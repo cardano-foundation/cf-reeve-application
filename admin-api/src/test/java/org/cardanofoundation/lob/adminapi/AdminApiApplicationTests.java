@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.cflob;
+package org.cardanofoundation.lob.adminapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
