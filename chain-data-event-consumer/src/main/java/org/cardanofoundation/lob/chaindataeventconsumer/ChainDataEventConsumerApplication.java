@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.sourceapi;
+package org.cardanofoundation.lob.chaindataeventconsumer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
