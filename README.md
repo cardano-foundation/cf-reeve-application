@@ -21,4 +21,6 @@ mvn clean package
 
 ## How to test
 
-TBD
+Test instructions for individual modules are provided in the corresponding sub folder README files.
+
+System level integration test instructions go here: TBD
