@@ -1,0 +1,53 @@
+# minio
+# watcher
+# source-api
+# rabbitmq
+# ledger-event-consumer
+# txsubmitter
+
+version: "3.9"
+services:
+  minio:
+    image: minio/minio:latest
+    ports:
+      - 9000:9000
+      - 9090:9090
+    volumes:
+      - "${MINIO_BUCKET_FOLDER}:/data"
+    environment:
+      MINIO_ROOT_USER: "${MINIO_USER_NAME}"
+      MINIO_ROOT_PASSWORD: "${MINIO_USER_SECRET}"
+    command: server /data --console-address ":9090"
+    restart: on-failure
+    networks:
+        - lobster
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    restart: on-failure
+    networks:
+        - lobster
+
+#  api:
+#    build: ./api
+#    platform: linux/arm64
+#    ports:
+#      - "${API_LOCAL_BIND_PORT}:${API_EXPOSED_PORT}"
+#    environment:
+#      DB_URL: "jdbc:postgresql://db:${DB_PORT}/${METADATA_DB_NAME}"
+#      DB_USER: "${SERVICE_USER_NAME}"
+#      DB_SECRET: "${SERVICE_USER_SECRET}"
+#      DB_DRIVER_CLASS_NAME: "${DB_DRIVER_CLASS_NAME}"
+#    depends_on:
+#      bootstrap-db:
+#        condition: service_completed_successfully
+#    restart: always
+
+networks:
+  lobster:
+    driver: bridge
