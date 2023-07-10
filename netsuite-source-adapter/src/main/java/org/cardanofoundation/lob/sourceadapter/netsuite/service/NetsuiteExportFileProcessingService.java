@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.LedgerEvent;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationRequest;
 import org.cardanofoundation.lob.sourceadapter.netsuite.model.BulkExportLedgerEvent;
@@ -15,6 +16,8 @@ import reactor.core.publisher.Mono;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +63,8 @@ public class NetsuiteExportFileProcessingService {
         }
     }
 
-    public void processNetsuiteExportFiles(final Path exportFile) {
+    public void processNetsuiteExportFiles(final Path exportFile) throws IOException {
+        final String fileHash = Hashing.blake2b256Hex(Files.readAllBytes(exportFile));
         final List<BulkExportLedgerEvent> netsuiteExportEvents = readInLedgerEvents(exportFile);
         final List<Optional<LedgerEvent>> ledgerEvents = netsuiteExportEvents.stream()
                 .filter(bulkExportLedgerEvent -> bulkExportLedgerEvent.getAccountLineName() != null &&
@@ -75,7 +79,7 @@ public class NetsuiteExportFileProcessingService {
         log.info(ledgerEvents);
 
         final LedgerEventRegistrationRequest ledgerEventRegistrationRequest = new LedgerEventRegistrationRequest();
-        ledgerEventRegistrationRequest.setRegistrationId("123");
+        ledgerEventRegistrationRequest.setRegistrationId(fileHash);
         ledgerEventRegistrationRequest.setLedgerEvents(ledgerEvents.stream().filter(Optional::isPresent).map(Optional::get).toList());
         final Mono<LedgerEventRegistrationRequest> ledgerEventUploadMono = webClient.post()
                 .uri("/events/registrations")

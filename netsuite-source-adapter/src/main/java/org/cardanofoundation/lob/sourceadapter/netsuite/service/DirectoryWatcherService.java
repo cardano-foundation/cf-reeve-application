@@ -43,7 +43,11 @@ public class DirectoryWatcherService {
         for (final WatchEvent<?> event : watchKey.pollEvents()) {
             if (event.context() != null && csvFilePathMatcher.matches((Path)event.context())) {
                 log.info("Processing file " + event.context());
-                fileProcessingService.processNetsuiteExportFiles(Path.of(directoryWatcherConfig.getInboundFilesRootPath(), ((Path)event.context()).toString()));
+                try {
+                    fileProcessingService.processNetsuiteExportFiles(Path.of(directoryWatcherConfig.getInboundFilesRootPath(), ((Path) event.context()).toString()));
+                } catch (final IOException e) {
+                    log.error(String.format("Could not read file %s", Path.of(directoryWatcherConfig.getInboundFilesRootPath(), ((Path) event.context()).toString())), e);
+                }
             }
         }
         watchKey.reset();

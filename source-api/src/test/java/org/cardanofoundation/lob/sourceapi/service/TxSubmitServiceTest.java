@@ -30,10 +30,8 @@ public class TxSubmitServiceTest {
         registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.APPROVED);
         final List<TxSubmitJob> txSubmitJobs = txPackagingService.createTxJobs(registrationJob);
         for (final TxSubmitJob txJob : txSubmitJobs) {
-            final Optional<String> res = txSubmitService.processTxSubmitJob(txJob);
-            if (res.isPresent()) {
-                System.out.println(res.get());
-            }
+            final Optional<String> res = txSubmitService.processTxSubmitJob(txJob, 0.1);
+            res.ifPresent(System.out::println);
         }
     }
 }

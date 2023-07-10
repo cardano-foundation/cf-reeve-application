@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.sourceapi.controller;
 
 
 import lombok.extern.log4j.Log4j2;
+import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.*;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationApprovalRequest;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationRequest;
@@ -75,10 +76,12 @@ public class LedgerEventController {
             registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.PROCESSED);
             ledgerEventRegistrationRepository.save(registrationJob);
 
-            txSubmitJobs.forEach(txSubmitJob -> {
+            for (final TxSubmitJob txSubmitJob : txSubmitJobs) {
                 try {
-                    txSubmitService.processTxSubmitJob(txSubmitJob).ifPresentOrElse(
+                    log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
+                    txSubmitService.processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
                             (txId) -> {
+                                log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
                                 txSubmitJob.setTransactionId(txId);
                                 txSubmitJob.setJobStatus(TxSubmitJobStatus.SUBMITTED);
                             },
@@ -89,12 +92,13 @@ public class LedgerEventController {
                 } catch (final Exception e) {
                     log.error(String.format("Could not submit a transaction job-id: %d", txSubmitJob.getId()));
                 }
-            });
+            }
 
             txSubmitJobRepository.saveAll(txSubmitJobs);
 
             return Mono.just(registrationJob);
         } catch (final ResponseStatusException e) {
+            log.error(e);
             return Mono.error(e);
         }
     }

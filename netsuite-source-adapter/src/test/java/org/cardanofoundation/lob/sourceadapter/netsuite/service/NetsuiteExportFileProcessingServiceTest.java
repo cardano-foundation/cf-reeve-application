@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 
 @SpringBootTest
@@ -15,7 +16,7 @@ public class NetsuiteExportFileProcessingServiceTest {
     private NetsuiteExportFileProcessingService netsuiteExportFileProcessingService;
 
     @Test
-    void testCsvFileImport() {
+    void testCsvFileImport() throws IOException {
         netsuiteExportFileProcessingService.processNetsuiteExportFiles(Paths.get("src", "test", "resources", TEST_CSV_FILENAME));
     }
 }
