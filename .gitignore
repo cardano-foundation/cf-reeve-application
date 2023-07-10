@@ -48,3 +48,8 @@ out/
 
 ### Jenv ###
 .java-version
+
+.DS_Store
+.minio_bucket*
+
+netsuite

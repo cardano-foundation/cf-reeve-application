@@ -9,5 +9,4 @@ class NetsuiteSourceAdapterApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
