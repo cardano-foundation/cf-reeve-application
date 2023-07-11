@@ -4,7 +4,6 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
-import org.bouncycastle.jcajce.provider.digest.Blake2b;
 import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.LedgerEvent;
 
@@ -228,7 +227,7 @@ public class BulkExportLedgerEvent {
             ledgerEvent.setCounterParty(entityId);
             ledgerEvent.setCostCenter(extractCostCenterNumber(costCenterName).orElse(null));
             ledgerEvent.setProjectCode(projectName);
-            ledgerEvent.setTimestamp(Date.from(Instant.now()));
+            ledgerEvent.setTimestamp(Instant.now().getEpochSecond());
             return Optional.of(ledgerEvent);
         } catch (final IllegalArgumentException e) {
             log.error("Could not parse bulk event to LedgerEvent.", e);

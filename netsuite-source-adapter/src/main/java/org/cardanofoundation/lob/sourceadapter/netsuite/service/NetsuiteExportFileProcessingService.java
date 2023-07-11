@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.LedgerEvent;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationRequest;
+import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationResponse;
 import org.cardanofoundation.lob.sourceadapter.netsuite.model.BulkExportLedgerEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -81,11 +82,11 @@ public class NetsuiteExportFileProcessingService {
         final LedgerEventRegistrationRequest ledgerEventRegistrationRequest = new LedgerEventRegistrationRequest();
         ledgerEventRegistrationRequest.setRegistrationId(fileHash);
         ledgerEventRegistrationRequest.setLedgerEvents(ledgerEvents.stream().filter(Optional::isPresent).map(Optional::get).toList());
-        final Mono<LedgerEventRegistrationRequest> ledgerEventUploadMono = webClient.post()
+        final Mono<LedgerEventRegistrationResponse> ledgerEventUploadMono = webClient.post()
                 .uri("/events/registrations")
                 .body(BodyInserters.fromValue(ledgerEventRegistrationRequest))
                 .retrieve()
-                .bodyToMono(LedgerEventRegistrationRequest.class);
+                .bodyToMono(LedgerEventRegistrationResponse.class);
 
         ledgerEventUploadMono.subscribe(log::info);
     }

@@ -5,6 +5,7 @@ import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.metadata.MetadataList;
 import com.bloxbean.cardano.client.metadata.MetadataMap;
 import lombok.extern.log4j.Log4j2;
+import org.cardanofoundation.lob.common.constants.Constants;
 import org.cardanofoundation.lob.common.model.LedgerEvent;
 import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJob;
 import org.cardanofoundation.lob.common.model.TxSubmitJob;
@@ -20,8 +21,6 @@ import java.util.List;
 @Log4j2
 public class TxPackagingService {
     private static final int MAX_EVENTS_PER_TX = 32;
-
-    private static final BigInteger METADATA_LABEL = BigInteger.valueOf(512);
 
     public List<TxSubmitJob> createTxJobs(final LedgerEventRegistrationJob ledgerEventRegistrationJob) {
         final List<TxSubmitJob> txSubmitJobs = new ArrayList<>();
@@ -47,7 +46,7 @@ public class TxPackagingService {
                     eventMetaData.put("type", ledgerEvent.getType());
                 }
                 if (ledgerEvent.getDocDate() != null) {
-                    eventMetaData.put("docDate", ledgerEvent.getDocDate().toString());
+                    eventMetaData.put("docDate", Constants.METADATA_DATE_FORMAT.format(ledgerEvent.getDocDate()));
                 }
                 if (ledgerEvent.getBookDate() != null) {
                     eventMetaData.put("bookDate", ledgerEvent.getBookDate());
@@ -79,11 +78,11 @@ public class TxPackagingService {
                 if (ledgerEvent.getProjectCode() != null) {
                     eventMetaData.put("projectCode", ledgerEvent.getProjectCode());
                 }
-                eventMetaData.put("timestamp", Instant.now().toString());
+                eventMetaData.put("timestamp", BigInteger.valueOf(Instant.now().getEpochSecond()));
                 metadataList.add(eventMetaData);
             }
-            metadataMap.put("events", metadataList);
-            metadata.put(METADATA_LABEL, metadataMap);
+            metadataMap.put("ledgerEvents", metadataList);
+            metadata.put(Constants.METADATA_LABEL, metadataMap);
 
             final TxSubmitJob job = new TxSubmitJob();
             job.setJobStatus(TxSubmitJobStatus.PENDING);

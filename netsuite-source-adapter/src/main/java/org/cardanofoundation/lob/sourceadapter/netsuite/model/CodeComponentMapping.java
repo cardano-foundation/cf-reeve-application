@@ -7,7 +7,7 @@ import static java.util.Map.entry;
 
 public class CodeComponentMapping {
 
-    private static final Map<String, String> EVENT_CODE_MAPPING = Map.ofEntries(
+    private static final Map<String, String> EVENT_CODE_MAPPING = Map.<String, String>ofEntries(
             entry("300430", "B300430"),
             entry("301430", "B301430"),
             entry("302430", "B302430"),
@@ -207,11 +207,15 @@ public class CodeComponentMapping {
             entry("840020", "I840020"),
             entry("840431", "I840431"),
             entry("840040", "I840040"),
-            entry("843430", "I843430")
+            entry("843430", "I843430"),
+            entry("200430", "I200430"),
+            entry("201430", "I201430")
     );
 
-    private static final Map<String, String> CODE_COMPONENT_MAPPING = Map.ofEntries(
+    private static final Map<String, String> CODE_COMPONENT_MAPPING = Map.<String, String>ofEntries(
             entry("110115", "020"),
+            entry("120311", "200"),
+            entry("120312", "201"),
             entry("120511", "160"),
             entry("120516", "163"),
             entry("120517", "165"),

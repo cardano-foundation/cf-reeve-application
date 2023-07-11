@@ -58,6 +58,7 @@
         <version.spring-boot>3.1.0</version.spring-boot>
         <version.commons-lang>3.12.0</version.commons-lang>
         <version.cardano-client-lib>0.5.0-alpha.3</version.cardano-client-lib>
+        <version.yaci-store>0.0.10</version.yaci-store>
         <version.opencsv>5.7.1</version.opencsv>
         <version.lombok>1.18.26</version.lombok>
         <version.bouncycastle>1.60</version.bouncycastle>
@@ -100,6 +101,16 @@
                 <groupId>com.bloxbean.cardano</groupId>
                 <artifactId>cardano-client-backend-blockfrost</artifactId>
                 <version>${version.cardano-client-lib}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bloxbean.cardano</groupId>
+                <artifactId>yaci-store-spring-boot-starter</artifactId>
+                <version>${version.yaci-store}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bloxbean.cardano</groupId>
+                <artifactId>yaci-store-metadata-spring-boot-starter</artifactId>
+                <version>${version.yaci-store}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>

@@ -5,7 +5,9 @@ import lombok.extern.log4j.Log4j2;
 import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.*;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationApprovalRequest;
+import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationApprovalResponse;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationRequest;
+import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationResponse;
 import org.cardanofoundation.lob.sourceapi.repository.LedgerEventRegistrationRepository;
 import org.cardanofoundation.lob.sourceapi.repository.LedgerEventRepository;
 import org.cardanofoundation.lob.sourceapi.repository.TxSubmitJobRepository;
@@ -41,7 +43,7 @@ public class LedgerEventController {
     private TxSubmitJobRepository txSubmitJobRepository;
 
     @PostMapping("/registrations")
-    public Mono<LedgerEventRegistrationRequest> addEventRegistration(@RequestBody final LedgerEventRegistrationRequest ledgerEventRegistration) {
+    public Mono<LedgerEventRegistrationResponse> addEventRegistration(@RequestBody final LedgerEventRegistrationRequest ledgerEventRegistration) {
         if (ledgerEventRegistrationRepository.existsById(ledgerEventRegistration.getRegistrationId())) {
             return Mono.error(new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -53,9 +55,12 @@ public class LedgerEventController {
             ledgerEventRegistrationJob.setLedgerEvents(ledgerEventRegistration.getLedgerEvents());
             ledgerEventRegistrationJob.setJobStatus(LedgerEventRegistrationJobStatus.PENDING_APPROVAL);
             ledgerEventRegistrationRepository.save(ledgerEventRegistrationJob);
-        }
 
-        return Mono.just(ledgerEventRegistration);
+            final LedgerEventRegistrationResponse response = new LedgerEventRegistrationResponse();
+            response.setRegistrationId(ledgerEventRegistration.getRegistrationId());
+            response.setJobStatus(ledgerEventRegistrationJob.getJobStatus());
+            return Mono.just(response);
+        }
     }
 
     @GetMapping("/registrations/pending")
@@ -64,7 +69,7 @@ public class LedgerEventController {
     }
 
     @PostMapping("/registrations/approve")
-    public Mono<LedgerEventRegistrationJob> approveRegistration(@RequestBody final LedgerEventRegistrationApprovalRequest approvalRequest) {
+    public Mono<LedgerEventRegistrationApprovalResponse> approveRegistration(@RequestBody final LedgerEventRegistrationApprovalRequest approvalRequest) {
         try {
             final LedgerEventRegistrationJob registrationJob = ledgerEventRegistrationRepository.findById(approvalRequest.getRegistrationId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration has already been approved."));
             registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.APPROVED);
@@ -96,7 +101,10 @@ public class LedgerEventController {
 
             txSubmitJobRepository.saveAll(txSubmitJobs);
 
-            return Mono.just(registrationJob);
+            final LedgerEventRegistrationApprovalResponse response = new LedgerEventRegistrationApprovalResponse();
+            response.setRegistrationId(approvalRequest.getRegistrationId());
+            response.setJobStatus(registrationJob.getJobStatus());
+            return Mono.just(response);
         } catch (final ResponseStatusException e) {
             log.error(e);
             return Mono.error(e);
