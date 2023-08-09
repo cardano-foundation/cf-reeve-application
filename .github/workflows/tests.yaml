@@ -43,7 +43,7 @@ jobs:
           mvn --batch-mode --update-snapshots test
 
   mutation-test:
-    needs: test
+    needs: unit-test
     runs-on: self-hosted
     steps:
       - name: Checkout
@@ -80,7 +80,7 @@ jobs:
           target-folder: mutation-report/
 
   end2end:
-    needs: test
+    needs: unit-test
     runs-on: self-hosted
     container:
       image: postman/newman
