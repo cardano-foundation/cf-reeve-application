@@ -57,6 +57,8 @@
         <version.maven-site-plugin>4.0.0-M2</version.maven-site-plugin>
         <version.spring-boot>3.1.0</version.spring-boot>
         <version.lombok>1.18.26</version.lombok>
+        <version.pitest>1.14.2</version.pitest>
+        <version.pitest-junit5>1.1.1</version.pitest-junit5>
     </properties>
 
     <repositories>
@@ -140,6 +142,29 @@
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>${version.sonarcube-maven-plugin}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>${version.pitest}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>${version.pitest-junit5}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <features>
+                        <feature>+auto_threads</feature>
+                    </features>
+                    <targetClasses>
+                        <param>org.cardanofoundation.lob.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>org.cardanofoundation.lob.*</param>
+                    </targetTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>
