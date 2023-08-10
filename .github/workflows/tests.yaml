@@ -14,7 +14,7 @@ env:
 
 jobs:
   unit-test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,7 +44,7 @@ jobs:
 
   mutation-test:
     needs: unit-test
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -81,7 +81,7 @@ jobs:
 
   end2end:
     needs: unit-test
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container:
       image: postman/newman
     steps:
