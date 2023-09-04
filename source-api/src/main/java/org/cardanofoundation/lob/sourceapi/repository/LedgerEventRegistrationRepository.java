@@ -11,5 +11,5 @@ import java.util.List;
 public interface LedgerEventRegistrationRepository extends JpaRepository<LedgerEventRegistrationJob, String> {
     List<LedgerEventRegistrationJob> findByJobStatus(final LedgerEventRegistrationJobStatus jobStatus);
 
-    List<LedgerEventRegistrationJob> findByIdAndJobStatus(String registrationId, final LedgerEventRegistrationJobStatus jobStatus);
+    List<LedgerEventRegistrationJob> findByRegistrationIdAndJobStatus(String registrationId, final LedgerEventRegistrationJobStatus jobStatus);
 }

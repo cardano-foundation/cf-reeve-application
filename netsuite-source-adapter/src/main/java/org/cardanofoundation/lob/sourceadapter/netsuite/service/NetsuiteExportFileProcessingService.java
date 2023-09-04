@@ -12,6 +12,7 @@ import org.cardanofoundation.lob.common.model.LedgerEvent;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationRequest;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationResponse;
 import org.cardanofoundation.lob.sourceadapter.netsuite.model.BulkExportLedgerEvent;
+import org.cardanofoundation.lob.sourceadapter.netsuite.model.LinesLedgerEvent;
 import org.springframework.asm.TypeReference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -123,10 +124,12 @@ public class NetsuiteExportFileProcessingService {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
-            List<BulkExportLedgerEvent> participantJsonList = Arrays.asList(mapper.readValue(data,
-                    BulkExportLedgerEvent[].class));
 
-            return participantJsonList;
+            List<LinesLedgerEvent> list = Arrays.asList(mapper.readValue(data,
+                    LinesLedgerEvent.class));
+            log.info(list);
+
+            return list.get(0).getLines().subList(0,5);
         } catch (final IllegalStateException e) {
             log.error("Given export file does not accord to the actual format.", e);
             return List.of();
