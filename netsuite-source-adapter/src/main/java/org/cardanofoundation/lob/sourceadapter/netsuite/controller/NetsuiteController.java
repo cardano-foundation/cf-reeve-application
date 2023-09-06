@@ -26,10 +26,10 @@ public class NetsuiteController {
     public @ResponseBody String callClient(){
         try {
             String data = clientAPI.makeCall();
-            log.info(data);
             LedgerEventRegistrationRequest result = netsuiteExportFileProcessingService.processNetsuiteExportJson(data);
             return result.toString();
         } catch (IOException e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

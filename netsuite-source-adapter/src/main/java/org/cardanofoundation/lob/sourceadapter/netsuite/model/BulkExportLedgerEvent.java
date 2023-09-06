@@ -63,13 +63,13 @@ public class BulkExportLedgerEvent {
     //@CsvBindByName(column = "Entity: Tax Reg. Number")
     private String entityTaxRegistrationNumber;
 
-    //@CsvBindByName(column = "Currency: Currency Symbol")
+    @JsonProperty("Currency")
     private String currencySymbol;
 
-    @JsonProperty("Amount (Debit)")
+    @JsonProperty("Amount (Debit) (Foreign Currency)")
     private Double amountForeignCurrency;
 
-    //@CsvBindByName(column = "Amount")
+    @JsonProperty("Amount (Debit)")
     private String amount;
 
     //@CsvBindByName(column = "Item: Taxable")
