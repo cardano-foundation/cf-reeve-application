@@ -15,6 +15,7 @@ import org.cardanofoundation.lob.sourceadapter.netsuite.model.BulkExportLedgerEv
 import org.cardanofoundation.lob.sourceadapter.netsuite.model.LinesLedgerEvent;
 import org.springframework.asm.TypeReference;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -99,44 +100,51 @@ public class NetsuiteExportFileProcessingService {
     }
 
     public LedgerEventRegistrationRequest processNetsuiteExportJson(String data) throws IOException {
-        final String fileHash = Hashing.blake2b256Hex(data.getBytes());
+
         final List<BulkExportLedgerEvent> netsuiteExportEvents = readInLedgerEvents(data);
-        log.info(netsuiteExportEvents);
+        final String fileHash = Hashing.blake2b256Hex(netsuiteExportEvents.toString().getBytes());
+
         final List<Optional<LedgerEvent>> ledgerEvents = netsuiteExportEvents.stream()
                 .map(BulkExportLedgerEvent::toLedgerEvent).toList();
-
-        log.info(ledgerEvents);
 
         final LedgerEventRegistrationRequest ledgerEventRegistrationRequest = new LedgerEventRegistrationRequest();
         ledgerEventRegistrationRequest.setRegistrationId(fileHash);
         ledgerEventRegistrationRequest.setLedgerEvents(ledgerEvents.stream().filter(Optional::isPresent).map(Optional::get).toList());
-        final Mono<LedgerEventRegistrationResponse> ledgerEventUploadMono = webClient.post()
-                .uri("/events/registrations")
-                .body(BodyInserters.fromValue(ledgerEventRegistrationRequest))
-                .retrieve()
-                .bodyToMono(LedgerEventRegistrationResponse.class);
+        try {
+            final Mono<LedgerEventRegistrationResponse> ledgerEventUploadMono = webClient.post()
+                    .uri("/events/registrations")
+                    .body(BodyInserters.fromValue(ledgerEventRegistrationRequest))
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, response -> {
+                        return Mono.just(new Exception("Bad Request"));
+                    })
+                    .onStatus(HttpStatusCode::is5xxServerError, response -> {
+                        return Mono.just(new Exception("Server Error"));
+                    })
+                    .onStatus(HttpStatusCode::is2xxSuccessful, response -> {
+                        log.info(response.statusCode());
+                        return Mono.just(new Exception("Server Error"));
+                    })
+                    .bodyToMono(LedgerEventRegistrationResponse.class);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
 
-        ledgerEventUploadMono.subscribe(log::info);
+
         return ledgerEventRegistrationRequest;
     }
 
     private List<BulkExportLedgerEvent> readInLedgerEvents(String data) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-
-
             List<LinesLedgerEvent> list = Arrays.asList(mapper.readValue(data,
                     LinesLedgerEvent.class));
-            log.info(list);
+            return list.get(0).getLines().subList(0, 7);
 
-            return list.get(0).getLines().subList(0,5);
-        } catch (final IllegalStateException e) {
+        } catch (final IllegalStateException | JsonProcessingException e) {
             log.error("Given export file does not accord to the actual format.", e);
-            return List.of();
-        } catch (JsonMappingException e) {
-            return List.of();
-        } catch (JsonProcessingException e) {
-            return List.of();
+
         }
+        return List.of();
     }
 }
