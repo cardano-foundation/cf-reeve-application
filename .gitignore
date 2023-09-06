@@ -52,3 +52,4 @@ out/
 .DS_Store
 .minio_bucket*
 
+netsuite
