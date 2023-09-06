@@ -116,9 +116,11 @@ public class NetsuiteExportFileProcessingService {
                     .body(BodyInserters.fromValue(ledgerEventRegistrationRequest))
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError, response -> {
+                        log.info(response.statusCode());
                         return Mono.just(new Exception("Bad Request"));
                     })
                     .onStatus(HttpStatusCode::is5xxServerError, response -> {
+                        log.info(response.statusCode());
                         return Mono.just(new Exception("Server Error"));
                     })
                     .onStatus(HttpStatusCode::is2xxSuccessful, response -> {
@@ -126,6 +128,7 @@ public class NetsuiteExportFileProcessingService {
                         return Mono.just(new Exception("Server Error"));
                     })
                     .bodyToMono(LedgerEventRegistrationResponse.class);
+
         }catch (Exception e){
             log.error(e.getMessage());
         }
