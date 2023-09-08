@@ -1,9 +1,6 @@
 package org.cardanofoundation.lob.common.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +15,6 @@ public class LedgerEventRegistrationJob {
 
     private LedgerEventRegistrationJobStatus jobStatus;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<LedgerEvent> ledgerEvents;
 }

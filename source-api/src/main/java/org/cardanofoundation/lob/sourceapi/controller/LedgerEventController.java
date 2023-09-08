@@ -54,7 +54,12 @@ public class LedgerEventController {
             ledgerEventRegistrationJob.setRegistrationId(ledgerEventRegistration.getRegistrationId());
             ledgerEventRegistrationJob.setLedgerEvents(ledgerEventRegistration.getLedgerEvents());
             ledgerEventRegistrationJob.setJobStatus(LedgerEventRegistrationJobStatus.PENDING_APPROVAL);
-            ledgerEventRegistrationRepository.save(ledgerEventRegistrationJob);
+            try {
+                ledgerEventRegistrationRepository.save(ledgerEventRegistrationJob);
+            }catch (Exception e){
+                log.error(e.getMessage());
+            }
+
 
             final LedgerEventRegistrationResponse response = new LedgerEventRegistrationResponse();
             response.setRegistrationId(ledgerEventRegistration.getRegistrationId());
