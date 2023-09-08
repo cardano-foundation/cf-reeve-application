@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.bean.CsvToBeanBuilder;
 import jakarta.annotation.PostConstruct;
+import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.cardanofoundation.lob.common.crypto.Hashing;
@@ -16,6 +17,7 @@ import org.cardanofoundation.lob.sourceadapter.netsuite.model.LinesLedgerEvent;
 import org.springframework.asm.TypeReference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -110,31 +112,27 @@ public class NetsuiteExportFileProcessingService {
         final LedgerEventRegistrationRequest ledgerEventRegistrationRequest = new LedgerEventRegistrationRequest();
         ledgerEventRegistrationRequest.setRegistrationId(fileHash);
         ledgerEventRegistrationRequest.setLedgerEvents(ledgerEvents.stream().filter(Optional::isPresent).map(Optional::get).toList());
+        sendRegistration(ledgerEventRegistrationRequest);
+
+        return ledgerEventRegistrationRequest;
+    }
+
+    private Boolean sendRegistration(LedgerEventRegistrationRequest ledgerEventRegistrationRequest) {
         try {
             final Mono<LedgerEventRegistrationResponse> ledgerEventUploadMono = webClient.post()
                     .uri("/events/registrations")
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(ledgerEventRegistrationRequest))
                     .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, response -> {
-                        log.info(response.statusCode());
-                        return Mono.just(new Exception("Bad Request"));
-                    })
-                    .onStatus(HttpStatusCode::is5xxServerError, response -> {
-                        log.info(response.statusCode());
-                        return Mono.just(new Exception("Server Error"));
-                    })
-                    .onStatus(HttpStatusCode::is2xxSuccessful, response -> {
-                        log.info(response.statusCode());
-                        return Mono.just(new Exception("Server Error"));
-                    })
-                    .bodyToMono(LedgerEventRegistrationResponse.class);
+                    .bodyToMono(LedgerEventRegistrationResponse.class)
 
-        }catch (Exception e){
+            ;
+            ledgerEventUploadMono.subscribe(log::info);
+        } catch (Exception e) {
             log.error(e.getMessage());
+            return false;
         }
-
-
-        return ledgerEventRegistrationRequest;
+        return true;
     }
 
     private List<BulkExportLedgerEvent> readInLedgerEvents(String data) {
