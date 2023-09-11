@@ -20,6 +20,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @// TODO: 11/09/2023 Need to move all this service to tx-submitter 
+ */
 @Component
 @Log4j2
 public class TxSubmitService {
@@ -86,7 +89,6 @@ public class TxSubmitService {
         try {
             result = quickTxBuilder.compose(tx)
                     .withSigner(SignerProviders.signerFrom(sender))                    .complete();
-
 
             waitForTransaction(result);
             checkIfUtxoAvailable(result.getValue(), sender.baseAddress());
