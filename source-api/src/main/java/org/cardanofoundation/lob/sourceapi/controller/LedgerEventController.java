@@ -21,6 +21,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/events")
@@ -49,7 +50,10 @@ public class LedgerEventController {
                     HttpStatus.BAD_REQUEST,
                     "A ledger event registration with this registration id already exists."));
         } else {
-            ledgerEventRepository.saveAll(ledgerEventRegistration.getLedgerEvents());
+            /**
+             * @// TODO: 11/09/2023 The saveAll create horphan data in th ledger_event table.
+             */
+            //ledgerEventRepository.saveAll(ledgerEventRegistration.getLedgerEvents());
             final LedgerEventRegistrationJob ledgerEventRegistrationJob = new LedgerEventRegistrationJob();
             ledgerEventRegistrationJob.setRegistrationId(ledgerEventRegistration.getRegistrationId());
             ledgerEventRegistrationJob.setLedgerEvents(ledgerEventRegistration.getLedgerEvents());

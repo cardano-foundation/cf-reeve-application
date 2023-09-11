@@ -47,6 +47,21 @@ services:
 #      bootstrap-db:
 #        condition: service_completed_successfully
 #    restart: always
+  postgres:
+    hostname: postgres
+    container_name: postgres
+    image: postgres:13.2
+    environment:
+      - POSTGRES_USER=cardano-master
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=lob
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+    postgres-data:
 
 networks:
   lobster:
