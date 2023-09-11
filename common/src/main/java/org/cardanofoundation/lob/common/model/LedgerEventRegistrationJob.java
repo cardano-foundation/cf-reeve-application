@@ -15,6 +15,6 @@ public class LedgerEventRegistrationJob {
 
     private LedgerEventRegistrationJobStatus jobStatus;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<LedgerEvent> ledgerEvents;
 }

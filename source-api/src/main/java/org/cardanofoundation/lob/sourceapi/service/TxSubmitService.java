@@ -70,6 +70,9 @@ public class TxSubmitService {
     }
 
     public Optional<String> processTxSubmitJob(final TxSubmitJob txSubmitJob, final double nonce) {
+        /**
+         * @// TODO: 11/09/2023 Should this account be asociated with the client? or Lob pays for this?  
+         */
         final String senderMnemonic = "omit patch shoe tunnel fluid inform mom mandate glare balance bachelor sense market question oval talk damp void play retire fold attract execute tomato";
         final Account sender = new Account(Networks.testnet(), senderMnemonic);
 

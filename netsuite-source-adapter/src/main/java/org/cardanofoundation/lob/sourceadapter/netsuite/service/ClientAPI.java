@@ -119,7 +119,7 @@ public class ClientAPI {
                 "            \"Period\": \"112\",\n" +
                 "            \"Tax Period\": \"17\",\n" +
                 "            \"Internal ID\": \"1\",\n" +
-                "            \"Transaction Number\": \"JOURNAL1\",\n" +
+                "            \"Transaction Number\": \"JOURNAL1ULTIMO\",\n" +
                 "            \"Document Number\": \"JE-0001\",\n" +
                 "            \"Number\": \"4101110100\",\n" +
                 "            \"Name\": \"\",\n" +
@@ -149,7 +149,7 @@ public class ClientAPI {
                 "            \"Period\": \"112\",\n" +
                 "            \"Tax Period\": \"17\",\n" +
                 "            \"Internal ID\": \"1\",\n" +
-                "            \"Transaction Number\": \"JOURNAL1\",\n" +
+                "            \"Transaction Number\": \"JOURNAL1PENULTIMO\",\n" +
                 "            \"Document Number\": \"JE-0001\",\n" +
                 "            \"Number\": \"4101120100\",\n" +
                 "            \"Name\": \"\",\n" +
