@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.sourceapi.service;
+package org.cardanofoundation.lob.txsubmitter.service;
 
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.api.model.Amount;
@@ -25,7 +25,7 @@ import java.util.Optional;
  */
 @Component
 @Log4j2
-public class TxSubmitService {
+public class TxSubmitterService {
 
     private BackendService backendService;
 

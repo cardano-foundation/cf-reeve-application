@@ -22,15 +22,39 @@
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.bloxbean.cardano</groupId>
+			<artifactId>cardano-client-lib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.bloxbean.cardano</groupId>
+			<artifactId>cardano-client-backend-blockfrost</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.cardanofoundation.lob</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>

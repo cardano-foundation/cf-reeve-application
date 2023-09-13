@@ -11,8 +11,9 @@ import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationRespon
 import org.cardanofoundation.lob.sourceapi.repository.LedgerEventRegistrationRepository;
 import org.cardanofoundation.lob.sourceapi.repository.LedgerEventRepository;
 import org.cardanofoundation.lob.sourceapi.repository.TxSubmitJobRepository;
-import org.cardanofoundation.lob.sourceapi.service.TxPackagingService;
-import org.cardanofoundation.lob.sourceapi.service.TxSubmitService;
+
+import org.cardanofoundation.lob.txsubmitter.service.TxPackagingService;
+import org.cardanofoundation.lob.txsubmitter.service.TxSubmitterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/events")
@@ -29,7 +29,7 @@ import java.util.Optional;
 public class LedgerEventController {
 
     @Autowired
-    private TxSubmitService txSubmitService;
+    private TxSubmitterService txSubmitService;
 
     @Autowired
     private TxPackagingService txPackagingService;
