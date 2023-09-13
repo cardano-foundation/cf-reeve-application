@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.sourceapi.service;
+package org.cardanofoundation.lob.txsubmitter.service;
 
 import com.bloxbean.cardano.client.metadata.Metadata;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
