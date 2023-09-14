@@ -1,5 +1,0 @@
-/var/www/cf-lob/source-api/src/main/java/org/cardanofoundation/lob/sourceapi/controller/LedgerEventController.java
-/var/www/cf-lob/source-api/src/main/java/org/cardanofoundation/lob/sourceapi/repository/LedgerEventRepository.java
-/var/www/cf-lob/source-api/src/main/java/org/cardanofoundation/lob/sourceapi/repository/TxSubmitJobRepository.java
-/var/www/cf-lob/source-api/src/main/java/org/cardanofoundation/lob/sourceapi/SourceApiApplication.java
-/var/www/cf-lob/source-api/src/main/java/org/cardanofoundation/lob/sourceapi/repository/LedgerEventRegistrationRepository.java
