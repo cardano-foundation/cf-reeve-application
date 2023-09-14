@@ -19,7 +19,7 @@ import java.util.List;
 
 @Component
 @Log4j2
-public class TxPackagingService {
+public class ServiceTxPackaging {
     private static final int MAX_EVENTS_PER_TX = 32;
 
     public List<TxSubmitJob> createTxJobs(final LedgerEventRegistrationJob ledgerEventRegistrationJob) {
