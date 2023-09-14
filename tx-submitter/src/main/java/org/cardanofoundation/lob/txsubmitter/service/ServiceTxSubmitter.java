@@ -25,7 +25,7 @@ import java.util.Optional;
  */
 @Component
 @Log4j2
-public class TxSubmitterService {
+public class ServiceTxSubmitter {
 
     private BackendService backendService;
 

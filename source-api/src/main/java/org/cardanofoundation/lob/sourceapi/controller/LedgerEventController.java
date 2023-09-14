@@ -12,8 +12,8 @@ import org.cardanofoundation.lob.sourceapi.repository.LedgerEventRegistrationRep
 import org.cardanofoundation.lob.sourceapi.repository.LedgerEventRepository;
 import org.cardanofoundation.lob.sourceapi.repository.TxSubmitJobRepository;
 
-import org.cardanofoundation.lob.txsubmitter.service.TxPackagingService;
-import org.cardanofoundation.lob.txsubmitter.service.TxSubmitterService;
+import org.cardanofoundation.lob.txsubmitter.service.ServiceTxPackaging;
+import org.cardanofoundation.lob.txsubmitter.service.ServiceTxSubmitter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +29,10 @@ import java.util.List;
 public class LedgerEventController {
 
     @Autowired
-    private TxSubmitterService txSubmitService;
+    private ServiceTxSubmitter serviceTxSubmit;
 
     @Autowired
-    private TxPackagingService txPackagingService;
+    private ServiceTxPackaging serviceTxPackaging;
 
     @Autowired
     private LedgerEventRegistrationRepository ledgerEventRegistrationRepository;
@@ -95,7 +95,7 @@ public class LedgerEventController {
             registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.APPROVED);
             ledgerEventRegistrationRepository.save(registrationJob);
 
-            final List<TxSubmitJob> txSubmitJobs = txPackagingService.createTxJobs(registrationJob);
+            final List<TxSubmitJob> txSubmitJobs = serviceTxPackaging.createTxJobs(registrationJob);
             txSubmitJobRepository.saveAll(txSubmitJobs);
 
             registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.PROCESSED);
@@ -104,7 +104,7 @@ public class LedgerEventController {
             for (final TxSubmitJob txSubmitJob : txSubmitJobs) {
                 try {
                     log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
-                    txSubmitService.processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
+                    serviceTxSubmit.processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
                             (txId) -> {
                                 log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
                                 txSubmitJob.setTransactionId(txId);
