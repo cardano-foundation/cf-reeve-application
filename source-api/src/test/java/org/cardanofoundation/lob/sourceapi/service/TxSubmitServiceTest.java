@@ -2,7 +2,7 @@ package org.cardanofoundation.lob.sourceapi.service;
 
 import org.cardanofoundation.lob.common.model.*;
 import org.cardanofoundation.lob.txsubmitter.service.ServiceTxPackaging;
-import org.cardanofoundation.lob.txsubmitter.service.ServiceTxSubmitter;
+import org.cardanofoundation.lob.txsubmitter.service.TxSubmitterService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @SpringBootTest
 public class TxSubmitServiceTest {
     @Autowired
-    private ServiceTxSubmitter txSubmitService;
+    private TxSubmitterService txSubmitService;
 
     @Autowired
     private ServiceTxPackaging serviceTxPackaging;
