@@ -20,12 +20,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @// TODO: 11/09/2023 Need to move all this service to tx-submitter 
- */
 @Component
 @Log4j2
-public class ServiceTxSubmitter {
+public class TxSubmitterService {
 
     private BackendService backendService;
 

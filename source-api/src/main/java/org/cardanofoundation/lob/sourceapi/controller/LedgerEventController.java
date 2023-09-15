@@ -13,7 +13,7 @@ import org.cardanofoundation.lob.sourceapi.repository.LedgerEventRepository;
 import org.cardanofoundation.lob.sourceapi.repository.TxSubmitJobRepository;
 
 import org.cardanofoundation.lob.txsubmitter.service.ServiceTxPackaging;
-import org.cardanofoundation.lob.txsubmitter.service.ServiceTxSubmitter;
+import org.cardanofoundation.lob.txsubmitter.service.TxSubmitterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +29,7 @@ import java.util.List;
 public class LedgerEventController {
 
     @Autowired
-    private ServiceTxSubmitter serviceTxSubmit;
+    private TxSubmitterService serviceTxSubmit;
 
     @Autowired
     private ServiceTxPackaging serviceTxPackaging;
