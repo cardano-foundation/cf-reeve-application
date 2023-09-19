@@ -14,8 +14,19 @@ import com.bloxbean.cardano.client.quicktx.QuickTxBuilder;
 import com.bloxbean.cardano.client.quicktx.Tx;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
+import org.cardanofoundation.lob.common.crypto.Hashing;
+import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJob;
+import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJobStatus;
 import org.cardanofoundation.lob.common.model.TxSubmitJob;
+import org.cardanofoundation.lob.common.model.TxSubmitJobStatus;
+import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRegistrationRepository;
+import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRepository;
+import org.cardanofoundation.lob.txsubmitter.repository.TxSubmitJobRepository;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +36,91 @@ import java.util.Optional;
 public class TxSubmitterService {
 
     private BackendService backendService;
+
+    private Account sender;
+
+    @Autowired
+    private ServiceTxPackaging serviceTxPackaging;
+    @Autowired
+    private LedgerEventRegistrationRepository ledgerEventRegistrationRepository;
+
+    @Autowired
+    private LedgerEventRepository ledgerEventRepository;
+
+    @Autowired
+    private TxSubmitJobRepository txSubmitJobRepository;
+
+    @PostConstruct
+    public void init() {
+        backendService = new BFBackendService("http://localhost:8080/api/v1/", "Dummy");
+        final String senderMnemonic = "omit patch shoe tunnel fluid inform mom mandate glare balance bachelor sense market question oval talk damp void play retire fold attract execute tomato";
+        sender = new Account(Networks.testnet(), senderMnemonic);
+
+    }
+
+    @RabbitListener(queues = "myqueue")
+    public void listen(String registrationId) {
+        log.info(registrationId);
+        final LedgerEventRegistrationJob registrationJob = ledgerEventRegistrationRepository.findById(registrationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration has already been approved."));
+        final List<TxSubmitJob> txSubmitJobs = serviceTxPackaging.createTxJobs(registrationJob);
+        txSubmitJobRepository.saveAll(txSubmitJobs);
+
+        registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.PROCESSED);
+        ledgerEventRegistrationRepository.save(registrationJob);
+
+        for (final TxSubmitJob txSubmitJob : txSubmitJobs) {
+            try {
+                log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
+
+                processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
+                        (txId) -> {
+                            log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
+                            txSubmitJob.setTransactionId(txId);
+                            txSubmitJob.setJobStatus(TxSubmitJobStatus.SUBMITTED);
+                            log.info("Submit");
+                        },
+                        () -> {
+                            txSubmitJob.setJobStatus(TxSubmitJobStatus.FAILED);
+                            log.info("fail");
+                        }
+                );
+            } catch (final Exception e) {
+                log.error(String.format("Could not submit a transaction job-id: %d", txSubmitJob.getId()));
+                log.error(String.format("Could not submit a transaction error", e.getMessage().toString()));
+            }
+
+            txSubmitJobRepository.save(txSubmitJob);
+        }
+
+        txSubmitJobRepository.saveAll(txSubmitJobs);
+    }
+
+    public Optional<String> processTxSubmitJob(final TxSubmitJob txSubmitJob, final double nonce) {
+
+        final QuickTxBuilder quickTxBuilder = new QuickTxBuilder(backendService);
+        final Tx tx = new Tx()
+                .payToAddress(sender.baseAddress(), Amount.ada(1.5 + nonce * 0.001))
+                .attachMetadata(CBORMetadata.deserialize(txSubmitJob.getTransactionMetadata()))
+                .from(sender.baseAddress());
+
+        Result<String> result = null;
+        try {
+            result = quickTxBuilder.compose(tx)
+                    .withSigner(SignerProviders.signerFrom(sender)).complete();
+
+            waitForTransaction(result);
+            checkIfUtxoAvailable(result.getValue(), sender.baseAddress());
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+
+
+        if (result.isSuccessful()) {
+            return Optional.of(result.getValue());
+        } else {
+            return Optional.empty();
+        }
+    }
 
     private void waitForTransaction(final Result<String> result) {
         try {
@@ -64,40 +160,4 @@ public class TxSubmitterService {
         }
     }
 
-    @PostConstruct
-    public void init() {
-        backendService = new BFBackendService("http://localhost:8080/api/v1/", "Dummy");
-    }
-
-    public Optional<String> processTxSubmitJob(final TxSubmitJob txSubmitJob, final double nonce) {
-        /**
-         * @// TODO: 11/09/2023 Should this account be asociated with the client? or Lob pays for this?  
-         */
-        final String senderMnemonic = "omit patch shoe tunnel fluid inform mom mandate glare balance bachelor sense market question oval talk damp void play retire fold attract execute tomato";
-        final Account sender = new Account(Networks.testnet(), senderMnemonic);
-
-        final QuickTxBuilder quickTxBuilder = new QuickTxBuilder(backendService);
-        final Tx tx = new Tx()
-                .payToAddress(sender.baseAddress(), Amount.ada(1.5 + nonce * 0.001))
-                .attachMetadata(CBORMetadata.deserialize(txSubmitJob.getTransactionMetadata()))
-                .from(sender.baseAddress());
-
-        Result<String> result = null;
-        try {
-            result = quickTxBuilder.compose(tx)
-                    .withSigner(SignerProviders.signerFrom(sender))                    .complete();
-
-            waitForTransaction(result);
-            checkIfUtxoAvailable(result.getValue(), sender.baseAddress());
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-
-
-        if (result.isSuccessful()) {
-            return Optional.of(result.getValue());
-        } else {
-            return Optional.empty();
-        }
-    }
 }

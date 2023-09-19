@@ -23,6 +23,9 @@ services:
         - lobster
   rabbitmq:
     image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=lob
+      - RABBITMQ_DEFAULT_PASS=l0bst3r
     ports:
         - 5672:5672
         - 15672:15672

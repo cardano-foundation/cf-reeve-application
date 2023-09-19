@@ -12,8 +12,7 @@ import org.cardanofoundation.lob.sourceapi.repository.LedgerEventRegistrationRep
 import org.cardanofoundation.lob.sourceapi.repository.LedgerEventRepository;
 import org.cardanofoundation.lob.sourceapi.repository.TxSubmitJobRepository;
 
-import org.cardanofoundation.lob.txsubmitter.service.ServiceTxPackaging;
-import org.cardanofoundation.lob.txsubmitter.service.TxSubmitterService;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +28,7 @@ import java.util.List;
 public class LedgerEventController {
 
     @Autowired
-    private TxSubmitterService serviceTxSubmit;
-
-    @Autowired
-    private ServiceTxPackaging serviceTxPackaging;
+    private AmqpTemplate template;
 
     @Autowired
     private LedgerEventRegistrationRepository ledgerEventRegistrationRepository;
@@ -53,7 +49,7 @@ public class LedgerEventController {
             /**
              * @// TODO: 11/09/2023 The saveAll create horphan data in th ledger_event table.
              */
-            //ledgerEventRepository.saveAll(ledgerEventRegistration.getLedgerEvents());
+            ledgerEventRepository.saveAll(ledgerEventRegistration.getLedgerEvents());
             final LedgerEventRegistrationJob ledgerEventRegistrationJob = new LedgerEventRegistrationJob();
             ledgerEventRegistrationJob.setRegistrationId(ledgerEventRegistration.getRegistrationId());
             ledgerEventRegistrationJob.setLedgerEvents(ledgerEventRegistration.getLedgerEvents());
@@ -95,36 +91,11 @@ public class LedgerEventController {
             registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.APPROVED);
             ledgerEventRegistrationRepository.save(registrationJob);
 
-            final List<TxSubmitJob> txSubmitJobs = serviceTxPackaging.createTxJobs(registrationJob);
-            txSubmitJobRepository.saveAll(txSubmitJobs);
+            /**
+             * @// TODO: 19/09/2023 Create message with the registrationJob id.
+             */
+            template.convertAndSend("myqueue", registrationJob.getRegistrationId());
 
-            registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.PROCESSED);
-            ledgerEventRegistrationRepository.save(registrationJob);
-
-            for (final TxSubmitJob txSubmitJob : txSubmitJobs) {
-                try {
-                    log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
-                    serviceTxSubmit.processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
-                            (txId) -> {
-                                log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
-                                txSubmitJob.setTransactionId(txId);
-                                txSubmitJob.setJobStatus(TxSubmitJobStatus.SUBMITTED);
-                                log.info("Submit");
-                            },
-                            () -> {
-                                txSubmitJob.setJobStatus(TxSubmitJobStatus.FAILED);
-                                log.info("fail");
-                            }
-                    );
-                } catch (final Exception e) {
-                    log.error(String.format("Could not submit a transaction job-id: %d", txSubmitJob.getId()));
-                    log.error(String.format("Could not submit a transaction error", e.getMessage().toString()));
-                }
-
-                txSubmitJobRepository.save(txSubmitJob);
-            }
-
-            txSubmitJobRepository.saveAll(txSubmitJobs);
 
             final LedgerEventRegistrationApprovalResponse response = new LedgerEventRegistrationApprovalResponse();
             response.setRegistrationId(approvalRequest.getRegistrationId());
