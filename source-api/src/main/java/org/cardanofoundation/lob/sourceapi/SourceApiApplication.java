@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.sourceapi;
 
-import org.cardanofoundation.lob.sourceapi.message.Receiver;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.boot.ApplicationRunner;
@@ -25,7 +24,7 @@ public class SourceApiApplication {
 	}
 
 	@Bean
-	public Queue myQueue() {
+	public Queue queue() {
 		return new Queue("myqueue");
 	}
 

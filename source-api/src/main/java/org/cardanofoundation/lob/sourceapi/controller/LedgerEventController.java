@@ -83,6 +83,11 @@ public class LedgerEventController {
         return Flux.fromIterable(txSubmitJobRepository.findAll());
     }
 
+    @GetMapping("/tx/pending")
+    public Flux<TxSubmitJob> getAllTransactionsPending() {
+        return Flux.fromIterable(txSubmitJobRepository.findByJobStatus(TxSubmitJobStatus.PENDING));
+    }
+
     @PostMapping("/registrations/approve")
     public Mono<LedgerEventRegistrationApprovalResponse> approveRegistration(@RequestBody final LedgerEventRegistrationApprovalRequest approvalRequest) {
         try {
