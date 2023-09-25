@@ -22,6 +22,7 @@ import org.cardanofoundation.lob.common.model.TxSubmitJobStatus;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRegistrationRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.TxSubmitJobRepository;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,9 @@ public class TxSubmitterService {
     @Autowired
     private TxSubmitJobRepository txSubmitJobRepository;
 
+    @Autowired
+    private AmqpTemplate template;
+
     @PostConstruct
     public void init() {
         backendService = new BFBackendService("http://localhost:8080/api/v1/", "Dummy");
@@ -69,30 +73,37 @@ public class TxSubmitterService {
         ledgerEventRegistrationRepository.save(registrationJob);
 
         for (final TxSubmitJob txSubmitJob : txSubmitJobs) {
-            try {
-                log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
-
-                processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
-                        (txId) -> {
-                            log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
-                            txSubmitJob.setTransactionId(txId);
-                            txSubmitJob.setJobStatus(TxSubmitJobStatus.SUBMITTED);
-                            log.info("Submit");
-                        },
-                        () -> {
-                            txSubmitJob.setJobStatus(TxSubmitJobStatus.FAILED);
-                            log.info("fail");
-                        }
-                );
-            } catch (final Exception e) {
-                log.error(String.format("Could not submit a transaction job-id: %d", txSubmitJob.getId()));
-                log.error(String.format("Could not submit a transaction error", e.getMessage().toString()));
-            }
-
-            txSubmitJobRepository.save(txSubmitJob);
+            template.convertAndSend("txJobs", txSubmitJob.getId());
         }
 
         txSubmitJobRepository.saveAll(txSubmitJobs);
+    }
+
+    @RabbitListener(queues = "txJobs", concurrency = "3", batch = "1")
+    public void listenTwo(String jobId) throws Exception {
+
+        TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration has already been approved."));
+
+        log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
+
+        processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
+                (txId) -> {
+                    log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
+                    txSubmitJob.setTransactionId(txId);
+                    txSubmitJob.setJobStatus(TxSubmitJobStatus.SUBMITTED);
+                    log.info("Submit");
+                },
+                () -> {
+                    txSubmitJob.setJobStatus(TxSubmitJobStatus.FAILED);
+                    log.error("fail");
+                    txSubmitJobRepository.save(txSubmitJob);
+                    throw new RuntimeException("Something went wrong");
+                }
+        );
+
+
+        txSubmitJobRepository.save(txSubmitJob);
+
     }
 
     public Optional<String> processTxSubmitJob(final TxSubmitJob txSubmitJob, final double nonce) {

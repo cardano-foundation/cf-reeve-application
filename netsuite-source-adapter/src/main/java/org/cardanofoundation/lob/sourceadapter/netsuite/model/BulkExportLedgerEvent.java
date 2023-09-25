@@ -7,6 +7,7 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.text.RandomStringGenerator;
 import org.cardanofoundation.lob.common.constants.Constants;
 import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.LedgerEvent;
@@ -212,6 +213,14 @@ public class BulkExportLedgerEvent {
         stringWriter.append("exchangeRate:");
         stringWriter.append(exchangeRate.toString());
         stringWriter.append(";");
+
+        /**
+         * @// TODO: 25/09/2023 This is a WTF walkaround because some data give exactly the same fingerprint.
+         */
+        stringWriter.append("theRand:");
+        stringWriter.append(new RandomStringGenerator.Builder().toString());
+        stringWriter.append(";");
+
         log.info(stringWriter);
         return Hashing.blake2b256Hex(stringWriter.toString().getBytes(StandardCharsets.UTF_8));
     }

@@ -73,10 +73,10 @@ public class ClientAPI {
     //#HttpClient
 
     public String makeCall() throws IOException {
-        return mockData();
-        /*Response result = callWithHttpPost();
+        //return mockData();
+        Response result = callWithHttpPost();
         log.info(result.getHeaders());
-        return result.getBody().toString();*/
+        return result.getBody().toString();
 
     }
 

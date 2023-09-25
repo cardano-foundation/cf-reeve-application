@@ -7,5 +7,6 @@ public enum TxSubmitJobStatus {
 
     CONFIRMED,
 
-    FAILED
+    FAILED,
+    PREPARED
 }
