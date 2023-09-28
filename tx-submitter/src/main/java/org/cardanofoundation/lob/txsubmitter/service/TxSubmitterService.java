@@ -22,6 +22,7 @@ import org.cardanofoundation.lob.common.model.TxSubmitJobStatus;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRegistrationRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.TxSubmitJobRepository;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,7 @@ public class TxSubmitterService {
     @RabbitListener(queues = "txJobs", concurrency = "3", batch = "1")
     public void listenTwo(String jobId) throws Exception {
 
-        TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration has already been approved."));
+        TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElseThrow(() -> new AmqpRejectAndDontRequeueException("ID " + jobId + ":Error Handler converted exception to fatal"));
 
         log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
 

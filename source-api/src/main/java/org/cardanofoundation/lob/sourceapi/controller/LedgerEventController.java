@@ -2,7 +2,6 @@ package org.cardanofoundation.lob.sourceapi.controller;
 
 
 import lombok.extern.log4j.Log4j2;
-import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.*;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationApprovalRequest;
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationApprovalResponse;
@@ -19,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/events")
@@ -86,6 +83,14 @@ public class LedgerEventController {
     @GetMapping("/tx/pending")
     public Flux<TxSubmitJob> getAllTransactionsPending() {
         return Flux.fromIterable(txSubmitJobRepository.findByJobStatus(TxSubmitJobStatus.PENDING));
+    }
+
+    @RequestMapping("/tx/resubmit/{id}")
+    public String resubmit(@PathVariable(value="id") String id ){
+        txSubmitJobRepository.findById(Integer.valueOf(id)).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration has already been approved."));
+        template.convertAndSend("txJobs", id);
+        log.info("txJobs", id);
+        return "done: " + id;
     }
 
     @PostMapping("/registrations/approve")
