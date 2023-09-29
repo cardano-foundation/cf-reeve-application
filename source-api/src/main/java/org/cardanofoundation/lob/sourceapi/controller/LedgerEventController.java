@@ -87,9 +87,8 @@ public class LedgerEventController {
 
     @RequestMapping("/tx/resubmit/{id}")
     public String resubmit(@PathVariable(value="id") String id ){
-        txSubmitJobRepository.findById(Integer.valueOf(id)).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration has already been approved."));
         template.convertAndSend("txJobs", id);
-        log.info("txJobs", id);
+        log.info("txJobs"+ id);
         return "done: " + id;
     }
 
@@ -98,14 +97,15 @@ public class LedgerEventController {
         try {
             //* Don't check that exist and the status */
             final LedgerEventRegistrationJob registrationJob = ledgerEventRegistrationRepository.findById(approvalRequest.getRegistrationId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration has already been approved."));
-            registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.APPROVED);
-            ledgerEventRegistrationRepository.save(registrationJob);
 
             /**
              * @// TODO: 19/09/2023 Create message with the registrationJob id.
              */
-            template.convertAndSend("myqueue", registrationJob.getRegistrationId());
-
+            if(LedgerEventRegistrationJobStatus.PENDING_APPROVAL == registrationJob.getJobStatus()){
+                template.convertAndSend("myqueue", registrationJob.getRegistrationId());
+                registrationJob.setJobStatus(LedgerEventRegistrationJobStatus.APPROVED);
+                ledgerEventRegistrationRepository.save(registrationJob);
+            }
 
             final LedgerEventRegistrationApprovalResponse response = new LedgerEventRegistrationApprovalResponse();
             response.setRegistrationId(approvalRequest.getRegistrationId());

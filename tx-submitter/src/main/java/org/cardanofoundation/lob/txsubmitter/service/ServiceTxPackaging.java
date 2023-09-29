@@ -63,8 +63,11 @@ public class ServiceTxPackaging {
                 if (ledgerEvent.getCurrency() != null) {
                     eventMetaData.put("currency", ledgerEvent.getCurrency());
                 }
-                if (ledgerEvent.getAmount() != null) {
-                    eventMetaData.put("amount", ledgerEvent.getAmount().toString());
+                if (ledgerEvent.getAmountDebit() != null) {
+                    eventMetaData.put("amountDebit", ledgerEvent.getAmountDebit().toString());
+                }
+                if (ledgerEvent.getAmountCredit() != null) {
+                    eventMetaData.put("amountCredit", ledgerEvent.getAmountCredit().toString());
                 }
                 if (ledgerEvent.getExchangeRate() != null) {
                     eventMetaData.put("exchangeRate", ledgerEvent.getExchangeRate().toString());

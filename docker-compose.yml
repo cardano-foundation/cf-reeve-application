@@ -7,20 +7,6 @@
 
 version: "3.9"
 services:
-  minio:
-    image: minio/minio:latest
-    ports:
-      - 9000:9000
-      - 9090:9090
-    volumes:
-      - "${MINIO_BUCKET_FOLDER}:/data"
-    environment:
-      MINIO_ROOT_USER: "${MINIO_USER_NAME}"
-      MINIO_ROOT_PASSWORD: "${MINIO_USER_SECRET}"
-    command: server /data --console-address ":9090"
-    restart: on-failure
-    networks:
-        - lobster
   rabbitmq:
     image: rabbitmq:management
     environment:
