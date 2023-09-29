@@ -3,21 +3,16 @@ package org.cardanofoundation.lob.sourceadapter.netsuite.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvDate;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.text.RandomStringGenerator;
 import org.cardanofoundation.lob.common.constants.Constants;
 import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.LedgerEvent;
 
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Data
@@ -28,7 +23,7 @@ public class BulkExportLedgerEvent {
     private final static Pattern COST_CENTER_EXTRACTOR_PATTERN = Pattern.compile("^\\d+");
 
     //@CsvBindByName(column = "Subsidiary: Name")
-    @JsonProperty("subsidiaryName")
+    @JsonProperty("Internal ID")
     private String subsidiaryName;
 
     @JsonProperty("Type")
@@ -68,10 +63,16 @@ public class BulkExportLedgerEvent {
     private String currencySymbol;
 
     @JsonProperty("Amount (Debit) (Foreign Currency)")
-    private Double amountForeignCurrency;
+    private Double amountDebitForeignCurrency;
 
     @JsonProperty("Amount (Debit)")
-    private String amount;
+    private String amountDebit;
+
+    @JsonProperty("Amount (Credit) (Foreign Currency)")
+    private Double amountCreditForeignCurrency;
+
+    @JsonProperty("Amount (Credit)")
+    private String amountCredit;
 
     //@CsvBindByName(column = "Item: Taxable")
     private String itemTaxable;
@@ -108,6 +109,9 @@ public class BulkExportLedgerEvent {
     @JsonProperty("Exchange Rate")
     private Double exchangeRate;
 
+    @JsonProperty("Status")
+    private String status;
+
     private static Optional<String> eventCodeFromDebitAndCredit(String debitAccountNumber, String creditAccountNumber) throws IllegalArgumentException {
         try {
             if (debitAccountNumber != null && creditAccountNumber != null) {
@@ -127,102 +131,8 @@ public class BulkExportLedgerEvent {
     }
 
     private String computeFingerprint() {
-        final StringWriter stringWriter = new StringWriter();
-
-        stringWriter.append("subsidiaryName:");
-        stringWriter.append(subsidiaryName);
-        stringWriter.append(";");
-
-        stringWriter.append("type:");
-        stringWriter.append(type);
-        stringWriter.append(";");
-
-        stringWriter.append("date:");
-        stringWriter.append(date.toString());
-        stringWriter.append(";");
-
-        stringWriter.append("accountingPeriodName:");
-        stringWriter.append(accountingPeriodName);
-        stringWriter.append(";");
-
-        stringWriter.append("transactionNumber:");
-        stringWriter.append(transactionNumber);
-        stringWriter.append(";");
-
-        stringWriter.append("documentNumber:");
-        stringWriter.append(documentNumber);
-        stringWriter.append(";");
-
-        stringWriter.append("entityId:");
-        stringWriter.append(entityId);
-        stringWriter.append(";");
-
-        stringWriter.append("entityName:");
-        stringWriter.append(entityName);
-        stringWriter.append(";");
-
-        stringWriter.append("entityTaxRegistrationNumber:");
-        stringWriter.append(entityTaxRegistrationNumber);
-        stringWriter.append(";");
-
-        stringWriter.append("currencySymbol:");
-        stringWriter.append(currencySymbol);
-        stringWriter.append(";");
-
-
-        stringWriter.append("amountForeignCurrency:");
-        stringWriter.append((null == amountForeignCurrency) ? "NULL" : amountForeignCurrency.toString());
-        stringWriter.append(";");
-
-        stringWriter.append("amount:");
-        stringWriter.append(amount);
-        stringWriter.append(";");
-
-        stringWriter.append("itemTaxable:");
-        stringWriter.append(itemTaxable);
-        stringWriter.append(";");
-
-        stringWriter.append("salesTaxItemTaxRate:");
-        stringWriter.append(salesTaxItemTaxRate);
-        stringWriter.append(";");
-
-        stringWriter.append("accountLineNumber:");
-        stringWriter.append(accountLineNumber);
-        stringWriter.append(";");
-
-        stringWriter.append("accountLineName:");
-        stringWriter.append((null == accountLineName) ? "NULL" : accountLineName.toString());
-        stringWriter.append(";");
-
-        stringWriter.append("accountNumber:");
-        stringWriter.append(accountNumber);
-        stringWriter.append(";");
-
-        stringWriter.append("accountName:");
-        stringWriter.append(accountName);
-        stringWriter.append(";");
-
-        stringWriter.append("projectName:");
-        stringWriter.append(projectName);
-        stringWriter.append(";");
-
-        stringWriter.append("memo:");
-        stringWriter.append(memo);
-        stringWriter.append(";");
-
-        stringWriter.append("exchangeRate:");
-        stringWriter.append(exchangeRate.toString());
-        stringWriter.append(";");
-
-        /**
-         * @// TODO: 25/09/2023 This is a WTF walkaround because some data give exactly the same fingerprint.
-         */
-        stringWriter.append("theRand:");
-        stringWriter.append(new RandomStringGenerator.Builder().toString());
-        stringWriter.append(";");
-
-        log.info(stringWriter);
-        return Hashing.blake2b256Hex(stringWriter.toString().getBytes(StandardCharsets.UTF_8));
+        log.info(this.toString());
+        return Hashing.blake2b256Hex(this.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     public Optional<LedgerEvent> toLedgerEvent() {
@@ -231,14 +141,17 @@ public class BulkExportLedgerEvent {
             ledgerEvent.setSourceEventFingerprint(computeFingerprint());
             ledgerEvent.setEntity(subsidiaryName);
             ledgerEvent.setModule("NS");
-            ledgerEvent.setType("A");
+            ledgerEvent.setType(type);
             ledgerEvent.setDocDate(date);
             ledgerEvent.setBookDate(accountingPeriodName);
             ledgerEvent.setTransactionNumber(transactionNumber);
             ledgerEvent.setDocumentNumber(documentNumber);
             ledgerEvent.setEvent(eventCodeFromDebitAndCredit(accountLineNumber, accountNumber).orElse(null));
             ledgerEvent.setCurrency(currencySymbol);
-            ledgerEvent.setAmount(amountForeignCurrency);
+            ledgerEvent.setNumber(number);
+            ledgerEvent.setAmountDebit(amountDebitForeignCurrency);
+            ledgerEvent.setAmountCredit(amountCreditForeignCurrency);
+            ledgerEvent.setStatus(status);
             ledgerEvent.setExchangeRate(exchangeRate);
             ledgerEvent.setCounterParty(entityId);
             ledgerEvent.setProjectCode(projectName);

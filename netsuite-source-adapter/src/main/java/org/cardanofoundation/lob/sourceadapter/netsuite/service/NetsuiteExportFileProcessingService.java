@@ -1,11 +1,9 @@
 package org.cardanofoundation.lob.sourceadapter.netsuite.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.bean.CsvToBeanBuilder;
 import jakarta.annotation.PostConstruct;
-import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.cardanofoundation.lob.common.crypto.Hashing;
@@ -14,9 +12,7 @@ import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationReques
 import org.cardanofoundation.lob.common.model.rest.LedgerEventRegistrationResponse;
 import org.cardanofoundation.lob.sourceadapter.netsuite.model.BulkExportLedgerEvent;
 import org.cardanofoundation.lob.sourceadapter.netsuite.model.LinesLedgerEvent;
-import org.springframework.asm.TypeReference;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -28,7 +24,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -81,8 +76,8 @@ public class NetsuiteExportFileProcessingService {
                 .filter(bulkExportLedgerEvent -> bulkExportLedgerEvent.getAccountLineName() != null &&
                         bulkExportLedgerEvent.getAccountName() != null &&
                         !bulkExportLedgerEvent.getAccountLineName().trim().equalsIgnoreCase(bulkExportLedgerEvent.getAccountName().trim()) &&
-                        bulkExportLedgerEvent.getAmountForeignCurrency() != null &&
-                        bulkExportLedgerEvent.getAmountForeignCurrency() > 0.0 &&
+                        bulkExportLedgerEvent.getAmountDebitForeignCurrency() != null &&
+                        bulkExportLedgerEvent.getAmountDebitForeignCurrency() > 0.0 &&
                         bulkExportLedgerEvent.getEntityId() != null &&
                         StringUtils.isNumeric(bulkExportLedgerEvent.getEntityId()))
                 .map(BulkExportLedgerEvent::toLedgerEvent).toList();

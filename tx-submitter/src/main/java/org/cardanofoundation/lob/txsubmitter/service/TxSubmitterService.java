@@ -80,13 +80,22 @@ public class TxSubmitterService {
         txSubmitJobRepository.saveAll(txSubmitJobs);
     }
 
-    @RabbitListener(queues = "txJobs", concurrency = "3", batch = "1")
+    @RabbitListener(queues = "txJobs", concurrency = "4", batch = "1")
     public void listenTwo(String jobId) throws Exception {
 
-        TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElseThrow(() -> new AmqpRejectAndDontRequeueException("ID " + jobId + ":Error Handler converted exception to fatal"));
+        TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElse( null );
+
+        if(null == txSubmitJob){
+            log.info("Doesn't exist: "+jobId);
+            return;
+        }
 
         log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
 
+        if (TxSubmitJobStatus.SUBMITTED == txSubmitJob.getJobStatus()) {
+            log.info("Submitted already: "+jobId);
+            return;
+        }
         processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
                 (txId) -> {
                     log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
@@ -120,12 +129,11 @@ public class TxSubmitterService {
             result = quickTxBuilder.compose(tx)
                     .withSigner(SignerProviders.signerFrom(sender)).complete();
 
-            waitForTransaction(result);
+            //waitForTransaction(result);
             checkIfUtxoAvailable(result.getValue(), sender.baseAddress());
         } catch (Exception e) {
             return Optional.empty();
         }
-
 
         if (result.isSuccessful()) {
             return Optional.of(result.getValue());
@@ -147,7 +155,7 @@ public class TxSubmitterService {
                     }
 
                     count++;
-                    Thread.sleep(2000);
+                    Thread.sleep(100);
                 }
             }
         } catch (final Exception e) {
@@ -159,13 +167,13 @@ public class TxSubmitterService {
         Optional<Utxo> utxo = Optional.empty();
         int count = 0;
         while (utxo.isEmpty()) {
-            if (count++ >= 20)
+            if (count++ >= 1000)
                 break;
             final List<Utxo> utxos = new DefaultUtxoSupplier(backendService.getUtxoService()).getAll(address);
             utxo = utxos.stream().filter(u -> u.getTxHash().equals(txHash)).findFirst();
             log.debug("Try to get new output... txhash: " + txHash);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10);
             } catch (final Exception e) {
                 log.error(e);
             }

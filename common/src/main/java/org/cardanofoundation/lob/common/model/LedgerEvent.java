@@ -27,12 +27,15 @@ public class LedgerEvent {
     private String bookDate;
     private String transactionNumber;
     private String documentNumber;
+    private String number;
     private String event;
     private String currency;
-    private Double amount;
+    private Double amountDebit;
+    private Double amountCredit;
     private Double exchangeRate;
     private String counterParty;
     private String costCenter;
     private String projectCode;
+    private String Status;
     private Long timestamp;
 }
