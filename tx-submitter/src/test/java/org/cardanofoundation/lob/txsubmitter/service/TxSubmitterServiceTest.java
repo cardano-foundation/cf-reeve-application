@@ -1,11 +1,24 @@
 package org.cardanofoundation.lob.txsubmitter.service;
 
+import com.bloxbean.cardano.client.account.Account;
+import com.bloxbean.cardano.client.api.model.ProtocolParams;
+import com.bloxbean.cardano.client.api.model.Result;
+import com.bloxbean.cardano.client.backend.api.BackendService;
+import com.bloxbean.cardano.client.backend.blockfrost.service.BFBackendService;
+import com.bloxbean.cardano.client.backend.blockfrost.service.BFEpochService;
+import com.bloxbean.cardano.client.common.model.Networks;
+import com.bloxbean.cardano.client.metadata.Metadata;
+import com.bloxbean.cardano.client.metadata.MetadataBuilder;
+import org.aspectj.lang.annotation.Before;
 import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJob;
 import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJobStatus;
 import org.cardanofoundation.lob.common.model.TxSubmitJob;
+import org.cardanofoundation.lob.common.model.TxSubmitJobStatus;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRegistrationRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.TxSubmitJobRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,6 +43,10 @@ class TxSubmitterServiceTest {
     @InjectMocks
     TxSubmitterService txSubmitterService;
 
+    @Mock
+    private BackendService backendService;
+    @Mock
+    private Account sender;
     @Mock
     private LedgerEventRegistrationRepository ledgerEventRegistrationRepository;
 
@@ -67,7 +84,38 @@ class TxSubmitterServiceTest {
     }
 
     @Test
-    void listenTwo() {
+    void listenTwoFail() throws Exception {
+        Mockito.when(sender.baseAddress()).thenReturn("PAJASTOSTAS");
+        Result<ProtocolParams> paramsResult = Mockito.mock(Result.class);
+        BFEpochService epochService = Mockito.mock(BFEpochService.class);
+        Mockito.when(epochService.getProtocolParameters()).thenReturn(paramsResult);
+        Mockito.when(backendService.getEpochService()).thenReturn(epochService);
+        Mockito.when(paramsResult.isSuccessful()).thenReturn(true);
+        TxSubmitJob txSubmitJob = Mockito.mock(TxSubmitJob.class);
+        Metadata metadata = MetadataBuilder.createMetadata();
+        Mockito.when(txSubmitJob.getTransactionMetadata()).thenReturn(metadata.serialize());
+        Mockito.when(txSubmitJob.getJobStatus()).thenReturn(TxSubmitJobStatus.PENDING);
+        Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(txSubmitJob));
+        Assertions.assertThrows(RuntimeException.class, () -> txSubmitterService.listenTwo("100"));
+        
+        Mockito.verify(txSubmitJobRepository, Mockito.times(1)).save(Mockito.any(TxSubmitJob.class));
+    }
+
+    @Test
+    void listenTwoSubmittedAlready() throws Exception {
+        TxSubmitJob txSubmitJob = Mockito.mock(TxSubmitJob.class);
+        Mockito.when(txSubmitJob.getTransactionMetadata()).thenReturn("Trans".getBytes());
+        Mockito.when(txSubmitJob.getJobStatus()).thenReturn(TxSubmitJobStatus.SUBMITTED);
+        Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(txSubmitJob));
+        txSubmitterService.listenTwo("100");
+        Mockito.verify(txSubmitJobRepository, Mockito.never()).save(Mockito.any(TxSubmitJob.class));
+    }
+
+    @Test
+    void listenTwoDoesntExist() throws Exception {
+        Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        txSubmitterService.listenTwo("100");
+        Mockito.verify(txSubmitJobRepository, Mockito.never()).save(Mockito.any(TxSubmitJob.class));
     }
 
     @Test
