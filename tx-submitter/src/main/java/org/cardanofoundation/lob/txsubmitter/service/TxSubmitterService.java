@@ -19,6 +19,7 @@ import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJob;
 import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJobStatus;
 import org.cardanofoundation.lob.common.model.TxSubmitJob;
 import org.cardanofoundation.lob.common.model.TxSubmitJobStatus;
+import org.cardanofoundation.lob.txsubmitter.factory.TxBuilderFactory;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRegistrationRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.TxSubmitJobRepository;
@@ -41,6 +42,8 @@ public class TxSubmitterService {
 
     private Account sender;
 
+    @Autowired
+    private TxBuilderFactory txBuilderFactory;
     @Autowired
     private ServiceTxPackaging serviceTxPackaging;
     @Autowired
@@ -118,7 +121,7 @@ public class TxSubmitterService {
 
     public Optional<String> processTxSubmitJob(final TxSubmitJob txSubmitJob, final double nonce) {
 
-        final QuickTxBuilder quickTxBuilder = new QuickTxBuilder(backendService);
+        final QuickTxBuilder quickTxBuilder = txBuilderFactory.createTxBuilder(backendService);
         final Tx tx = new Tx()
                 .payToAddress(sender.baseAddress(), Amount.ada(1.5 + nonce * 0.001))
                 .attachMetadata(CBORMetadata.deserialize(txSubmitJob.getTransactionMetadata()))
