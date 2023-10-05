@@ -83,17 +83,17 @@ public class TxSubmitterService {
     @RabbitListener(queues = "txJobs", concurrency = "4", batch = "1")
     public void listenTwo(String jobId) throws Exception {
 
-        TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElse( null );
+        TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElse(null);
 
-        if(null == txSubmitJob){
-            log.info("Doesn't exist: "+jobId);
+        if (null == txSubmitJob) {
+            log.info("Doesn't exist: " + jobId);
             return;
         }
 
         log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
 
         if (TxSubmitJobStatus.SUBMITTED == txSubmitJob.getJobStatus()) {
-            log.info("Submitted already: "+jobId);
+            log.info("Submitted already: " + jobId);
             return;
         }
         processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
