@@ -14,6 +14,7 @@ import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJob;
 import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJobStatus;
 import org.cardanofoundation.lob.common.model.TxSubmitJob;
 import org.cardanofoundation.lob.common.model.TxSubmitJobStatus;
+import org.cardanofoundation.lob.txsubmitter.factory.TxBuilderFactory;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRegistrationRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.TxSubmitJobRepository;
 import org.junit.jupiter.api.Assertions;
@@ -49,7 +50,8 @@ class TxSubmitterServiceTest {
     private Account sender;
     @Mock
     private LedgerEventRegistrationRepository ledgerEventRegistrationRepository;
-
+    @Mock
+    private TxBuilderFactory txBuilderFactory;
     @Mock
     private ServiceTxPackaging serviceTxPackaging;
     @Mock
@@ -86,18 +88,14 @@ class TxSubmitterServiceTest {
     @Test
     void listenTwoFail() throws Exception {
         Mockito.when(sender.baseAddress()).thenReturn("PAJASTOSTAS");
-        Result<ProtocolParams> paramsResult = Mockito.mock(Result.class);
-        BFEpochService epochService = Mockito.mock(BFEpochService.class);
-        Mockito.when(epochService.getProtocolParameters()).thenReturn(paramsResult);
-        Mockito.when(backendService.getEpochService()).thenReturn(epochService);
-        Mockito.when(paramsResult.isSuccessful()).thenReturn(true);
+
         TxSubmitJob txSubmitJob = Mockito.mock(TxSubmitJob.class);
         Metadata metadata = MetadataBuilder.createMetadata();
         Mockito.when(txSubmitJob.getTransactionMetadata()).thenReturn(metadata.serialize());
         Mockito.when(txSubmitJob.getJobStatus()).thenReturn(TxSubmitJobStatus.PENDING);
         Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(txSubmitJob));
         Assertions.assertThrows(RuntimeException.class, () -> txSubmitterService.listenTwo("100"));
-        
+
         Mockito.verify(txSubmitJobRepository, Mockito.times(1)).save(Mockito.any(TxSubmitJob.class));
     }
 
