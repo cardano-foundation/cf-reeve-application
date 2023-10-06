@@ -4,11 +4,14 @@ import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.api.model.ProtocolParams;
 import com.bloxbean.cardano.client.api.model.Result;
 import com.bloxbean.cardano.client.backend.api.BackendService;
+import com.bloxbean.cardano.client.backend.api.UtxoService;
 import com.bloxbean.cardano.client.backend.blockfrost.service.BFBackendService;
 import com.bloxbean.cardano.client.backend.blockfrost.service.BFEpochService;
 import com.bloxbean.cardano.client.common.model.Networks;
+import com.bloxbean.cardano.client.function.helper.SignerProviders;
 import com.bloxbean.cardano.client.metadata.Metadata;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
+import com.bloxbean.cardano.client.quicktx.QuickTxBuilder;
 import org.aspectj.lang.annotation.Before;
 import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJob;
 import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJobStatus;
@@ -86,17 +89,56 @@ class TxSubmitterServiceTest {
     }
 
     @Test
+    void listenTwoSubmit() throws Exception {
+        Mockito.when(sender.baseAddress()).thenReturn("addr_test1qrq699e8nd9e8jw93kkunh9vmuucaq2qth0xym42ws6sqs468gt7ad8l6dnr9yglcqt5f6ss63wgntfjyl2xpxw0wqpq9xr8tx");
+        UtxoService utxoService = Mockito.mock(UtxoService.class);
+        QuickTxBuilder quickTxBuilder = Mockito.mock(QuickTxBuilder.class);
+        Result result = Mockito.mock(Result.class);
+        QuickTxBuilder.TxContext txContext = Mockito.mock(QuickTxBuilder.TxContext.class);
+        Mockito.when(txBuilderFactory.createTxBuilder(backendService)).thenReturn(quickTxBuilder);
+        Mockito.when(backendService.getUtxoService()).thenReturn(utxoService);
+        Mockito.when(quickTxBuilder.compose(Mockito.any())).thenReturn(txContext);
+        Mockito.when(txContext.withSigner(Mockito.any())).thenReturn(txContext);
+        Mockito.when(result.isSuccessful()).thenReturn(true);
+        Mockito.when(txContext.complete()).thenReturn(result);
+        Mockito.when(result.getValue()).thenReturn("cc95221752e81d08113d5d995f1804276d4b5c6882236da1d96870829a1fbafa");
+        final TxSubmitJob txSubmitJob = Mockito.mock(TxSubmitJob.class);
+        Metadata metadata = MetadataBuilder.createMetadata();
+        Mockito.when(txSubmitJob.getTransactionMetadata()).thenReturn(metadata.serialize());
+        Mockito.when(txSubmitJob.getJobStatus()).thenReturn(TxSubmitJobStatus.PENDING);
+        Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(txSubmitJob));
+
+        txSubmitterService.listenTwo("100");
+
+        Mockito.verify(txSubmitJobRepository, Mockito.times(1)).save(txSubmitJob);
+        Mockito.verify(txSubmitJob,Mockito.times(1)).setTransactionId("cc95221752e81d08113d5d995f1804276d4b5c6882236da1d96870829a1fbafa");
+        Mockito.verify(txSubmitJob,Mockito.times(1)).setJobStatus(TxSubmitJobStatus.SUBMITTED);
+
+    }
+
+    @Test
     void listenTwoFail() throws Exception {
         Mockito.when(sender.baseAddress()).thenReturn("PAJASTOSTAS");
-
+        UtxoService utxoService = Mockito.mock(UtxoService.class);
+        QuickTxBuilder quickTxBuilder = Mockito.mock(QuickTxBuilder.class);
+        Result result = Mockito.mock(Result.class);
+        QuickTxBuilder.TxContext txContext = Mockito.mock(QuickTxBuilder.TxContext.class);
+        Mockito.when(txBuilderFactory.createTxBuilder(backendService)).thenReturn(quickTxBuilder);
+        Mockito.when(backendService.getUtxoService()).thenReturn(utxoService);
+        Mockito.when(quickTxBuilder.compose(Mockito.any())).thenReturn(txContext);
+        Mockito.when(txContext.withSigner(Mockito.any())).thenReturn(txContext);
+        Mockito.when(result.isSuccessful()).thenReturn(false);
+        Mockito.when(txContext.complete()).thenReturn(result);
         TxSubmitJob txSubmitJob = Mockito.mock(TxSubmitJob.class);
         Metadata metadata = MetadataBuilder.createMetadata();
         Mockito.when(txSubmitJob.getTransactionMetadata()).thenReturn(metadata.serialize());
         Mockito.when(txSubmitJob.getJobStatus()).thenReturn(TxSubmitJobStatus.PENDING);
         Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(txSubmitJob));
+
         Assertions.assertThrows(RuntimeException.class, () -> txSubmitterService.listenTwo("100"));
 
         Mockito.verify(txSubmitJobRepository, Mockito.times(1)).save(Mockito.any(TxSubmitJob.class));
+        Mockito.verify(txSubmitJob,Mockito.times(1)).setJobStatus(TxSubmitJobStatus.FAILED);
     }
 
     @Test

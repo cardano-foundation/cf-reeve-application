@@ -135,7 +135,7 @@ public class NetsuiteExportFileProcessingService {
             ObjectMapper mapper = new ObjectMapper();
             List<LinesLedgerEvent> list = Arrays.asList(mapper.readValue(data,
                     LinesLedgerEvent.class));
-            return list.get(0).getLines().subList(0, 1600);
+            return list.get(0).getLines();
 
         } catch (final IllegalStateException | JsonProcessingException e) {
             log.error("Given export file does not accord to the actual format.", e);

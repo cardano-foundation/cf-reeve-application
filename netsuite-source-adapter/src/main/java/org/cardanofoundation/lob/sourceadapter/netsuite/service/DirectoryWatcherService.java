@@ -37,8 +37,7 @@ public class DirectoryWatcherService {
                 watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
     }
 
-    @Async
-    @Scheduled(fixedDelay = 5000L)
+
     public void pollFileEvents() throws InterruptedException {
         for (final WatchEvent<?> event : watchKey.pollEvents()) {
             if (event.context() != null && csvFilePathMatcher.matches((Path)event.context())) {
