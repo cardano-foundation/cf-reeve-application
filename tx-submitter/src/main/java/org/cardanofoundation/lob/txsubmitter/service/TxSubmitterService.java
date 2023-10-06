@@ -170,7 +170,7 @@ public class TxSubmitterService {
         Optional<Utxo> utxo = Optional.empty();
         int count = 0;
         while (utxo.isEmpty()) {
-            if (count++ >= 10)
+            if (count++ >= 1000)
                 break;
             final List<Utxo> utxos = new DefaultUtxoSupplier(backendService.getUtxoService()).getAll(address);
             utxo = utxos.stream().filter(u -> u.getTxHash().equals(txHash)).findFirst();
