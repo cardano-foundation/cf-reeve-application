@@ -96,7 +96,7 @@ class TxSubmitterServiceTest {
         Result result = Mockito.mock(Result.class);
         QuickTxBuilder.TxContext txContext = Mockito.mock(QuickTxBuilder.TxContext.class);
         Mockito.when(txBuilderFactory.createTxBuilder(backendService)).thenReturn(quickTxBuilder);
-        Mockito.when(backendService.getUtxoService()).thenReturn(utxoService);
+
         Mockito.when(quickTxBuilder.compose(Mockito.any())).thenReturn(txContext);
         Mockito.when(txContext.withSigner(Mockito.any())).thenReturn(txContext);
         Mockito.when(result.isSuccessful()).thenReturn(true);
@@ -124,7 +124,6 @@ class TxSubmitterServiceTest {
         Result result = Mockito.mock(Result.class);
         QuickTxBuilder.TxContext txContext = Mockito.mock(QuickTxBuilder.TxContext.class);
         Mockito.when(txBuilderFactory.createTxBuilder(backendService)).thenReturn(quickTxBuilder);
-        Mockito.when(backendService.getUtxoService()).thenReturn(utxoService);
         Mockito.when(quickTxBuilder.compose(Mockito.any())).thenReturn(txContext);
         Mockito.when(txContext.withSigner(Mockito.any())).thenReturn(txContext);
         Mockito.when(result.isSuccessful()).thenReturn(false);

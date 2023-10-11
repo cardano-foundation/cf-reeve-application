@@ -88,7 +88,14 @@ public class LedgerEventController {
     @RequestMapping("/tx/resubmit/{id}")
     public String resubmit(@PathVariable(value="id") String id ){
         template.convertAndSend("txJobs", id);
-        log.info("txJobs"+ id);
+        log.info("txJobs "+ id);
+        return "done: " + id;
+    }
+
+    @RequestMapping("/tx/check/{id}")
+    public String recheck(@PathVariable(value="id") String id ){
+        template.convertAndSend("txCheckUtxo", id);
+        log.info("txCheckUtxo "+ id);
         return "done: " + id;
     }
 

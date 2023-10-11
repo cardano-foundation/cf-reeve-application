@@ -9,10 +9,12 @@ import org.cardanofoundation.lob.common.constants.Constants;
 import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.LedgerEvent;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 @Data
@@ -38,6 +40,9 @@ public class BulkExportLedgerEvent {
     //@CsvBindByName(column = "Accounting Period: Name")
     @JsonProperty("Period")
     private String accountingPeriodName;
+
+    @JsonProperty("Tax Period")
+    private String taxPeriod;
 
     //@CsvBindByName(column = "Transaction Number")
     @JsonProperty("Transaction Number")
@@ -102,6 +107,9 @@ public class BulkExportLedgerEvent {
     @JsonProperty("Memo")
     private String memo;
 
+    @JsonProperty("Memo (Main)")
+    private String memoMain;
+
     @JsonProperty("Last Modified")
     private String lastModified;
 
@@ -111,6 +119,12 @@ public class BulkExportLedgerEvent {
 
     @JsonProperty("Status")
     private String status;
+
+    @JsonProperty("Date Created")
+    private String dateCreated;
+
+    @JsonProperty("Due Date/Receive By")
+    private String dueDateReceiveBy;
 
     private static Optional<String> eventCodeFromDebitAndCredit(String debitAccountNumber, String creditAccountNumber) throws IllegalArgumentException {
         try {
@@ -132,7 +146,11 @@ public class BulkExportLedgerEvent {
 
     private String computeFingerprint() {
         log.info(this.toString());
-        return Hashing.blake2b256Hex(this.toString().getBytes(StandardCharsets.UTF_8));
+        byte[] array = new byte[7]; // length is bounded by 7
+        new Random().nextBytes(array);
+        String generatedString = new String(array, Charset.forName("UTF-8"));
+
+        return Hashing.blake2b256Hex((this.toString() + generatedString).getBytes(StandardCharsets.UTF_8));
     }
 
     public Optional<LedgerEvent> toLedgerEvent() {

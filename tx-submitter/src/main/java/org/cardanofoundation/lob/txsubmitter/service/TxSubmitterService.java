@@ -83,7 +83,7 @@ public class TxSubmitterService {
         txSubmitJobRepository.saveAll(txSubmitJobs);
     }
 
-    @RabbitListener(queues = "txJobs", concurrency = "4", batch = "1")
+    @RabbitListener(queues = "txJobs", concurrency = "6", batch = "1")
     public void listenTwo(String jobId) throws Exception {
 
         TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElse(null);
@@ -95,7 +95,7 @@ public class TxSubmitterService {
 
         log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
 
-        if (TxSubmitJobStatus.SUBMITTED == txSubmitJob.getJobStatus()) {
+        if (TxSubmitJobStatus.SUBMITTED == txSubmitJob.getJobStatus() || TxSubmitJobStatus.CONFIRMED == txSubmitJob.getJobStatus()) {
             log.info("Submitted already: " + jobId);
             return;
         }
@@ -104,11 +104,11 @@ public class TxSubmitterService {
                     log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
                     txSubmitJob.setTransactionId(txId);
                     txSubmitJob.setJobStatus(TxSubmitJobStatus.SUBMITTED);
-                    log.info("Submit");
+                    log.info("Submit: " + jobId);
                 },
                 () -> {
                     txSubmitJob.setJobStatus(TxSubmitJobStatus.FAILED);
-                    log.error("fail");
+                    log.error("fail: " + jobId);
                     txSubmitJobRepository.save(txSubmitJob);
                     throw new RuntimeException("Something went wrong");
                 }
@@ -116,6 +116,7 @@ public class TxSubmitterService {
 
 
         txSubmitJobRepository.save(txSubmitJob);
+        template.convertAndSend("txCheckUtxo", txSubmitJob.getId());
 
     }
 
@@ -133,7 +134,7 @@ public class TxSubmitterService {
                     .withSigner(SignerProviders.signerFrom(sender)).complete();
 
             //waitForTransaction(result);
-            checkIfUtxoAvailable(result.getValue(), sender.baseAddress());
+            //checkIfUtxoAvailable(result.getValue(), sender.baseAddress());
         } catch (Exception e) {
             return Optional.empty();
         }
