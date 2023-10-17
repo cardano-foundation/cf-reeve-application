@@ -106,6 +106,8 @@ class TxSubmitterServiceTest {
         Metadata metadata = MetadataBuilder.createMetadata();
         Mockito.when(txSubmitJob.getTransactionMetadata()).thenReturn(metadata.serialize());
         Mockito.when(txSubmitJob.getJobStatus()).thenReturn(TxSubmitJobStatus.PENDING);
+        Mockito.when(txSubmitJob.getId()).thenReturn(6);
+
         Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(txSubmitJob));
 
         txSubmitterService.listenTwo("100");
@@ -113,6 +115,7 @@ class TxSubmitterServiceTest {
         Mockito.verify(txSubmitJobRepository, Mockito.times(1)).save(txSubmitJob);
         Mockito.verify(txSubmitJob,Mockito.times(1)).setTransactionId("cc95221752e81d08113d5d995f1804276d4b5c6882236da1d96870829a1fbafa");
         Mockito.verify(txSubmitJob,Mockito.times(1)).setJobStatus(TxSubmitJobStatus.SUBMITTED);
+        Mockito.verify(template, Mockito.times(1)).convertAndSend("txCheckUtxo", 6);
 
     }
 

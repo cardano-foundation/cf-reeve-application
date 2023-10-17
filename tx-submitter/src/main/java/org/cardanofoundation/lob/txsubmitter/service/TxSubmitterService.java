@@ -167,21 +167,4 @@ public class TxSubmitterService {
         }
     }
 
-    private void checkIfUtxoAvailable(final String txHash, final String address) {
-        Optional<Utxo> utxo = Optional.empty();
-        int count = 0;
-        while (utxo.isEmpty()) {
-            if (count++ >= 1000)
-                break;
-            final List<Utxo> utxos = new DefaultUtxoSupplier(backendService.getUtxoService()).getAll(address);
-            utxo = utxos.stream().filter(u -> u.getTxHash().equals(txHash)).findFirst();
-            log.debug("Try to get new output... txhash: " + txHash);
-            try {
-                Thread.sleep(10);
-            } catch (final Exception e) {
-                log.error(e);
-            }
-        }
-    }
-
 }
