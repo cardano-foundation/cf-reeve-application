@@ -39,7 +39,7 @@ public class BulkExportLedgerEvent {
 
     //@CsvBindByName(column = "Accounting Period: Name")
     @JsonProperty("Period")
-    private String accountingPeriodName;
+    private String period;
 
     @JsonProperty("Tax Period")
     private String taxPeriod;
@@ -115,7 +115,7 @@ public class BulkExportLedgerEvent {
 
     //@CsvBindByName(column = "Exchange Rate")
     @JsonProperty("Exchange Rate")
-    private Double exchangeRate;
+    private String exchangeRate;
 
     @JsonProperty("Status")
     private String status;
@@ -161,17 +161,17 @@ public class BulkExportLedgerEvent {
             ledgerEvent.setModule("NS");
             ledgerEvent.setType(type);
             ledgerEvent.setDocDate(date);
-            ledgerEvent.setBookDate(accountingPeriodName);
-            ledgerEvent.setTransactionNumber(transactionNumber);
-            ledgerEvent.setDocumentNumber(documentNumber);
-            ledgerEvent.setEvent(eventCodeFromDebitAndCredit(accountLineNumber, accountNumber).orElse(null));
+            ledgerEvent.setPeriod(period);
+            //ledgerEvent.setTransactionNumber(transactionNumber);
+            ledgerEvent.setLineNumber(documentNumber);
+            ledgerEvent.setEventCode(eventCodeFromDebitAndCredit(accountLineNumber, accountNumber).orElse(null));
             ledgerEvent.setCurrency(currencySymbol);
-            ledgerEvent.setNumber(number);
-            ledgerEvent.setAmountDebit(amountDebitForeignCurrency);
-            ledgerEvent.setAmountCredit(amountCreditForeignCurrency);
+            ledgerEvent.setLineNumber(number);
+            ledgerEvent.setAmount(!amountDebit.isBlank()?amountDebit:amountCredit);
+
             ledgerEvent.setStatus(status);
             ledgerEvent.setExchangeRate(exchangeRate);
-            ledgerEvent.setCounterParty(entityId);
+            ledgerEvent.setEntity(entityId);
             ledgerEvent.setProjectCode(projectName);
             ledgerEvent.setTimestamp(Instant.now().getEpochSecond());
             return Optional.of(ledgerEvent);

@@ -44,7 +44,7 @@ public class LedgerEventController {
                     "A ledger event registration with this registration id already exists."));
         } else {
             /**
-             * @// TODO: 11/09/2023 The saveAll create horphan data in th ledger_event table.
+             * @// TODO: 11/09/2023 The saveAll create orphan data in th ledger_event table.
              */
             ledgerEventRepository.saveAll(ledgerEventRegistration.getLedgerEvents());
             final LedgerEventRegistrationJob ledgerEventRegistrationJob = new LedgerEventRegistrationJob();

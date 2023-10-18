@@ -22,20 +22,22 @@ public class LedgerEvent {
     private String entity;
     private String module;
     private String type;
+    private String docCode;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.METADATA_DATE_PATTERN)
     private Date docDate;
-    private String bookDate;
-    private String transactionNumber;
-    private String documentNumber;
-    private String number;
-    private String event;
-    private String currency;
-    private Double amountDebit;
-    private Double amountCredit;
-    private Double exchangeRate;
-    private String counterParty;
+    private String period;
+    private String vendor;
     private String costCenter;
     private String projectCode;
+    private String currency;
+    /**
+     * @// TODO: 18/10/2023 If is float, we should use Double/Float/String? to not loose anything 
+     */
+    private String amount;
+    private String exchangeRate;
+    private String eventCode;
+    private String eventDescription;
+    private String lineNumber;
     private String Status;
     private Long timestamp;
 }
