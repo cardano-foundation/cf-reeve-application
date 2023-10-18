@@ -45,35 +45,17 @@ public class ServiceTxPackaging {
                 if (ledgerEvent.getType() != null) {
                     eventMetaData.put("type", ledgerEvent.getType());
                 }
+                if (ledgerEvent.getDocCode() != null) {
+                    eventMetaData.put("docCode", ledgerEvent.getDocCode());
+                }
                 if (ledgerEvent.getDocDate() != null) {
                     //eventMetaData.put("docDate", Constants.METADATA_DATE_FORMAT.format(ledgerEvent.getDocDate()));
                 }
-                if (ledgerEvent.getBookDate() != null) {
-                    eventMetaData.put("bookDate", ledgerEvent.getBookDate());
+                if (ledgerEvent.getPeriod() != null) {
+                    eventMetaData.put("period", ledgerEvent.getPeriod());
                 }
-                if (ledgerEvent.getTransactionNumber() != null) {
-                    eventMetaData.put("transactionNumber", ledgerEvent.getTransactionNumber());
-                }
-                if (ledgerEvent.getDocumentNumber() != null) {
-                    eventMetaData.put("documentNumber", ledgerEvent.getDocumentNumber());
-                }
-                if (ledgerEvent.getEvent() != null) {
-                    eventMetaData.put("event", ledgerEvent.getEvent());
-                }
-                if (ledgerEvent.getCurrency() != null) {
-                    eventMetaData.put("currency", ledgerEvent.getCurrency());
-                }
-                if (ledgerEvent.getAmountDebit() != null) {
-                    eventMetaData.put("amountDebit", ledgerEvent.getAmountDebit().toString());
-                }
-                if (ledgerEvent.getAmountCredit() != null) {
-                    eventMetaData.put("amountCredit", ledgerEvent.getAmountCredit().toString());
-                }
-                if (ledgerEvent.getExchangeRate() != null) {
-                    eventMetaData.put("exchangeRate", ledgerEvent.getExchangeRate().toString());
-                }
-                if (ledgerEvent.getCounterParty() != null) {
-                    eventMetaData.put("counterParty", ledgerEvent.getCounterParty());
+                if (ledgerEvent.getVendor() != null) {
+                    eventMetaData.put("vendor", ledgerEvent.getVendor());
                 }
                 if (ledgerEvent.getCostCenter() != null) {
                     eventMetaData.put("costCenter", ledgerEvent.getCostCenter());
@@ -81,6 +63,31 @@ public class ServiceTxPackaging {
                 if (ledgerEvent.getProjectCode() != null) {
                     eventMetaData.put("projectCode", ledgerEvent.getProjectCode());
                 }
+                if (ledgerEvent.getCurrency() != null) {
+                    eventMetaData.put("curency", ledgerEvent.getCurrency());
+                }
+                if (ledgerEvent.getAmount() != null) {
+                    eventMetaData.put("amount", ledgerEvent.getAmount());
+                }
+                if (ledgerEvent.getExchangeRate() != null) {
+                    eventMetaData.put("exchangeRate", ledgerEvent.getExchangeRate());
+                }
+                if (ledgerEvent.getEventCode() != null) {
+                    eventMetaData.put("eventCode", ledgerEvent.getEventCode());
+                }
+                if (ledgerEvent.getEventDescription() != null) {
+                    eventMetaData.put("eventDescription", ledgerEvent.getEventDescription());
+                }
+                if (ledgerEvent.getLineNumber() != null) {
+                    eventMetaData.put("lineNumber", ledgerEvent.getLineNumber());
+                }
+                if (ledgerEvent.getStatus() != null) {
+                    eventMetaData.put("status", ledgerEvent.getStatus());
+                }
+                if (ledgerEvent.getTimestamp() != null) {
+                    eventMetaData.put("timestampEvent", ledgerEvent.getTimestamp().toString());
+                }
+
                 eventMetaData.put("timestamp", BigInteger.valueOf(Instant.now().getEpochSecond()));
                 metadataList.add(eventMetaData);
             }
