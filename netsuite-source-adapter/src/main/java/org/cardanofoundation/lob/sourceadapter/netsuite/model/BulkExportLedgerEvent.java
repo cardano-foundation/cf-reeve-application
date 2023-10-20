@@ -24,7 +24,6 @@ public class BulkExportLedgerEvent {
 
     private final static Pattern COST_CENTER_EXTRACTOR_PATTERN = Pattern.compile("^\\d+");
 
-    //@CsvBindByName(column = "Subsidiary: Name")
     @JsonProperty("Subsidiary (no hierarchy)")
     private String subsidiaryName;
 
@@ -37,13 +36,10 @@ public class BulkExportLedgerEvent {
     @JsonProperty("Last Modified")
     private String lastModified;
 
-    //@CsvBindByName(column = "Date")
-    //@CsvDate("dd/MM/yyyy")
     @JsonProperty("Date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.METADATA_DATE_PATTERN)
     private Date date;
 
-    //@CsvBindByName(column = "Accounting Period: Name")
     @JsonProperty("Period")
     private String period;
 
@@ -53,11 +49,9 @@ public class BulkExportLedgerEvent {
     @JsonProperty("Internal ID")
     private String internalID;
 
-    //@CsvBindByName(column = "Transaction Number")
     @JsonProperty("Transaction Number")
     private String transactionNumber;
 
-    //@CsvBindByName(column = "Document Number")
     @JsonProperty("Document Number")
     private String documentNumber;
 
@@ -109,7 +103,6 @@ public class BulkExportLedgerEvent {
     @JsonProperty("Status")
     private String status;
 
-
     @JsonProperty("Due Date/Receive By")
     private String dueDateReceiveBy;
 
@@ -133,8 +126,11 @@ public class BulkExportLedgerEvent {
 
     private String computeFingerprint() {
         log.info(this.toString());
+        byte[] array = new byte[7]; // length is bounded by 7
+        new Random().nextBytes(array);
+        String generatedString = new String(array, Charset.forName("UTF-8"));
 
-        return Hashing.blake2b256Hex((this.toString()).getBytes(StandardCharsets.UTF_8));
+        return Hashing.blake2b256Hex((this.toString() + generatedString).getBytes(StandardCharsets.UTF_8));
     }
 
     public Optional<LedgerEvent> toLedgerEvent() {
@@ -148,7 +144,7 @@ public class BulkExportLedgerEvent {
             ledgerEvent.setPeriod(period);
             //ledgerEvent.setTransactionNumber(transactionNumber);
             ledgerEvent.setLineNumber(documentNumber);
-            ledgerEvent.setEventCode(eventCodeFromDebitAndCredit(null,null).orElse(null));
+            ledgerEvent.setEventCode(eventCodeFromDebitAndCredit(null, null).orElse(null));
             ledgerEvent.setCurrency(currencySymbol);
             ledgerEvent.setLineNumber(number);
             ledgerEvent.setAmount(!amountDebit.isBlank() ? amountDebit : amountCredit);
