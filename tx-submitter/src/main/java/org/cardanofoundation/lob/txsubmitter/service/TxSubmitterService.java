@@ -83,7 +83,7 @@ public class TxSubmitterService {
         txSubmitJobRepository.saveAll(txSubmitJobs);
     }
 
-    @RabbitListener(queues = "txJobs", concurrency = "6", batch = "1")
+    @RabbitListener(queues = "txJobs", concurrency = "2")
     public void listenTwo(String jobId) throws Exception {
 
         TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElse(null);
