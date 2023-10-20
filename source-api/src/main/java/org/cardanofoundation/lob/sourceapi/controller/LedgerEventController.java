@@ -57,7 +57,6 @@ public class LedgerEventController {
                 log.error(e.getMessage());
             }
 
-
             final LedgerEventRegistrationResponse response = new LedgerEventRegistrationResponse();
             response.setRegistrationId(ledgerEventRegistration.getRegistrationId());
             response.setJobStatus(ledgerEventRegistrationJob.getJobStatus());

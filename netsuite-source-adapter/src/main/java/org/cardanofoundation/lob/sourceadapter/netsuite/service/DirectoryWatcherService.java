@@ -37,18 +37,4 @@ public class DirectoryWatcherService {
                 watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
     }
 
-
-    public void pollFileEvents() throws InterruptedException {
-        for (final WatchEvent<?> event : watchKey.pollEvents()) {
-            if (event.context() != null && csvFilePathMatcher.matches((Path)event.context())) {
-                log.info("Processing file " + event.context());
-                try {
-                    fileProcessingService.processNetsuiteExportFiles(Path.of(directoryWatcherConfig.getInboundFilesRootPath(), ((Path) event.context()).toString()));
-                } catch (final IOException e) {
-                    log.error(String.format("Could not read file %s", Path.of(directoryWatcherConfig.getInboundFilesRootPath(), ((Path) event.context()).toString())), e);
-                }
-            }
-        }
-        watchKey.reset();
-    }
 }
