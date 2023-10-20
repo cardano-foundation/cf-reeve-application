@@ -15,8 +15,4 @@ public class NetsuiteExportFileProcessingServiceTest {
     @Autowired
     private NetsuiteExportFileProcessingService netsuiteExportFileProcessingService;
 
-    @Test
-    void testCsvFileImport() throws IOException {
-        netsuiteExportFileProcessingService.processNetsuiteExportFiles(Paths.get("src", "test", "resources", TEST_CSV_FILENAME));
-    }
 }

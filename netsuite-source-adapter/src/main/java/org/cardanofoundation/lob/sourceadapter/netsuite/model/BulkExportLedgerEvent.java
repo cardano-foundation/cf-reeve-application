@@ -25,11 +25,17 @@ public class BulkExportLedgerEvent {
     private final static Pattern COST_CENTER_EXTRACTOR_PATTERN = Pattern.compile("^\\d+");
 
     //@CsvBindByName(column = "Subsidiary: Name")
-    @JsonProperty("Internal ID")
+    @JsonProperty("Subsidiary (no hierarchy)")
     private String subsidiaryName;
 
     @JsonProperty("Type")
     private String type;
+
+    @JsonProperty("Date Created")
+    private String dateCreated;
+
+    @JsonProperty("Last Modified")
+    private String lastModified;
 
     //@CsvBindByName(column = "Date")
     //@CsvDate("dd/MM/yyyy")
@@ -44,6 +50,9 @@ public class BulkExportLedgerEvent {
     @JsonProperty("Tax Period")
     private String taxPeriod;
 
+    @JsonProperty("Internal ID")
+    private String internalID;
+
     //@CsvBindByName(column = "Transaction Number")
     @JsonProperty("Transaction Number")
     private String transactionNumber;
@@ -55,17 +64,32 @@ public class BulkExportLedgerEvent {
     @JsonProperty("Number")
     private String number;
 
-    //@CsvBindByName(column = "Entity: ID")
-    private String entityId;
+    @JsonProperty("Name")
+    private String name;
 
-    //@CsvBindByName(column = "Name")
-    private String entityName;
+    @JsonProperty("Tax Number")
+    private String taxNumber;
 
-    //@CsvBindByName(column = "Entity: Tax Reg. Number")
-    private String entityTaxRegistrationNumber;
+    @JsonProperty("Project (no hierarchy)")
+    private String project;
+
+    @JsonProperty("Rate")
+    private String rate;
+
+    @JsonProperty("Account (Main)")
+    private String account;
+
+    @JsonProperty("Memo")
+    private String memo;
+
+    @JsonProperty("Memo (Main)")
+    private String memoMain;
 
     @JsonProperty("Currency")
     private String currencySymbol;
+
+    @JsonProperty("Exchange Rate")
+    private String exchangeRate;
 
     @JsonProperty("Amount (Debit) (Foreign Currency)")
     private Double amountDebitForeignCurrency;
@@ -79,49 +103,12 @@ public class BulkExportLedgerEvent {
     @JsonProperty("Amount (Credit)")
     private String amountCredit;
 
-    //@CsvBindByName(column = "Item: Taxable")
-    private String itemTaxable;
-
-    //@CsvBindByName(column = "Sales Tax Item: Tax Rate")
-    private String salesTaxItemTaxRate;
-
-    //@CsvBindByName(column = "Account (Line): Number")
-    private String accountLineNumber;
-
-    //@CsvBindByName(column = "Account (Line): Name")
-    private String accountLineName;
-
-    //@CsvBindByName(column = "Account: Number")
-    private String accountNumber;
-
-    //@CsvBindByName(column = "Account: Name")
-    private String accountName;
-
-    //@CsvBindByName(column = "Cost Center: Name")
-    private String costCenterName;
-
-    //@CsvBindByName(column = "Project: Name")
-    private String projectName;
-
-    //@CsvBindByName(column = "Memo")
-    @JsonProperty("Memo")
-    private String memo;
-
-    @JsonProperty("Memo (Main)")
-    private String memoMain;
-
-    @JsonProperty("Last Modified")
-    private String lastModified;
-
-    //@CsvBindByName(column = "Exchange Rate")
-    @JsonProperty("Exchange Rate")
-    private String exchangeRate;
+    @JsonProperty("Intercompany")
+    private String intercompany;
 
     @JsonProperty("Status")
     private String status;
 
-    @JsonProperty("Date Created")
-    private String dateCreated;
 
     @JsonProperty("Due Date/Receive By")
     private String dueDateReceiveBy;
@@ -135,22 +122,19 @@ public class BulkExportLedgerEvent {
                         CodeComponentMapping.getCodeComponentFromAccount(debitAccount).orElseThrow(() -> new IllegalArgumentException(String.format("Could not find a matching value for debit account %s", debitAccount))),
                         CodeComponentMapping.getCodeComponentFromAccount(creditAccount).orElseThrow(() -> new IllegalArgumentException(String.format("Could not find a matching value for credit account %s", creditAccount)))
                 ).orElseThrow(() -> new IllegalArgumentException(String.format("Could not find a matching event code %s %s", debitAccount, creditAccount))));
-            } else {
-                return Optional.empty();
             }
+
         } catch (final IllegalArgumentException e) {
             log.error(String.format("Could not parse event code from debit and credit account %s %s", debitAccountNumber, creditAccountNumber), e);
             return Optional.empty();
         }
+        return Optional.empty();
     }
 
     private String computeFingerprint() {
         log.info(this.toString());
-        byte[] array = new byte[7]; // length is bounded by 7
-        new Random().nextBytes(array);
-        String generatedString = new String(array, Charset.forName("UTF-8"));
 
-        return Hashing.blake2b256Hex((this.toString() + generatedString).getBytes(StandardCharsets.UTF_8));
+        return Hashing.blake2b256Hex((this.toString()).getBytes(StandardCharsets.UTF_8));
     }
 
     public Optional<LedgerEvent> toLedgerEvent() {
@@ -164,15 +148,15 @@ public class BulkExportLedgerEvent {
             ledgerEvent.setPeriod(period);
             //ledgerEvent.setTransactionNumber(transactionNumber);
             ledgerEvent.setLineNumber(documentNumber);
-            ledgerEvent.setEventCode(eventCodeFromDebitAndCredit(accountLineNumber, accountNumber).orElse(null));
+            ledgerEvent.setEventCode(eventCodeFromDebitAndCredit(null,null).orElse(null));
             ledgerEvent.setCurrency(currencySymbol);
             ledgerEvent.setLineNumber(number);
-            ledgerEvent.setAmount(!amountDebit.isBlank()?amountDebit:amountCredit);
+            ledgerEvent.setAmount(!amountDebit.isBlank() ? amountDebit : amountCredit);
 
             ledgerEvent.setStatus(status);
             ledgerEvent.setExchangeRate(exchangeRate);
-            ledgerEvent.setEntity(entityId);
-            ledgerEvent.setProjectCode(projectName);
+            ledgerEvent.setEntity(internalID);
+            ledgerEvent.setProjectCode("projectName");
             ledgerEvent.setTimestamp(Instant.now().getEpochSecond());
             return Optional.of(ledgerEvent);
         } catch (final IllegalArgumentException e) {

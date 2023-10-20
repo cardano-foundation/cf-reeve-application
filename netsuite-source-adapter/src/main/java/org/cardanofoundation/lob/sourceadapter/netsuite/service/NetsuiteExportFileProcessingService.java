@@ -69,33 +69,6 @@ public class NetsuiteExportFileProcessingService {
         }
     }
 
-    public void processNetsuiteExportFiles(final Path exportFile) throws IOException {
-        final String fileHash = Hashing.blake2b256Hex(Files.readAllBytes(exportFile));
-        final List<BulkExportLedgerEvent> netsuiteExportEvents = readInLedgerEvents(exportFile);
-        final List<Optional<LedgerEvent>> ledgerEvents = netsuiteExportEvents.stream()
-                .filter(bulkExportLedgerEvent -> bulkExportLedgerEvent.getAccountLineName() != null &&
-                        bulkExportLedgerEvent.getAccountName() != null &&
-                        !bulkExportLedgerEvent.getAccountLineName().trim().equalsIgnoreCase(bulkExportLedgerEvent.getAccountName().trim()) &&
-                        bulkExportLedgerEvent.getAmountDebitForeignCurrency() != null &&
-                        bulkExportLedgerEvent.getAmountDebitForeignCurrency() > 0.0 &&
-                        bulkExportLedgerEvent.getEntityId() != null &&
-                        StringUtils.isNumeric(bulkExportLedgerEvent.getEntityId()))
-                .map(BulkExportLedgerEvent::toLedgerEvent).toList();
-
-        log.info(ledgerEvents);
-
-        final LedgerEventRegistrationRequest ledgerEventRegistrationRequest = new LedgerEventRegistrationRequest();
-        ledgerEventRegistrationRequest.setRegistrationId(fileHash);
-        ledgerEventRegistrationRequest.setLedgerEvents(ledgerEvents.stream().filter(Optional::isPresent).map(Optional::get).toList());
-        final Mono<LedgerEventRegistrationResponse> ledgerEventUploadMono = webClient.post()
-                .uri("/events/registrations")
-                .body(BodyInserters.fromValue(ledgerEventRegistrationRequest))
-                .retrieve()
-                .bodyToMono(LedgerEventRegistrationResponse.class);
-
-        ledgerEventUploadMono.subscribe(log::info);
-    }
-
     public LedgerEventRegistrationRequest processNetsuiteExportJson(String data) throws IOException {
 
         final List<BulkExportLedgerEvent> netsuiteExportEvents = readInLedgerEvents(data);
