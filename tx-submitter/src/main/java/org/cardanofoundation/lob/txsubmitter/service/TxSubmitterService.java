@@ -3,7 +3,6 @@ package org.cardanofoundation.lob.txsubmitter.service;
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.api.model.Result;
-import com.bloxbean.cardano.client.api.model.Utxo;
 import com.bloxbean.cardano.client.backend.api.*;
 import com.bloxbean.cardano.client.backend.blockfrost.service.BFBackendService;
 import com.bloxbean.cardano.client.backend.model.TransactionContent;
@@ -23,8 +22,8 @@ import org.cardanofoundation.lob.txsubmitter.factory.TxBuilderFactory;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRegistrationRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.LedgerEventRepository;
 import org.cardanofoundation.lob.txsubmitter.repository.TxSubmitJobRepository;
-import org.springframework.amqp.AmqpRejectAndDontRequeueException;
-import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +41,8 @@ public class TxSubmitterService {
 
     private Account sender;
 
+    @Autowired
+    private AmqpAdmin admin;
     @Autowired
     private TxBuilderFactory txBuilderFactory;
     @Autowired
@@ -77,15 +78,30 @@ public class TxSubmitterService {
         ledgerEventRegistrationRepository.save(registrationJob);
 
         for (final TxSubmitJob txSubmitJob : txSubmitJobs) {
-            template.convertAndSend("txJobs", txSubmitJob.getId());
+            template.convertAndSend("txJobs", txSubmitJob.getId(), new MessagePostProcessor() {
+
+                @Override
+                public Message postProcessMessage(Message message) throws AmqpException {
+                    message.getMessageProperties().setDelay(3000000);
+                    return message;
+                }
+
+            });
         }
 
         txSubmitJobRepository.saveAll(txSubmitJobs);
     }
 
-    @RabbitListener(queues = "txJobs", concurrency = "2")
-    public void listenTwo(String jobId) throws Exception {
+    public DirectExchange delayExchange() {
+        DirectExchange exchange = new DirectExchange("delay");
+        exchange.setDelayed(true);
+        return exchange;
+    }
 
+    @RabbitListener(queues = "txJobs", concurrency = "6"/*, ackMode = "MANUAL"*/)
+    public void listenTwo(final Message message) throws Exception {
+
+        String jobId = new String(message.getBody());
         TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElse(null);
 
         if (null == txSubmitJob) {
@@ -105,19 +121,50 @@ public class TxSubmitterService {
                     txSubmitJob.setTransactionId(txId);
                     txSubmitJob.setJobStatus(TxSubmitJobStatus.SUBMITTED);
                     log.info("Submit: " + jobId);
+                    template.convertAndSend("txCheckUtxo", txSubmitJob.getId());
                 },
                 () -> {
                     txSubmitJob.setJobStatus(TxSubmitJobStatus.FAILED);
-                    log.error("fail: " + jobId);
+
                     txSubmitJobRepository.save(txSubmitJob);
-                    throw new RuntimeException("Something went wrong");
+
+                    Integer value = null;
+                    if (null == (value = message.getMessageProperties().getHeader("x-retries"))) {
+                        value = 0;
+                    }
+                    value += 1;
+
+                    log.error("fail: " + jobId+ " Retry:" + value) ;
+                    if (100 > value) {
+                        Integer total = (1000 * value);
+                        if(5000 < total){
+                            total = 5000;
+                        }
+                        message.getMessageProperties().setHeader("x-retries", value);
+                        template.convertAndSend(delayQueue(total), message);
+                        return;
+                    }
+                    //throw new RuntimeException("Something went wrong");
                 }
         );
 
 
         txSubmitJobRepository.save(txSubmitJob);
-        template.convertAndSend("txCheckUtxo", txSubmitJob.getId());
 
+
+    }
+
+    public String delayQueue(Integer ttl) {
+
+        String name = "delay_txJobs_" + ttl.toString();
+
+        Queue queue = QueueBuilder.nonDurable(name)
+                .ttl(ttl)
+                .deadLetterExchange("delay")
+                .deadLetterRoutingKey("txJobs")
+                .build();
+        admin.declareQueue(queue);
+        return name;
     }
 
     public Optional<String> processTxSubmitJob(final TxSubmitJob txSubmitJob, final double nonce) {
