@@ -84,12 +84,11 @@ public class TxSubmitterService {
         txSubmitJobRepository.saveAll(txSubmitJobs);
     }
 
-    public DirectExchange delayExchange() {
-        DirectExchange exchange = new DirectExchange("delay");
-        exchange.setDelayed(true);
-        return exchange;
-    }
-
+    /**
+     * @// TODO: 26/10/2023 How to declare a queue names constan?
+     * @param message
+     * @throws Exception
+     */
     @RabbitListener(queues = "txJobs", concurrency = "5"/*, ackMode = "MANUAL"*/)
     public void listenTwo(final Message message) throws Exception {
 
