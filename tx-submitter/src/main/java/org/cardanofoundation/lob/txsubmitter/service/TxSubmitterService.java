@@ -78,15 +78,7 @@ public class TxSubmitterService {
         ledgerEventRegistrationRepository.save(registrationJob);
 
         for (final TxSubmitJob txSubmitJob : txSubmitJobs) {
-            template.convertAndSend("txJobs", txSubmitJob.getId(), new MessagePostProcessor() {
-
-                @Override
-                public Message postProcessMessage(Message message) throws AmqpException {
-                    message.getMessageProperties().setDelay(3000000);
-                    return message;
-                }
-
-            });
+            template.convertAndSend("txJobs", txSubmitJob.getId());
         }
 
         txSubmitJobRepository.saveAll(txSubmitJobs);
