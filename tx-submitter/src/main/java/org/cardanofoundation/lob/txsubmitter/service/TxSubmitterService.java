@@ -165,10 +165,7 @@ public class TxSubmitterService {
     public Optional<String> processTxSubmitJob(final TxSubmitJob txSubmitJob, final double nonce) {
 
         final QuickTxBuilder quickTxBuilder = txBuilderFactory.createTxBuilder(backendService);
-        final Tx tx = new Tx()
-                .payToAddress(sender.baseAddress(), Amount.ada(1.5 + nonce * 0.001))
-                .attachMetadata(CBORMetadata.deserialize(txSubmitJob.getTransactionMetadata()))
-                .from(sender.baseAddress());
+        final Tx tx = txBuilderFactory.createTx(sender,txSubmitJob, nonce);
 
         Result<String> result = null;
         try {
