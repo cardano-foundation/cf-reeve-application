@@ -12,6 +12,7 @@ import com.bloxbean.cardano.client.function.helper.SignerProviders;
 import com.bloxbean.cardano.client.metadata.Metadata;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.quicktx.QuickTxBuilder;
+import com.bloxbean.cardano.client.quicktx.Tx;
 import org.aspectj.lang.annotation.Before;
 import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJob;
 import org.cardanofoundation.lob.common.model.LedgerEventRegistrationJobStatus;
@@ -134,11 +135,14 @@ class TxSubmitterServiceTest {
         Result result = Mockito.mock(Result.class);
         QuickTxBuilder.TxContext txContext = Mockito.mock(QuickTxBuilder.TxContext.class);
         Mockito.when(txBuilderFactory.createTxBuilder(backendService)).thenReturn(quickTxBuilder);
+
         Mockito.when(quickTxBuilder.compose(Mockito.any())).thenReturn(txContext);
         Mockito.when(txContext.withSigner(Mockito.any())).thenReturn(txContext);
         Mockito.when(result.isSuccessful()).thenReturn(false);
         Mockito.when(txContext.complete()).thenReturn(result);
         TxSubmitJob txSubmitJob = Mockito.mock(TxSubmitJob.class);
+        Tx tx = Mockito.mock(Tx.class);
+        Mockito.when(txBuilderFactory.createTx(sender,txSubmitJob,Mockito.anyFloat())).thenReturn(tx);
         Metadata metadata = MetadataBuilder.createMetadata();
         Mockito.when(txSubmitJob.getTransactionMetadata()).thenReturn(metadata.serialize());
         Mockito.when(txSubmitJob.getJobStatus()).thenReturn(TxSubmitJobStatus.PENDING);
