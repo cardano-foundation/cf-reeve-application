@@ -29,8 +29,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -62,6 +64,8 @@ class TxSubmitterServiceTest {
     private TxSubmitJobRepository txSubmitJobRepository;
 
     @Mock
+    private AmqpAdmin admin;
+    @Mock
     private AmqpTemplate template;
 
     @Test
@@ -75,7 +79,7 @@ class TxSubmitterServiceTest {
         txSubmitterService.listen("4");
         Mockito.verify(ledgerEventRegistrationRepository, Mockito.times(1)).save(registrationJob);
         Assertions.assertEquals(LedgerEventRegistrationJobStatus.PROCESSED, registrationJob.getJobStatus());
-        Mockito.verify(template, Mockito.times(1)).convertAndSend(Mockito.anyString(), Mockito.anyInt());
+        Mockito.verify(template, Mockito.times(1)).convertAndSend(Mockito.anyString(), Mockito.anyString());
     }
 
     @Test
@@ -141,10 +145,16 @@ class TxSubmitterServiceTest {
         Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(txSubmitJob));
         Message message = Mockito.mock(Message.class);
         Mockito.when(message.getBody()).thenReturn("100".getBytes());
-        Assertions.assertThrows(RuntimeException.class, () -> txSubmitterService.listenTwo(message));
+        MessageProperties messageProperties = Mockito.mock(MessageProperties.class);
+        Mockito.when(message.getMessageProperties()).thenReturn(messageProperties);
+        Mockito.when(messageProperties.getHeader("x-retries")).thenReturn(null);
+        txSubmitterService.listenTwo(message);
 
-        Mockito.verify(txSubmitJobRepository, Mockito.times(1)).save(Mockito.any(TxSubmitJob.class));
+        Mockito.verify(txSubmitJobRepository, Mockito.times(2)).save(Mockito.any(TxSubmitJob.class));
         Mockito.verify(txSubmitJob,Mockito.times(1)).setJobStatus(TxSubmitJobStatus.FAILED);
+        Mockito.verify(messageProperties,Mockito.times(1)).setHeader("x-retries",1);
+        Mockito.verify(template, Mockito.times(1)).convertAndSend("delay_txJobs_1000", message);
+
     }
 
     @Test
