@@ -78,7 +78,7 @@ public class TxSubmitterService {
         ledgerEventRegistrationRepository.save(registrationJob);
 
         for (final TxSubmitJob txSubmitJob : txSubmitJobs) {
-            template.convertAndSend("txJobs", txSubmitJob.getId());
+            template.convertAndSend("txJobs", txSubmitJob.getId().toString());
         }
 
         txSubmitJobRepository.saveAll(txSubmitJobs);
@@ -119,22 +119,8 @@ public class TxSubmitterService {
 
                     txSubmitJobRepository.save(txSubmitJob);
 
-                    Integer value = null;
-                    if (null == (value = message.getMessageProperties().getHeader("x-retries"))) {
-                        value = 0;
-                    }
-                    value += 1;
-
-                    log.error("fail: " + jobId+ " Retry:" + value) ;
-                    if (100 > value) {
-                        Integer total = (1000 * value);
-                        if(5000 < total){
-                            total = 5000;
-                        }
-                        message.getMessageProperties().setHeader("x-retries", value);
-                        template.convertAndSend(delayQueue(total), message);
-                        return;
-                    }
+                    messageRequeue(message);
+                    return;
                     //throw new RuntimeException("Something went wrong");
                 }
         );
@@ -158,6 +144,24 @@ public class TxSubmitterService {
         return name;
     }
 
+    public void messageRequeue(Message message){
+        Integer value = null;
+        String jobId = new String(message.getBody());
+        if (null == (value = message.getMessageProperties().getHeader("x-retries"))) {
+            value = 0;
+        }
+        value += 1;
+
+        log.error("fail: " + jobId+ " Retry:" + value) ;
+        if (100 > value) {
+            Integer total = (1000 * value);
+            if(5000 < total){
+                total = 5000;
+            }
+            message.getMessageProperties().setHeader("x-retries", value);
+            template.convertAndSend(delayQueue(total), message);
+        }
+    }
     public Optional<String> processTxSubmitJob(final TxSubmitJob txSubmitJob, final double nonce) {
 
         final QuickTxBuilder quickTxBuilder = txBuilderFactory.createTxBuilder(backendService);
