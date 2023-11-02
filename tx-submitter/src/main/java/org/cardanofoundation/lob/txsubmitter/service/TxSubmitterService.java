@@ -106,7 +106,7 @@ public class TxSubmitterService {
             log.info("Submitted already: " + jobId);
             return;
         }
-        processTxSubmitJob(txSubmitJob, Math.random()).ifPresentOrElse(
+        processTxSubmitJob(txSubmitJob, txBuilderFactory.createRandom()).ifPresentOrElse(
                 (txId) -> {
                     log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
                     txSubmitJob.setTransactionId(txId);
