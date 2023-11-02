@@ -96,7 +96,6 @@ class TxSubmitterServiceTest {
 
     @Test
     void listenTwoSubmit() throws Exception {
-        Mockito.when(sender.baseAddress()).thenReturn("addr_test1qrq699e8nd9e8jw93kkunh9vmuucaq2qth0xym42ws6sqs468gt7ad8l6dnr9yglcqt5f6ss63wgntfjyl2xpxw0wqpq9xr8tx");
         UtxoService utxoService = Mockito.mock(UtxoService.class);
         QuickTxBuilder quickTxBuilder = Mockito.mock(QuickTxBuilder.class);
         Result result = Mockito.mock(Result.class);
@@ -121,20 +120,21 @@ class TxSubmitterServiceTest {
         txSubmitterService.listenTwo(message);
 
         Mockito.verify(txSubmitJobRepository, Mockito.times(1)).save(txSubmitJob);
-        Mockito.verify(txSubmitJob,Mockito.times(1)).setTransactionId("cc95221752e81d08113d5d995f1804276d4b5c6882236da1d96870829a1fbafa");
-        Mockito.verify(txSubmitJob,Mockito.times(1)).setJobStatus(TxSubmitJobStatus.SUBMITTED);
+        Mockito.verify(txSubmitJob, Mockito.times(1)).setTransactionId("cc95221752e81d08113d5d995f1804276d4b5c6882236da1d96870829a1fbafa");
+        Mockito.verify(txSubmitJob, Mockito.times(1)).setJobStatus(TxSubmitJobStatus.SUBMITTED);
         Mockito.verify(template, Mockito.times(1)).convertAndSend("txCheckUtxo", 6);
 
     }
 
     @Test
     void listenTwoFail() throws Exception {
-        Mockito.when(sender.baseAddress()).thenReturn("PAJASTOSTAS");
         UtxoService utxoService = Mockito.mock(UtxoService.class);
         QuickTxBuilder quickTxBuilder = Mockito.mock(QuickTxBuilder.class);
         Result result = Mockito.mock(Result.class);
         QuickTxBuilder.TxContext txContext = Mockito.mock(QuickTxBuilder.TxContext.class);
         Mockito.when(txBuilderFactory.createTxBuilder(backendService)).thenReturn(quickTxBuilder);
+        double random = Math.random();
+        Mockito.when(txBuilderFactory.createRandom()).thenReturn(random);
 
         Mockito.when(quickTxBuilder.compose(Mockito.any())).thenReturn(txContext);
         Mockito.when(txContext.withSigner(Mockito.any())).thenReturn(txContext);
@@ -142,7 +142,7 @@ class TxSubmitterServiceTest {
         Mockito.when(txContext.complete()).thenReturn(result);
         TxSubmitJob txSubmitJob = Mockito.mock(TxSubmitJob.class);
         Tx tx = Mockito.mock(Tx.class);
-        Mockito.when(txBuilderFactory.createTx(sender,txSubmitJob,Mockito.anyFloat())).thenReturn(tx);
+        Mockito.when(txBuilderFactory.createTx(sender, txSubmitJob, random)).thenReturn(tx);
         Metadata metadata = MetadataBuilder.createMetadata();
         Mockito.when(txSubmitJob.getTransactionMetadata()).thenReturn(metadata.serialize());
         Mockito.when(txSubmitJob.getJobStatus()).thenReturn(TxSubmitJobStatus.PENDING);
@@ -155,8 +155,8 @@ class TxSubmitterServiceTest {
         txSubmitterService.listenTwo(message);
 
         Mockito.verify(txSubmitJobRepository, Mockito.times(2)).save(Mockito.any(TxSubmitJob.class));
-        Mockito.verify(txSubmitJob,Mockito.times(1)).setJobStatus(TxSubmitJobStatus.FAILED);
-        Mockito.verify(messageProperties,Mockito.times(1)).setHeader("x-retries",1);
+        Mockito.verify(txSubmitJob, Mockito.times(1)).setJobStatus(TxSubmitJobStatus.FAILED);
+        Mockito.verify(messageProperties, Mockito.times(1)).setHeader("x-retries", 1);
         Mockito.verify(template, Mockito.times(1)).convertAndSend("delay_txJobs_1000", message);
 
     }

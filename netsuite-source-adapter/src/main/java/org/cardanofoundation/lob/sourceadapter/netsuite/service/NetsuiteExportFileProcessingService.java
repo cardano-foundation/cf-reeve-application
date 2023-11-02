@@ -71,6 +71,9 @@ public class NetsuiteExportFileProcessingService {
 
     public LedgerEventRegistrationRequest processNetsuiteExportJson(String data) throws IOException {
 
+        /**
+         * @// TODO: 02/11/2023 Here is where we need to apply the rules or convert data and apply the rules
+         */
         final List<BulkExportLedgerEvent> netsuiteExportEvents = readInLedgerEvents(data);
         final String fileHash = Hashing.blake2b256Hex(netsuiteExportEvents.toString().getBytes());
 
