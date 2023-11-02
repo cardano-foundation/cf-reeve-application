@@ -40,6 +40,7 @@ jobs:
 
       - name: Test
         run: |
+          cd tx-submitter
           mvn --batch-mode --update-snapshots test
 
   mutation-test:
