@@ -51,23 +51,6 @@ public class NetsuiteExportFileProcessingService {
         webClient = WebClient.create(sourceApiBaseUrl);
     }
 
-    private List<BulkExportLedgerEvent> readInLedgerEvents(final Path exportFile) {
-        try {
-            final CsvToBeanBuilder<BulkExportLedgerEvent> csvToBeanBuilder = new CsvToBeanBuilder<BulkExportLedgerEvent>(new FileReader(exportFile.toFile()))
-                    .withSeparator(separatorChar).withSkipLines(skipLines).withType(BulkExportLedgerEvent.class);
-            if (quoteChar != null) {
-                csvToBeanBuilder.withQuoteChar(quoteChar);
-            }
-
-            return csvToBeanBuilder.build().parse();
-        } catch (final FileNotFoundException e) {
-            log.error("Netsuite export file to read does not exist.", e);
-            return List.of();
-        } catch (final IllegalStateException e) {
-            log.error("Given export file does not accord to the actual format.", e);
-            return List.of();
-        }
-    }
 
     public LedgerEventRegistrationRequest processNetsuiteExportJson(String data) throws IOException {
 
