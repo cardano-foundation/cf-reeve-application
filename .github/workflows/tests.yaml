@@ -40,7 +40,6 @@ jobs:
 
       - name: Test
         run: |
-          cd tx-submitter
           mvn --batch-mode --update-snapshots test
 
   mutation-test:
@@ -70,7 +69,6 @@ jobs:
 
       - name: Test
         run: |
-          cd tx-submitter
           mvn test-compile org.pitest:pitest-maven:mutationCoverage -DmutationThreshold=39
 
 #      - name: Publish mutation test report to GitHub Pages
