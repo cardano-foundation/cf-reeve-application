@@ -52,6 +52,8 @@ class TxSubmitterServiceTest {
     TxSubmitterService txSubmitterService;
 
     @Mock
+    private RequeueStrategyService requeueStrategy;
+    @Mock
     private BackendService backendService;
     @Mock
     private Account sender;
@@ -149,16 +151,12 @@ class TxSubmitterServiceTest {
         Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(txSubmitJob));
         Message message = Mockito.mock(Message.class);
         Mockito.when(message.getBody()).thenReturn("100".getBytes());
-        MessageProperties messageProperties = Mockito.mock(MessageProperties.class);
-        Mockito.when(message.getMessageProperties()).thenReturn(messageProperties);
-        Mockito.when(messageProperties.getHeader("x-retries")).thenReturn(null);
+
         txSubmitterService.listenTwo(message);
 
         Mockito.verify(txSubmitJobRepository, Mockito.times(2)).save(Mockito.any(TxSubmitJob.class));
         Mockito.verify(txSubmitJob, Mockito.times(1)).setJobStatus(TxSubmitJobStatus.FAILED);
-        Mockito.verify(messageProperties, Mockito.times(1)).setHeader("x-retries", 1);
-        Mockito.verify(template, Mockito.times(1)).convertAndSend("delay_txJobs_1000", message);
-
+        Mockito.verify(requeueStrategy, Mockito.times(1)).messageRequeue(message);
     }
 
     @Test

@@ -42,7 +42,7 @@ public class TxSubmitterService {
     private Account sender;
 
     @Autowired
-    private AmqpAdmin admin;
+    private RequeueStrategyService requeueStrategy;
     @Autowired
     private TxBuilderFactory txBuilderFactory;
     @Autowired
@@ -119,7 +119,7 @@ public class TxSubmitterService {
 
                     txSubmitJobRepository.save(txSubmitJob);
 
-                    messageRequeue(message);
+                    requeueStrategy.messageRequeue(message);
                     return;
                     //throw new RuntimeException("Something went wrong");
                 }
@@ -131,37 +131,7 @@ public class TxSubmitterService {
 
     }
 
-    public String delayQueue(Integer ttl) {
 
-        String name = "delay_txJobs_" + ttl.toString();
-
-        Queue queue = QueueBuilder.nonDurable(name)
-                .ttl(ttl)
-                .deadLetterExchange("delay")
-                .deadLetterRoutingKey("txJobs")
-                .build();
-        admin.declareQueue(queue);
-        return name;
-    }
-
-    public void messageRequeue(Message message){
-        Integer value = null;
-        String jobId = new String(message.getBody());
-        if (null == (value = message.getMessageProperties().getHeader("x-retries"))) {
-            value = 0;
-        }
-        value += 1;
-
-        log.error("fail: " + jobId+ " Retry:" + value) ;
-        if (100 > value) {
-            Integer total = (1000 * value);
-            if(5000 < total){
-                total = 5000;
-            }
-            message.getMessageProperties().setHeader("x-retries", value);
-            template.convertAndSend(delayQueue(total), message);
-        }
-    }
     public Optional<String> processTxSubmitJob(final TxSubmitJob txSubmitJob, final double nonce) {
 
         final QuickTxBuilder quickTxBuilder = txBuilderFactory.createTxBuilder(backendService);
