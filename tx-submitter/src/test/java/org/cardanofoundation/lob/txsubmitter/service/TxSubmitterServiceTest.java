@@ -1,6 +1,7 @@
 package org.cardanofoundation.lob.txsubmitter.service;
 
 import com.bloxbean.cardano.client.account.Account;
+import com.bloxbean.cardano.client.api.exception.ApiRuntimeException;
 import com.bloxbean.cardano.client.api.model.ProtocolParams;
 import com.bloxbean.cardano.client.api.model.Result;
 import com.bloxbean.cardano.client.backend.api.BackendService;
@@ -124,7 +125,7 @@ class TxSubmitterServiceTest {
         Mockito.verify(txSubmitJobRepository, Mockito.times(1)).save(txSubmitJob);
         Mockito.verify(txSubmitJob, Mockito.times(1)).setTransactionId("cc95221752e81d08113d5d995f1804276d4b5c6882236da1d96870829a1fbafa");
         Mockito.verify(txSubmitJob, Mockito.times(1)).setJobStatus(TxSubmitJobStatus.SUBMITTED);
-        Mockito.verify(template, Mockito.times(1)).convertAndSend("txCheckUtxo", 6);
+        Mockito.verify(template, Mockito.times(1)).convertAndSend("txCheckUtxo", "6");
 
     }
 
@@ -159,6 +160,36 @@ class TxSubmitterServiceTest {
         Mockito.verify(requeueStrategy, Mockito.times(1)).messageRequeue(message);
     }
 
+    @Test
+    void listenTwoExceptionCatch() throws Exception {
+        UtxoService utxoService = Mockito.mock(UtxoService.class);
+        QuickTxBuilder quickTxBuilder = Mockito.mock(QuickTxBuilder.class);
+        Result result = Mockito.mock(Result.class);
+        QuickTxBuilder.TxContext txContext = Mockito.mock(QuickTxBuilder.TxContext.class);
+        Mockito.when(txBuilderFactory.createTxBuilder(backendService)).thenReturn(quickTxBuilder);
+        double random = Math.random();
+        Mockito.when(txBuilderFactory.createRandom()).thenReturn(random);
+
+        Mockito.when(quickTxBuilder.compose(Mockito.any())).thenReturn(txContext);
+        Mockito.when(txContext.withSigner(Mockito.any())).thenReturn(txContext);
+        
+        Mockito.when(txContext.complete()).thenThrow(ApiRuntimeException.class);
+        TxSubmitJob txSubmitJob = Mockito.mock(TxSubmitJob.class);
+        Tx tx = Mockito.mock(Tx.class);
+        Mockito.when(txBuilderFactory.createTx(sender, txSubmitJob, random)).thenReturn(tx);
+        Metadata metadata = MetadataBuilder.createMetadata();
+        Mockito.when(txSubmitJob.getTransactionMetadata()).thenReturn(metadata.serialize());
+        Mockito.when(txSubmitJob.getJobStatus()).thenReturn(TxSubmitJobStatus.PENDING);
+        Mockito.when(txSubmitJobRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(txSubmitJob));
+        Message message = Mockito.mock(Message.class);
+        Mockito.when(message.getBody()).thenReturn("100".getBytes());
+
+        txSubmitterService.listenTwo(message);
+
+        Mockito.verify(txSubmitJobRepository, Mockito.times(2)).save(Mockito.any(TxSubmitJob.class));
+        Mockito.verify(txSubmitJob, Mockito.times(1)).setJobStatus(TxSubmitJobStatus.FAILED);
+        Mockito.verify(requeueStrategy, Mockito.times(1)).messageRequeue(message);
+    }
     @Test
     void listenTwoSubmittedAlready() throws Exception {
         TxSubmitJob txSubmitJob = Mockito.mock(TxSubmitJob.class);

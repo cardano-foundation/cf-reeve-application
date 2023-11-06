@@ -32,6 +32,7 @@ class RequeueStrategyServiceTest {
         Mockito.when(message.getMessageProperties()).thenReturn(messageProperties);
         Mockito.when(message.getBody()).thenReturn("100".getBytes());
         Mockito.when(messageProperties.getHeader("x-retries")).thenReturn(null);
+        Mockito.when(messageProperties.getConsumerQueue()).thenReturn("txJobs");
 
         requeueStrategy.messageRequeue(message);
 
@@ -46,6 +47,7 @@ class RequeueStrategyServiceTest {
         Mockito.when(message.getMessageProperties()).thenReturn(messageProperties);
         Mockito.when(message.getBody()).thenReturn("100".getBytes());
         Mockito.when(messageProperties.getHeader("x-retries")).thenReturn(3);
+        Mockito.when(messageProperties.getConsumerQueue()).thenReturn("txJobs");
 
         requeueStrategy.messageRequeue(message);
 
@@ -60,6 +62,7 @@ class RequeueStrategyServiceTest {
         Mockito.when(message.getMessageProperties()).thenReturn(messageProperties);
         Mockito.when(message.getBody()).thenReturn("100".getBytes());
         Mockito.when(messageProperties.getHeader("x-retries")).thenReturn(4);
+        Mockito.when(messageProperties.getConsumerQueue()).thenReturn("txJobs");
 
         requeueStrategy.multiplier = 1.5;
         requeueStrategy.maxInterval=5.0;
@@ -77,6 +80,7 @@ class RequeueStrategyServiceTest {
         Mockito.when(message.getMessageProperties()).thenReturn(messageProperties);
         Mockito.when(message.getBody()).thenReturn("100".getBytes());
         Mockito.when(messageProperties.getHeader("x-retries")).thenReturn(5);
+        Mockito.when(messageProperties.getConsumerQueue()).thenReturn("txJobs");
 
         requeueStrategy.messageRequeue(message);
 

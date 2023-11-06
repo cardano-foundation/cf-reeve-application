@@ -13,6 +13,7 @@ import org.cardanofoundation.lob.common.crypto.Hashing;
 import org.cardanofoundation.lob.common.model.TxSubmitJob;
 import org.cardanofoundation.lob.common.model.TxSubmitJobStatus;
 import org.cardanofoundation.lob.txsubmitter.repository.TxSubmitJobRepository;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,11 @@ import java.util.Optional;
 public class TxCheckUtxo {
     private BackendService backendService;
 
+    @Autowired
+    private RequeueStrategyService requeueStrategy;
+
     private Account sender;
+
     @Autowired
     private TxSubmitJobRepository txSubmitJobRepository;
 
@@ -38,7 +43,8 @@ public class TxCheckUtxo {
     }
 
     @RabbitListener(queues = "txCheckUtxo", concurrency = "1", batch = "1")
-    private void checkIfUtxoAvailable(String jobId) {
+    private void checkIfUtxoAvailable(final Message message) {
+        String jobId = new String(message.getBody());
 
         TxSubmitJob txSubmitJob = txSubmitJobRepository.findById(Integer.valueOf(jobId)).orElse(null);
         if (null == txSubmitJob) {
@@ -61,16 +67,18 @@ public class TxCheckUtxo {
             log.debug("Try to get new output... txhash: " + txSubmitJob.getTransactionId());
         } catch (Exception e) {
             log.error("Something Wrong: " + e.getMessage());
-            throw new RuntimeException("Something Wrong: " + e.getMessage());
+            //throw new RuntimeException("Something Wrong: " + e.getMessage());
+            requeueStrategy.messageRequeue(message);
+            return;
         }
 
         if (utxo.isEmpty()) {
             log.error("Need more time to check: " + jobId);
-            throw new RuntimeException("Need more time to check");
+            requeueStrategy.messageRequeue(message);
+            return;
         }
-        log.info("tx Id is: " + txSubmitJob.getTransactionId() + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
         txSubmitJob.setJobStatus(TxSubmitJobStatus.CONFIRMED);
         txSubmitJobRepository.save(txSubmitJob);
-        log.info("Confirmed: " + jobId);
+        log.info(" Confirmed: " + jobId);
     }
 }
