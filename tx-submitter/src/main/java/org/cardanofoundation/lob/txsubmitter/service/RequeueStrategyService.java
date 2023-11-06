@@ -45,7 +45,7 @@ public class RequeueStrategyService {
         ttl *= 1000;
 
         Integer totalTime = (int) ttl;
-        String name = "delay_txJobs_" + totalTime;
+        String name = "delay_"+routingKey+"_" + totalTime;
         Queue queue = QueueBuilder.durable(name)
                 .ttl(totalTime)
                 .deadLetterExchange("delay")

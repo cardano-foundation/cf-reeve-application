@@ -112,7 +112,7 @@ public class TxSubmitterService {
                     txSubmitJob.setTransactionId(txId);
                     txSubmitJob.setJobStatus(TxSubmitJobStatus.SUBMITTED);
                     log.info("Submit: " + jobId);
-                    template.convertAndSend("txCheckUtxo", txSubmitJob.getId());
+                    template.convertAndSend("txCheckUtxo", txSubmitJob.getId().toString());
                 },
                 () -> {
                     txSubmitJob.setJobStatus(TxSubmitJobStatus.FAILED);
@@ -155,6 +155,7 @@ public class TxSubmitterService {
         }
     }
 
+    /*
     private void waitForTransaction(final Result<String> result) {
         try {
             if (result.isSuccessful()) { //Wait for transaction to be mined
@@ -175,5 +176,6 @@ public class TxSubmitterService {
             log.error(e);
         }
     }
+     */
 
 }

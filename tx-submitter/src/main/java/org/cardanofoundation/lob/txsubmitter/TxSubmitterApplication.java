@@ -29,12 +29,14 @@ public class TxSubmitterApplication {
 	@Bean
 	public void selfQueue() {
 		Queue txJobs = QueueBuilder.nonDurable("txJobs").build();
+		Queue txCheckUtxo = QueueBuilder.nonDurable("txCheckUtxo").build();
 		Exchange delay =ExchangeBuilder.directExchange("delay").build();
 		amqpAdmin().declareQueue(txJobs);
 		amqpAdmin().declareQueue(QueueBuilder.nonDurable("myqueue").build());
-		amqpAdmin().declareQueue(QueueBuilder.nonDurable("txCheckUtxo").build());
+		amqpAdmin().declareQueue(txCheckUtxo);
 		amqpAdmin().declareExchange(delay);
 		amqpAdmin().declareBinding(BindingBuilder.bind(txJobs).to(delay).with("txJobs").noargs());
+		amqpAdmin().declareBinding(BindingBuilder.bind(txCheckUtxo).to(delay).with("txCheckUtxo").noargs());
 	}
 
 }
