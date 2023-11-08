@@ -50,6 +50,7 @@ public class RequeueStrategyService {
                 .ttl(totalTime)
                 .deadLetterExchange("delay")
                 .deadLetterRoutingKey(routingKey)
+                .expires(totalTime * 2)
                 .build();
         admin.declareQueue(queue);
         return name;

@@ -89,7 +89,7 @@ public class TxSubmitterService {
      * @param message
      * @throws Exception
      */
-    @RabbitListener(queues = "txJobs", concurrency = "5"/*, ackMode = "MANUAL"*/)
+    @RabbitListener(queues = "txJobs", concurrency = "2"/*, ackMode = "MANUAL"*/)
     public void listenTwo(final Message message) throws Exception {
 
         String jobId = new String(message.getBody());
