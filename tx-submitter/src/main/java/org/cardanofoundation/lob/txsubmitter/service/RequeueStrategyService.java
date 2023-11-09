@@ -20,32 +20,54 @@ public class RequeueStrategyService {
 
     Double maxInterval = 5.0;
 
-    Double multiplier = 1.0;
+    Double multiplier = 1.5;
 
     public void messageRequeue(Message message) {
-        Integer xRetries = null;
-        String jobId = new String(message.getBody());
-        if (null == (xRetries = message.getMessageProperties().getHeader("x-retries"))) {
-            xRetries = 0;
-        }
-        xRetries += 1;
-        log.error("fail: " + jobId + " Retry:" + xRetries);
-        if (maxAttempts > xRetries) {
-            Double total = (multiplier * xRetries);
-            if (maxInterval < total) {
-                total = maxInterval;
-            }
-            message.getMessageProperties().setHeader("x-retries", xRetries);
+
+        if (isRetryable(message)) {
+            int total = getWaitingTime(message);
             template.convertAndSend(delayQueue(total, message.getMessageProperties().getConsumerQueue()), message);
         }
     }
 
-    private String delayQueue(double ttl, String routingKey) {
+    private boolean isRetryable(Message message) {
+        Integer xRetries = null;
+
+        if (null == (xRetries = message.getMessageProperties().getHeader("x-retries"))) {
+            xRetries = 0;
+        }
+
+        return maxAttempts > xRetries;
+    }
+
+    private int getWaitingTime(Message message) {
+        Integer xRetries = null;
+
+        if (null == (xRetries = message.getMessageProperties().getHeader("x-retries"))) {
+            xRetries = 0;
+        }
+
+        String jobId = new String(message.getBody());
+
+        Double delay = initialInterval + Math.pow(multiplier, xRetries);
+
+        if (delay > maxInterval && 0 != maxInterval) {
+            delay = maxInterval;
+        }
+        xRetries += 1;
+        message.getMessageProperties().setHeader("x-retries", xRetries);
+        log.error("fail:" + jobId + " Retry:" + xRetries + " Delay:" + delay);
+        return (int) Math.ceil(delay);
+
+    }
+
+    private String delayQueue(int ttl, String routingKey) {
 
         ttl *= 1000;
 
-        Integer totalTime = (int) ttl;
-        String name = "delay_"+routingKey+"_" + totalTime;
+        Integer totalTime = ttl;
+
+        String name = "delay_" + routingKey + "_" + totalTime;
         Queue queue = QueueBuilder.durable(name)
                 .ttl(totalTime)
                 .deadLetterExchange("delay")
