@@ -6,10 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.core.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,6 +60,7 @@ class RequeueStrategyServiceTest {
         Mockito.when(message.getBody()).thenReturn("100".getBytes());
         Mockito.when(messageProperties.getHeader("x-retries")).thenReturn(4);
         Mockito.when(messageProperties.getConsumerQueue()).thenReturn("txJobs");
+        //Mockito.when(queueBuilder.durable("delay_txJobs_5000"))
 
         requeueStrategy.multiplier = 1.5;
         requeueStrategy.maxInterval=5.0;
@@ -93,8 +91,7 @@ class RequeueStrategyServiceTest {
         Message message = Mockito.mock(Message.class);
         MessageProperties messageProperties = Mockito.mock(MessageProperties.class);
         Mockito.when(message.getMessageProperties()).thenReturn(messageProperties);
-        Mockito.when(message.getBody()).thenReturn("100".getBytes());
-        Mockito.when(messageProperties.getHeader("x-retries")).thenReturn(99);
+        Mockito.when(messageProperties.getHeader("x-retries")).thenReturn(100);
 
         requeueStrategy.messageRequeue(message);
 
