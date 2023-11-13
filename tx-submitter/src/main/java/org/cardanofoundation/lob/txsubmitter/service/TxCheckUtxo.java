@@ -51,7 +51,7 @@ public class TxCheckUtxo {
             log.info("Doesn't exist: " + jobId);
             return;
         }
-        log.info("Confirming: " + txSubmitJob.getId() + " -- " + txSubmitJob.getTransactionId() + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
+        //log.info("Confirming: " + txSubmitJob.getId() + " -- " + txSubmitJob.getTransactionId() + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
 
         if (TxSubmitJobStatus.CONFIRMED == txSubmitJob.getJobStatus()) {
             log.info("Confirmed already: " + jobId);
@@ -64,7 +64,7 @@ public class TxCheckUtxo {
             //final List<Utxo> utxos = new DefaultUtxoSupplier(backendService.getUtxoService()).getAll(sender.baseAddress());
             //log.info(utxos);
             //utxo = utxos.stream().filter(u -> u.getTxHash().equals(txSubmitJob.getTransactionId())).findFirst();
-            log.debug("Try to get new output... txhash: " + txSubmitJob.getTransactionId());
+            //log.debug("Try to get new output... txhash: " + txSubmitJob.getTransactionId());
         } catch (Exception e) {
             log.error("Something Wrong: " + e.getMessage());
             //throw new RuntimeException("Something Wrong: " + e.getMessage());

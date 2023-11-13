@@ -89,7 +89,7 @@ public class TxSubmitterService {
      * @param message
      * @throws Exception
      */
-    @RabbitListener(queues = "txJobs", concurrency = "2"/*, ackMode = "MANUAL"*/)
+    @RabbitListener(queues = "txJobs", concurrency = "4"/*, ackMode = "MANUAL"*/)
     public void listenTwo(final Message message) throws Exception {
 
         String jobId = new String(message.getBody());
@@ -100,7 +100,7 @@ public class TxSubmitterService {
             return;
         }
 
-        log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
+        //log.info("Processing: " + txSubmitJob.getTransactionMetadata().length + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
 
         if (TxSubmitJobStatus.SUBMITTED == txSubmitJob.getJobStatus() || TxSubmitJobStatus.CONFIRMED == txSubmitJob.getJobStatus()) {
             log.info("Submitted already: " + jobId);
@@ -108,10 +108,10 @@ public class TxSubmitterService {
         }
         processTxSubmitJob(txSubmitJob, txBuilderFactory.createRandom()).ifPresentOrElse(
                 (txId) -> {
-                    log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
+                    //log.info("tx Id is: " + txId + " -- " + Hashing.blake2b256Hex(txSubmitJob.getTransactionMetadata()));
                     txSubmitJob.setTransactionId(txId);
                     txSubmitJob.setJobStatus(TxSubmitJobStatus.SUBMITTED);
-                    log.info("Submit: " + jobId);
+                    log.info("Submited: " + jobId);
                     template.convertAndSend("txCheckUtxo", txSubmitJob.getId().toString());
                 },
                 () -> {
@@ -145,12 +145,14 @@ public class TxSubmitterService {
             //waitForTransaction(result);
             //checkIfUtxoAvailable(result.getValue(), sender.baseAddress());
         } catch (Exception e) {
+            log.error("TxBuilder: "+e.getMessage());
             return Optional.empty();
         }
 
         if (result.isSuccessful()) {
             return Optional.of(result.getValue());
         } else {
+            log.warn(result.getResponse());
             return Optional.empty();
         }
     }
