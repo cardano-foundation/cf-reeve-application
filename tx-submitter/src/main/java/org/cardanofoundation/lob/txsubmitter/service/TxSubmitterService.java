@@ -140,6 +140,7 @@ public class TxSubmitterService {
         Result<String> result = null;
         try {
             result = quickTxBuilder.compose(tx)
+                    .feePayer(sender.baseAddress())
                     .withSigner(SignerProviders.signerFrom(sender)).complete();
 
             //waitForTransaction(result);
