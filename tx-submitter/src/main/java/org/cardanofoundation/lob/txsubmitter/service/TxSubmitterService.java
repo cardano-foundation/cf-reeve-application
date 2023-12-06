@@ -81,7 +81,6 @@ public class TxSubmitterService {
             template.convertAndSend("txJobs", txSubmitJob.getId().toString());
         }
 
-        txSubmitJobRepository.saveAll(txSubmitJobs);
     }
 
     /**
@@ -89,7 +88,7 @@ public class TxSubmitterService {
      * @param message
      * @throws Exception
      */
-    @RabbitListener(queues = "txJobs", concurrency = "4"/*, ackMode = "MANUAL"*/)
+    @RabbitListener(queues = "txJobs", concurrency = "3"/*, ackMode = "MANUAL"*/)
     public void listenTwo(final Message message) throws Exception {
 
         String jobId = new String(message.getBody());

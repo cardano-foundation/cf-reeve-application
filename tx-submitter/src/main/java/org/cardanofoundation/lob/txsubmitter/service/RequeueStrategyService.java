@@ -56,7 +56,7 @@ public class RequeueStrategyService {
         }
         xRetries += 1;
         message.getMessageProperties().setHeader("x-retries", xRetries);
-        log.error("fail:" + jobId + " Retry:" + xRetries + " Delay:" + delay);
+        log.error("Retry:" + xRetries + " Delay:" + delay+" failId:" + jobId );
         return (int) Math.ceil(delay);
 
     }
