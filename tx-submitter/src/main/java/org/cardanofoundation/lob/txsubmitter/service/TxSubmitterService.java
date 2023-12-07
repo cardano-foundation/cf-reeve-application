@@ -140,7 +140,8 @@ public class TxSubmitterService {
         try {
             result = quickTxBuilder.compose(tx)
                     .feePayer(sender.baseAddress())
-                    .withSigner(SignerProviders.signerFrom(sender)).complete();
+                    .withSigner(SignerProviders.signerFrom(sender))
+                    .complete();
 
             //waitForTransaction(result);
             //checkIfUtxoAvailable(result.getValue(), sender.baseAddress());
