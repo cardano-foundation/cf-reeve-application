@@ -1,0 +1,55 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres?currentSchema=lob_service}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    schema: ${DB_SCHEMA:lob_service}
+    driver-class-name: ${DB_DRIVER_CLASS_NAME:org.postgresql.Driver}
+
+    hikari:
+      minimum-idle: ${DB_MIN_IDLE:2}
+      maximum-pool-size: ${DB_MAX_POOL_SIZE:10}
+      idle-timeout: ${DB_IDLE_TIMEOUT:30000}
+
+    jpa:
+      database-platform: ${DB_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
+      hibernate:
+        ddl-auto: none
+        show_sql: ${JPA_SHOW_SQL:false}
+
+  flyway:
+      locations: classpath:db/migration/{vendor}
+      out-of-order: true
+      url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
+      user: ${DB_USER:postgres}
+      password: ${DB_PASSWORD:postgres}
+      schemas: ${DB_SCHEMA:lob_service}
+      # baselineOnMigrate this will create a baseline version if none exists (https://flywaydb.org/documentation/configuration/parameters/baselineOnMigrate)
+      baselineOnMigrate: true
+      enabled: true
+      validateMigrationNaming: true
+
+  web:
+    resources:
+      add-mappings: false
+    # disable static content handling
+    spring.web.resources.add-mappings: false
+    spring.mvc.throw-exception-if-no-handler-found: true
+    # force charset in request and responses
+    servlet:
+      encoding:
+        force: true
+
+  main:
+    allow-bean-definition-overriding: true
+
+endpoints:
+  health:
+    enabled: ${HEALTH_ENABLED:true}
+  web:
+    exposure:
+      include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,flyway,modulith}
+  endpoint:
+    health:
+      show-details: ${MANAGEMENT_ENDPOINT_SHOW_DETAILS:always}
+
