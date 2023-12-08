@@ -1,59 +1,18 @@
-# minio
-# watcher
-# source-api
-# rabbitmq
-# ledger-event-consumer
-# txsubmitter
-
 version: "3.9"
 services:
-  rabbitmq:
-    hostname: rabbitmq
-    container_name: rabbitmq
-    image: rabbitmq:management
-    environment:
-      - RABBITMQ_DEFAULT_USER=lob
-      - RABBITMQ_DEFAULT_PASS=l0bst3r
-    ports:
-        - 5672:5672
-        - 15672:15672
-    volumes:
-        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
-    restart: on-failure
-    networks:
-        - lobster
 
-#  api:
-#    build: ./api
-#    platform: linux/arm64
-#    ports:
-#      - "${API_LOCAL_BIND_PORT}:${API_EXPOSED_PORT}"
-#    environment:
-#      DB_URL: "jdbc:postgresql://db:${DB_PORT}/${METADATA_DB_NAME}"
-#      DB_USER: "${SERVICE_USER_NAME}"
-#      DB_SECRET: "${SERVICE_USER_SECRET}"
-#      DB_DRIVER_CLASS_NAME: "${DB_DRIVER_CLASS_NAME}"
-#    depends_on:
-#      bootstrap-db:
-#        condition: service_completed_successfully
-#    restart: always
   postgres:
     hostname: postgres
     container_name: postgres
-    image: postgres:13.2
+    image: postgres:15.5
     environment:
-      - POSTGRES_USER=cardano-master
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=lob
+      - POSTGRES_DB=postgres
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - /tmp/lob-postgres-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
 
 volumes:
     postgres-data:
-
-networks:
-  lobster:
-    driver: bridge

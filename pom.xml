@@ -45,23 +45,36 @@
     </organization>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.maven-compiler-plugin>3.10.0</version.maven-compiler-plugin>
         <version.maven-surefire-plugin>3.0.0-M5</version.maven-surefire-plugin>
-        <version.jacoco-maven-plugin>0.8.8</version.jacoco-maven-plugin>
+        <version.jacoco-maven-plugin>0.8.10</version.jacoco-maven-plugin>
         <version.flatten-maven-plugin>1.2.7</version.flatten-maven-plugin>
         <version.maven-pmd-plugin>3.17.0</version.maven-pmd-plugin>
         <version.sonarcube-maven-plugin>3.9.1.2184</version.sonarcube-maven-plugin>
         <version.maven-project-info-reports-plugin>3.3.0</version.maven-project-info-reports-plugin>
         <version.maven-site-plugin>4.0.0-M2</version.maven-site-plugin>
-        <version.spring-boot>3.1.0</version.spring-boot>
+        <version.spring-boot>3.2.0</version.spring-boot>
         <version.commons-lang>3.12.0</version.commons-lang>
-        <version.cardano-client-lib>0.5.0-alpha.3</version.cardano-client-lib>
-        <version.yaci-store>0.0.10</version.yaci-store>
-        <version.opencsv>5.7.1</version.opencsv>
-        <version.lombok>1.18.26</version.lombok>
-        <version.bouncycastle>1.60</version.bouncycastle>
+        <version.cardano-client-lib>0.5.0</version.cardano-client-lib>
+        <version.yaci-store>0.0.12</version.yaci-store>
+        <version.lombok>1.18.30</version.lombok>
+        <version.bouncycastle>1.75</version.bouncycastle>
+        <version.scribe>1.3.7</version.scribe>
+        <version.modulith>1.1.0</version.modulith>
+        <version.molecule>2023.1.0</version.molecule>
+        <version.problem.spring.starter>0.29.1</version.problem.spring.starter>
+        <version.vavr>0.10.4</version.vavr>
+        <version.spring.docs>2.2.0</version.spring.docs>
+        <version.spring.dotenv>4.0.0</version.spring.dotenv>
+
+        <version.rest.assured>5.3.2</version.rest.assured>
+        <version.wiremock>3.3.1</version.wiremock>
+        <version.testcontainers.postgres>1.17.3</version.testcontainers.postgres>
+        <version.micrometer>1.11.2</version.micrometer>
+
+<!--        <version.spring-cloud>2023.0.0</version.spring-cloud>-->
     </properties>
 
     <repositories>
@@ -88,6 +101,37 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>org.springframework.modulith</groupId>
+                <artifactId>spring-modulith-bom</artifactId>
+                <version>${version.modulith}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jmolecules</groupId>
+                <artifactId>jmolecules-bom</artifactId>
+                <version>${version.molecule}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-bom</artifactId>
+                <version>${version.micrometer}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--            <dependency>-->
+<!--                <groupId>org.springframework.cloud</groupId>-->
+<!--                <artifactId>spring-cloud-dependencies</artifactId>-->
+<!--                <version>${version.spring-cloud}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${version.commons-lang}</version>
@@ -102,32 +146,86 @@
                 <artifactId>cardano-client-backend-blockfrost</artifactId>
                 <version>${version.cardano-client-lib}</version>
             </dependency>
+
+
             <dependency>
                 <groupId>com.bloxbean.cardano</groupId>
                 <artifactId>yaci-store-spring-boot-starter</artifactId>
                 <version>${version.yaci-store}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.bloxbean.cardano</groupId>
                 <artifactId>yaci-store-metadata-spring-boot-starter</artifactId>
                 <version>${version.yaci-store}</version>
             </dependency>
+
+            <dependency>
+                <groupId>io.vavr</groupId>
+                <artifactId>vavr</artifactId>
+                <version>${version.vavr}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${version.spring.docs}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>me.paulschwarz</groupId>
+                <artifactId>spring-dotenv</artifactId>
+                <version>${version.spring.dotenv}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
+                <artifactId>bcprov-jdk18on</artifactId>
                 <version>${version.bouncycastle}</version>
             </dependency>
+
             <dependency>
-                <groupId>com.opencsv</groupId>
-                <artifactId>opencsv</artifactId>
-                <version>${version.opencsv}</version>
+                <groupId>org.zalando</groupId>
+                <artifactId>problem-spring-web-starter</artifactId>
+                <version>${version.problem.spring.starter}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${version.lombok}</version>
                 <scope>provided</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.scribe</groupId>
+                <artifactId>scribe</artifactId>
+                <version>${version.scribe}</version>
+            </dependency>
+
+            <!-- test scope -->
+
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <scope>test</scope>
+                <version>${version.rest.assured}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wiremock</groupId>
+                <artifactId>wiremock-standalone</artifactId>
+                <version>${version.wiremock}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${version.testcontainers.postgres}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -208,16 +306,8 @@
     </reporting>
 
     <modules>
-        <module>common</module>
-        <module>source-adapter-base</module>
-        <module>netsuite-source-adapter</module>
-        <module>source-api</module>
-        <module>ledger-event-consumer</module>
-        <module>config-event-consumer</module>
-        <module>chain-data-event-consumer</module>
-        <module>tx-submitter</module>
-        <module>admin-api</module>
-        <module>webview-api</module>
+      <module>netsuite-adapter</module>
+      <module>lob-service</module>
     </modules>
 
 </project>
