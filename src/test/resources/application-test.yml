@@ -1,0 +1,9 @@
+#spring:
+#  datasource:
+#    url: jdbc:tc:postgresql:localhost:5432:///postgres
+#    username: postgres
+#    password: postgres
+#    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+#  jpa:
+#    hibernate:
+#    ddl-auto: create
