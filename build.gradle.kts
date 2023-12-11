@@ -1,0 +1,81 @@
+plugins {
+    java
+    id("org.springframework.boot") version "3.2.0"
+    id("io.spring.dependency-management") version "1.1.4"
+    id("org.graalvm.buildtools.native") version "0.9.28"
+}
+
+group = "de.cardanofoundation"
+version = "0.0.1-SNAPSHOT"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
+
+configurations {
+    compileOnly {
+       extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+extra["springCloudVersion"] = "2023.0.0"
+extra["springModulithVersion"] = "1.1.0"
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    //implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.flywaydb:flyway-core")
+
+    //implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
+
+    implementation("org.springframework.modulith:spring-modulith-starter-core")
+    implementation("org.springframework.modulith:spring-modulith-starter-jdbc")
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    runtimeOnly("org.postgresql:postgresql")
+
+    runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
+
+//  runtimeOnly("org.springframework.modulith:spring-modulith-observability")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.springframework.modulith:spring-modulith-starter-test")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
+
+    runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
+    implementation("org.zalando:problem-spring-web-starter:0.29.1")
+    implementation("io.vavr:vavr:0.10.4")
+    implementation("me.paulschwarz:spring-dotenv:4.0.0")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.77")
+
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+    testCompileOnly("org.projectlombok:lombok:1.18.30")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+    testImplementation("io.rest-assured:rest-assured:5.3.2")
+    testImplementation("org.wiremock:wiremock-standalone:3.3.1")
+
+}
+
+dependencyManagement {
+    imports {
+       mavenBom("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
+       mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
