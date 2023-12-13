@@ -24,3 +24,13 @@ mvn clean package
 Test instructions for individual modules are provided in the corresponding sub folder README files.
 
 System level integration test instructions go here: TBD
+
+***
+#### ToDelete
+```
+curl --location 'http://localhost:8082/netsuite/client'
+
+curl --location 'http://localhost:8081/events/registrations/approve' --header 'Content-Type: application/json' --data '{"registrationId": "ad9f70bb952de9be813e1abf06dddba3681b8d9ca80692b77e11e99612c4487c"}';
+
+for este in {0..10}; do curl http://localhost:8081/events/tx/resubmit/$este; done;clear;
+```
