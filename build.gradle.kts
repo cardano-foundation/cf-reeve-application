@@ -1,8 +1,9 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.2.0"
+    id("org.springframework.boot") version "3.2.1"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.graalvm.buildtools.native") version "0.9.28"
+    id("com.github.ben-manes.versions") version "0.50.0"
 }
 
 group = "de.cardanofoundation"
@@ -23,7 +24,7 @@ repositories {
 }
 
 extra["springCloudVersion"] = "2023.0.0"
-extra["springModulithVersion"] = "1.1.0"
+extra["springModulithVersion"] = "1.1.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -64,9 +65,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     testCompileOnly("org.projectlombok:lombok:1.18.30")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
-    testImplementation("io.rest-assured:rest-assured:5.3.2")
+    testImplementation("io.rest-assured:rest-assured:5.4.0")
     testImplementation("org.wiremock:wiremock-standalone:3.3.1")
-
 }
 
 dependencyManagement {
