@@ -1,10 +1,10 @@
 package org.cardanofoundation.lob.module.netsuite.service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.module.netsuite.domain.NetSuiteIngestionCreatedEvent;
+import org.cardanofoundation.lob.module.netsuite.domain.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.module.netsuite.domain.entity.NetSuiteIngestion;
 import org.cardanofoundation.lob.module.netsuite.repository.IngestionRepository;
 import org.cardanofoundation.lob.module.netsuite.util.MD5Hashing;
@@ -29,17 +29,11 @@ public class NetsuiteService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @PostConstruct
-    public void init() {
-        log.info("NetsuiteProcessor init.");
-    }
-
     @Transactional(readOnly = true)
     public Optional<NetSuiteIngestion> findIngestionById(String id) {
         return ingestionRepository.findById(id);
     }
 
-    @Transactional
     public void runIngestion() throws IOException {
         log.info("Running ingestion...");
 
@@ -52,22 +46,27 @@ public class NetsuiteService {
 
             val ingestionBodyChecksum = MD5Hashing.md5(body);
 
-            val netSuiteIngestion1 = NetSuiteIngestion.builder()
-                    .id(ingestionBodyChecksum)
-                    .version(1L) // TODO jpa auditing (envers)
-                    .ingestionBody(body)
-                    .ingestionBodyChecksum(ingestionBodyChecksum)
-                    .build();
+            val netSuiteIngestion1 = new NetSuiteIngestion();
+            netSuiteIngestion1.setIngestionBody(body);
+            netSuiteIngestion1.setIngestionBodyChecksum(ingestionBodyChecksum);
 
             ingestionRepository.saveAndFlush(netSuiteIngestion1);
 
-            String id = netSuiteIngestion1.getId();
-            applicationEventPublisher.publishEvent(new NetSuiteIngestionCreatedEvent(id));
+            applicationEventPublisher.publishEvent(new NetSuiteIngestionCreatedEvent(netSuiteIngestion1.getId()));
 
             log.info("Ingestion created.");
         }
 
-        applicationEventPublisher.publishEvent(new NetSuiteIngestionCreatedEvent("FAKE_ID"));
+        log.info("Publishing NetSuiteIngestionCreatedEvent...");
+
+        applicationEventPublisher.publishEvent(new NetSuiteIngestionCreatedEvent(-1L));
+    }
+
+    @Transactional
+    public void process(ScheduledIngestionEvent event) throws IOException {
+        log.info("Handling NetSuiteStartIngestionEvent..., {}", event);
+
+        runIngestion();
     }
 
 }

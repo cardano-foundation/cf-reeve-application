@@ -1,4 +1,18 @@
 spring:
+  threads:
+    virtual:
+      enabled: true
+
+  jpa:
+    properties:
+      org:
+        hibernate:
+          envers:
+            audit_table_suffix: _AUDIT
+            revision_field_name: REVISION
+            revision_type_field_name: REVISION_TYPE
+    open-in-view: false
+
   sql:
     init:
       mode: never

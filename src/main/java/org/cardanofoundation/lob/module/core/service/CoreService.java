@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class ExampleService {
+public class CoreService {
 
     @ApplicationModuleListener
     public void process(NetSuiteIngestionCreatedEvent event) {

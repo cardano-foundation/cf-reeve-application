@@ -20,7 +20,7 @@ public class HelloNetSuiteIntegrationTest extends WebBaseIntegrationTest {
     public void findNetSuiteIngestion() {
         given()
                 .when()
-                .get("/api/netsuite/ingestion/86d612cb0782a3b001f7374430211c83")
+                .get("/api/netsuite/ingestion/1")
                 .then()
                 .statusCode(200);
     }
