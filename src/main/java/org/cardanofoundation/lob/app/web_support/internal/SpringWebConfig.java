@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.config;
+package org.cardanofoundation.lob.app.web_support.internal;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
