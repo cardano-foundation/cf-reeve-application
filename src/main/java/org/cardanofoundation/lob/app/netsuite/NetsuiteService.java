@@ -11,7 +11,6 @@ import org.cardanofoundation.lob.app.netsuite.util.MD5Hashing;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.modulith.events.ApplicationModuleListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,7 +65,6 @@ public class NetsuiteService {
     }
 
     @Transactional
-    @Async
     public void scheduleNetsuiteIngestionEvent() {
         log.info("Handling NetSuiteStartIngestionEvent...");
 
