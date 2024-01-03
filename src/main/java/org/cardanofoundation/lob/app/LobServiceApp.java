@@ -5,8 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.cardanofoundation.lob.module.netsuite.domain.ScheduledIngestionEvent;
-import org.cardanofoundation.lob.module.netsuite.service.NetsuiteService;
+import org.cardanofoundation.lob.app.netsuite.NetsuiteService;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.CommandLineRunner;
@@ -21,12 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.config.FixedRateTask;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import java.io.IOException;
-import java.time.Duration;
 
 import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 
@@ -34,14 +28,7 @@ import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 @EnableJpaRepositories( { "org.cardanofoundation.lob", "org.springframework.modulith.events.jpa" } )
 @EntityScan(basePackages = { "org.cardanofoundation.lob", "org.springframework.modulith.events.jpa" } )
 @ComponentScan(basePackages = {
-        "org.cardanofoundation.lob.app.service",
-        "org.cardanofoundation.lob.app.config",
-        "org.cardanofoundation.lob.app.resource",
-        "org.cardanofoundation.lob.module.netsuite.config",
-
-        "org.cardanofoundation.lob.module.core.config",
-        "org.cardanofoundation.lob.module.core.domain",
-        "org.cardanofoundation.lob.module.core.service",
+        "org.cardanofoundation.lob.app"
 })
 @EnableTransactionManagement
 @EnableAsync
@@ -50,10 +37,7 @@ import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 @RequiredArgsConstructor
 public class LobServiceApp {
 
-    private final ScheduledTaskRegistrar scheduledTaskRegistrar;
-
     private final NetsuiteService netsuiteService;
-
 
     public static void main(String[] args) {
         SpringApplication.run(LobServiceApp.class, args);
@@ -64,15 +48,7 @@ public class LobServiceApp {
         return (args) -> {
             log.info("Starting Lob Service...");
 
-            scheduledTaskRegistrar.scheduleFixedRateTask(new FixedRateTask(() -> {
-                log.info("Schedule Netsuite ingestion job...");
-
-                try {
-                    netsuiteService.process(new ScheduledIngestionEvent("system"));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }, Duration.ofSeconds(10), Duration.ofSeconds(1)));
+            netsuiteService.scheduleNetsuiteIngestionEvent();
 
             log.info("Lob Service started.");
         };
