@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 
+import static org.cardanofoundation.lob.app.netsuite.util.MoreCompress.decompress;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.zalando.problem.Status.NOT_FOUND;
 
@@ -62,7 +63,7 @@ public class NetSuiteResource {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    public ResponseEntity<?> findNetSuiteIngestion(@Parameter(description = "injestion id", required = true)
+    public ResponseEntity<?> findNetSuiteIngestion(@Parameter(description = "ingestion id", required = true)
                                                    @PathVariable("id") String id) {
         val r = netsuiteService.findIngestionById(id);
 
@@ -78,7 +79,13 @@ public class NetSuiteResource {
 
         val netSuiteIngestion = r.get();
 
-        return ResponseEntity.ok().body(netSuiteIngestion);
+        val ingestionPresentation = new IngestionPresentation(
+                netSuiteIngestion.getIngestionBodyChecksum(),
+                netSuiteIngestion.getIngestionBody(),
+                decompress(netSuiteIngestion.getIngestionBody())
+        );
+
+        return ResponseEntity.ok().body(ingestionPresentation);
     }
 
     record Hello(String text) { }

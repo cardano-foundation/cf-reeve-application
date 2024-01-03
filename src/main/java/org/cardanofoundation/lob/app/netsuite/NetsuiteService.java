@@ -8,6 +8,7 @@ import org.cardanofoundation.lob.app.netsuite.domain.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite.domain.entity.NetSuiteIngestion;
 import org.cardanofoundation.lob.app.netsuite.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite.util.MD5Hashing;
+import org.cardanofoundation.lob.app.netsuite.util.MoreCompress;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.modulith.events.ApplicationModuleListener;
@@ -49,7 +50,12 @@ public class NetsuiteService {
             val ingestionBodyChecksum = MD5Hashing.md5(body);
 
             val netSuiteIngestion1 = new NetSuiteIngestion();
-            netSuiteIngestion1.setIngestionBody(body);
+
+            var compressedBody = MoreCompress.compress(body);
+
+            log.info("Before compression: {}, compressed: {}", body.length(), compressedBody.length());
+
+            netSuiteIngestion1.setIngestionBody(compressedBody);
             netSuiteIngestion1.setIngestionBodyChecksum(ingestionBodyChecksum);
 
             ingestionRepository.saveAndFlush(netSuiteIngestion1);
