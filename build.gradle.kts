@@ -25,6 +25,7 @@ repositories {
 
 extra["springCloudVersion"] = "2023.0.0"
 extra["springModulithVersion"] = "1.1.1"
+extra["jMoleculesVersion"] = "2023.1.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -42,6 +43,12 @@ dependencies {
     implementation("org.springframework.modulith:spring-modulith-starter-core")
     implementation("org.springframework.modulith:spring-modulith-starter-jdbc")
 
+    implementation("org.springframework.modulith:spring-modulith-events-amqp")
+
+    implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
+
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
+
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
@@ -53,9 +60,12 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
+
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
+
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:rabbitmq")
 
     runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
     implementation("org.zalando:problem-spring-web-starter:0.29.1")
@@ -76,6 +86,7 @@ dependencyManagement {
     imports {
        mavenBom("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+       mavenBom("org.jmolecules:jmolecules-bom:${property("jMoleculesVersion")}")
     }
 }
 

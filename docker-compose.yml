@@ -9,10 +9,24 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
-    volumes:
-      - /tmp/lob-postgres-data:/var/lib/postgresql/data
+#    volumes:
+#      - /tmp/lob-postgres-data:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - "5432:5432"
 
-volumes:
-    postgres-data:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: 'guest'
+      RABBITMQ_DEFAULT_PASS: 'guest'
+
+#    volumes:
+#      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+#      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+
+#volumes:
+#    postgres-data:

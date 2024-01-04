@@ -1,4 +1,8 @@
 spring:
+  docker:
+    compose:
+      lifecycle-management: start-and-stop
+
   threads:
     virtual:
       enabled: true
@@ -13,10 +17,13 @@ spring:
             revision_type_field_name: REVISION_TYPE
     open-in-view: false
 
+
+
   sql:
     init:
       mode: never
       #schema-locations: classpath:db/schema.sql
+
   datasource:
     name: ${DB_NAME:lob_service}
     url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres?currentSchema=lob_service}
@@ -59,23 +66,30 @@ spring:
       encoding:
         force: true
 
+    exposure:
+      include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,flyway,applicationmodules}
+
+  artemis:
+    embedded:
+      topics=target: target
+
   main:
     allow-bean-definition-overriding: true
 
-endpoints:
   health:
     enabled: ${HEALTH_ENABLED:true}
-  web:
-    exposure:
-      include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,flyway,applicationmodules}
+
   endpoint:
     health:
       show-details: ${MANAGEMENT_ENDPOINT_SHOW_DETAILS:always}
 
   modulith:
     events:
-      jdbc:
-        schema-initialization:
-          enabled: true
+      externalization:
+        enabled: true
+
+    jdbc:
+      schema-initialization:
+        enabled: true
 
     republish-outstanding-events-on-restart: true
