@@ -49,18 +49,18 @@ public class NetsuiteService {
 
             val ingestionBodyChecksum = MD5Hashing.md5(body);
 
-            val netSuiteIngestion1 = new NetSuiteIngestion();
+            val netSuiteIngestion = new NetSuiteIngestion();
 
-            var compressedBody = MoreCompress.compress(body);
+            val compressedBody = MoreCompress.compress(body);
 
             log.info("Before compression: {}, compressed: {}", body.length(), compressedBody.length());
 
-            netSuiteIngestion1.setIngestionBody(compressedBody);
-            netSuiteIngestion1.setIngestionBodyChecksum(ingestionBodyChecksum);
+            netSuiteIngestion.setIngestionBody(compressedBody);
+            netSuiteIngestion.setIngestionBodyChecksum(ingestionBodyChecksum);
 
-            ingestionRepository.saveAndFlush(netSuiteIngestion1);
+            ingestionRepository.saveAndFlush(netSuiteIngestion);
 
-            applicationEventPublisher.publishEvent(new NetSuiteIngestionCreatedEvent(netSuiteIngestion1.getId()));
+            applicationEventPublisher.publishEvent(new NetSuiteIngestionCreatedEvent(netSuiteIngestion.getId()));
 
             log.info("Ingestion created.");
         }
