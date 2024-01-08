@@ -2,40 +2,86 @@ package org.cardanofoundation.lob.app.netsuite.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.cardanofoundation.lob.app.netsuite.util.NetSuiteDateDeserialiser;
 
-import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static org.cardanofoundation.lob.app.netsuite.common.Constants.METADATA_DATE_PATTERN;
+public record TransactionLine(
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class TransactionLine {
+        @JsonProperty("Subsidiary (no hierarchy)") String subsidiary,
+        @JsonProperty("Type") String type,
 
-    @JsonProperty("fingerprint")
-    private String sourceEventFingerprint;
-    private String entity;
-    private String module;
-    private String type;
-    private String docCode;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = METADATA_DATE_PATTERN)
-    private LocalDateTime docDate;
-    private String period;
-    private String vendor;
-    private String costCenter;
-    private String projectCode;
-    private String currency;
-    private BigDecimal amount;
-    private BigDecimal exchangeRate;
-    private String eventCode;
-    private String eventDescription;
-    private String lineNumber;
-    private String Status;
-    private Instant timestamp;
+        @JsonProperty("Date Created")
+        @JsonDeserialize(using = NetSuiteDateDeserialiser.class)
+        LocalDateTime dateCreated,
 
-}
+        @JsonProperty("End Date")
+        @JsonDeserialize(using = NetSuiteDateDeserialiser.class)
+        LocalDateTime endDate,
+
+        @JsonProperty("Last Modified")
+        @JsonDeserialize(using = NetSuiteDateDeserialiser.class)
+        LocalDateTime lastModified,
+
+        @JsonProperty("Date")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+        LocalDate date,
+
+        @JsonProperty("Due Date/Receive By")
+        @JsonDeserialize(using = NetSuiteDateDeserialiser.class)
+        LocalDateTime dueDate,
+
+        @JsonProperty("ID") String id,
+
+        @JsonProperty("Company Name") String companyName,
+
+        @JsonProperty("Period") String period,
+
+        @JsonProperty("Tax Period") String taxPeriod,
+
+        @JsonProperty("Tax Item") String taxItem,
+
+        @JsonProperty("Cost Center (no hierarchy)") String costCenter,
+
+        @JsonProperty("Internal ID") String internalID,
+
+        @JsonProperty("Transaction Number") String transactionNumber,
+
+        @JsonProperty("Document Number") String documentNumber,
+
+        @JsonProperty("Number") String number,
+
+        @JsonProperty("Name") String name,
+
+        @JsonProperty("Tax Number") String taxNumber,
+
+        @JsonProperty("Project (no hierarchy)") String project,
+
+        @JsonProperty("Rate") String rate,
+
+        @JsonProperty("Account (Main)") String accountMain,
+
+        @JsonProperty("Memo") String memo,
+
+        @JsonProperty("Memo (Main)") String memoMain,
+
+        @JsonProperty("Currency") String currency,
+
+        @JsonProperty("Exchange Rate") String exchangeRate,
+
+        @JsonProperty("Amount (Debit) (Foreign Currency)") String amountDebitForeignCurrency,
+
+        @JsonProperty("Amount (Credit) (Foreign Currency)") String amountCreditForeignCurrency,
+
+        @JsonProperty("Amount (Debit)") String amountDebit,
+
+        @JsonProperty("Amount (Credit)") String amountCredit,
+
+        @JsonProperty("Intercompany") String intercompany,
+
+        @JsonProperty("Status") String status,
+
+        @JsonProperty("Approval History") String approvalHistory
+) { }

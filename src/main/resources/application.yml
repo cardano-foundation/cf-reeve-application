@@ -93,3 +93,14 @@ spring:
         enabled: true
 
     republish-outstanding-events-on-restart: true
+
+lob:
+  netsuite:
+    client:
+      realm: 6766746_SB1
+      oauth_nonce: NN9H7V6319V
+      consumer_key: 23498aa75f9a87ffc50eb78c42b4cc413974500d1e01307d950ae83b85460e53
+      token_secret: 4b7c015da837267bfe205a316b7357b0e18fc5dccf4a8b06c46554a155ead4d2
+      consumer_secret: 330100b0a2be6dc76f50ba7f3c7077a9d00f4a4685dfd64e862b389b960b7ff6
+      token: 1496b695d6cb266b1505b363a549b1db3a0566ed28459d03d7c013fdad0669a4
+      url: https://6766746-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=384&deploy=1&searchname=transaction_search_cm
