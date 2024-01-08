@@ -72,6 +72,11 @@ dependencies {
     implementation("io.vavr:vavr:0.10.4")
     implementation("me.paulschwarz:spring-dotenv:4.0.0")
     implementation("org.bouncycastle:bcprov-jdk18on:1.77")
+    //implementation("com.github.scribejava:scribejava-core:8.3.3")
+    implementation("org.scribe:scribe:1.3.7") // needed for OAuth 1.0 for NetSuite Module
+
+    implementation("javax.xml.bind", "jaxb-api", "2.3.0")
+    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2") // needed for OAuth 1.0 for NetSuite Module
 
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")

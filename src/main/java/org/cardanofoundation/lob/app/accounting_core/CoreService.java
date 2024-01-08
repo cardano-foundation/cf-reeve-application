@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_core;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.netsuite.domain.NetSuiteIngestionCreatedEvent;
+import org.cardanofoundation.lob.app.netsuite.domain.TransactionLine;
 import org.cardanofoundation.lob.app.notification.domain.NotificationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.modulith.events.ApplicationModuleListener;
@@ -20,6 +21,10 @@ public class CoreService {
     @ApplicationModuleListener
     public void process(NetSuiteIngestionCreatedEvent event) {
       log.info("Received NetSuiteIngestionCreatedEvent event: {}", event);
+
+        for (TransactionLine transactionLine : event.transactionData().lines()) {
+            log.info("Processing transactionLine: {}", transactionLine);
+        }
 
         applicationEventPublisher.publishEvent(NotificationEvent.create(INFO, "NetSuiteIngestionCreatedEvent received, id: " + event.id()));
     }

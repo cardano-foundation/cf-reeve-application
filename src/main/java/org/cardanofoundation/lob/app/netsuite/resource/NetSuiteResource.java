@@ -11,7 +11,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.netsuite.NetsuiteService;
+import org.cardanofoundation.lob.app.netsuite.NetSuiteService;
 import org.cardanofoundation.lob.app.netsuite.domain.entity.NetSuiteIngestion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +30,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
 @Tag(name = "NetSuite", description = "The NetSuite API")
 public class NetSuiteResource {
 
-    private final NetsuiteService netsuiteService;
+    private final NetSuiteService netsuiteService;
 
     @PostConstruct
     public void init() {

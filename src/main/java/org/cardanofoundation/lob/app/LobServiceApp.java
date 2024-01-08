@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.cardanofoundation.lob.app.netsuite.NetsuiteService;
+import org.cardanofoundation.lob.app.netsuite.NetSuiteService;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.CommandLineRunner;
@@ -48,7 +48,7 @@ import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 @RequiredArgsConstructor
 public class LobServiceApp {
 
-    private final NetsuiteService netsuiteService;
+    private final NetSuiteService netSuiteService;
 
     public static void main(String[] args) {
         SpringApplication.run(LobServiceApp.class, args);
@@ -59,7 +59,7 @@ public class LobServiceApp {
         return (args) -> {
             log.info("Starting Lob Service...");
 
-            netsuiteService.scheduleNetsuiteIngestionEvent();
+            netSuiteService.scheduleNetsuiteIngestionEvent();
 
             log.info("Lob Service started.");
         };
