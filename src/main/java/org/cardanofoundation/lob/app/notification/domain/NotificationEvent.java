@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-//@Externalized("target")
+@Externalized("target")
 public record NotificationEvent(UUID id,
                                 NotificationSeverity severity,
                                 String message,

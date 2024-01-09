@@ -21,6 +21,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Audited
 public class NetSuiteIngestion extends BaseEntity {
 
+
+
     @Column(name = "ingestion_body", nullable = false, length = 999_999, columnDefinition = "TEXT")
     private String ingestionBody;
 

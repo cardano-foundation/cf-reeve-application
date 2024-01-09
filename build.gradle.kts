@@ -42,7 +42,6 @@ dependencies {
 
     implementation("org.springframework.modulith:spring-modulith-starter-core")
     implementation("org.springframework.modulith:spring-modulith-starter-jdbc")
-
     implementation("org.springframework.modulith:spring-modulith-events-amqp")
 
     implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
