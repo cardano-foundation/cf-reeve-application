@@ -9,6 +9,7 @@ import java.util.UUID;
 
 @Externalized("target")
 public record NotificationEvent(UUID id,
+
                                 NotificationSeverity severity,
                                 String message,
                                 Optional<Problem> problem
@@ -18,9 +19,9 @@ public record NotificationEvent(UUID id,
     return new NotificationEvent(UUID.randomUUID(), severity, message, Optional.ofNullable(problem));
   }
 
-    public static NotificationEvent create(NotificationSeverity severity, String message) {
-        return new NotificationEvent(UUID.randomUUID(), severity, message, Optional.empty());
-    }
+  public static NotificationEvent create(NotificationSeverity severity, String message) {
+    return new NotificationEvent(UUID.randomUUID(), severity, message, Optional.empty());
+  }
 
     public enum NotificationSeverity {
         INFO, WARN, ERROR
