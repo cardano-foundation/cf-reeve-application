@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.cardanofoundation.lob.app.netsuite.NetSuiteService;
+import org.cardanofoundation.lob.app.adapter.netsuite.NetSuiteService;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.CommandLineRunner;

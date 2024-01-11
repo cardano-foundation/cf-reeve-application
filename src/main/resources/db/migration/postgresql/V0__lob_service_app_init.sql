@@ -1,7 +1,7 @@
 CREATE SEQUENCE  IF NOT EXISTS netsuite_ingestion_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE netsuite_ingestion (
-  id BIGINT NOT NULL,
+   id BIGINT NOT NULL,
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
    created_at TIMESTAMP WITHOUT TIME ZONE,
@@ -12,7 +12,7 @@ CREATE TABLE netsuite_ingestion (
 );
 
 CREATE TABLE netsuite_ingestion_audit (
-  id BIGINT NOT NULL,
+   id BIGINT NOT NULL,
    revision INTEGER NOT NULL,
    revision_type SMALLINT,
    ingestion_body TEXT,
@@ -31,10 +31,10 @@ CREATE TABLE IF NOT EXISTS event_publication(
 );
 
 -- Spring Data Envers
-CREATE SEQUENCE  IF NOT EXISTS revinfo_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE IF NOT EXISTS revinfo_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE revinfo (
-  rev BIGINT NOT NULL,
+   rev BIGINT NOT NULL,
    rev_timestamp TIMESTAMP WITHOUT TIME ZONE,
    CONSTRAINT pk_revinfo PRIMARY KEY (rev)
 );
