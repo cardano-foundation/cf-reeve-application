@@ -17,14 +17,14 @@ public class AccountingCoreService {
 
     @ApplicationModuleListener
     public void process(SourceAccountingDataIngestionSuccessEvent event) {
-      log.info("Received SourceAccountingDataIngestionSuccessEvent event: {}", event);
+      log.info("Received SourceAccountingDataIngestionSuccessEvent event.");
 
       //applicationEventPublisher.publishEvent(NotificationEvent.create(INFO, "NetSuiteIngestionCreatedEvent received, id: " + event.id()));
     }
 
     @ApplicationModuleListener
     public void process(SourceAccountingDataIngestionFailEvent event) {
-        log.info("Received SourceAccountingDataIngestionFailEvent event: {}", event);
+        log.info("Received SourceAccountingDataIngestionFailEvent event");
 
         //applicationEventPublisher.publishEvent(NotificationEvent.create(INFO, "NetSuiteIngestionCreatedEvent received, id: " + event.id()));
     }

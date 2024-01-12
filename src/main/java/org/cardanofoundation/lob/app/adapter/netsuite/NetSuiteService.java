@@ -12,10 +12,8 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.Transactio
 import org.cardanofoundation.lob.app.adapter.netsuite.client.NetSuiteAPI;
 import org.cardanofoundation.lob.app.adapter.netsuite.domain.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.adapter.netsuite.domain.TransactionDataSearchResult;
-import org.cardanofoundation.lob.app.adapter.netsuite.repository.IngestionRepository;
-import org.cardanofoundation.lob.app.adapter.netsuite.util.MD5Hashing;
-import org.cardanofoundation.lob.app.adapter.netsuite.util.MoreCompress;
 import org.cardanofoundation.lob.app.adapter.netsuite.domain.entity.NetSuiteIngestion;
+import org.cardanofoundation.lob.app.adapter.netsuite.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.adapter.netsuite.service.TransactionLineConverter;
 import org.cardanofoundation.lob.app.notification.domain.NotificationEvent;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,6 +25,8 @@ import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
+import static org.cardanofoundation.lob.app.adapter.netsuite.util.MD5Hashing.md5;
+import static org.cardanofoundation.lob.app.adapter.netsuite.util.MoreCompress.compress;
 import static org.cardanofoundation.lob.app.notification.domain.NotificationEvent.NotificationSeverity.ERROR;
 import static org.cardanofoundation.lob.app.notification.domain.NotificationEvent.NotificationSeverity.WARN;
 
@@ -63,71 +63,65 @@ public class NetSuiteService {
 
         log.info("Checking if ingestion exists...");
 
-        if (ingestionRepository.count() == 0) {
-            log.info("No ingestion found. Creating one.");
+        log.info("No ingestion found. Creating one.");
 
-            val netSuiteJsonE = retrieveLatestNetsuiteTransactionLines();
+        val netSuiteJsonE = retrieveLatestNetsuiteTransactionLines();
 
-            if (netSuiteJsonE.isEmpty()) {
-                log.error("Error retrieving data from NetSuite API: {}", netSuiteJsonE.getLeft().getDetail());
+        if (netSuiteJsonE.isEmpty()) {
+            log.error("Error retrieving data from NetSuite API: {}", netSuiteJsonE.getLeft().getDetail());
 
-                applicationEventPublisher.publishEvent(NotificationEvent.create(
-                        ERROR,
-                        "Error retrieving data from NetSuite API",
-                        netSuiteJsonE.getLeft())
-                );
+            applicationEventPublisher.publishEvent(NotificationEvent.create(
+                    ERROR,
+                    "Error retrieving data from NetSuite API",
+                    netSuiteJsonE.getLeft())
+            );
 
-                return;
-            }
-
-            val bodyM = netSuiteJsonE.get();
-            if (bodyM.isEmpty()) {
-                log.warn("No data to read from NetSuite API..., bailing out!");
-
-                applicationEventPublisher.publishEvent(NotificationEvent.create(
-                        WARN,
-                        "No data to read from NetSuite API"));
-                return;
-            }
-
-            val netsuiteTransactionLinesJson = bodyM.get();
-            log.info("Retrieved data from NetSuite API: {}", netsuiteTransactionLinesJson);
-
-            val ingestionBodyChecksum = MD5Hashing.md5(netsuiteTransactionLinesJson);
-
-            val netSuiteIngestion = new NetSuiteIngestion();
-
-            val compressedBody = MoreCompress.compress(netsuiteTransactionLinesJson);
-
-            assert compressedBody != null;
-
-            log.info("Before compression: {}, compressed: {}", netsuiteTransactionLinesJson.length(), compressedBody.length());
-
-            netSuiteIngestion.setIngestionBody(compressedBody);
-            netSuiteIngestion.setIngestionBodyChecksum(ingestionBodyChecksum);
-
-            ingestionRepository.saveAndFlush(netSuiteIngestion);
-
-            val transactionDataSearchResult = objectMapper.readValue(netsuiteTransactionLinesJson, TransactionDataSearchResult.class);
-
-            val validatedTransactionLineItems = transactionDataSearchResult
-                    .lines()
-                    .stream()
-                    .filter(searchResultTransactionItem -> {
-                        val violations = validator.validate(searchResultTransactionItem);
-                        //log.warn("Violations: {}", violations);
-                        return violations.isEmpty();
-                    })
-                    .toList();
-
-            val coreTransactionLines = validatedTransactionLineItems.stream()
-                    .map(transactionLineConverter::convert)
-                    .toList();
-
-            applicationEventPublisher.publishEvent(new SourceAccountingDataIngestionSuccessEvent(new TransactionData(coreTransactionLines)));
-
-            log.info("Ingestion created.");
+            return;
         }
+
+        val bodyM = netSuiteJsonE.get();
+        if (bodyM.isEmpty()) {
+            log.warn("No data to read from NetSuite API..., bailing out!");
+
+            applicationEventPublisher.publishEvent(NotificationEvent.create(
+                    WARN,
+                    "No data to read from NetSuite API"));
+            return;
+        }
+
+        val netsuiteTransactionLinesJson = bodyM.get();
+        //log.info("Retrieved data from NetSuite API: {}", netsuiteTransactionLinesJson);
+
+        val ingestionBodyChecksum = md5(netsuiteTransactionLinesJson);
+
+        val netSuiteIngestion = new NetSuiteIngestion();
+
+        val compressedBody = compress(netsuiteTransactionLinesJson);
+
+        assert compressedBody != null;
+
+        log.info("Before compression: {}, compressed: {}", netsuiteTransactionLinesJson.length(), compressedBody.length());
+
+        netSuiteIngestion.setIngestionBody(compressedBody);
+        netSuiteIngestion.setIngestionBodyChecksum(ingestionBodyChecksum);
+
+        ingestionRepository.saveAndFlush(netSuiteIngestion);
+
+        val transactionDataSearchResult = objectMapper.readValue(netsuiteTransactionLinesJson, TransactionDataSearchResult.class);
+
+        val validatedTransactionLineItems = transactionDataSearchResult
+                .lines()
+                .stream()
+                .filter(searchResultTransactionItem -> validator.validate(searchResultTransactionItem).isEmpty())
+                .toList();
+
+        val coreTransactionLines = validatedTransactionLineItems.stream()
+                .map(transactionLineConverter::convert)
+                .toList();
+
+        applicationEventPublisher.publishEvent(new SourceAccountingDataIngestionSuccessEvent(new TransactionData(coreTransactionLines)));
+
+        log.info("Ingestion created.");
     }
 
     @Transactional

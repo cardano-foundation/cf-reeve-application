@@ -26,6 +26,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -59,10 +60,14 @@ public class LobServiceApp {
         return (args) -> {
             log.info("Starting Lob Service...");
 
-            netSuiteService.scheduleNetsuiteIngestionEvent();
-
             log.info("Lob Service started.");
         };
+    }
+
+    @Scheduled(fixedDelayString = "PT1M")
+    public void tick() {
+        // TODO we cannot interact here directly with NetSuite, makes no sense, this is just a test
+        netSuiteService.scheduleNetsuiteIngestionEvent();
     }
 
     @Configuration
