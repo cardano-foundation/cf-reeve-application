@@ -1,32 +1,44 @@
 package org.cardanofoundation.lob.app.adapter.netsuite.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.TransactionType;
 import org.cardanofoundation.lob.app.adapter.netsuite.domain.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.adapter.netsuite.domain.Type;
+import org.cardanofoundation.lob.app.organisation.OrganisationApi;
+import org.cardanofoundation.lob.app.organisation.domain.AccountSystemProvider;
 import org.springframework.stereotype.Service;
 
 import static org.cardanofoundation.lob.app.adapter.netsuite.util.MoreBigDecimal.substractOpt;
+import static org.cardanofoundation.lob.app.adapter.netsuite.util.MoreBigDecimal.zeroForNull;
 import static org.cardanofoundation.lob.app.adapter.netsuite.util.MoreString.normaliseString;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionLineConverter {
 
-    private final NetSuiteOrganisationService netSuiteOrganisationService;
+    private final CurrencyConverter currencyConverter;
+    private final OrganisationApi organisationApi;
 
     public TransactionLine convert(SearchResultTransactionItem searchResultTransactionItem) {
-        val orgNameM = netSuiteOrganisationService.findOrganisationName(searchResultTransactionItem.subsidiary());
+        val orgM = organisationApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), AccountSystemProvider.NETSUITE);
+        val organisation = orgM.orElseThrow();
+
+        val currencyCode = currencyConverter.convert(searchResultTransactionItem.currency());
+
+        log.info("currency:{}", searchResultTransactionItem.currency());
 
         return new TransactionLine(
-                orgNameM.orElseThrow(),
+                organisation.id(),
                 transactionType(searchResultTransactionItem.type()),
                 searchResultTransactionItem.dateCreated(),
                 searchResultTransactionItem.transactionNumber(),
                 searchResultTransactionItem.number(),
-                searchResultTransactionItem.currency(),
+                organisation.baseCurrency().getCurrencyCode(),
+                currencyCode,
                 searchResultTransactionItem.exchangeRate(),
                 normaliseString(searchResultTransactionItem.documentNumber()),
                 normaliseString(searchResultTransactionItem.id()),
@@ -37,8 +49,8 @@ public class TransactionLineConverter {
                 normaliseString(searchResultTransactionItem.name()),
                 normaliseString(searchResultTransactionItem.accountMain()),
                 normaliseString(searchResultTransactionItem.memo()),
-                substractOpt(searchResultTransactionItem.amountDebitForeignCurrency(), searchResultTransactionItem.amountCreditForeignCurrency()),
-                substractOpt(searchResultTransactionItem.amountDebit(), searchResultTransactionItem.amountCredit())
+                substractOpt(zeroForNull(searchResultTransactionItem.amountDebitForeignCurrency()), zeroForNull(searchResultTransactionItem.amountCreditForeignCurrency())),
+                substractOpt(zeroForNull(searchResultTransactionItem.amountDebit()), zeroForNull(searchResultTransactionItem.amountCredit()))
                 );
     }
 

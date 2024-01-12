@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core;
+package org.cardanofoundation.lob.app.accounting_reporting_core.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,22 +11,22 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AccountingCoreService {
+public class AccountingCoreEventHandler {
+
+    private final AccountingCoreService accountingCoreService;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @ApplicationModuleListener
     public void process(SourceAccountingDataIngestionSuccessEvent event) {
-      log.info("Received SourceAccountingDataIngestionSuccessEvent event.");
+        log.info("Received SourceAccountingDataIngestionSuccessEvent event.");
 
-      //applicationEventPublisher.publishEvent(NotificationEvent.create(INFO, "NetSuiteIngestionCreatedEvent received, id: " + event.id()));
+        accountingCoreService.store(event.transactionData());
     }
 
     @ApplicationModuleListener
     public void process(SourceAccountingDataIngestionFailEvent event) {
         log.info("Received SourceAccountingDataIngestionFailEvent event");
-
-        //applicationEventPublisher.publishEvent(NotificationEvent.create(INFO, "NetSuiteIngestionCreatedEvent received, id: " + event.id()));
     }
 
 }

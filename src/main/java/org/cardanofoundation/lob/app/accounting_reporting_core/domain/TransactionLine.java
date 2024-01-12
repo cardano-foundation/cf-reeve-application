@@ -1,12 +1,15 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain;
 
+import jakarta.validation.constraints.Pattern;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 public record TransactionLine(
 
-        String organisation, // organisationId??
+        // mandatory values
+        String organisationId,
 
         TransactionType transactionType,
 
@@ -16,6 +19,11 @@ public record TransactionLine(
 
         String accountCodeDebit,
 
+        @Pattern(regexp = "^[A-Z]{3}$")
+        String baseCurrency,
+
+        // target currency
+        @Pattern(regexp = "^[A-Z]{3}$")
         String currency,
 
         BigDecimal fxRate,

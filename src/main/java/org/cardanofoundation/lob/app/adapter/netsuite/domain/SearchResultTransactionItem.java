@@ -77,9 +77,9 @@ public record SearchResultTransactionItem(
         @JsonProperty("Memo (Main)")
         String memo,
 
-        @NotBlank
         @JsonProperty("Currency")
-        String currency,
+        @Positive
+        Integer currency,
 
         @NotNull
         @JsonProperty("Exchange Rate")
