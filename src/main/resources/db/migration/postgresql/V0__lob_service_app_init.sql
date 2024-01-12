@@ -19,6 +19,30 @@ CREATE TABLE netsuite_ingestion_audit (
    ingestion_body_checksum VARCHAR(255)
 );
 
+CREATE TABLE accounting_core_transaction_line (
+  id UUID NOT NULL,
+   organisation_id VARCHAR(255),
+   transaction_type VARCHAR(255),
+   entry_date TIMESTAMP WITHOUT TIME ZONE,
+   transaction_number VARCHAR(255),
+   account_code_debit VARCHAR(255),
+   base_currency VARCHAR(4),
+   currency VARCHAR(4),
+   fx_rate DECIMAL,
+   document_number VARCHAR(255),
+   vendor_code VARCHAR(255),
+   vendor_name VARCHAR(255),
+   cost_center VARCHAR(255),
+   project_code VARCHAR(255),
+   vat_code VARCHAR(255),
+   account_name_debit VARCHAR(255),
+   account_credit VARCHAR(255),
+   memo VARCHAR(255),
+   amount_fcy DECIMAL,
+   amount_lcy DECIMAL,
+   CONSTRAINT pk_transaction_line PRIMARY KEY (id)
+);
+
 -- Spring Modulith
 CREATE TABLE IF NOT EXISTS event_publication(
   id               UUID NOT NULL,

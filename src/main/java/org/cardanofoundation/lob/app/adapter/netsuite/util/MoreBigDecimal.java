@@ -7,12 +7,16 @@ import java.util.Optional;
 
 public class MoreBigDecimal {
 
-    @Nullable
-    public static BigDecimal substract(@Nullable BigDecimal a, @Nullable BigDecimal b) {
-        if (a == null || b == null) {
-            return null;
+    public static BigDecimal zeroForNull(BigDecimal value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
         }
 
+        return value;
+    }
+
+    @Nullable
+    public static BigDecimal substract(@Nullable BigDecimal a, @Nullable BigDecimal b) {
         return a.subtract(b);
     }
 

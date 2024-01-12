@@ -71,6 +71,9 @@ dependencies {
     implementation("io.vavr:vavr:0.10.4")
     implementation("me.paulschwarz:spring-dotenv:4.0.0")
     implementation("org.bouncycastle:bcprov-jdk18on:1.77")
+    //implementation("org.javers:javers-spring-boot-starter-sql:7.3.7")
+    //implementation("org.javers:javers-spring:7.3.7")
+
     //implementation("com.github.scribejava:scribejava-core:8.3.3")
     implementation("org.scribe:scribe:1.3.7") // needed for OAuth 1.0 for NetSuite Module
 
