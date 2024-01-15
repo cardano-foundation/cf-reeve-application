@@ -2,8 +2,8 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.SourceAccountingDataIngestionFailEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.SourceAccountingDataIngestionSuccessEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.SourceAccountingDataIngestionFailEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.SourceAccountingDataIngestionSuccessEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;

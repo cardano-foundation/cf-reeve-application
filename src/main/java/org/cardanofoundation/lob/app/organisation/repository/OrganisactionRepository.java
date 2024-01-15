@@ -1,7 +1,7 @@
 package org.cardanofoundation.lob.app.organisation.repository;
 
 
-import org.cardanofoundation.lob.app.organisation.domain.Organisation;
+import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 
 import java.util.List;
 
