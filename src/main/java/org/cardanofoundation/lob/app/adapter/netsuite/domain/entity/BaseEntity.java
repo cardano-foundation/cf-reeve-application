@@ -1,8 +1,13 @@
 package org.cardanofoundation.lob.app.adapter.netsuite.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -10,9 +15,8 @@ import lombok.Setter;
 public abstract class BaseEntity extends AuditEntity {
 
     @Id
-    @GeneratedValue(generator = "netsuite_ingestion_gen")
-    @SequenceGenerator(name = "netsuite_ingestion_gen", sequenceName = "netsuite_ingestion_seq", initialValue = 1, allocationSize = 1)
+    @GeneratedValue
     @Column(name = "id", nullable = false)
-    protected Long id;
+    protected UUID id;
 
 }

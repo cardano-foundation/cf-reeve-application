@@ -8,12 +8,12 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.Transactio
 import org.cardanofoundation.lob.app.adapter.netsuite.domain.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.adapter.netsuite.domain.Type;
 import org.cardanofoundation.lob.app.organisation.OrganisationApi;
-import org.cardanofoundation.lob.app.organisation.domain.AccountSystemProvider;
 import org.springframework.stereotype.Service;
 
 import static org.cardanofoundation.lob.app.adapter.netsuite.util.MoreBigDecimal.substractOpt;
 import static org.cardanofoundation.lob.app.adapter.netsuite.util.MoreBigDecimal.zeroForNull;
 import static org.cardanofoundation.lob.app.adapter.netsuite.util.MoreString.normaliseString;
+import static org.cardanofoundation.lob.app.organisation.domain.AccountSystemProvider.NETSUITE;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class TransactionLineConverter {
     private final OrganisationApi organisationApi;
 
     public TransactionLine convert(SearchResultTransactionItem searchResultTransactionItem) {
-        val orgM = organisationApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), AccountSystemProvider.NETSUITE);
+        val orgM = organisationApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), NETSUITE);
         val organisation = orgM.orElseThrow();
 
         val currencyCode = currencyConverter.convert(searchResultTransactionItem.currency());

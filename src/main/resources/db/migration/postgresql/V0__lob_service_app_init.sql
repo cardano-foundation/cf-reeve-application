@@ -1,7 +1,7 @@
-CREATE SEQUENCE  IF NOT EXISTS netsuite_ingestion_seq START WITH 1 INCREMENT BY 1;
+--CREATE SEQUENCE  IF NOT EXISTS netsuite_ingestion_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE netsuite_ingestion (
-   id BIGINT NOT NULL,
+   id UUID NOT NULL,
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
    created_at TIMESTAMP WITHOUT TIME ZONE,
@@ -12,7 +12,7 @@ CREATE TABLE netsuite_ingestion (
 );
 
 CREATE TABLE netsuite_ingestion_audit (
-   id BIGINT NOT NULL,
+   id UUID NOT NULL,
    revision INTEGER NOT NULL,
    revision_type SMALLINT,
    ingestion_body TEXT,
@@ -20,7 +20,7 @@ CREATE TABLE netsuite_ingestion_audit (
 );
 
 CREATE TABLE accounting_core_transaction_line (
-  id UUID NOT NULL,
+   id UUID NOT NULL,
    organisation_id VARCHAR(255),
    transaction_type VARCHAR(255),
    entry_date TIMESTAMP WITHOUT TIME ZONE,
