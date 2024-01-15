@@ -20,7 +20,7 @@ CREATE TABLE netsuite_ingestion_audit (
 );
 
 CREATE TABLE accounting_core_transaction_line (
-   id UUID NOT NULL,
+   id CHAR(64) NOT NULL,
    organisation_id VARCHAR(255),
    transaction_type VARCHAR(255),
    entry_date TIMESTAMP WITHOUT TIME ZONE,

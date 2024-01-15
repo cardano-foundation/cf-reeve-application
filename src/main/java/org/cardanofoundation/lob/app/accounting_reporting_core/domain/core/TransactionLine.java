@@ -9,6 +9,9 @@ import java.util.Optional;
 public record TransactionLine(
 
         // mandatory values
+
+        String id,
+
         String organisationId,
 
         TransactionType transactionType,

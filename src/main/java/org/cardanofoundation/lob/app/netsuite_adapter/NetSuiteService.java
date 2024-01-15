@@ -109,6 +109,8 @@ public class NetSuiteService {
 
         val transactionDataSearchResult = objectMapper.readValue(netsuiteTransactionLinesJson, TransactionDataSearchResult.class);
 
+        
+
         val validatedTransactionLineItems = transactionDataSearchResult
                 .lines()
                 .stream()
