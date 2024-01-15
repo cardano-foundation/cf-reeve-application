@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionData;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
+import org.cardanofoundation.lob.app.blockchain_publisher.BlockchainPublisherApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountingCoreService {
 
     private final AccountingCoreRepository accountingCoreRepository;
+
+    private final BlockchainPublisherApi blockchainPublisherApi;
 
     @Transactional
     public void store(TransactionData transactionData) {
@@ -47,12 +50,15 @@ public class AccountingCoreService {
             entityTxLine.setAmountFcy(txLine.amountFcy().orElse(null));
             entityTxLine.setAmountLcy(txLine.amountLcy().orElse(null));
 
-
             return entityTxLine;
-        }).toList();
 
-        // TODO this is obviously wrong but for now we overwrite the previous values
-        // but for now it's ok
+            // id empotency check
+        }).filter(txLine -> !blockchainPublisherApi.isPublished(txLine.getTransactionNumber(), txLine.getId()))
+        // we can update only those that have not been published yet
+        .toList();
+
+        // it's ok to overwrite previous values as long as it  has not been published to the blockchain
+
         accountingCoreRepository.saveAllAndFlush(entityTxLines);
     }
 
