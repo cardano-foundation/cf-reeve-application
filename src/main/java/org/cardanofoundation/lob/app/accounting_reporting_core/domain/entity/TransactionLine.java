@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.TransactionType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;

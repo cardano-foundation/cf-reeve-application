@@ -2,8 +2,8 @@ package org.cardanofoundation.lob.app.organisation.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardanofoundation.lob.app.organisation.domain.AccountSystemProvider;
-import org.cardanofoundation.lob.app.organisation.domain.Organisation;
+import org.cardanofoundation.lob.app.organisation.domain.core.AccountSystemProvider;
+import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.cardanofoundation.lob.app.organisation.repository.OrganisactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
