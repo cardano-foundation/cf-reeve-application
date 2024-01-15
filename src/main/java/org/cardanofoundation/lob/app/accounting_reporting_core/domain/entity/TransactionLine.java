@@ -9,7 +9,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,9 +18,8 @@ import java.util.UUID;
 public class TransactionLine {
 
     @Id
-    @GeneratedValue
     @Column(name = "id", nullable = false)
-    private UUID id;
+    private String id;
 
     @Column(name = "organisation_id", nullable = false)
     private String organisationId;

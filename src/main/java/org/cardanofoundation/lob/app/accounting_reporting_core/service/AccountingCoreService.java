@@ -22,6 +22,7 @@ public class AccountingCoreService {
 
             val entityTxLine = new org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLine();
 
+            entityTxLine.setId(txLine.id());
             entityTxLine.setOrganisationId(txLine.organisationId());
             entityTxLine.setTransactionType(txLine.transactionType());
             entityTxLine.setEntryDate(txLine.entryDate());
