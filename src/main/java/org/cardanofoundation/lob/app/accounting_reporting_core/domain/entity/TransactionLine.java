@@ -20,6 +20,7 @@ public class TransactionLine {
 
     @Id
     @GeneratedValue
+    @Column(name = "id", nullable = false)
     private UUID id;
 
     @Column(name = "organisation_id", nullable = false)
