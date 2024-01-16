@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionData;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 import org.cardanofoundation.lob.app.blockchain_publisher.BlockchainPublisherApi;
+import org.cardanofoundation.lob.app.blockchain_publisher.event.TransactionsReadyToPublishEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +21,13 @@ public class AccountingCoreService {
 
     private final BlockchainPublisherApi blockchainPublisherApi;
 
+    private final ApplicationEventPublisher applicationEventPublisher;
+
     @Transactional
     public void store(TransactionData transactionData) {
-        log.info("Storing transaction data: {}", transactionData);
-        val entityTxLines = transactionData.lines().stream().map(txLine -> {
+        //log.info("Storing transaction data: {}", transactionData);
 
+        val entityTxLines = transactionData.lines().stream().map(txLine -> {
             val entityTxLine = new org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLine();
 
             entityTxLine.setId(txLine.id());
@@ -42,7 +47,7 @@ public class AccountingCoreService {
             entityTxLine.setVendorName(txLine.vendorName().orElse(null));
             entityTxLine.setCostCenter(txLine.costCenter().orElse(null));
             entityTxLine.setProjectCode(txLine.projectCode().orElse(null));
-            entityTxLine.setVatCode(txLine.vatCode().orElse(null));
+            entityTxLine.setVatRate(txLine.vatRate().orElse(null));
             entityTxLine.setAccountNameDebit(txLine.accountNameDebit().orElse(null));
             entityTxLine.setAccountCredit(txLine.accountCredit().orElse(null));
             entityTxLine.setMemo(txLine.memo().orElse(null));
@@ -59,7 +64,16 @@ public class AccountingCoreService {
 
         // it's ok to overwrite previous values as long as it  has not been published to the blockchain
 
-        accountingCoreRepository.saveAllAndFlush(entityTxLines);
+        var storedTransactionLineIds = accountingCoreRepository.saveAllAndFlush(entityTxLines)
+                .stream()
+                .map(TransactionLine::getId)
+                .toList();
+
+        log.info("Storing transaction line count: {}", storedTransactionLineIds.size());
+
+        var onlyUpdated = transactionData.lines().stream().filter(txLine -> storedTransactionLineIds.contains(txLine.id())).toList();
+
+        applicationEventPublisher.publishEvent(new TransactionsReadyToPublishEvent(new TransactionData(onlyUpdated)));
     }
 
 }
