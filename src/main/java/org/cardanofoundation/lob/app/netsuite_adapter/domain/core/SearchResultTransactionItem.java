@@ -25,7 +25,7 @@ public record SearchResultTransactionItem(
         Integer subsidiary,
 
         @JsonProperty("Type")
-        @EnumNamePattern(regexp =  "Journal|CardChrg|VendorBill|CardRfnd|FxReval|Transfer|CustPymt")
+        @EnumNamePattern(regexp =  "Journal|CardChrg|VendBill|CardRfnd|FxReval|Transfer|CustPymt")
         Type type,
 
         @JsonProperty("Date Created")
@@ -35,43 +35,37 @@ public record SearchResultTransactionItem(
         @JsonProperty("ID")
         String id,
 
-        //@NotBlank
         @JsonProperty("Company Name")
         String companyName,
 
-        //@NotBlank
         @JsonProperty("Period")
         String period,
 
-        //@NotBlank
         @JsonProperty("Tax Item")
         String taxItem,
 
-        //@NotBlank
         @JsonProperty("Cost Center (no hierarchy)")
+        @Nullable
         String costCenter,
 
         @JsonProperty("Transaction Number")
         @NotBlank
         String transactionNumber,
 
-        //@NotBlank
         @JsonProperty("Document Number")
+        @Nullable
         String documentNumber,
 
-        @NotBlank
         @JsonProperty("Number")
         String number,
 
-        //@NotBlank
         @JsonProperty("Name")
+        @Nullable
         String name,
 
-        //@NotBlank
         @JsonProperty("Project (no hierarchy)")
         String project,
 
-        //@NotBlank
         @JsonProperty("Account (Main)")
         String accountMain,
 

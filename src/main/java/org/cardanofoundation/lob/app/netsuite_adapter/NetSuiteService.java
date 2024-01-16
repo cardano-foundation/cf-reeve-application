@@ -102,24 +102,41 @@ public class NetSuiteService {
 
         log.info("Before compression: {}, compressed: {}", netsuiteTransactionLinesJson.length(), compressedBody.length());
 
-        netSuiteIngestion.setIngestionBody(compressedBody);
+        //netSuiteIngestion.setIngestionBody(compressedBody);
+        netSuiteIngestion.setIngestionBody(netsuiteTransactionLinesJson);
         netSuiteIngestion.setIngestionBodyChecksum(ingestionBodyChecksum);
 
         ingestionRepository.saveAndFlush(netSuiteIngestion);
 
         val transactionDataSearchResult = objectMapper.readValue(netsuiteTransactionLinesJson, TransactionDataSearchResult.class);
 
-        
+        log.info("transactionDataSearchResult count:{}", transactionDataSearchResult.lines().size());
 
         val validatedTransactionLineItems = transactionDataSearchResult
                 .lines()
                 .stream()
-                .filter(searchResultTransactionItem -> validator.validate(searchResultTransactionItem).isEmpty())
+                .filter(searchResultTransactionItem -> {
+                    val issues = validator.validate(searchResultTransactionItem);
+                    val isValid = issues.isEmpty();
+
+                    if (!isValid) {
+                        log.warn("Invalid transaction line item: {}", searchResultTransactionItem);
+
+                        log.warn("Validation issues: {}", issues.iterator().next());
+                    }
+
+                    return isValid;
+                })
                 .toList();
+
+        log.info("validatedTransactionLineItems count:{}", validatedTransactionLineItems.size());
 
         val coreTransactionLines = validatedTransactionLineItems.stream()
                 .map(transactionLineConverter::convert)
                 .toList();
+
+
+        log.info("coreTransactionLines count:{}", coreTransactionLines.size());
 
         applicationEventPublisher.publishEvent(new SourceAccountingDataIngestionSuccessEvent(new TransactionData(coreTransactionLines)));
 

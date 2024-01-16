@@ -11,13 +11,13 @@ CREATE TABLE netsuite_ingestion (
    CONSTRAINT pk_netsuite_ingestion PRIMARY KEY (id)
 );
 
-CREATE TABLE netsuite_ingestion_audit (
-   id UUID NOT NULL,
-   revision INTEGER NOT NULL,
-   revision_type SMALLINT,
-   ingestion_body TEXT,
-   ingestion_body_checksum VARCHAR(255)
-);
+--CREATE TABLE netsuite_ingestion_audit (
+--   id UUID NOT NULL,
+--   revision INTEGER NOT NULL,
+--   revision_type SMALLINT,
+--   ingestion_body TEXT,
+--   ingestion_body_checksum VARCHAR(255)
+--);
 
 CREATE TABLE accounting_core_transaction_line (
    id CHAR(64) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE accounting_core_transaction_line (
    vendor_name VARCHAR(255),
    cost_center VARCHAR(255),
    project_code VARCHAR(255),
-   vat_code VARCHAR(255),
+   vat_rate DECIMAL,
    account_name_debit VARCHAR(255),
    account_credit VARCHAR(255),
    memo VARCHAR(255),

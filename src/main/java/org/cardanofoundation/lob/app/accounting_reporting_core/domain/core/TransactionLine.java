@@ -43,7 +43,7 @@ public record TransactionLine(
 
         Optional<String> projectCode,
 
-        Optional<String> vatCode,
+        Optional<BigDecimal> vatRate,
 
         Optional<String> accountNameDebit,
 

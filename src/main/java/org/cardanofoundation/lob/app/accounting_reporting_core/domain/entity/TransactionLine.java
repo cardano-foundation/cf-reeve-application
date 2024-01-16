@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 
 import javax.annotation.Nullable;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "accounting_core_transaction_line")
 @NoArgsConstructor
+@ToString
 public class TransactionLine {
 
     @Id
@@ -67,8 +69,8 @@ public class TransactionLine {
     private String projectCode;
 
     @Nullable
-    @Column(name = "vat_code")
-    private String vatCode;
+    @Column(name = "vat_rate")
+    private BigDecimal vatRate;
 
     @Nullable
     @Column(name = "account_name_debit")

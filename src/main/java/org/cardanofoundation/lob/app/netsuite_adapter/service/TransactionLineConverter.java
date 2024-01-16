@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.netsuite_adapter.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
@@ -11,6 +12,10 @@ import org.cardanofoundation.lob.app.netsuite_adapter.util.SHA3;
 import org.cardanofoundation.lob.app.organisation.OrganisationApi;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
+import static java.lang.Integer.parseInt;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractOpt;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.zeroForNull;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
@@ -45,7 +50,7 @@ public class TransactionLineConverter {
                 normaliseString(searchResultTransactionItem.companyName()),
                 normaliseString(searchResultTransactionItem.costCenter()),
                 normaliseString(searchResultTransactionItem.project()),
-                normaliseString(searchResultTransactionItem.taxItem()),
+                vatRate(normaliseString(searchResultTransactionItem.taxItem())),
                 normaliseString(searchResultTransactionItem.name()),
                 normaliseString(searchResultTransactionItem.accountMain()),
                 normaliseString(searchResultTransactionItem.memo()),
@@ -58,6 +63,21 @@ public class TransactionLineConverter {
         val transactionNumber  = searchResultTransactionItem.transactionNumber();
 
         return SHA3.digest(String.format("%s::%s::%s", NETSUITE, transactionNumber, searchResultTransactionItem.lineID()));
+    }
+
+    private Optional<BigDecimal> vatRate(Optional<String> taxItemM) {
+        return taxItemM.flatMap(taxItem -> {
+            if (NumberUtils.isDigits(taxItem)) {
+                val vatRateIntCode = parseInt(taxItem);
+
+                return switch (vatRateIntCode) {
+                    case 11 -> Optional.of(BigDecimal.valueOf(0.081D));
+                    default -> Optional.empty();
+                };
+            }
+
+            return Optional.empty();
+        });
     }
 
     private TransactionType transactionType(Type transType) {
