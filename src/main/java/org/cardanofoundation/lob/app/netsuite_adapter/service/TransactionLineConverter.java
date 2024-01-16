@@ -3,19 +3,18 @@ package org.cardanofoundation.lob.app.netsuite_adapter.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CurrencyRepository;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Type;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.SHA3;
 import org.cardanofoundation.lob.app.organisation.OrganisationApi;
+import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
-import static java.lang.Integer.parseInt;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractOpt;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.zeroForNull;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
@@ -26,31 +25,29 @@ import static org.cardanofoundation.lob.app.organisation.domain.core.AccountSyst
 @Slf4j
 public class TransactionLineConverter {
 
-    private final CurrencyConverter currencyConverter;
+    private final CurrencyRepository currencyRepository;
     private final OrganisationApi organisationApi;
 
     public TransactionLine convert(SearchResultTransactionItem searchResultTransactionItem) {
-        val organisationM = organisationApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), NETSUITE);
-        val organisation = organisationM.orElseThrow();
-
-        val currencyCode = currencyConverter.convert(searchResultTransactionItem.currency());
+        val organisation = organisationApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), NETSUITE)
+                .orElseThrow();
 
         return new TransactionLine(
-                id(searchResultTransactionItem),
+                id(organisation, searchResultTransactionItem),
                 organisation.id(),
                 transactionType(searchResultTransactionItem.type()),
                 searchResultTransactionItem.dateCreated(),
                 searchResultTransactionItem.transactionNumber(),
                 searchResultTransactionItem.number(),
-                organisation.baseCurrency().getCurrencyCode(),
-                currencyCode,
+                orgCurrencyPair(organisation).orElseThrow(),
+                currencyPair(searchResultTransactionItem).orElseThrow(),
                 searchResultTransactionItem.exchangeRate(),
                 normaliseString(searchResultTransactionItem.documentNumber()),
                 normaliseString(searchResultTransactionItem.id()),
                 normaliseString(searchResultTransactionItem.companyName()),
                 normaliseString(searchResultTransactionItem.costCenter()),
                 normaliseString(searchResultTransactionItem.project()),
-                vatRate(normaliseString(searchResultTransactionItem.taxItem())),
+                vat(searchResultTransactionItem),
                 normaliseString(searchResultTransactionItem.name()),
                 normaliseString(searchResultTransactionItem.accountMain()),
                 normaliseString(searchResultTransactionItem.memo()),
@@ -59,25 +56,42 @@ public class TransactionLineConverter {
         );
     }
 
-    public String id(SearchResultTransactionItem searchResultTransactionItem) {
-        val transactionNumber  = searchResultTransactionItem.transactionNumber();
+    private Optional<TransactionLine.CurrencyPair> orgCurrencyPair(Organisation organisation) {
+        val organisationBaseCurrency = organisation.baseCurrency();
+        val organisationBaseCurrencyId = organisationBaseCurrency.currencyId();
 
-        return SHA3.digest(String.format("%s::%s::%s", NETSUITE, transactionNumber, searchResultTransactionItem.lineID()));
+        return currencyRepository.findByCurrencyId(organisationBaseCurrencyId)
+                .map(baseCurrency -> new TransactionLine.CurrencyPair(organisationBaseCurrency, baseCurrency));
     }
 
-    private Optional<BigDecimal> vatRate(Optional<String> taxItemM) {
-        return taxItemM.flatMap(taxItem -> {
-            if (NumberUtils.isDigits(taxItem)) {
-                val vatRateIntCode = parseInt(taxItem);
+    private Optional<TransactionLine.CurrencyPair> currencyPair(SearchResultTransactionItem item) {
+        val currencyInternalId = item.currency();
 
-                return switch (vatRateIntCode) {
-                    case 11 -> Optional.of(BigDecimal.valueOf(0.081D));
-                    default -> Optional.empty();
-                };
-            }
+        return organisationApi.findOrganisationCurrencyByInternalId(currencyInternalId.toString()).flatMap(organisationCurrency -> {
+            val currencyId = organisationCurrency.currencyId();
 
-            return Optional.empty();
+            return currencyRepository.findByCurrencyId(currencyId)
+                    .map(currency -> new TransactionLine.CurrencyPair(organisationCurrency, currency));
         });
+    }
+
+    private Optional<TransactionLine.VatPair> vat(SearchResultTransactionItem searchResultTransactionItem) {
+        val vatRateCodeM = normaliseString(searchResultTransactionItem.taxItem());
+
+        if (vatRateCodeM.isEmpty()) {
+            return Optional.empty();
+        }
+
+        val internalVatId = vatRateCodeM.orElseThrow();
+
+        return organisationApi.findOrganisationVatByInternalId(internalVatId)
+                .map(varOrg -> new TransactionLine.VatPair(internalVatId, varOrg.rate()));
+    }
+
+    public String id(Organisation organisation, SearchResultTransactionItem searchResultTransactionItem) {
+        val transactionNumber  = searchResultTransactionItem.transactionNumber();
+
+        return SHA3.digest(String.format("%s::%s::%s::%s", NETSUITE, organisation.id(), transactionNumber, searchResultTransactionItem.lineID()));
     }
 
     private TransactionType transactionType(Type transType) {

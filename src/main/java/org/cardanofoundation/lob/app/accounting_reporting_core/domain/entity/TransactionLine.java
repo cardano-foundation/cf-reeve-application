@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.EnumType.STRING;
+
 @Getter
 @Setter
 @Entity
@@ -27,50 +29,58 @@ public class TransactionLine {
     private String organisationId;
 
     @Column(name = "transaction_type", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private TransactionType transactionType;
 
     @Column(name = "entry_date", nullable = false)
     private LocalDateTime entryDate;
 
-    @Column(name = "transaction_number", nullable = false)
-    private String transactionNumber;
+    @Column(name = "transaction_internal_number", nullable = false)
+    private String transactionInternalNumber;
 
     @Column(name = "account_code_debit", nullable = false)
     private String accountCodeDebit;
 
-    @Column(name = "base_currency", nullable = false)
-    private String baseCurrency;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "base_currency_id")),
+            @AttributeOverride(name = "internalCode", column = @Column(name = "base_currency_internal_code"))
+    })
+    private Currency baseCurrency;
 
-    @Column(name = "currency", nullable = false)
-    private String currency;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "target_currency_id")),
+            @AttributeOverride(name = "internalCode", column = @Column(name = "target_currency_internal_code"))
+    })
+    private Currency targetCurrency;
 
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
 
     @Nullable
-    @Column(name = "document_number")
-    private String documentNumber;
+    @Column(name = "document_internal_number")
+    private String documentInternalNumber;
 
     @Nullable
-    @Column(name = "vendor_code")
-    private String vendorCode;
+    @Column(name = "vendor_internal_code")
+    private String vendorInternalCode;
 
     @Nullable
     @Column(name = "vendor_name")
     private String vendorName;
 
     @Nullable
-    @Column(name = "cost_center")
-    private String costCenter;
+    @Column(name = "cost_center_internal_code")
+    private String costCenterInternalCode;
 
     @Nullable
-    @Column(name = "project_code")
-    private String projectCode;
+    @Column(name = "project_internal_code")
+    private String projectInternalCode;
 
     @Nullable
-    @Column(name = "vat_rate")
-    private BigDecimal vatRate;
+    @Embedded
+    private Vat vat;
 
     @Nullable
     @Column(name = "account_name_debit")
