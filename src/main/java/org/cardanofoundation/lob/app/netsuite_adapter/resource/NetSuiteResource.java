@@ -52,7 +52,7 @@ public class NetSuiteResource {
         return ResponseEntity.ok().body(new Hello("hello"));
     }
 
-    @RequestMapping(value = "/ingestion/{id}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/ingestion/{currencyId}", method = GET, produces = "application/json")
     @Timed(value = "resource.netsuite.ingestion.find", histogram = true)
     @Operation(summary = "ingestion",
             description = "ingestion desc",
@@ -63,7 +63,7 @@ public class NetSuiteResource {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    public ResponseEntity<?> findNetSuiteIngestion(@Parameter(description = "ingestion id", required = true)
+    public ResponseEntity<?> findNetSuiteIngestion(@Parameter(description = "ingestion currencyId", required = true)
                                                    @PathVariable("id") String id) {
         val r = netsuiteService.findIngestionById(id);
 

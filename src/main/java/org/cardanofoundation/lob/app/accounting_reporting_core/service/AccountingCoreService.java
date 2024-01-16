@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionData;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Currency;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLine;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Vat;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 import org.cardanofoundation.lob.app.blockchain_publisher.BlockchainPublisherApi;
 import org.cardanofoundation.lob.app.blockchain_publisher.event.TransactionsReadyToPublishEvent;
@@ -34,20 +36,22 @@ public class AccountingCoreService {
             entityTxLine.setOrganisationId(txLine.organisationId());
             entityTxLine.setTransactionType(txLine.transactionType());
             entityTxLine.setEntryDate(txLine.entryDate());
-            entityTxLine.setTransactionNumber(txLine.transactionNumber());
+            entityTxLine.setTransactionInternalNumber(txLine.transactionNumber());
             entityTxLine.setAccountCodeDebit(txLine.accountCodeDebit());
 
-            entityTxLine.setBaseCurrency(txLine.baseCurrency().toUpperCase());
-            entityTxLine.setCurrency(txLine.currency().toUpperCase());
+            entityTxLine.setBaseCurrency(new Currency(txLine.baseCurrency().currency().id(), txLine.baseCurrency().organisationCurrency().internalId()));
+            entityTxLine.setTargetCurrency(new Currency(txLine.targetCurrency().currency().id(), txLine.targetCurrency().organisationCurrency().internalId()));
             entityTxLine.setFxRate(txLine.fxRate());
 
-            entityTxLine.setDocumentNumber(txLine.documentNumber().orElse(null));
+            entityTxLine.setDocumentInternalNumber(txLine.documentNumber().orElse(null));
 
-            entityTxLine.setVendorCode(txLine.vendorCode().orElse(null));
+            entityTxLine.setVendorInternalCode(txLine.vendorCode().orElse(null));
             entityTxLine.setVendorName(txLine.vendorName().orElse(null));
-            entityTxLine.setCostCenter(txLine.costCenter().orElse(null));
-            entityTxLine.setProjectCode(txLine.projectCode().orElse(null));
-            entityTxLine.setVatRate(txLine.vatRate().orElse(null));
+            entityTxLine.setCostCenterInternalCode(txLine.costCenter().orElse(null));
+            entityTxLine.setProjectInternalCode(txLine.projectCode().orElse(null));
+
+            entityTxLine.setVat(txLine.vat().map(vp -> new Vat(vp.vatCode(), vp.vatRate())).orElse(null));
+
             entityTxLine.setAccountNameDebit(txLine.accountNameDebit().orElse(null));
             entityTxLine.setAccountCredit(txLine.accountCredit().orElse(null));
             entityTxLine.setMemo(txLine.memo().orElse(null));
@@ -57,8 +61,8 @@ public class AccountingCoreService {
 
             return entityTxLine;
 
-            // id empotency check
-        }).filter(txLine -> !blockchainPublisherApi.isPublished(txLine.getTransactionNumber(), txLine.getId()))
+            // currencyId empotency check
+        }).filter(txLine -> !blockchainPublisherApi.isPublished(txLine.getTransactionInternalNumber(), txLine.getId()))
         // we can update only those that have not been published yet
         .toList();
 
