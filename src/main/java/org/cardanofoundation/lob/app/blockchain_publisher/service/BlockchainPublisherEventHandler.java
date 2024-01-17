@@ -1,19 +1,17 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.cardanofoundation.lob.app.blockchain_publisher.event.TransactionsReadyToPublishEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.IngestionStoredEvent;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class BlockchainPublisher {
+public class BlockchainPublisherEventHandler {
 
     @ApplicationModuleListener
-    public void process(TransactionsReadyToPublishEvent event) {
-        log.info("Received TransactionsReadyToPublishEvent event.");
-
-
+    public void process(IngestionStoredEvent event) {
+        log.info("Received IngestionStoredEvent event.");
 
         // TODO send data to the blockchain
         // or prepare data to be sent to the blockchain

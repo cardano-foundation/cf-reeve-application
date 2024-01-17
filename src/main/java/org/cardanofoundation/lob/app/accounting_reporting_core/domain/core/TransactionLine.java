@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
+import org.cardanofoundation.lob.app.organisation.domain.core.Currency;
 import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationCurrency;
 
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ public record TransactionLine(
 
         LocalDateTime entryDate, // date of the transaction
 
-        String transactionNumber, // unique transaction number, organisation level value
+        String internalTransactionNumber, // unique transaction number, organisation level value
 
         String accountCodeDebit, //
 
@@ -32,15 +33,15 @@ public record TransactionLine(
 
         /// optionals below
 
-        Optional<String> documentNumber,
+        Optional<String> internalDocumentNumber,
 
-        Optional<String> vendorCode,
+        Optional<String> internalVendorCode,
 
         Optional<String> vendorName,
 
-        Optional<String> costCenter,
+        Optional<String> internalCostCenterCode,
 
-        Optional<String> projectCode,
+        Optional<String> internalProjectCode,
 
         Optional<VatPair> vat,
 

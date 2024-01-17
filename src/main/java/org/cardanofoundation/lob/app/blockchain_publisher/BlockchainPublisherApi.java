@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 public class BlockchainPublisherApi {
 
     // TODO total fake implementation for now (!) but it established initial contract
-//    public boolean isPublished(String transactionNumber, String transactionLineItemId) {
-//        val lastChar = transactionNumber.charAt(transactionLineItemId.length() - 1);
+//    public boolean isPublished(String internalTransactionNumber, String transactionLineItemId) {
+//        val lastChar = internalTransactionNumber.charAt(transactionLineItemId.length() - 1);
 //
 //        return lastChar % 2 == 0;
 //    }

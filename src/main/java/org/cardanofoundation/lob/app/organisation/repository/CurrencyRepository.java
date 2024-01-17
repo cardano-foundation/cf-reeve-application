@@ -1,6 +1,6 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core.repository;
+package org.cardanofoundation.lob.app.organisation.repository;
 
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency;
+import org.cardanofoundation.lob.app.organisation.domain.core.Currency;
 
 import java.util.List;
 import java.util.Optional;

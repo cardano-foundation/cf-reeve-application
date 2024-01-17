@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.netsuite_adapter;
+package org.cardanofoundation.lob.app.netsuite_adapter.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,14 +7,13 @@ import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.SourceAccountingDataIngestionSuccessEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionData;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.SourceAccountingDataIngestionSuccessEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
-import org.cardanofoundation.lob.app.netsuite_adapter.domain.event.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionDataSearchResult;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestion;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.event.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.repository.IngestionRepository;
-import org.cardanofoundation.lob.app.netsuite_adapter.service.TransactionLineConverter;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MD5Hashing;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MoreCompress;
 import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
@@ -141,15 +140,6 @@ public class NetSuiteService {
         applicationEventPublisher.publishEvent(new SourceAccountingDataIngestionSuccessEvent(new TransactionData(coreTransactionLines)));
 
         log.info("Ingestion created.");
-    }
-
-    @Transactional
-    public void scheduleNetsuiteIngestionEvent() {
-        log.info("Handling NetSuiteStartIngestionEvent...");
-
-        applicationEventPublisher.publishEvent(new ScheduledIngestionEvent("system"));
-
-        log.info("Scheduled Netsuite ingestion job.");
     }
 
 }

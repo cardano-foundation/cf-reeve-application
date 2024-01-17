@@ -2,10 +2,8 @@ package org.cardanofoundation.lob.app.organisation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardanofoundation.lob.app.organisation.domain.core.AccountSystemProvider;
-import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
-import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationCurrency;
-import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationVat;
+import org.cardanofoundation.lob.app.organisation.domain.core.*;
+import org.cardanofoundation.lob.app.organisation.repository.CurrencyRepository;
 import org.cardanofoundation.lob.app.organisation.repository.OrganisationCurrencyRepository;
 import org.cardanofoundation.lob.app.organisation.repository.OrganisationVatRepository;
 import org.cardanofoundation.lob.app.organisation.service.OrganisationService;
@@ -18,6 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrganisationApi {
 
+    private final CurrencyRepository currencyRepository;
     private final OrganisationService organisationService;
     private final OrganisationCurrencyRepository organisationCurrencyRepository;
     private final OrganisationVatRepository organisationVatRepository;
@@ -33,6 +32,10 @@ public class OrganisationApi {
 
     public Optional<OrganisationVat> findOrganisationVatByInternalId(String internalVatId) {
         return organisationVatRepository.findByInternalId(internalVatId);
+    }
+
+    public Optional<Currency> findByCurrencyId(String currencyId) {
+        return currencyRepository.findByCurrencyId(currencyId);
     }
 
 }
