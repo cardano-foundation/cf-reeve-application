@@ -11,9 +11,9 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.netsuite_adapter.util.MoreCompress;
-import org.cardanofoundation.lob.app.netsuite_adapter.NetSuiteService;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestion;
+import org.cardanofoundation.lob.app.netsuite_adapter.service.NetSuiteService;
+import org.cardanofoundation.lob.app.netsuite_adapter.util.MoreCompress;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +30,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
 @Tag(name = "NetSuite", description = "The NetSuite API")
 public class NetSuiteResource {
 
-    private final NetSuiteService netsuiteService;
+    private final NetSuiteService netSuiteService;
 
     @PostConstruct
     public void init() {
@@ -65,7 +65,7 @@ public class NetSuiteResource {
     )
     public ResponseEntity<?> findNetSuiteIngestion(@Parameter(description = "ingestion currencyId", required = true)
                                                    @PathVariable("id") String id) {
-        val r = netsuiteService.findIngestionById(id);
+        val r = netSuiteService.findIngestionById(id);
 
         if (r.isEmpty()) {
             var issue = Problem.builder()

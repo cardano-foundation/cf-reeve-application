@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.cardanofoundation.lob.app.netsuite_adapter.NetSuiteService;
+import org.cardanofoundation.lob.app.netsuite_adapter.NetSuiteApi;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.CommandLineRunner;
@@ -49,7 +49,7 @@ import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 @RequiredArgsConstructor
 public class LobServiceApp {
 
-    private final NetSuiteService netSuiteService;
+    private final NetSuiteApi netSuiteApi;
 
     public static void main(String[] args) {
         SpringApplication.run(LobServiceApp.class, args);
@@ -67,7 +67,7 @@ public class LobServiceApp {
     @Scheduled(fixedDelayString = "PT1M")
     public void tick() {
         // TODO we cannot interact here directly with NetSuite, makes no sense, this is just a test
-        netSuiteService.scheduleNetsuiteIngestionEvent();
+        netSuiteApi.scheduleNetsuiteIngestionEvent();
     }
 
     @Configuration

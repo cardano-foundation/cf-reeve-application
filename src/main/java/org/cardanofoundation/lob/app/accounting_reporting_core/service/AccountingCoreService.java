@@ -7,9 +7,8 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Currency;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Vat;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.IngestionStoredEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
-import org.cardanofoundation.lob.app.blockchain_publisher.BlockchainPublisherApi;
-import org.cardanofoundation.lob.app.blockchain_publisher.event.TransactionsReadyToPublishEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,7 @@ public class AccountingCoreService {
 
     private final AccountingCoreRepository accountingCoreRepository;
 
-    private final BlockchainPublisherApi blockchainPublisherApi;
+    //private final BlockchainPublisherApi blockchainPublisherApi;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -36,19 +35,19 @@ public class AccountingCoreService {
             entityTxLine.setOrganisationId(txLine.organisationId());
             entityTxLine.setTransactionType(txLine.transactionType());
             entityTxLine.setEntryDate(txLine.entryDate());
-            entityTxLine.setTransactionInternalNumber(txLine.transactionNumber());
+            entityTxLine.setTransactionInternalNumber(txLine.internalTransactionNumber());
             entityTxLine.setAccountCodeDebit(txLine.accountCodeDebit());
 
             entityTxLine.setBaseCurrency(new Currency(txLine.baseCurrency().currency().id(), txLine.baseCurrency().organisationCurrency().internalId()));
             entityTxLine.setTargetCurrency(new Currency(txLine.targetCurrency().currency().id(), txLine.targetCurrency().organisationCurrency().internalId()));
             entityTxLine.setFxRate(txLine.fxRate());
 
-            entityTxLine.setDocumentInternalNumber(txLine.documentNumber().orElse(null));
+            entityTxLine.setDocumentInternalNumber(txLine.internalDocumentNumber().orElse(null));
 
-            entityTxLine.setVendorInternalCode(txLine.vendorCode().orElse(null));
+            entityTxLine.setVendorInternalCode(txLine.internalVendorCode().orElse(null));
             entityTxLine.setVendorName(txLine.vendorName().orElse(null));
-            entityTxLine.setCostCenterInternalCode(txLine.costCenter().orElse(null));
-            entityTxLine.setProjectInternalCode(txLine.projectCode().orElse(null));
+            entityTxLine.setCostCenterInternalCode(txLine.internalCostCenterCode().orElse(null));
+            entityTxLine.setProjectInternalCode(txLine.internalProjectCode().orElse(null));
 
             entityTxLine.setVat(txLine.vat().map(vp -> new Vat(vp.vatCode(), vp.vatRate())).orElse(null));
 
@@ -62,7 +61,8 @@ public class AccountingCoreService {
             return entityTxLine;
 
             // currencyId empotency check
-        }).filter(txLine -> !blockchainPublisherApi.isPublished(txLine.getTransactionInternalNumber(), txLine.getId()))
+        })
+//                .filter(txLine -> !blockchainPublisherApi.isPublished(txLine.getTransactionInternalNumber(), txLine.getId()))
         // we can update only those that have not been published yet
         .toList();
 
@@ -77,7 +77,7 @@ public class AccountingCoreService {
 
         var onlyUpdated = transactionData.lines().stream().filter(txLine -> storedTransactionLineIds.contains(txLine.id())).toList();
 
-        applicationEventPublisher.publishEvent(new TransactionsReadyToPublishEvent(new TransactionData(onlyUpdated)));
+        applicationEventPublisher.publishEvent(new IngestionStoredEvent(new TransactionData(onlyUpdated)));
     }
 
 }

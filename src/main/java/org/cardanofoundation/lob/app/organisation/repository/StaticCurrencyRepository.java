@@ -1,9 +1,9 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core.repository;
+package org.cardanofoundation.lob.app.organisation.repository;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency;
+import org.cardanofoundation.lob.app.organisation.domain.core.Currency;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Locale.ENGLISH;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.CurrencyIsoStandard.ISO_24165;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.CurrencyIsoStandard.ISO_4217;
+import static org.cardanofoundation.lob.app.organisation.domain.core.Currency.CurrencyIsoStandard.ISO_24165;
+import static org.cardanofoundation.lob.app.organisation.domain.core.Currency.CurrencyIsoStandard.ISO_4217;
 
 @Service
 @Slf4j
@@ -31,8 +31,6 @@ public class StaticCurrencyRepository implements CurrencyRepository {
                     currency.getCurrencyCode(),
                     currency.getDisplayName(ENGLISH)
             );
-
-            log.info("Currency: {}", c);
 
             currencies.add(c);
         });

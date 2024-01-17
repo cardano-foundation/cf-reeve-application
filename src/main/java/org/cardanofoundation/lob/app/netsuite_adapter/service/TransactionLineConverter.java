@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CurrencyRepository;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Type;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.SHA3;
@@ -25,7 +24,6 @@ import static org.cardanofoundation.lob.app.organisation.domain.core.AccountSyst
 @Slf4j
 public class TransactionLineConverter {
 
-    private final CurrencyRepository currencyRepository;
     private final OrganisationApi organisationApi;
 
     public TransactionLine convert(SearchResultTransactionItem searchResultTransactionItem) {
@@ -60,7 +58,7 @@ public class TransactionLineConverter {
         val organisationBaseCurrency = organisation.baseCurrency();
         val organisationBaseCurrencyId = organisationBaseCurrency.currencyId();
 
-        return currencyRepository.findByCurrencyId(organisationBaseCurrencyId)
+        return organisationApi.findByCurrencyId(organisationBaseCurrencyId)
                 .map(baseCurrency -> new TransactionLine.CurrencyPair(organisationBaseCurrency, baseCurrency));
     }
 
@@ -70,7 +68,7 @@ public class TransactionLineConverter {
         return organisationApi.findOrganisationCurrencyByInternalId(currencyInternalId.toString()).flatMap(organisationCurrency -> {
             val currencyId = organisationCurrency.currencyId();
 
-            return currencyRepository.findByCurrencyId(currencyId)
+            return organisationApi.findByCurrencyId(currencyId)
                     .map(currency -> new TransactionLine.CurrencyPair(organisationCurrency, currency));
         });
     }
