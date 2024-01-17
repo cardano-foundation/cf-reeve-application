@@ -41,6 +41,10 @@ public class TransactionLine {
     @Column(name = "account_code_debit", nullable = false)
     private String accountCodeDebit;
 
+    @Column(name = "ledger_dispatch_status", nullable = false)
+    @Enumerated(STRING)
+    org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus ledgerDispatchStatus;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "base_currency_id")),

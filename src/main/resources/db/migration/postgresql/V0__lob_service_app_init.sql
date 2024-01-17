@@ -43,6 +43,7 @@ CREATE TABLE accounting_core_transaction_line (
    memo VARCHAR(255),
    amount_fcy DECIMAL,
    amount_lcy DECIMAL,
+   ledger_dispatch_status VARCHAR(255),
    CONSTRAINT pk_transaction_line PRIMARY KEY (id)
 );
 

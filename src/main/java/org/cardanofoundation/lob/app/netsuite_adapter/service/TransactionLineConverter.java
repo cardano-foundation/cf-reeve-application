@@ -40,6 +40,7 @@ public class TransactionLineConverter {
                 orgCurrencyPair(organisation).orElseThrow(),
                 currencyPair(searchResultTransactionItem).orElseThrow(),
                 searchResultTransactionItem.exchangeRate(),
+                TransactionLine.LedgerDispatchStatus.NEW,
                 normaliseString(searchResultTransactionItem.documentNumber()),
                 normaliseString(searchResultTransactionItem.id()),
                 normaliseString(searchResultTransactionItem.companyName()),
