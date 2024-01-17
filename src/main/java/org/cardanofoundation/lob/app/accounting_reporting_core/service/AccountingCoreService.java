@@ -13,6 +13,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -20,15 +22,12 @@ public class AccountingCoreService {
 
     private final AccountingCoreRepository accountingCoreRepository;
 
-    //private final BlockchainPublisherApi blockchainPublisherApi;
-
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public void store(TransactionData transactionData) {
         //log.info("Storing transaction data: {}", transactionData);
-
-        val entityTxLines = transactionData.lines().stream().map(txLine -> {
+        val entityTxLines = transactionData.transactionLines().stream().map(txLine -> {
             val entityTxLine = new org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLine();
 
             entityTxLine.setId(txLine.id());
@@ -59,25 +58,16 @@ public class AccountingCoreService {
             entityTxLine.setAmountLcy(txLine.amountLcy().orElse(null));
 
             return entityTxLine;
-
-            // currencyId empotency check
         })
-//                .filter(txLine -> !blockchainPublisherApi.isPublished(txLine.getTransactionInternalNumber(), txLine.getId()))
-        // we can update only those that have not been published yet
         .toList();
 
-        // it's ok to overwrite previous values as long as it  has not been published to the blockchain
-
-        var storedTransactionLineIds = accountingCoreRepository.saveAllAndFlush(entityTxLines)
-                .stream()
-                .map(TransactionLine::getId)
+        List<String> updatedTxLines = accountingCoreRepository.saveAllAndFlush(entityTxLines)
+                .stream().map(TransactionLine::getId)
                 .toList();
 
-        log.info("Storing transaction line count: {}", storedTransactionLineIds.size());
+        log.info("Storing transaction line count: {}", updatedTxLines.size());
 
-        var onlyUpdated = transactionData.lines().stream().filter(txLine -> storedTransactionLineIds.contains(txLine.id())).toList();
-
-        applicationEventPublisher.publishEvent(new IngestionStoredEvent(new TransactionData(onlyUpdated)));
+        applicationEventPublisher.publishEvent(new IngestionStoredEvent(updatedTxLines));
     }
 
 }

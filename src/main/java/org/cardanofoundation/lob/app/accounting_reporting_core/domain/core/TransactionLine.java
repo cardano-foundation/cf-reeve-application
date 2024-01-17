@@ -31,6 +31,8 @@ public record TransactionLine(
 
         BigDecimal fxRate,
 
+        LedgerDispatchStatus ledgerDispatchStatus,
+
         /// optionals below
 
         Optional<String> internalDocumentNumber,
@@ -61,5 +63,11 @@ public record TransactionLine(
     public record VatPair(String vatCode, BigDecimal vatRate) {
     }
 
-}
+    public enum LedgerDispatchStatus {
+        NEW, // freshly created
+        DISPATCHED, // dispatched to blockchain(s)
+        FINALIZED, // finalised on blockchain(s)
+        UNRECOVERABLE_ERROR // unrecoverable error occurred needing user attention
+    }
 
+}
