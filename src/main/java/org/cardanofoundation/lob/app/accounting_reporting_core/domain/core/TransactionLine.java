@@ -74,7 +74,15 @@ public record TransactionLine(
 
         FAILED,
 
-        UNRECOVERABLE_ERROR // unrecoverable error occurred needing user attention
+        UNRECOVERABLE_ERROR; // unrecoverable error occurred needing user attention
+
+        /**
+         * Dispatchable means that we can dispatch the transaction line to the blockchain(s)
+         */
+        public boolean isDispatchable() {
+            return this == NOT_DISPATCHED || this == FAILED;
+        }
+
     }
 
 }

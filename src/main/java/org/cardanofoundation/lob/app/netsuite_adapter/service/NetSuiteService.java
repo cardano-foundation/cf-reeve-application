@@ -7,7 +7,8 @@ import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionData;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactionData;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.SourceAccountingDataIngestionSuccessEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionDataSearchResult;
@@ -26,6 +27,7 @@ import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity.ERROR;
 import static org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity.WARN;
 
@@ -57,7 +59,7 @@ public class NetSuiteService {
     }
 
     @ApplicationModuleListener
-    public void runIngestion(ScheduledIngestionEvent event) throws JsonProcessingException {
+    public void processIngestion(ScheduledIngestionEvent event) throws JsonProcessingException {
         log.info("Running ingestion...");
 
         log.info("Checking if ingestion exists...");
@@ -97,12 +99,10 @@ public class NetSuiteService {
 
         val compressedBody = MoreCompress.compress(netsuiteTransactionLinesJson);
 
-        assert compressedBody != null;
-
         log.info("Before compression: {}, compressed: {}", netsuiteTransactionLinesJson.length(), compressedBody.length());
 
-        //netSuiteIngestion.setIngestionBody(compressedBody);
-        netSuiteIngestion.setIngestionBody(netsuiteTransactionLinesJson);
+        netSuiteIngestion.setIngestionBody(compressedBody);
+        //netSuiteIngestion.setIngestionBody(netsuiteTransactionLinesJson);
         netSuiteIngestion.setIngestionBodyChecksum(ingestionBodyChecksum);
 
         ingestionRepository.saveAndFlush(netSuiteIngestion);
@@ -134,12 +134,21 @@ public class NetSuiteService {
                 .map(transactionLineConverter::convert)
                 .toList();
 
+        log.info("CoreTransactionLines count:{}", coreTransactionLines.size());
 
-        log.info("coreTransactionLines count:{}", coreTransactionLines.size());
+        val txLinesPerOrganisationId = coreTransactionLines.stream()
+                .collect(groupingBy(TransactionLine::organisationId));
 
-        applicationEventPublisher.publishEvent(new SourceAccountingDataIngestionSuccessEvent(new TransactionData(coreTransactionLines)));
+        for (val entry : txLinesPerOrganisationId.entrySet()) {
+            val organisationId = entry.getKey();
+            val txLines = entry.getValue();
 
-        log.info("Ingestion created.");
+            log.info("Publishing SourceAccountingDataIngestionSuccessEvent event, organisationId: {}, txLines count: {}", organisationId, txLines.size());
+
+            applicationEventPublisher.publishEvent(new SourceAccountingDataIngestionSuccessEvent(new OrganisationTransactionData(organisationId, txLines)));
+        }
+
+        log.info("NetSuite Ingestion completed.");
     }
 
 }
