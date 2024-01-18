@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class NetSuiteApi {
+public class NetSuiteAdapterPublicApi {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 

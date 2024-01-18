@@ -6,25 +6,30 @@ import org.cardanofoundation.lob.app.organisation.domain.core.AccountSystemProvi
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.cardanofoundation.lob.app.organisation.repository.OrganisationRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class OrganisationService {
 
     private final OrganisationRepository organisationRepository;
 
-    @Transactional(readOnly = true)
+    //@Transactional(readOnly = true)
+    public final List<Organisation> listAll() {
+        return organisationRepository.listAll();
+    }
+
+    //@Transactional(readOnly = true)
     public Optional<Organisation> findById(String id) {
         return organisationRepository.listAll().stream()
                 .filter(organisation -> organisation.id().equals(id))
                 .findFirst();
     }
 
-    @Transactional(readOnly = true)
+    //@Transactional(readOnly = true)
     public Optional<Organisation> findByForeignProvider(String foreignId,
                                                         AccountSystemProvider accountSystemProvider) {
         return organisationRepository.listAll().stream()

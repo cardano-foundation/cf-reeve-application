@@ -4,14 +4,14 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.cardanofoundation.lob.app.organisation.domain.core.AccountSystemProvider.NETSUITE;
 
-@Service
+@Component
 @Slf4j
 @RequiredArgsConstructor
 public class StaticOrganisationRepository implements OrganisationRepository {
