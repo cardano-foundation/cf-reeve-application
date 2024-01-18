@@ -7,9 +7,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface AccountingCoreRepository extends JpaRepository<TransactionLineEntity, String> {
+
+    @Query("SELECT tl.id FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('NOT_DISPATCHED', 'FAILED')")
+    List<String> findNotYetDispatchedAndFailedTxLineIds(@Param("organisationId") String organisationId,
+                                                        @Param("txLineIds") List<String> txLineIds);
+
+    @Query("SELECT tl.id FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('DISPATCHED', 'COMPLETED', 'FINALISED')")
+    List<String> findDoneTxLineIds(@Param("organisationId") String organisationId,
+                                                        @Param("txLineIds") List<String> txLineIds);
 
     @Query("SELECT tl FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.ledgerDispatchStatus in :dispatchStatuses")
     List<TransactionLineEntity> findByPendingTransactionLinesByOrganisationAndDispatchStatus(@Param("organisationId") String organisationId,

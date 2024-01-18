@@ -1,6 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionData;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactionData;
 
-public record SourceAccountingDataIngestionSuccessEvent(TransactionData transactionData) {
+public record SourceAccountingDataIngestionSuccessEvent(OrganisationTransactionData organisationTransactionData) {
 }

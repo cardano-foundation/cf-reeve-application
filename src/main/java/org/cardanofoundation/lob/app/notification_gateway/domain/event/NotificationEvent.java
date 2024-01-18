@@ -1,14 +1,13 @@
 package org.cardanofoundation.lob.app.notification_gateway.domain.event;
 
 import org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity;
-import org.springframework.modulith.events.Externalized;
 import org.zalando.problem.Problem;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-@Externalized("target")
+//@Externalized("target")
 public record NotificationEvent(UUID id,
 
                                 NotificationSeverity severity,
