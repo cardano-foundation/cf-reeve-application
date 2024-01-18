@@ -29,7 +29,7 @@ public class StaticOrganisationVatRepository implements OrganisationVatRepositor
                 BigDecimal.valueOf(0.077D)
         ));
 
-        // TODO rest of mapping codes
+        // TODO rest of mapping codes goes here
     }
 
     @Override

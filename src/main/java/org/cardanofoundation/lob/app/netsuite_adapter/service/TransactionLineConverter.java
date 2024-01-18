@@ -8,7 +8,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Type;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.SHA3;
-import org.cardanofoundation.lob.app.organisation.OrganisationApi;
+import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +24,10 @@ import static org.cardanofoundation.lob.app.organisation.domain.core.AccountSyst
 @Slf4j
 public class TransactionLineConverter {
 
-    private final OrganisationApi organisationApi;
+    private final OrganisationPublicApi organisationPublicApi;
 
     public TransactionLine convert(SearchResultTransactionItem searchResultTransactionItem) {
-        val organisation = organisationApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), NETSUITE)
+        val organisation = organisationPublicApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), NETSUITE)
                 .orElseThrow();
 
         return new TransactionLine(
@@ -40,7 +40,7 @@ public class TransactionLineConverter {
                 orgCurrencyPair(organisation).orElseThrow(),
                 currencyPair(searchResultTransactionItem).orElseThrow(),
                 searchResultTransactionItem.exchangeRate(),
-                TransactionLine.LedgerDispatchStatus.NEW,
+                TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED,
                 normaliseString(searchResultTransactionItem.documentNumber()),
                 normaliseString(searchResultTransactionItem.id()),
                 normaliseString(searchResultTransactionItem.companyName()),
@@ -59,17 +59,17 @@ public class TransactionLineConverter {
         val organisationBaseCurrency = organisation.baseCurrency();
         val organisationBaseCurrencyId = organisationBaseCurrency.currencyId();
 
-        return organisationApi.findByCurrencyId(organisationBaseCurrencyId)
+        return organisationPublicApi.findByCurrencyId(organisationBaseCurrencyId)
                 .map(baseCurrency -> new TransactionLine.CurrencyPair(organisationBaseCurrency, baseCurrency));
     }
 
     private Optional<TransactionLine.CurrencyPair> currencyPair(SearchResultTransactionItem item) {
         val currencyInternalId = item.currency();
 
-        return organisationApi.findOrganisationCurrencyByInternalId(currencyInternalId.toString()).flatMap(organisationCurrency -> {
+        return organisationPublicApi.findOrganisationCurrencyByInternalId(currencyInternalId.toString()).flatMap(organisationCurrency -> {
             val currencyId = organisationCurrency.currencyId();
 
-            return organisationApi.findByCurrencyId(currencyId)
+            return organisationPublicApi.findByCurrencyId(currencyId)
                     .map(currency -> new TransactionLine.CurrencyPair(organisationCurrency, currency));
         });
     }
@@ -83,7 +83,7 @@ public class TransactionLineConverter {
 
         val internalVatId = vatRateCodeM.orElseThrow();
 
-        return organisationApi.findOrganisationVatByInternalId(internalVatId)
+        return organisationPublicApi.findOrganisationVatByInternalId(internalVatId)
                 .map(varOrg -> new TransactionLine.VatPair(internalVatId, varOrg.rate()));
     }
 

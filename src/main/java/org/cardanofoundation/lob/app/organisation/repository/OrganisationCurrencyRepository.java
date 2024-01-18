@@ -11,6 +11,6 @@ public interface OrganisationCurrencyRepository {
 
     Optional<OrganisationCurrency> findByCurrencyId(String currencyId);
 
-    Optional<OrganisationCurrency> findByOrganisationCurrencyInternalId(String currencyId);
+    Optional<OrganisationCurrency> findByOrganisationCurrencyInternalId(String internalCurrencyId);
 
 }

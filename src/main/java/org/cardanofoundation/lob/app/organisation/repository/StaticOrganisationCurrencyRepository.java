@@ -2,13 +2,13 @@ package org.cardanofoundation.lob.app.organisation.repository;
 
 import jakarta.annotation.PostConstruct;
 import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationCurrency;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Component
 public class StaticOrganisationCurrencyRepository implements OrganisationCurrencyRepository {
 
     private List<OrganisationCurrency> organisationCurrencies = new ArrayList<>();

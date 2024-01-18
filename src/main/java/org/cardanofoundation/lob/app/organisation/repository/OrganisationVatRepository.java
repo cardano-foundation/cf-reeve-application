@@ -7,7 +7,6 @@ import java.util.Optional;
 
 public interface OrganisationVatRepository {
 
-
     Optional<OrganisationVat> findByInternalId(String organisationId);
 
 }

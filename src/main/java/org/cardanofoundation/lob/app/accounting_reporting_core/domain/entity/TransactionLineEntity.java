@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 
 import javax.annotation.Nullable;
@@ -19,7 +20,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Table(name = "accounting_core_transaction_line")
 @NoArgsConstructor
 @ToString
-public class TransactionLine {
+public class TransactionLineEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -43,7 +44,7 @@ public class TransactionLine {
 
     @Column(name = "ledger_dispatch_status", nullable = false)
     @Enumerated(STRING)
-    org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus ledgerDispatchStatus;
+    org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus ledgerDispatchStatus = TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
 
     @Embedded
     @AttributeOverrides({

@@ -64,9 +64,16 @@ public record TransactionLine(
     }
 
     public enum LedgerDispatchStatus {
-        NEW, // freshly created
+        NOT_DISPATCHED, // not dispatched to blockchain(s) yet
+
         DISPATCHED, // dispatched to blockchain(s)
+
+        COMPLETED,
+
         FINALIZED, // finalised on blockchain(s)
+
+        FAILED,
+
         UNRECOVERABLE_ERROR // unrecoverable error occurred needing user attention
     }
 

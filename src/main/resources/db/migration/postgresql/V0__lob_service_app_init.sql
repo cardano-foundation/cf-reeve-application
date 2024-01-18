@@ -21,16 +21,16 @@ CREATE TABLE netsuite_ingestion (
 
 CREATE TABLE accounting_core_transaction_line (
    id CHAR(64) NOT NULL,
-   organisation_id VARCHAR(255),
-   transaction_type VARCHAR(255),
-   entry_date TIMESTAMP WITHOUT TIME ZONE,
+   organisation_id VARCHAR(255) NOT NULL,
+   transaction_type VARCHAR(255) NOT NULL,
+   entry_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
    transaction_internal_number VARCHAR(255),
-   account_code_debit VARCHAR(255),
-   base_currency_id VARCHAR(255),
-   base_currency_internal_code VARCHAR(255),
-   target_currency_id VARCHAR(255),
-   target_currency_internal_code VARCHAR(255),
-   fx_rate DECIMAL,
+   account_code_debit VARCHAR(255) NOT NULL,
+   base_currency_id VARCHAR(255) NOT NULL,
+   base_currency_internal_code VARCHAR(255) NOT NULL,
+   target_currency_id VARCHAR(255) NOT NULL,
+   target_currency_internal_code VARCHAR(255) NOT NULL,
+   fx_rate DECIMAL NOT NULL,
    document_internal_number VARCHAR(255),
    vendor_internal_code VARCHAR(255),
    vendor_name VARCHAR(255),
@@ -43,7 +43,7 @@ CREATE TABLE accounting_core_transaction_line (
    memo VARCHAR(255),
    amount_fcy DECIMAL,
    amount_lcy DECIMAL,
-   ledger_dispatch_status VARCHAR(255),
+   ledger_dispatch_status VARCHAR(255) NOT NULL,
    CONSTRAINT pk_transaction_line PRIMARY KEY (id)
 );
 
