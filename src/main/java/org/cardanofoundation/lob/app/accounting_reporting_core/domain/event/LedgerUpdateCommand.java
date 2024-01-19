@@ -5,8 +5,8 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 /**
  *
  * @param organisationId
- * @param txData
+ * @param transactionLines
  */
 public record LedgerUpdateCommand(String organisationId,
-                                  TransactionLines txData) {
+                                  TransactionLines transactionLines) {
 }

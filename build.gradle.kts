@@ -2,7 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.2.1"
     id("io.spring.dependency-management") version "1.1.4"
-    id("org.graalvm.buildtools.native") version "0.9.28"
+    //id("org.graalvm.buildtools.native") version "0.9.28"
     id("com.github.ben-manes.versions") version "0.50.0"
 }
 
@@ -97,6 +97,21 @@ dependencyManagement {
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+
+tasks {
+    val ENABLE_PREVIEW = "--enable-preview"
+
+    withType<JavaCompile>() {
+        options.compilerArgs.add(ENABLE_PREVIEW)
+        options.compilerArgs.add("-Xlint:preview")
+    }
+
+    withType<Test>() {
+        useJUnitPlatform()
+        jvmArgs(ENABLE_PREVIEW)
+    }
+
+    withType<JavaExec>() {
+        jvmArgs(ENABLE_PREVIEW)
+    }
 }

@@ -18,18 +18,24 @@ import java.util.UUID;
  * @param problem
  */
 public record NotificationEvent(UUID id,
+                                String code,
 
                                 NotificationSeverity severity,
+                                String title,
                                 String message,
                                 Optional<Problem> problem
                                 ) {
 
-  public static NotificationEvent create(NotificationSeverity severity, String message, @Nullable Problem problem) {
-    return new NotificationEvent(UUID.randomUUID(), severity, message, Optional.ofNullable(problem));
+  public static NotificationEvent create(NotificationSeverity severity,
+                                         String code,
+                                         String title,
+                                         String message,
+                                         @Nullable Problem problem) {
+    return new NotificationEvent(UUID.randomUUID(), code, severity, title, message, Optional.ofNullable(problem));
   }
 
-  public static NotificationEvent create(NotificationSeverity severity, String message) {
-    return new NotificationEvent(UUID.randomUUID(), severity, message, Optional.empty());
+  public static NotificationEvent create(NotificationSeverity severity, String code, String title, String message) {
+    return new NotificationEvent(UUID.randomUUID(), code, severity, title, message, Optional.empty());
   }
 
 }

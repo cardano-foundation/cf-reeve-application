@@ -7,8 +7,8 @@ import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionDataSearchResult;
@@ -73,7 +73,10 @@ public class NetSuiteService {
 
             applicationEventPublisher.publishEvent(NotificationEvent.create(
                     ERROR,
+                    "NETSUITE_API_ERROR",
                     "Error retrieving data from NetSuite API",
+                    "Error retrieving data from NetSuite API",
+
                     netSuiteJsonE.getLeft())
             );
 
@@ -86,6 +89,8 @@ public class NetSuiteService {
 
             applicationEventPublisher.publishEvent(NotificationEvent.create(
                     WARN,
+                    "NETSUITE_API_NO_DATA_ERROR",
+                    "No data to read from NetSuite API",
                     "No data to read from NetSuite API"));
             return;
         }

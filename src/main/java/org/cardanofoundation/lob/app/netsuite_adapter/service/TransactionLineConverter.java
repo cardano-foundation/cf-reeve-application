@@ -94,7 +94,9 @@ public class TransactionLineConverter {
 
             applicationEventPublisher.publishEvent(NotificationEvent.create(
                     ERROR,
-                    "Vat Rate not found for internalVatId: " + internalVatId));
+                    "VAT_RATE_NOT_FOUND_ERROR",
+                    STR."Vat Rate not found for internalVatId: \{internalVatId}",
+                    STR."Vat Rate not found for internalVatId: \{internalVatId}"));
 
             // TODO we need this to return Either or go with exceptions
             //throw new RuntimeException("Vat Rate not found for internalVatId: " + internalVatId);

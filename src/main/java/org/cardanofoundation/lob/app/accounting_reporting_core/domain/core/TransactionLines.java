@@ -4,6 +4,6 @@ import java.util.List;
 
 public record TransactionLines(
         String organisationId,
-        List<TransactionLine> transactionLines
+        List<TransactionLine> entries
 ) {
 }

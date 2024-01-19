@@ -32,7 +32,7 @@ public class AccountingCoreEventHandler {
         val organisationId = event.transactionLines().organisationId();
 
         val txLines = event.transactionLines()
-                .transactionLines()
+                .entries()
                 .stream()
                 .toList();
 
@@ -56,7 +56,12 @@ public class AccountingCoreEventHandler {
                     .map(TransactionLine::id)
                     .collect(joining(","));
 
-            applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, "Unable to update tx line ids as they have been dispatched:" + dispatchedTxLineIdsAsString));
+            applicationEventPublisher.publishEvent(NotificationEvent.create(
+                    ERROR,
+                    "CANNOT_UPDATE_TX_LINES_ERROR",
+                    "Not possible to update transactions that have already been dispatched to the blockchain.",
+                    STR . "Unable to update tx line ids as they have been dispatched: \{ dispatchedTxLineIdsAsString }")
+            );
         }
 
         val notDispatchedTxLines = txLines.stream()
