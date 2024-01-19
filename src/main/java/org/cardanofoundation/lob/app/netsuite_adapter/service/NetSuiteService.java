@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactionData;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.SourceAccountingDataIngestionSuccessEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionDataSearchResult;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestion;
@@ -145,7 +145,7 @@ public class NetSuiteService {
 
             log.info("Publishing SourceAccountingDataIngestionSuccessEvent event, organisationId: {}, txLines count: {}", organisationId, txLines.size());
 
-            applicationEventPublisher.publishEvent(new SourceAccountingDataIngestionSuccessEvent(new OrganisationTransactionData(organisationId, txLines)));
+            applicationEventPublisher.publishEvent(new ERPIngestionEvent(new OrganisationTransactionData(organisationId, txLines)));
         }
 
         log.info("NetSuite Ingestion completed.");

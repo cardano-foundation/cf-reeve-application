@@ -57,6 +57,11 @@ public record TransactionLine(
 
         Optional<BigDecimal> amountLcy) {
 
+    // TODO equality in business sense will not include in the future e.g. ingestion_id
+    public boolean isBusinessEqual(TransactionLine transactionLine) {
+        return this.equals(transactionLine);
+    }
+
     public record CurrencyPair(OrganisationCurrency organisationCurrency, Currency currency) {
     }
 
