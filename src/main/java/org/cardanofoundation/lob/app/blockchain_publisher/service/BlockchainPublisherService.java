@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus.DISPATCHED;
 
 @Service("blockchainPublisherService")
 @RequiredArgsConstructor
@@ -22,7 +23,8 @@ public class BlockchainPublisherService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
-    public void dispatchTransactionsToBlockchains(String organisationId, TransactionLines transactionLines) {
+    public void dispatchTransactionsToBlockchains(String organisationId,
+                                                  TransactionLines transactionLines) {
         log.info("dispatchTransactionsToBlockchains...");
 
         val blockchainDispatchedTxLineIds = transactionLines.entries()
@@ -34,11 +36,12 @@ public class BlockchainPublisherService {
         // or prepare data to be sent to the blockchain
         // so that user can be prompted to send it
 
-        val statusesMap = blockchainDispatchedTxLineIds.stream()
-                .collect(toMap(Function.identity(), v -> TransactionLine.LedgerDispatchStatus.DISPATCHED));
+        val statusesMap = blockchainDispatchedTxLineIds
+                .stream()
+                .collect(toMap(Function.identity(), v -> DISPATCHED));
 
         if (!statusesMap.isEmpty()) {
-            log.info("Publishing LedgerChangeEvent command, statusesMap: {}", statusesMap);
+            log.info("Publishing LedgerChangeEvent command, statusesMapCount: {}", statusesMap.size());
 
             applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(organisationId, statusesMap));
         }

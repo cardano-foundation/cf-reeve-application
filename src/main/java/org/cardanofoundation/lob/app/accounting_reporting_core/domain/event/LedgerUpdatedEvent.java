@@ -7,9 +7,9 @@ import java.util.Map;
 /**
  * Event used after data has been sent or updated on the blockchain
  *
- * @param statusUpdatesMap
+ * @param statusUpdates
  */
 public record LedgerUpdatedEvent(String organisationId,
-                                 Map<String, TransactionLine.LedgerDispatchStatus> statusUpdatesMap) {
+                                 Map<String, TransactionLine.LedgerDispatchStatus> statusUpdates) {
 
 }

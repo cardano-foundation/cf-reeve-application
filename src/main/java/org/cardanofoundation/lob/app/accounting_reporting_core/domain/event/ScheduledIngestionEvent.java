@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.netsuite_adapter.domain.event;
+package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 
 import org.jmolecules.event.types.DomainEvent;
 
