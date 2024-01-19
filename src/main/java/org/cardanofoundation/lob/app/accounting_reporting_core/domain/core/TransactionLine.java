@@ -4,7 +4,7 @@ import org.cardanofoundation.lob.app.organisation.domain.core.Currency;
 import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationCurrency;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,7 +18,7 @@ public record TransactionLine(
 
         TransactionType transactionType, // LOB transaction type
 
-        LocalDateTime entryDate, // date of the transaction
+        LocalDate entryDate, // date of the transaction
 
         String internalTransactionNumber, // unique transaction number, organisation level value
 

@@ -10,7 +10,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static jakarta.persistence.EnumType.STRING;
@@ -35,7 +35,7 @@ public class TransactionLineEntity {
     private TransactionType transactionType;
 
     @Column(name = "entry_date", nullable = false)
-    private LocalDateTime entryDate;
+    private LocalDate entryDate;
 
     @Column(name = "transaction_internal_number", nullable = false)
     private String transactionInternalNumber;

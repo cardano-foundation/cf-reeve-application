@@ -104,8 +104,8 @@ public class NetSuiteService {
 
         log.info("Before compression: {}, compressed: {}", netsuiteTransactionLinesJson.length(), compressedBody.length());
 
-        netSuiteIngestion.setIngestionBody(compressedBody);
-        //netSuiteIngestion.setIngestionBody(netsuiteTransactionLinesJson);
+        //netSuiteIngestion.setIngestionBody(compressedBody);
+        netSuiteIngestion.setIngestionBody(netsuiteTransactionLinesJson);
         netSuiteIngestion.setIngestionBodyChecksum(ingestionBodyChecksum);
 
         ingestionRepository.saveAndFlush(netSuiteIngestion);
