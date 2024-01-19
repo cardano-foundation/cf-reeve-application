@@ -37,13 +37,13 @@ public class TransactionLineConverter {
                                    SearchResultTransactionItem searchResultTransactionItem) {
         val organisationM = organisationPublicApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), NETSUITE);
         if (organisationM.isEmpty()) {
-            throw new ACLMappingException(STR."Organisation mapping not found for foreignId: \{searchResultTransactionItem.subsidiary()}");
+            throw new ACLMappingException(STR."Organisation mapping not found for subsidiaryId: \{searchResultTransactionItem.subsidiary()}");
         }
         val organisation = organisationM.orElseThrow();
         val organisationId = organisationM.orElseThrow().id();
 
         return new TransactionLine(
-                createTxLineId(organisationM.orElseThrow(), searchResultTransactionItem),
+                createTxLineId(organisation, searchResultTransactionItem),
                 organisationId,
                 transactionType(searchResultTransactionItem.type()),
                 searchResultTransactionItem.dateCreated(),
@@ -62,7 +62,7 @@ public class TransactionLineConverter {
                 convertVat(searchResultTransactionItem),
                 normaliseString(searchResultTransactionItem.name()),
                 normaliseString(searchResultTransactionItem.accountMain()),
-                substractOpt(zeroForNull(searchResultTransactionItem.amountCreditForeignCurrency()), zeroForNull(searchResultTransactionItem.amountDebitForeignCurrency())),
+                substractOpt(zeroForNull(searchResultTransactionItem.amountDebitForeignCurrency()), zeroForNull(searchResultTransactionItem.amountCreditForeignCurrency())),
                 substractOpt(zeroForNull(searchResultTransactionItem.amountDebit()), zeroForNull(searchResultTransactionItem.amountCredit()))
         );
     }
