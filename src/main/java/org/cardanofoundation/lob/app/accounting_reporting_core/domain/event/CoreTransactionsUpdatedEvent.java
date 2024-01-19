@@ -7,6 +7,6 @@ import java.util.List;
  *
  * @param txLinesId
  */
-public record AccountingCoreTransactionsUpdatedEvent(String organisationId,
-                                                     List<String> txLinesId) {
+public record CoreTransactionsUpdatedEvent(String organisationId,
+                                           List<String> txLinesId) {
 }

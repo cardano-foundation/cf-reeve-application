@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class TransactionLineScanningJob {
+public class TransactionsWatchDogJob {
 
     @Scheduled(fixedDelay = 60_000L) // TODO job should be configurable
     public void checkTransactionStatuses() {

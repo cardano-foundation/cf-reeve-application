@@ -1,6 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactionData;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 
 /**
  *
@@ -8,5 +8,5 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organ
  * @param txData
  */
 public record LedgerUpdateCommand(String organisationId,
-                                  OrganisationTransactionData txData) {
+                                  TransactionLines txData) {
 }

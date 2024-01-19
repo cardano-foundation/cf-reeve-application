@@ -3,10 +3,10 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactionData;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.modulith.events.ApplicationModuleListener;
@@ -24,14 +24,14 @@ public class AccountingCoreEventHandler {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @ApplicationModuleListener
-    public void processIncomingIngestionAdapterEvents(ERPIngestionEvent event) {
-        log.info("Received SourceAccountingDataIngestionSuccessEvent event.");
+    public void handleERPIngestionEvent(ERPIngestionEvent event) {
+        log.info("Received handleERPIngestionEvent event.");
 
         // load entities from db based on ids from event
 
-        val organisationId = event.organisationTransactionData().organisationId();
+        val organisationId = event.transactionLines().organisationId();
 
-        val txLines = event.organisationTransactionData()
+        val txLines = event.transactionLines()
                 .transactionLines()
                 .stream()
                 .toList();
@@ -68,15 +68,15 @@ public class AccountingCoreEventHandler {
         if (!notDispatchedTxLines.isEmpty()) {
             log.info("Storing notDispatchedTxLines: {}", notDispatchedTxLines.size());
 
-            accountingCoreService.storeAll(new OrganisationTransactionData(organisationId, notDispatchedTxLines));
+            accountingCoreService.storeAll(new TransactionLines(organisationId, notDispatchedTxLines));
         }
     }
 
     @ApplicationModuleListener
-    public void processFromBlockchainLayer(LedgerUpdatedEvent event) {
-        log.info("Received LedgerChangeEvent event, event:{}", event);
+    public void handleLedgerUpdatedEvent(LedgerUpdatedEvent event) {
+        log.info("Received LedgerUpdatedEvent event, event:{}", event);
 
-        accountingCoreService.updateDispatchStatus(event.statusUpdatesMap());
+        accountingCoreService.updateDispatchStatusesForTransactionLines(event.statusUpdatesMap());
     }
 
 }

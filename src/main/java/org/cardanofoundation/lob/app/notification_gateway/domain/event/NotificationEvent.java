@@ -8,6 +8,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 //@Externalized("target")
+
+/**
+ * Event responsible for notifying the LOB user of a problem
+ *
+ * @param id
+ * @param severity
+ * @param message
+ * @param problem
+ */
 public record NotificationEvent(UUID id,
 
                                 NotificationSeverity severity,
