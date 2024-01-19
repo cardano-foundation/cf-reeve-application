@@ -28,7 +28,7 @@ public class StaticOrganisationRepository implements OrganisationRepository {
                 "Cardano Foundation",
                 NETSUITE,
                 "1",
-                organisationCurrencyRepository.findByCurrencyId("ISO_4217::CHF").orElseThrow()
+                organisationCurrencyRepository.findByCurrencyId("ISO_4217:CHF").orElseThrow()
         ));
 
         log.info("StaticOrganisationRepository init completed.");

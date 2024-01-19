@@ -17,72 +17,72 @@ public class StaticOrganisationCurrencyRepository implements OrganisationCurrenc
     public void init() {
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::CHF",
+                "ISO_4217:CHF",
                 "1"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::USD",
+                "ISO_4217:USD",
                 "2"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::CAD",
+                "ISO_4217:CAD",
                 "3"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::EUR",
+                "ISO_4217:EUR",
                 "4"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::GBP",
+                "ISO_4217:GBP",
                 "5"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_24165::ADA",
+                "ISO_24165:ADA",
                 "6"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_24165::BTC",
+                "ISO_24165:BTC",
                 "7"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::CRC",
+                "ISO_4217:CRC",
                 "8"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_24165::BCH",
+                "ISO_24165:BCH",
                 "9"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_24165::BSV",
+                "ISO_24165:BSV",
                 "10"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::LKK",
+                "ISO_4217:LKK",
                 "11"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::AED",
+                "ISO_4217:AED",
                 "12"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::GEL",
+                "ISO_4217:GEL",
                 "13"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_4217::KRW",
+                "ISO_4217:KRW",
                 "14"
         ));
     }

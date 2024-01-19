@@ -7,7 +7,7 @@ import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactionData;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
@@ -143,9 +143,9 @@ public class NetSuiteService {
             val organisationId = entry.getKey();
             val txLines = entry.getValue();
 
-            log.info("Publishing SourceAccountingDataIngestionSuccessEvent event, organisationId: {}, txLines count: {}", organisationId, txLines.size());
+            log.info("Publishing ERPIngestionEvent event, organisationId: {}, txLines count: {}", organisationId, txLines.size());
 
-            applicationEventPublisher.publishEvent(new ERPIngestionEvent(new OrganisationTransactionData(organisationId, txLines)));
+            applicationEventPublisher.publishEvent(new ERPIngestionEvent(new TransactionLines(organisationId, txLines)));
         }
 
         log.info("NetSuite Ingestion completed.");

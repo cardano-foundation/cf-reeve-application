@@ -24,10 +24,10 @@ public class BlockchainPublisherEventHandler {
     public final ApplicationEventPublisher applicationEventPublisher;
 
     @ApplicationModuleListener
-    public void process(LedgerUpdateCommand event) {
-        log.info("Received PublishToTheLedgerEvent event...");
+    public void handleLedgerUpdateCommand(LedgerUpdateCommand command) {
+        log.info("Received LedgerUpdateCommand command...");
 
-        val blockchainDispatchedTxLineIds = event.txData().transactionLines()
+        val blockchainDispatchedTxLineIds = command.txData().transactionLines()
                 .stream()
                 .map(TransactionLine::id)
                 .toList();
@@ -40,9 +40,9 @@ public class BlockchainPublisherEventHandler {
                 .collect(toMap(Function.identity(), v -> LedgerDispatchStatus.DISPATCHED));
 
         if (!statusesMap.isEmpty()) {
-            log.info("Publishing LedgerChangeEvent event, statusesMap: {}", statusesMap);
+            log.info("Publishing LedgerChangeEvent command, statusesMap: {}", statusesMap);
 
-            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(event.organisationId(), statusesMap));
+            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(command.organisationId(), statusesMap));
         }
     }
 

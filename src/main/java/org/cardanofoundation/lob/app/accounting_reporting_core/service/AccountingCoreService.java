@@ -3,10 +3,10 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactionData;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLineEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.AccountingCoreTransactionsUpdatedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.CoreTransactionsUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
@@ -45,7 +45,7 @@ public class AccountingCoreService {
     }
 
     @Transactional
-    public void updateDispatchStatus(Map<String, TransactionLine.LedgerDispatchStatus> statusMap) {
+    public void updateDispatchStatusesForTransactionLines(Map<String, TransactionLine.LedgerDispatchStatus> statusMap) {
         log.info("Updating dispatch status for statusMapCount: {}", statusMap.size());
 
         for (val entry : statusMap.entrySet()) {
@@ -55,13 +55,12 @@ public class AccountingCoreService {
             val txLineIdM = accountingCoreRepository.findById(txLineId);
 
             txLineIdM.ifPresent(txLine -> {
-                log.info("Updating dispatch status for txLineId: {}, status: {}", txLineId, status);
                 txLine.setLedgerDispatchStatus(status);
                 accountingCoreRepository.saveAndFlush(txLine);
             });
         }
 
-        log.info("Updated dispatch status for statusMapCount: {}", statusMap.size());
+        log.info("Updated dispatch status for statusMapCount: {} completed.", statusMap.size());
     }
 
     @Transactional(readOnly = true)
@@ -77,9 +76,9 @@ public class AccountingCoreService {
     }
 
     @Transactional
-    public void storeAll(OrganisationTransactionData organisationTransactionData) {
+    public void storeAll(TransactionLines transactionLines) {
         //log.info("Storing transaction data: {}", transactionData);
-        val entityTxLines = organisationTransactionData.transactionLines().stream()
+        val entityTxLines = transactionLines.transactionLines().stream()
                 .map(transactionLineConverter::convert)
                 .toList();
 
@@ -89,7 +88,7 @@ public class AccountingCoreService {
 
         log.info("Updated transaction line ids count: {}", updatedTxLineIds.size());
 
-        applicationEventPublisher.publishEvent(new AccountingCoreTransactionsUpdatedEvent(organisationTransactionData.organisationId(), updatedTxLineIds));
+        applicationEventPublisher.publishEvent(new CoreTransactionsUpdatedEvent(transactionLines.organisationId(), updatedTxLineIds));
     }
 
     @Transactional
@@ -99,7 +98,7 @@ public class AccountingCoreService {
             log.info("Processing organisationId: {} - pendingTxLinesCount: {}", org.id(), pendingTxLines.size());
 
             log.info("Publishing PublishToTheLedgerEvent...");
-            applicationEventPublisher.publishEvent(new LedgerUpdateCommand(org.id(), new OrganisationTransactionData(org.id(), pendingTxLines)));
+            applicationEventPublisher.publishEvent(new LedgerUpdateCommand(org.id(), new TransactionLines(org.id(), pendingTxLines)));
         }
     }
 
