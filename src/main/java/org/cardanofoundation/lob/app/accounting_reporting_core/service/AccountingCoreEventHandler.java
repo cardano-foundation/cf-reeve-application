@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactionData;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerChangeEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.SourceAccountingDataIngestionSuccessEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.modulith.events.ApplicationModuleListener;
@@ -24,7 +24,7 @@ public class AccountingCoreEventHandler {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @ApplicationModuleListener
-    public void processIncomingIngestionAdapterEvents(SourceAccountingDataIngestionSuccessEvent event) {
+    public void processIncomingIngestionAdapterEvents(ERPIngestionEvent event) {
         log.info("Received SourceAccountingDataIngestionSuccessEvent event.");
 
         // load entities from db based on ids from event
@@ -73,7 +73,7 @@ public class AccountingCoreEventHandler {
     }
 
     @ApplicationModuleListener
-    public void processFromBlockchainLayer(LedgerChangeEvent event) {
+    public void processFromBlockchainLayer(LedgerUpdatedEvent event) {
         log.info("Received LedgerChangeEvent event, event:{}", event);
 
         accountingCoreService.updateDispatchStatus(event.statusUpdatesMap());

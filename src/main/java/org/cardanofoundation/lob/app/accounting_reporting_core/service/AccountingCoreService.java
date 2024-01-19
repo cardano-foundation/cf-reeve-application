@@ -6,8 +6,8 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactionData;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLineEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.IngestionStoredEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.PublishToTheLedgerEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.AccountingCoreTransactionsUpdatedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
@@ -89,7 +89,7 @@ public class AccountingCoreService {
 
         log.info("Updated transaction line ids count: {}", updatedTxLineIds.size());
 
-        applicationEventPublisher.publishEvent(new IngestionStoredEvent(updatedTxLineIds));
+        applicationEventPublisher.publishEvent(new AccountingCoreTransactionsUpdatedEvent(organisationTransactionData.organisationId(), updatedTxLineIds));
     }
 
     @Transactional
@@ -99,7 +99,7 @@ public class AccountingCoreService {
             log.info("Processing organisationId: {} - pendingTxLinesCount: {}", org.id(), pendingTxLines.size());
 
             log.info("Publishing PublishToTheLedgerEvent...");
-            applicationEventPublisher.publishEvent(new PublishToTheLedgerEvent(org.id(), new OrganisationTransactionData(org.id(), pendingTxLines)));
+            applicationEventPublisher.publishEvent(new LedgerUpdateCommand(org.id(), new OrganisationTransactionData(org.id(), pendingTxLines)));
         }
     }
 
