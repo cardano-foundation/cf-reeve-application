@@ -134,7 +134,7 @@ public class NetSuiteService {
         log.info("validatedTransactionLineItems count:{}", validatedTransactionLineItems.size());
 
         val coreTransactionLines = validatedTransactionLineItems.stream()
-                .map(transactionLineConverter::convert)
+                .map(item -> transactionLineConverter.convert(netSuiteIngestion.getId(), item))
                 .toList();
 
         log.info("CoreTransactionLines count:{}", coreTransactionLines.size());

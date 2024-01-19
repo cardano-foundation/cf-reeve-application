@@ -101,7 +101,7 @@ tasks {
 
     withType<JavaCompile>() {
         options.compilerArgs.add(ENABLE_PREVIEW)
-        options.compilerArgs.add("-Xlint:preview")
+        //options.compilerArgs.add("-Xlint:preview")
     }
 
     withType<Test>() {

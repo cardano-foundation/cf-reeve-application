@@ -11,6 +11,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -63,6 +64,9 @@ public class TransactionLineEntity {
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
 
+    @Column(name = "ingestion_id", nullable = false)
+    private UUID ingestionID;
+
     @Nullable
     @Column(name = "document_internal_number")
     private String documentInternalNumber;
@@ -94,10 +98,6 @@ public class TransactionLineEntity {
     @Nullable
     @Column(name = "account_credit")
     private String accountCredit;
-
-    @Nullable
-    @Column(name = "memo")
-    String memo;
 
     @Nullable
     @Column(name = "amount_fcy")

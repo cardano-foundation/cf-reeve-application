@@ -28,6 +28,7 @@ public class TransactionLineConverter {
         entityTxLine.setEntryDate(txLine.entryDate());
         entityTxLine.setTransactionInternalNumber(txLine.internalTransactionNumber());
         entityTxLine.setAccountCodeDebit(txLine.accountCodeDebit());
+        entityTxLine.setIngestionID(txLine.ingestionId());
 
         entityTxLine.setBaseCurrency(new Currency(txLine.baseCurrency().currency().id(), txLine.baseCurrency().organisationCurrency().internalId()));
         entityTxLine.setTargetCurrency(new Currency(txLine.targetCurrency().currency().id(), txLine.targetCurrency().organisationCurrency().internalId()));
@@ -44,7 +45,6 @@ public class TransactionLineConverter {
 
         entityTxLine.setAccountNameDebit(txLine.accountNameDebit().orElse(null));
         entityTxLine.setAccountCredit(txLine.accountCredit().orElse(null));
-        entityTxLine.setMemo(txLine.memo().orElse(null));
 
         entityTxLine.setAmountFcy(txLine.amountFcy().orElse(null));
         entityTxLine.setAmountLcy(txLine.amountLcy().orElse(null));
@@ -59,7 +59,9 @@ public class TransactionLineConverter {
                 entityTxLine.getTransactionType(),
                 entityTxLine.getEntryDate(),
                 entityTxLine.getTransactionInternalNumber(),
+                entityTxLine.getIngestionID(),
                 entityTxLine.getAccountCodeDebit(),
+
                 new TransactionLine.CurrencyPair(
                         organisationPublicApi.findOrganisationCurrencyByInternalId(entityTxLine.getBaseCurrency().getInternalCode()).orElseThrow(),
                         organisationPublicApi.findByCurrencyId(entityTxLine.getBaseCurrency().getId()).orElseThrow()
@@ -68,6 +70,7 @@ public class TransactionLineConverter {
                         organisationPublicApi.findOrganisationCurrencyByInternalId(entityTxLine.getTargetCurrency().getInternalCode()).orElseThrow(),
                         organisationPublicApi.findByCurrencyId(entityTxLine.getTargetCurrency().getId()).orElseThrow()
                 ),
+
                 entityTxLine.getFxRate(),
                 entityTxLine.getLedgerDispatchStatus(),
                 Optional.ofNullable(entityTxLine.getDocumentInternalNumber()),
@@ -78,7 +81,6 @@ public class TransactionLineConverter {
                 Optional.ofNullable(entityTxLine.getVat()).map(vat -> new TransactionLine.VatPair(vat.getInternalCode(), vat.getRate())),
                 Optional.ofNullable(entityTxLine.getAccountNameDebit()),
                 Optional.ofNullable(entityTxLine.getAccountCredit()),
-                Optional.ofNullable(entityTxLine.getMemo()),
                 Optional.ofNullable(entityTxLine.getAmountFcy()),
                 Optional.ofNullable(entityTxLine.getAmountLcy())
         );
