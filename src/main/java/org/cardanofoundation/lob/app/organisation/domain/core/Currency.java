@@ -10,7 +10,7 @@ public record Currency(
                        String currencyName) {
 
     public static String id(CurrencyIsoStandard currencyISOStandard, String currencyISOCode) {
-        return currencyISOStandard + ":" + currencyISOCode;
+        return STR . "\{currencyISOStandard}:\{currencyISOCode}";
     }
 
     public enum CurrencyIsoStandard {

@@ -79,9 +79,9 @@ public class AccountingCoreEventHandler {
 
     @ApplicationModuleListener
     public void handleLedgerUpdatedEvent(LedgerUpdatedEvent event) {
-        log.info("Received LedgerUpdatedEvent event, event:{}", event);
+        log.info("Received LedgerUpdatedEvent event, eventCounts:{}", event.statusUpdates().size());
 
-        accountingCoreService.updateDispatchStatusesForTransactionLines(event.statusUpdatesMap());
+        accountingCoreService.updateDispatchStatusesForTransactionLines(event.statusUpdates());
     }
 
 }

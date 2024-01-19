@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TransactionsWatchDogJob {
 
-    @Scheduled(fixedDelay = 60_000L) // TODO job should be configurable
-    public void checkTransactionStatuses() {
+    @Scheduled(fixedDelayString = "PT1M", initialDelayString = "PT10S")
+    public void execute() {
         log.info("Polling for to check for transaction statuses...");
 
         // gets transaction lines from the database which have not been finalished yet

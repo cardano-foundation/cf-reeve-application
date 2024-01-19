@@ -8,6 +8,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLineEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.CoreTransactionsUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
@@ -93,13 +94,22 @@ public class AccountingCoreService {
 
     @Transactional
     public void publishLedgerEvents() {
-        for (val org : organisationPublicApi.listAll()) {
-            val pendingTxLines = readPendingTransactionLines(org);
-            log.info("Processing organisationId: {} - pendingTxLinesCount: {}", org.id(), pendingTxLines.size());
+        log.info("publishLedgerEvents...");
+
+        for (val organisation : organisationPublicApi.listAll()) {
+            val pendingTxLines = readPendingTransactionLines(organisation);
+            log.info("Processing organisationId: {} - pendingTxLinesCount: {}", organisation.id(), pendingTxLines.size());
 
             log.info("Publishing PublishToTheLedgerEvent...");
-            applicationEventPublisher.publishEvent(new LedgerUpdateCommand(org.id(), new TransactionLines(org.id(), pendingTxLines)));
+            applicationEventPublisher.publishEvent(new LedgerUpdateCommand(organisation.id(), new TransactionLines(organisation.id(), pendingTxLines)));
         }
+    }
+
+    @Transactional
+    public void scheduleIngestion() {
+        log.info("Executing ScheduledIngestionJob...");
+
+        applicationEventPublisher.publishEvent(new ScheduledIngestionEvent("system"));
     }
 
 }

@@ -3,13 +3,8 @@ package org.cardanofoundation.lob.app;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.cardanofoundation.lob.app.netsuite_adapter.NetSuiteAdapterPublicApi;
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,20 +16,16 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
 import java.time.Clock;
-
-import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
 @EnableJpaRepositories( { "org.cardanofoundation.lob", "org.springframework.modulith.events.jpa" } )
@@ -44,12 +35,10 @@ import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 })
 @EnableTransactionManagement
 @EnableAsync
-@ImportRuntimeHints(LobServiceApp.Hints.class)
+//@ImportRuntimeHints(LobServiceApp.Hints.class)
 @Slf4j
 @RequiredArgsConstructor
 public class LobServiceApp {
-
-    private final NetSuiteAdapterPublicApi netSuiteAdapterPublicApi;
 
     public static void main(String[] args) {
         SpringApplication.run(LobServiceApp.class, args);
@@ -62,12 +51,6 @@ public class LobServiceApp {
 
             log.info("Lob Service started.");
         };
-    }
-
-    @Scheduled(fixedDelayString = "PT1M")
-    public void tick() {
-        // TODO we cannot interact here directly with NetSuite, makes no sense, this is just a test
-        netSuiteAdapterPublicApi.scheduleNetsuiteIngestionEvent();
     }
 
     @Configuration
@@ -129,15 +112,6 @@ public class LobServiceApp {
             return Clock.systemDefaultZone();
         }
 
-    }
-
-    static class Hints implements RuntimeHintsRegistrar {
-
-        @Override
-        @SneakyThrows
-        public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-            hints.reflection().registerMethod(TimedAspect.class.getMethod("timedMethod", ProceedingJoinPoint.class), INVOKE);
-        }
     }
 
 }
