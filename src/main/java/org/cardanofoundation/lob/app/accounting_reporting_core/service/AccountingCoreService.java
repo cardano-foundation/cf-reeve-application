@@ -78,7 +78,7 @@ public class AccountingCoreService {
     @Transactional
     public void storeAll(TransactionLines transactionLines) {
         //log.info("Storing transaction data: {}", transactionData);
-        val entityTxLines = transactionLines.transactionLines().stream()
+        val entityTxLines = transactionLines.entries().stream()
                 .map(transactionLineConverter::convert)
                 .toList();
 
