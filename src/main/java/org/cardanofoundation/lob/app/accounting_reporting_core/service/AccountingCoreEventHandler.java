@@ -49,7 +49,7 @@ public class AccountingCoreEventHandler {
         log.info("dispatchedTxLineCount: {}", dispatchedTxLines.size());
 
         if (!dispatchedTxLines.isEmpty()) {
-            log.error("Failed to update = dispatchedTxLineCount: {}", dispatchedTxLines.size());
+            log.warn("Failed to update = dispatchedTxLineCount: {}", dispatchedTxLines.size());
 
             val dispatchedTxLineIdsAsString = dispatchedTxLines
                     .stream()
@@ -60,7 +60,7 @@ public class AccountingCoreEventHandler {
                     ERROR,
                     "CANNOT_UPDATE_TX_LINES_ERROR",
                     "Not possible to update transactions that have already been dispatched to the blockchain.",
-                    STR . "Unable to update tx line ids as they have been dispatched: \{ dispatchedTxLineIdsAsString }")
+                    STR . "Unable to update tx line ids as they have been dispatched: \{dispatchedTxLineIdsAsString}")
             );
         }
 

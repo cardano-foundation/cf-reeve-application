@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.netsuite_adapter.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ACLMappingException;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
@@ -15,7 +16,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractOpt;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.zeroForNull;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
@@ -30,21 +33,27 @@ public class TransactionLineConverter {
     private final OrganisationPublicApi organisationPublicApi;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public TransactionLine convert(SearchResultTransactionItem searchResultTransactionItem) {
-        val organisation = organisationPublicApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), NETSUITE)
-                .orElseThrow();
+    public TransactionLine convert(UUID ingestionId,
+                                   SearchResultTransactionItem searchResultTransactionItem) {
+        val organisationM = organisationPublicApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), NETSUITE);
+        if (organisationM.isEmpty()) {
+            throw new ACLMappingException(STR."Organisation mapping not found for foreignId: \{searchResultTransactionItem.subsidiary()}");
+        }
+        val organisation = organisationM.orElseThrow();
+        val organisationId = organisationM.orElseThrow().id();
 
         return new TransactionLine(
-                createTxLineId(organisation, searchResultTransactionItem),
-                organisation.id(),
+                createTxLineId(organisationM.orElseThrow(), searchResultTransactionItem),
+                organisationId,
                 transactionType(searchResultTransactionItem.type()),
                 searchResultTransactionItem.dateCreated(),
                 searchResultTransactionItem.transactionNumber(),
+                ingestionId,
                 searchResultTransactionItem.number(),
-                covertOrganisationCurrency(organisation).orElseThrow(),
-                convertCurrency(searchResultTransactionItem).orElseThrow(),
+                covertOrganisationCurrency(organisation),
+                convertCurrency(searchResultTransactionItem),
                 searchResultTransactionItem.exchangeRate(),
-                TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED,
+                NOT_DISPATCHED,
                 normaliseString(searchResultTransactionItem.documentNumber()),
                 normaliseString(searchResultTransactionItem.id()),
                 normaliseString(searchResultTransactionItem.companyName()),
@@ -53,29 +62,40 @@ public class TransactionLineConverter {
                 convertVat(searchResultTransactionItem),
                 normaliseString(searchResultTransactionItem.name()),
                 normaliseString(searchResultTransactionItem.accountMain()),
-                normaliseString(searchResultTransactionItem.memo()),
-                substractOpt(zeroForNull(searchResultTransactionItem.amountDebitForeignCurrency()), zeroForNull(searchResultTransactionItem.amountCreditForeignCurrency())),
+                substractOpt(zeroForNull(searchResultTransactionItem.amountCreditForeignCurrency()), zeroForNull(searchResultTransactionItem.amountDebitForeignCurrency())),
                 substractOpt(zeroForNull(searchResultTransactionItem.amountDebit()), zeroForNull(searchResultTransactionItem.amountCredit()))
         );
     }
 
-    private Optional<TransactionLine.CurrencyPair> covertOrganisationCurrency(Organisation organisation) {
+    private TransactionLine.CurrencyPair covertOrganisationCurrency(Organisation organisation) {
         val organisationBaseCurrency = organisation.baseCurrency();
         val organisationBaseCurrencyId = organisationBaseCurrency.currencyId();
 
-        return organisationPublicApi.findByCurrencyId(organisationBaseCurrencyId)
+        val orgM =  organisationPublicApi.findByCurrencyId(organisationBaseCurrencyId)
                 .map(baseCurrency -> new TransactionLine.CurrencyPair(organisationBaseCurrency, baseCurrency));
+
+        if (orgM.isEmpty()) {
+            throw new ACLMappingException(STR."Organisation base currency mapping not found for organisationId: \{organisation.id()}");
+        }
+
+        return orgM.orElseThrow();
     }
 
-    private Optional<TransactionLine.CurrencyPair> convertCurrency(SearchResultTransactionItem item) {
+    private TransactionLine.CurrencyPair convertCurrency(SearchResultTransactionItem item) {
         val currencyInternalId = item.currency();
 
-        return organisationPublicApi.findOrganisationCurrencyByInternalId(currencyInternalId.toString()).flatMap(organisationCurrency -> {
+        val currencyM = organisationPublicApi.findOrganisationCurrencyByInternalId(currencyInternalId.toString()).flatMap(organisationCurrency -> {
             val currencyId = organisationCurrency.currencyId();
 
             return organisationPublicApi.findByCurrencyId(currencyId)
                     .map(currency -> new TransactionLine.CurrencyPair(organisationCurrency, currency));
         });
+
+        if (currencyM.isEmpty()) {
+            throw new ACLMappingException(STR."Currency mapping not found for internalCurrencyId: \{currencyInternalId}");
+        }
+
+        return currencyM.orElseThrow();
     }
 
     private Optional<TransactionLine.VatPair> convertVat(SearchResultTransactionItem searchResultTransactionItem) {
@@ -98,10 +118,7 @@ public class TransactionLineConverter {
                     STR."Vat Rate not found for internalVatId: \{internalVatId}",
                     STR."Vat Rate not found for internalVatId: \{internalVatId}"));
 
-            // TODO we need this to return Either or go with exceptions
-            //throw new RuntimeException("Vat Rate not found for internalVatId: " + internalVatId);
-
-            return Optional.empty();
+            throw new ACLMappingException(STR."Vat Rate mapping not found for internalVatId: \{internalVatId}");
         }
 
         val organisationVat = organisationVatM.orElseThrow();
@@ -124,6 +141,7 @@ public class TransactionLineConverter {
             case FxReval -> TransactionType.FxRevaluation;
             case Transfer -> TransactionType.Transfer;
             case CustPymt -> TransactionType.CustomerPayment;
+            default -> throw new ACLMappingException(STR."Transaction type not supported: \{transType}");
         };
     }
 

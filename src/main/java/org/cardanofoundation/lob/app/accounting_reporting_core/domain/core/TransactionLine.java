@@ -6,6 +6,7 @@ import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationCurren
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 public record TransactionLine(
 
@@ -20,6 +21,8 @@ public record TransactionLine(
         LocalDateTime entryDate, // date of the transaction
 
         String internalTransactionNumber, // unique transaction number, organisation level value
+
+        UUID ingestionId,
 
         String accountCodeDebit, //
 
@@ -51,8 +54,6 @@ public record TransactionLine(
 
         Optional<String> accountCredit,
 
-        Optional<String> memo,
-
         Optional<BigDecimal> amountFcy,
 
         Optional<BigDecimal> amountLcy) {
@@ -75,17 +76,13 @@ public record TransactionLine(
 
         COMPLETED,
 
-        FINALIZED, // finalised on blockchain(s)
-
-        FAILED,
-
-        UNRECOVERABLE_ERROR; // unrecoverable error occurred needing user attention
+        FINALIZED; // finalised on blockchain(s)
 
         /**
          * Dispatchable means that we can dispatch the transaction line to the blockchain(s)
          */
         public boolean isDispatchable() {
-            return this == NOT_DISPATCHED || this == FAILED;
+            return this == NOT_DISPATCHED;
         }
 
     }

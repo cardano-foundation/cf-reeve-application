@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
 
 @Service
@@ -68,7 +67,7 @@ public class AccountingCoreService {
     public List<TransactionLine> readPendingTransactionLines(Organisation organisation) {
         // TODO what about order by entry date or transaction internal number, etc?
         val pendingTransactionLines = accountingCoreRepository
-                .findByPendingTransactionLinesByOrganisationAndDispatchStatus(organisation.id(), List.of(NOT_DISPATCHED, FAILED));
+                .findByPendingTransactionLinesByOrganisationAndDispatchStatus(organisation.id(), List.of(NOT_DISPATCHED));
 
         return pendingTransactionLines
                 .stream()
@@ -107,8 +106,7 @@ public class AccountingCoreService {
 
     @Transactional
     public void scheduleIngestion() {
-        log.info("Executing ScheduledIngestionJob...");
-
+        log.info("scheduleIngestion...");
         applicationEventPublisher.publishEvent(new ScheduledIngestionEvent("system"));
     }
 
