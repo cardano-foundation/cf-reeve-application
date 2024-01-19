@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class NetSuiteDateDeserialiser extends LocalDateTimeDeserializer {
+public class NetSuiteDateTimeDeserialiser extends LocalDateTimeDeserializer {
 
     private final static DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd/MM/yyyy h:mm a");
 
-public NetSuiteDateDeserialiser() {
+public NetSuiteDateTimeDeserialiser() {
         super(DTF);
     }
 

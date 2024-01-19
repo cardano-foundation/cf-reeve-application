@@ -1,14 +1,17 @@
 package org.cardanofoundation.lob.app.netsuite_adapter.domain.core;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import jakarta.validation.constraints.*;
-import org.cardanofoundation.lob.app.netsuite_adapter.util.NetSuiteDateDeserialiser;
+import org.cardanofoundation.lob.app.netsuite_adapter.util.NetSuiteDateTimeDeserialiser;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.validation.EnumNamePattern;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -21,7 +24,7 @@ public record SearchResultTransactionItem(
         Integer lineID,
 
         @JsonProperty("Subsidiary (no hierarchy)")
-        @Positive
+        @PositiveOrZero
         Integer subsidiary,
 
         @JsonProperty("Type")
@@ -29,8 +32,13 @@ public record SearchResultTransactionItem(
         Type type,
 
         @JsonProperty("Date Created")
-        @JsonDeserialize(using = NetSuiteDateDeserialiser.class)
+        @JsonDeserialize(using = NetSuiteDateTimeDeserialiser.class)
         LocalDateTime dateCreated,
+
+        @JsonProperty("Date")
+        @JsonDeserialize(using = LocalDateDeserializer.class)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+        LocalDate date,
 
         @JsonProperty("ID")
         String id,

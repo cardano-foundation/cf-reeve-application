@@ -46,7 +46,7 @@ public class TransactionLineConverter {
                 createTxLineId(organisation, searchResultTransactionItem),
                 organisationId,
                 transactionType(searchResultTransactionItem.type()),
-                searchResultTransactionItem.dateCreated(),
+                searchResultTransactionItem.date(),
                 searchResultTransactionItem.transactionNumber(),
                 ingestionId,
                 searchResultTransactionItem.number(),

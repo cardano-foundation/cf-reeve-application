@@ -24,7 +24,7 @@ CREATE TABLE accounting_core_transaction_line (
    organisation_id VARCHAR(255) NOT NULL,
    transaction_type VARCHAR(255) NOT NULL,
    ingestion_id UUID NOT NULL,
-   entry_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+   entry_date DATE NOT NULL,
    transaction_internal_number VARCHAR(255),
    account_code_debit VARCHAR(255) NOT NULL,
    base_currency_id VARCHAR(255) NOT NULL,

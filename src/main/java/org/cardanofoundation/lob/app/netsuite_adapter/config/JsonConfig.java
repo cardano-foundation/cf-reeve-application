@@ -3,7 +3,7 @@ package org.cardanofoundation.lob.app.netsuite_adapter.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.val;
-import org.cardanofoundation.lob.app.netsuite_adapter.util.NetSuiteDateDeserialiser;
+import org.cardanofoundation.lob.app.netsuite_adapter.util.NetSuiteDateTimeDeserialiser;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,7 @@ public class JsonConfig {
     @Qualifier("netSuiteJsonMapper")
     public ObjectMapper jsonMapper() {
         val javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addDeserializer(java.time.LocalDateTime.class, new NetSuiteDateDeserialiser());
+        javaTimeModule.addDeserializer(java.time.LocalDateTime.class, new NetSuiteDateTimeDeserialiser());
 
         return new ObjectMapper()
                 .setSerializationInclusion(NON_NULL)
