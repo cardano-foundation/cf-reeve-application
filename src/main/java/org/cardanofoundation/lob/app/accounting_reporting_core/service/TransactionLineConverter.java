@@ -46,6 +46,8 @@ public class TransactionLineConverter {
         entityTxLine.setAccountNameDebit(txLine.accountNameDebit().orElse(null));
         entityTxLine.setAccountCredit(txLine.accountCredit().orElse(null));
 
+        entityTxLine.setValidated(txLine.validated().orElse(null));
+
         entityTxLine.setAmountFcy(txLine.amountFcy().orElse(null));
         entityTxLine.setAmountLcy(txLine.amountLcy().orElse(null));
 
@@ -81,6 +83,7 @@ public class TransactionLineConverter {
                 Optional.ofNullable(entityTxLine.getVat()).map(vat -> new TransactionLine.VatPair(vat.getInternalCode(), vat.getRate())),
                 Optional.ofNullable(entityTxLine.getAccountNameDebit()),
                 Optional.ofNullable(entityTxLine.getAccountCredit()),
+                Optional.ofNullable(entityTxLine.getValidated()),
                 Optional.ofNullable(entityTxLine.getAmountFcy()),
                 Optional.ofNullable(entityTxLine.getAmountLcy())
         );

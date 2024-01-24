@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-
 /**
  * Event responsible for notifying the LOB user of a problem
  *
@@ -18,9 +17,9 @@ import java.util.UUID;
  * @param problem
  */
 @Externalized("target")
+// TODO add organisationId and creationDate, expirationDate, acked notification?
 public record NotificationEvent(UUID id,
                                 String code,
-
                                 NotificationSeverity severity,
                                 String title,
                                 String message,
@@ -40,4 +39,3 @@ public record NotificationEvent(UUID id,
   }
 
 }
-

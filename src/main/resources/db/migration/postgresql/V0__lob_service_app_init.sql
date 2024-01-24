@@ -41,6 +41,7 @@ CREATE TABLE accounting_core_transaction_line (
    vat_rate DECIMAL,
    account_name_debit VARCHAR(255),
    account_credit VARCHAR(255),
+   validated BOOLEAN,
    amount_fcy DECIMAL,
    amount_lcy DECIMAL,
    ledger_dispatch_status VARCHAR(255) NOT NULL,
