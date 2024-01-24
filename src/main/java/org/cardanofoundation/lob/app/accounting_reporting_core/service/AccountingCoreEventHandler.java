@@ -49,7 +49,7 @@ public class AccountingCoreEventHandler {
         log.info("dispatchedTxLineCount: {}", dispatchedTxLines.size());
 
         if (!dispatchedTxLines.isEmpty()) {
-            log.warn("Failed to update = dispatchedTxLineCount: {}", dispatchedTxLines.size());
+            log.warn("Failed to update some transaction lines, count: {}. They are already dispatched to the blockchain.", dispatchedTxLines.size());
 
             val dispatchedTxLineIdsAsString = dispatchedTxLines
                     .stream()
