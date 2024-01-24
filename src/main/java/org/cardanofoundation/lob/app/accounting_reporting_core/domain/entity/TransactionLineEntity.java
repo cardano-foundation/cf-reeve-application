@@ -100,6 +100,10 @@ public class TransactionLineEntity {
     private String accountCredit;
 
     @Nullable
+    @Column(name = "validated")
+    private Boolean validated;
+
+    @Nullable
     @Column(name = "amount_fcy")
     BigDecimal amountFcy;
 

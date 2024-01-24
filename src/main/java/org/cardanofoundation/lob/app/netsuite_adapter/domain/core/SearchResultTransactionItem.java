@@ -6,13 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import jakarta.validation.constraints.*;
-import org.cardanofoundation.lob.app.netsuite_adapter.util.NetSuiteDateTimeDeserialiser;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.validation.EnumNamePattern;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 
@@ -31,9 +29,9 @@ public record SearchResultTransactionItem(
         @EnumNamePattern(regexp =  "Journal|CardChrg|VendBill|CardRfnd|FxReval|Transfer|CustPymt")
         Type type,
 
-        @JsonProperty("Date Created")
-        @JsonDeserialize(using = NetSuiteDateTimeDeserialiser.class)
-        LocalDateTime dateCreated,
+//        @JsonProperty("Date Created")
+//        @JsonDeserialize(using = NetSuiteDateTimeDeserialiser.class)
+//        LocalDateTime dateCreated,
 
         @JsonProperty("Date")
         @JsonDeserialize(using = LocalDateDeserializer.class)

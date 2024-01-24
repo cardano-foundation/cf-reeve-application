@@ -3,15 +3,20 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.BusinessRuleViolation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesValidator;
 import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 import static org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity.ERROR;
 
@@ -21,15 +26,18 @@ import static org.cardanofoundation.lob.app.notification_gateway.domain.core.Not
 public class AccountingCoreEventHandler {
 
     private final AccountingCoreService accountingCoreService;
+    private final BusinessRulesValidator businessRulesValidator;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @ApplicationModuleListener
+    // TODO move this to the service layer
     public void handleERPIngestionEvent(ERPIngestionEvent event) {
         log.info("Received handleERPIngestionEvent event.");
 
         // load entities from db based on ids from event
 
-        val organisationId = event.transactionLines().organisationId();
+        val organisationId = event.transactionLines()
+                .organisationId();
 
         val txLines = event.transactionLines()
                 .entries()
@@ -73,7 +81,38 @@ public class AccountingCoreEventHandler {
         if (!notDispatchedTxLines.isEmpty()) {
             log.info("Storing notDispatchedTxLines: {}", notDispatchedTxLines.size());
 
-            accountingCoreService.storeAll(new TransactionLines(organisationId, notDispatchedTxLines));
+            val notDispatchedTxLinesLines = new TransactionLines(organisationId, notDispatchedTxLines);
+
+            val violations = businessRulesValidator.validate(organisationId, notDispatchedTxLinesLines);
+            val violationsByTxLineIdMap = violations.stream()
+                    .collect(groupingBy(BusinessRuleViolation::txLineId));
+
+            val violationsByTransactionNumberMap = violations
+                    .stream()
+                    .collect(groupingBy(BusinessRuleViolation::transactionNumber));
+
+            for (val violation : violations) {
+                log.warn("Business rule violation: {}", violation);
+
+                applicationEventPublisher.publishEvent(NotificationEvent.create(
+                        ERROR,
+                        "BUSINESS_RULE_VIOLATION_ERROR",
+                        "Business rule violation.",
+                        STR . "Business rule violation: \{violation}")
+                );
+            }
+
+            val txLineWithValidation = txLines.stream().map(txLine -> {
+                val txLineId = txLine.id();
+
+                val txLineViolations = violationsByTxLineIdMap.getOrDefault(txLineId, List.of());
+                val txLineViolationsByTransactionNumber = violationsByTransactionNumberMap.getOrDefault(txLine.internalTransactionNumber(), List.of());
+                val validated = txLineViolations.isEmpty() && txLineViolationsByTransactionNumber.isEmpty();
+
+                return TransactionLine.recreateWithValidation(txLine, validated);
+            }).toList();
+
+            accountingCoreService.storeAll(new TransactionLines(organisationId, txLineWithValidation));
         }
     }
 

@@ -42,7 +42,7 @@ public class TransactionLineConverter {
         val organisation = organisationM.orElseThrow();
         val organisationId = organisationM.orElseThrow().id();
 
-        return new TransactionLine(
+        val tLine = new TransactionLine(
                 createTxLineId(organisation, searchResultTransactionItem),
                 organisationId,
                 transactionType(searchResultTransactionItem.type()),
@@ -62,9 +62,17 @@ public class TransactionLineConverter {
                 convertVat(searchResultTransactionItem),
                 normaliseString(searchResultTransactionItem.name()),
                 normaliseString(searchResultTransactionItem.accountMain()),
+                Optional.empty(),
                 substractOpt(zeroForNull(searchResultTransactionItem.amountDebitForeignCurrency()), zeroForNull(searchResultTransactionItem.amountCreditForeignCurrency())),
                 substractOpt(zeroForNull(searchResultTransactionItem.amountDebit()), zeroForNull(searchResultTransactionItem.amountCredit()))
         );
+
+        // business rules validation
+        if (tLine.amountFcy().isEmpty() || tLine.amountLcy().isEmpty()) {
+            throw new ACLMappingException(STR."Transaction line amountFcy or amountLcy is empty");
+        }
+
+        return tLine;
     }
 
     private TransactionLine.CurrencyPair covertOrganisationCurrency(Organisation organisation) {

@@ -54,9 +54,40 @@ public record TransactionLine(
 
         Optional<String> accountCredit,
 
+        Optional<Boolean> validated,
+
         Optional<BigDecimal> amountFcy,
 
         Optional<BigDecimal> amountLcy) {
+
+    public static TransactionLine recreateWithValidation(
+            TransactionLine base,
+            boolean validated
+    ) {
+        return new TransactionLine(
+                UUID.randomUUID().toString(),
+                base.organisationId,
+                base.transactionType,
+                base.entryDate,
+                base.internalTransactionNumber,
+                base.ingestionId,
+                base.accountCodeDebit,
+                base.baseCurrency,
+                base.targetCurrency,
+                base.fxRate,
+                base.ledgerDispatchStatus,
+                base.internalDocumentNumber,
+                base.internalVendorCode,
+                base.vendorName,
+                base.internalCostCenterCode,
+                base.internalProjectCode,
+                base.vat,
+                base.accountNameDebit,
+                base.accountCredit,
+                Optional.of(validated),
+                base.amountFcy,
+                base.amountLcy);
+    }
 
     // TODO equality in business sense will not include in the future e.g. ingestion_id
     public boolean isBusinessEqual(TransactionLine transactionLine) {
