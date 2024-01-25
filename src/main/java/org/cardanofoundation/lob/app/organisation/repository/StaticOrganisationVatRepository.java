@@ -47,15 +47,12 @@ public class StaticOrganisationVatRepository implements OrganisationVatRepositor
                 BigDecimal.valueOf(0.0D)
         ));
 
-
-        // this is fake (not official) but we need to have it for now for ingestion job to succeed
         organisationVatList.add(new OrganisationVat(
                 "CF",
                 "181",
                 BigDecimal.valueOf(0.0D)
         ));
 
-        // this is fake (not official) but we need to have it for now for ingestion job to succeed
         organisationVatList.add(new OrganisationVat(
                 "CF",
                 "159",
