@@ -17,7 +17,7 @@ public class LedgerNotifierJob {
     public void execute() {
         log.info("Executing LedgerNotifierJob job...");
 
-        accountingCoreService.publishLedgerEvents();
+        accountingCoreService.uploadToTheLedger();
 
         log.info("Finished executing LedgerNotifierJob job.");
     }
