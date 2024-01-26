@@ -19,7 +19,7 @@ public class NetSuiteEventHandler {
     public void handleScheduledIngestionEvent(ScheduledIngestionEvent event) throws JsonProcessingException {
         log.info("Handling ScheduledIngestionEvent...");
 
-        netSuiteService.startIngestion();
+        netSuiteService.startIngestion(event.initiator(), event.filteringParameters());
 
         log.info("Handled ScheduledIngestionEvent.");
     }

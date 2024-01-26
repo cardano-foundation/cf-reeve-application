@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
+
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,9 +15,10 @@ import lombok.NoArgsConstructor;
 public class Currency {
 
     @Column(name = "currency_id")
+    @Nullable
     private String id;
 
-    @Column(name = "currency_internal_code")
+    @Column(name = "currency_internal_code", nullable = false)
     private String internalCode;
 
 }

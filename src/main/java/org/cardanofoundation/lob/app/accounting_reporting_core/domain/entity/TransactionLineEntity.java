@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -47,19 +48,18 @@ public class TransactionLineEntity {
     @Enumerated(STRING)
     org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus ledgerDispatchStatus = TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "id", column = @Column(name = "base_currency_id")),
-            @AttributeOverride(name = "internalCode", column = @Column(name = "base_currency_internal_code"))
-    })
-    private Currency baseCurrency;
+    @Column(name = "base_currency_internal_code", nullable = false)
+    private String baseCurrencyInternalCode;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "id", column = @Column(name = "target_currency_id")),
-            @AttributeOverride(name = "internalCode", column = @Column(name = "target_currency_internal_code"))
-    })
-    private Currency targetCurrency;
+    @Column(name = "base_currency_id", nullable = false)
+    private String baseCurrencyId;
+
+    @Column(name = "target_currency_internal_code", nullable = false)
+    private String targetCurrencyInternalCode;
+
+    @Column(name = "target_currency_id")
+    @Nullable
+    private String targetCurrencyId;
 
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
@@ -88,8 +88,12 @@ public class TransactionLineEntity {
     private String projectInternalCode;
 
     @Nullable
-    @Embedded
-    private Vat vat;
+    @Column(name = "vat_internal_code")
+    private String vatInternalCode;
+
+    @Nullable
+    @Column(name = "vat_rate")
+    private BigDecimal vatRate;
 
     @Nullable
     @Column(name = "account_name_debit")
@@ -99,9 +103,9 @@ public class TransactionLineEntity {
     @Column(name = "account_credit")
     private String accountCredit;
 
-    @Nullable
-    @Column(name = "validated")
-    private Boolean validated;
+    @Column(name = "validation_status", nullable = false)
+    @Enumerated(STRING)
+    private ValidationStatus validationStatus;
 
     @Nullable
     @Column(name = "amount_fcy")

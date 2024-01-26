@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 
 /**
@@ -7,5 +8,8 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
  *
  * @param transactionLines
  */
-public record ERPIngestionEvent(TransactionLines transactionLines) {
+public record ERPIngestionEvent(
+        String initiator,
+        FilteringParameters filteringParameters,
+        TransactionLines transactionLines) {
 }

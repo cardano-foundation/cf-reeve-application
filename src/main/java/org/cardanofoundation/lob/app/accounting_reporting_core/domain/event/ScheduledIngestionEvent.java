@@ -1,7 +1,8 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 
-import org.jmolecules.event.types.DomainEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
 
-public record ScheduledIngestionEvent(String initiator) implements DomainEvent {
-
+public record ScheduledIngestionEvent(
+        FilteringParameters filteringParameters,
+        String initiator) {
 }

@@ -29,7 +29,7 @@ public class BlockchainPublisherService {
 
         val blockchainDispatchedTxLineIds = transactionLines.entries()
                 .stream()
-                .map(TransactionLine::id)
+                .map(TransactionLine::getId)
                 .toList();
 
         // TODO send data to the blockchain
