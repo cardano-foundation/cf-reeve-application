@@ -7,6 +7,7 @@ import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
@@ -57,7 +58,7 @@ public class NetSuiteService {
     }
 
     @Transactional
-    public void startIngestion() throws JsonProcessingException {
+    public void startIngestion(String initiator, FilteringParameters filteringParameters) throws JsonProcessingException {
         log.info("Running ingestion...");
 
         log.info("Checking if ingestion exists...");
@@ -135,12 +136,16 @@ public class NetSuiteService {
 
         val coreTransactionLines = validatedTransactionLineItems.stream()
                 .map(item -> transactionLineConverter.convert(netSuiteIngestion.getId(), item))
+                .filter(line -> filteringParameters.getFrom().isEmpty() || filteringParameters.getFrom().map(date -> line.getEntryDate().isAfter(date)).orElse(false))
+                .filter(line -> filteringParameters.getTo().isEmpty() || filteringParameters.getTo().map(date -> line.getEntryDate().isBefore(date)).orElse(false))
+                .filter(line -> filteringParameters.getOrganisationIds().isEmpty() || filteringParameters.getOrganisationIds().contains(line.getOrganisationId()))
+                .filter(line -> filteringParameters.getProjectCodes().isEmpty() || line.getInternalProjectCode().map(projectCode -> filteringParameters.getProjectCodes().contains(projectCode)).orElse(false))
                 .toList();
 
-        log.info("CoreTransactionLines count:{}", coreTransactionLines.size());
+        log.info("CoreTransactionLines count: {}", coreTransactionLines.size());
 
         val txLinesPerOrganisationId = coreTransactionLines.stream()
-                .collect(groupingBy(TransactionLine::organisationId));
+                .collect(groupingBy(TransactionLine::getOrganisationId));
 
         for (val entry : txLinesPerOrganisationId.entrySet()) {
             val organisationId = entry.getKey();
@@ -148,7 +153,10 @@ public class NetSuiteService {
 
             log.info("Publishing ERPIngestionEvent event, organisationId: {}, txLines count: {}", organisationId, txLines.size());
 
-            applicationEventPublisher.publishEvent(new ERPIngestionEvent(new TransactionLines(organisationId, txLines)));
+            applicationEventPublisher.publishEvent(new ERPIngestionEvent(
+                    initiator,
+                    filteringParameters,
+                    new TransactionLines(organisationId, txLines)));
         }
 
         log.info("NetSuite Ingestion completed.");

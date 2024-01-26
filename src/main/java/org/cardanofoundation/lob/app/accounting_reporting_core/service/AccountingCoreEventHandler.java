@@ -17,9 +17,9 @@ public class AccountingCoreEventHandler {
     @ApplicationModuleListener
     // TODO move this to the service layer
     public void handleERPIngestionEvent(ERPIngestionEvent event) {
-        log.info("Received handleERPIngestionEvent event.");
+        log.info("Received handleERPIngestionEvent event....");
 
-        accountingCoreService.startCoreIngestion(event.transactionLines());
+        accountingCoreService.runIncomingIngestionPipeline(event.transactionLines());
     }
 
     @ApplicationModuleListener

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Pattern;
 public record Currency(
                        String id,
                        CurrencyIsoStandard currencyISOStandard,
-                       @Pattern(regexp = "[A-Z]{3,6}$")
+                       @Pattern(regexp = "^[A-Z]{3,6}$")
                        String currencyISOCode,
                        String currencyName) {
 

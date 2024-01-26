@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 
 @Embeddable
@@ -18,6 +19,7 @@ public class Vat {
     private String internalCode;
 
     @Column(name = "vat_rate")
+    @Nullable
     private BigDecimal rate;
 
 }
