@@ -26,7 +26,7 @@ public class AccountingCoreEventHandler {
     public void handleLedgerUpdatedEvent(LedgerUpdatedEvent event) {
         log.info("Received LedgerUpdatedEvent event, eventCounts:{}", event.statusUpdates().size());
 
-        accountingCoreService.updateDispatchStatusesForTransactionLines(event.statusUpdates());
+        accountingCoreService.syncStateFromLedger(event.statusUpdates());
     }
 
 }

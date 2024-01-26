@@ -6,10 +6,6 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.TransactionLineConverter;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline.BusinessRulesConvertor;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline.CleansingService;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline.ConversionsService;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline.GenesisService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
