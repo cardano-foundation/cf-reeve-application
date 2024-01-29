@@ -50,7 +50,12 @@ public class GenesisService {
                 .toList();
 
         dispatchedTxLines.forEach(txLine -> {
-            val v = Violation.create(txLine.getId(), txLine.getInternalTransactionNumber(), "CANNOT_UPDATE_TX_LINES_ERROR");
+            val v = Violation.create(
+                    txLine.getId(),
+                    Violation.Priority.HIGH,
+                    txLine.getInternalTransactionNumber(),
+                    "CANNOT_UPDATE_TX_LINES_ERROR"
+            );
 
             violations.add(v);
         });
