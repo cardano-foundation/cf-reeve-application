@@ -36,56 +36,36 @@ public class IngestionPipelineProcessor {
                 new TransactionLines(transactionLines.organisationId(), List.of())
         );
 
-        if (!genesisTransactionsResult.violations().isEmpty()) {
-            syncToDb(genesisTransactionsResult.passThroughTransactionLines(), genesisTransactionsResult.filteredTransactionLines());
-
-            // publish errors via notification gateway
-
-            return genesisTransactionsResult.passThroughTransactionLines();
-        }
+        val genesisPassThrough = genesisTransactionsResult.passThroughTransactionLines();
+        val genesisFiltered = genesisTransactionsResult.filteredTransactionLines();
 
         val cleansedTransactionsResult = cleansingService.run(
-                genesisTransactionsResult.passThroughTransactionLines(),
-                genesisTransactionsResult.ignoredTransactionLines()
+                genesisPassThrough,
+                genesisFiltered
         );
 
-        if (!cleansedTransactionsResult.violations().isEmpty()) {
-            syncToDb(cleansedTransactionsResult.passThroughTransactionLines(), cleansedTransactionsResult.filteredTransactionLines());
+        val cleansedPassThrough = cleansedTransactionsResult.passThroughTransactionLines();
+        val cleansedFiltered = cleansedTransactionsResult.ignoredTransactionLines();
 
-            // publish errors via notification gateway
-
-            return cleansedTransactionsResult.passThroughTransactionLines();
-        }
 
         val preValidationBusinessRulesResult = businessRulesConvertor.runPreValidation(
-                cleansedTransactionsResult.passThroughTransactionLines(),
-                cleansedTransactionsResult.ignoredTransactionLines()
+                cleansedPassThrough,
+                cleansedFiltered
         );
 
-        if (!preValidationBusinessRulesResult.violations().isEmpty()) {
-            syncToDb(preValidationBusinessRulesResult.passThroughTransactionLines(), preValidationBusinessRulesResult.filteredTransactionLines());
-
-            // publish errors via notification gateway
-
-            return preValidationBusinessRulesResult.passThroughTransactionLines();
-        }
+        val preValidationPassThrough = preValidationBusinessRulesResult.passThroughTransactionLines();
+        val preValidationFiltered = preValidationBusinessRulesResult.filteredTransactionLines();
 
         val convertedTransactionsResult = conversionsService.run(
-                preValidationBusinessRulesResult.passThroughTransactionLines(),
-                preValidationBusinessRulesResult.ignoredTransactionLines()
+                preValidationPassThrough,
+                preValidationFiltered
         );
-
-        if (!convertedTransactionsResult.violations().isEmpty()) {
-            // publish errors via notification gateway
-
-            syncToDb(convertedTransactionsResult.passThroughTransactionLines(), convertedTransactionsResult.filteredTransactionLines());
-
-            return convertedTransactionsResult.passThroughTransactionLines();
-        }
+        val convertedPassThrough = convertedTransactionsResult.passThroughTransactionLines();
+        val convertedFiltered = convertedTransactionsResult.ignoredTransactionLines();
 
         val postValidationTransactionsResult = businessRulesConvertor.runPostValidation(
-                convertedTransactionsResult.passThroughTransactionLines(),
-                convertedTransactionsResult.ignoredTransactionLines()
+                convertedPassThrough,
+                convertedFiltered
         );
 
         syncToDb(postValidationTransactionsResult.passThroughTransactionLines(), postValidationTransactionsResult.filteredTransactionLines());

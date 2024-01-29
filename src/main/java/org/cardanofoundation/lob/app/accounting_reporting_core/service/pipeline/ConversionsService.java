@@ -44,6 +44,7 @@ public class ConversionsService {
                 if (vatM.isEmpty()) {
                     return Either.left(Violation.create(
                             transactionLine.getId(),
+                            Violation.Priority.NORMAL,
                             transactionLine.getInternalTransactionNumber(),
                             "VAT_RATE_NOT_FOUND",
                             Map.of("vatInternalCode", vatInternalCode)
@@ -69,6 +70,7 @@ public class ConversionsService {
                 if (organisationCurrencyByInternalIdM.isEmpty()) {
                     return Either.left(Violation.create(
                             transactionLine.getId(),
+                            Violation.Priority.NORMAL,
                             transactionLine.getInternalTransactionNumber(),
                             "CURRENCY_RATE_NOT_FOUND",
                             Map.of("currencyInternalId", targetCurrencyInternalId)
