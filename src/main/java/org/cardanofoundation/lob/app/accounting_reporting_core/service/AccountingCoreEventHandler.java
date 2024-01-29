@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline.IngestionPipelineProcessor;
@@ -15,13 +16,18 @@ public class AccountingCoreEventHandler {
 
     private final IngestionPipelineProcessor ingestionPipelineProcessor;
 
+    private final NotificationGateway notificationGateway;
+
     private final LedgerService ledgerService;
 
     @ApplicationModuleListener
     public void handleERPIngestionEvent(ERPIngestionEvent event) {
         log.info("Received handleERPIngestionEvent event....");
 
-        ingestionPipelineProcessor.runPipeline(event.transactionLines());
+        val transformationResult = ingestionPipelineProcessor.runPipeline(event.transactionLines());
+        notificationGateway.sendViolationNotifications(transformationResult.violations());
+
+        log.info("Finished processing...");
     }
 
     @ApplicationModuleListener
