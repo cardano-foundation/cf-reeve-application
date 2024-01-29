@@ -1,7 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,6 +8,9 @@ import java.util.Optional;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class FilteringParameters {
 
     public static final FilteringParameters EMPTY = new FilteringParameters(

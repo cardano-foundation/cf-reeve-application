@@ -2,27 +2,38 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import java.util.Map;
 
-public record Violation(String txLineId,
-                        Priority priority,
+public record Violation(Priority priority,
+                        Type type,
+                        String txLineId,
                         String transactionNumber,
                         String violationCode,
                         Map<String, Object> bag) {
 
-    public static Violation create(String txLineId,
-                                               Priority priority,
-                                               String transactionNumber,
-                                               String violationCode,
-                                               Map<String, Object> bag) {
-        return new Violation(txLineId, priority, transactionNumber, violationCode, bag);
+    public static Violation create(Priority priority,
+                                   Type type,
+                                   String txLineId,
+                                   String transactionNumber,
+                                   String violationCode,
+                                   Map<String, Object> bag) {
+        return new Violation(priority, type, txLineId, transactionNumber, violationCode, bag);
     }
 
-    public static Violation create(String txLineId, Priority priority, String transactionNumber, String violationCode) {
-        return new Violation(txLineId, priority, transactionNumber, violationCode, Map.of());
+    public static Violation create(Priority priority,
+                                   Type type,
+                                   String txLineId,
+                                   String transactionNumber,
+                                   String violationCode) {
+        return new Violation(priority, type, txLineId, transactionNumber, violationCode, Map.of());
     }
 
     public enum Priority {
         HIGH,
         NORMAL,
+    }
+
+    public enum Type {
+        ERROR,
+        FATAL,
     }
 
 }
