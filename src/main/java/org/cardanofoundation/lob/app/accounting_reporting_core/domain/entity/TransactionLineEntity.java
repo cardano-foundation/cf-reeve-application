@@ -107,12 +107,10 @@ public class TransactionLineEntity {
     @Enumerated(STRING)
     private ValidationStatus validationStatus;
 
-    @Nullable
-    @Column(name = "amount_fcy")
+    @Column(name = "amount_fcy", nullable = false)
     BigDecimal amountFcy;
 
-    @Nullable
-    @Column(name = "amount_lcy")
+    @Column(name = "amount_lcy", nullable = false)
     BigDecimal amountLcy;
 
 }

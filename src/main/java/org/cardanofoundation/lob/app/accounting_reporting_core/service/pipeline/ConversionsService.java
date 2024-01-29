@@ -20,7 +20,7 @@ public class ConversionsService {
 
     private final OrganisationPublicApi organisationPublicApi;
 
-    public TransformationResult run(TransactionLines transactionLines) {
+    public TransformationResult run(TransactionLines transactionLines, TransactionLines ignoredTransactionLines) {
         val converted = transactionLines.entries().stream()
                 .map(Either::<Violation, TransactionLine>right)
                 .map(this::vatConversion)
@@ -32,7 +32,7 @@ public class ConversionsService {
 
         val successfulTransactionLines = new TransactionLines(transactionLines.organisationId(), convertedTxLines);
 
-        return TransformationResult.create(successfulTransactionLines, violations);
+        return TransformationResult.create(successfulTransactionLines, ignoredTransactionLines, violations);
     }
 
     public Either<Violation, TransactionLine> vatConversion(Either<Violation, TransactionLine> transactionLineE) {

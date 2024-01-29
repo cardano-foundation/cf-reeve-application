@@ -15,13 +15,16 @@ public class MoreBigDecimal {
         return value;
     }
 
-    @Nullable
-    public static BigDecimal substract(@Nullable BigDecimal a, @Nullable BigDecimal b) {
+    public static BigDecimal substract(BigDecimal a, BigDecimal b) {
         return a.subtract(b);
     }
 
+    public static BigDecimal substractNullFriendly(@Nullable BigDecimal a, @Nullable BigDecimal b) {
+        return zeroForNull(a).subtract(zeroForNull(b));
+    }
+
     public static Optional<BigDecimal> substractOpt(@Nullable BigDecimal a, @Nullable BigDecimal b) {
-        return Optional.ofNullable(substract(a, b));
+        return Optional.ofNullable(substract(zeroForNull(a), zeroForNull(b)));
     }
 
 }

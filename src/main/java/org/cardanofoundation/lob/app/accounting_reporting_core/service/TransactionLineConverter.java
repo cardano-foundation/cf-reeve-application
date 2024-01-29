@@ -48,15 +48,14 @@ public class TransactionLineConverter {
 
         entityTxLine.setValidationStatus(txLine.getValidationStatus());
 
-        entityTxLine.setAmountFcy(txLine.getAmountFcy().orElse(null));
-        entityTxLine.setAmountLcy(txLine.getAmountLcy().orElse(null));
+        entityTxLine.setAmountFcy(txLine.getAmountFcy());
+        entityTxLine.setAmountLcy(txLine.getAmountLcy());
 
         return entityTxLine;
     }
 
     public TransactionLine convert(TransactionLineEntity entityTxLine) {
         return new TransactionLine(
-
                 entityTxLine.getId(),
                 entityTxLine.getOrganisationId(),
                 entityTxLine.getTransactionType(),
@@ -86,8 +85,8 @@ public class TransactionLineConverter {
                 Optional.ofNullable(entityTxLine.getAccountNameDebit()),
                 Optional.ofNullable(entityTxLine.getAccountCredit()),
                 entityTxLine.getValidationStatus(),
-                Optional.ofNullable(entityTxLine.getAmountFcy()),
-                Optional.ofNullable(entityTxLine.getAmountLcy())
+                entityTxLine.getAmountFcy(),
+                entityTxLine.getAmountLcy()
         );
     }
 

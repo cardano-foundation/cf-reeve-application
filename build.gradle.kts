@@ -79,6 +79,8 @@ dependencies {
     implementation("javax.xml.bind", "jaxb-api", "2.3.0")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2") // needed for OAuth 1.0 for NetSuite Module
 
+    implementation("com.google.guava:guava:33.0.0-jre")
+
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
@@ -86,6 +88,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
     testImplementation("io.rest-assured:rest-assured:5.4.0")
     testImplementation("org.wiremock:wiremock-standalone:3.3.1")
+
 }
 
 dependencyManagement {

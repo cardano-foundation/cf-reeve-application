@@ -43,8 +43,8 @@ CREATE TABLE accounting_core_transaction_line (
    account_credit VARCHAR(255),
    validation_status VARCHAR(255) NOT NULL,
 
-   amount_fcy DECIMAL,
-   amount_lcy DECIMAL,
+   amount_fcy DECIMAL NOT NULL,
+   amount_lcy DECIMAL NOT NULL,
    ledger_dispatch_status VARCHAR(255) NOT NULL,
    CONSTRAINT pk_transaction_line PRIMARY KEY (id)
 );
