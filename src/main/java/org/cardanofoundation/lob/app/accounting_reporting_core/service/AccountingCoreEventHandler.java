@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline.IngestionPipelineProcessor;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
@@ -12,21 +13,22 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AccountingCoreEventHandler {
 
-    private final AccountingCoreService accountingCoreService;
+    private final IngestionPipelineProcessor ingestionPipelineProcessor;
+
+    private final LedgerService ledgerService;
 
     @ApplicationModuleListener
-    // TODO move this to the service layer
     public void handleERPIngestionEvent(ERPIngestionEvent event) {
         log.info("Received handleERPIngestionEvent event....");
 
-        accountingCoreService.runIncomingIngestionPipeline(event.transactionLines());
+        ingestionPipelineProcessor.runPipeline(event.transactionLines());
     }
 
     @ApplicationModuleListener
     public void handleLedgerUpdatedEvent(LedgerUpdatedEvent event) {
         log.info("Received LedgerUpdatedEvent event, eventCounts:{}", event.statusUpdates().size());
 
-        accountingCoreService.syncStateFromLedger(event.statusUpdates());
+        ledgerService.updateTransactionLines(event.statusUpdates());
     }
 
 }

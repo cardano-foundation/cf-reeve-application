@@ -66,9 +66,9 @@ public class TransactionLine {
 
     ValidationStatus validationStatus;
 
-    Optional<BigDecimal> amountFcy;
+    BigDecimal amountFcy;
 
-    Optional<BigDecimal> amountLcy;
+    BigDecimal amountLcy;
 
     // TODO equality in business sense will not include in the future e.g. ingestion_id
     public boolean isBusinessEqual(TransactionLine transactionLine) {

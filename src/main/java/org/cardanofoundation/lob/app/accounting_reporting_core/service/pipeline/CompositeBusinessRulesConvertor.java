@@ -20,7 +20,7 @@ public class CompositeBusinessRulesConvertor implements BusinessRulesConvertor {
     }
 
     @Override
-    public TransformationResult runPreValidation(TransactionLines transactionLines) {
+    public TransformationResult runPreValidation(TransactionLines transactionLines, TransactionLines ignoredTransactionLines) {
         var allViolations = new HashSet<Violation>();
 
 //        businessRulesConvertors.stream().map(validator -> validator.convert(transactionLines))
@@ -36,7 +36,7 @@ public class CompositeBusinessRulesConvertor implements BusinessRulesConvertor {
     }
 
     @Override
-    public TransformationResult runPostValidation(TransactionLines transactionLines) {
+    public TransformationResult runPostValidation(TransactionLines transactionLines, TransactionLines ignoredTransactionLines) {
         return TransformationResult.create(transactionLines);
     }
 

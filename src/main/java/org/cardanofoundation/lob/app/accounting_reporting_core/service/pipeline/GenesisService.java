@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
 
+import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -22,12 +25,13 @@ public class GenesisService {
 
     @Transactional
     // TODO find better business name for this
-    public TransformationResult run(TransactionLines transactionLines) {
+    public TransformationResult run(TransactionLines incomingPassthoughTransactionLines,
+                                    TransactionLines ignoredTransactionLines) {
         val violations = new HashSet<Violation>();
 
-        val organisationId = transactionLines.organisationId();
+        val organisationId = incomingPassthoughTransactionLines.organisationId();
 
-        val txLines = transactionLines
+        val txLines = incomingPassthoughTransactionLines
                 .entries()
                 .stream()
                 .toList();
@@ -46,14 +50,16 @@ public class GenesisService {
                 .toList();
 
         dispatchedTxLines.forEach(txLine -> {
-            violations.add(Violation.create(txLine.getId(), txLine.getInternalTransactionNumber(), "CANNOT_UPDATE_TX_LINES_ERROR"));
+            val v = Violation.create(txLine.getId(), txLine.getInternalTransactionNumber(), "CANNOT_UPDATE_TX_LINES_ERROR");
+
+            violations.add(v);
         });
 
-        val notDispatchedTxLines = txLines.stream()
-                .filter(txLine -> !dispatchedTxLineIds.contains(txLine.getId()))
+        val notDispatchedTxLines = Sets.difference(Set.copyOf(incomingPassthoughTransactionLines.entries()), Set.copyOf(dispatchedTxLines))
+                .stream()
                 .toList();
 
-        return new TransformationResult(new TransactionLines(organisationId, notDispatchedTxLines), new TransactionLines(organisationId, dispatchedTxLines), violations);
+        return new TransformationResult(new TransactionLines(organisationId, notDispatchedTxLines), new TransactionLines(organisationId, dispatchedTxLines), new TransactionLines(organisationId, List.of()), violations);
     }
 
 }
