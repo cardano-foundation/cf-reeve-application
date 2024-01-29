@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
@@ -67,7 +68,11 @@ public class LedgerService {
     private List<TransactionLine> readPendingTransactionLines(Organisation organisation) {
         // TODO what about order by entry date or transaction internal number, etc?
         val pendingTransactionLines = accountingCoreRepository
-                .findByPendingTransactionLinesByOrganisationAndDispatchStatus(organisation.id(), List.of(NOT_DISPATCHED));
+                .findByPendingTransactionLinesByOrganisationAndDispatchStatus(
+                        organisation.id(),
+                        List.of(TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED),
+                        List.of(ValidationStatus.VALIDATED)
+                );
 
         return pendingTransactionLines
                 .stream()

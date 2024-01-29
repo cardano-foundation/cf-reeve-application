@@ -1,28 +1,10 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
-import java.util.List;
 import java.util.Set;
 
-public record TransformationResult(TransactionLines passThroughTransactionLines,
-                                   TransactionLines ignoredTransactionLines,
-                                   TransactionLines filteredTransactionLines,
+public record TransformationResult(TransactionLines passThroughTransactionLines, // entries that passed through but still with possible violations, marked to be updated in db
+                                   TransactionLines ignoredTransactionLines, // entries that had issues but we do not way to save or update them
+                                   TransactionLines filteredTransactionLines, // we remove entries, this means we won't save those entries to the database
                                    Set<Violation> violations) {
-
-    public static TransformationResult create(TransactionLines passThroughTransactionLines) {
-        return new TransformationResult(
-                passThroughTransactionLines,
-                new TransactionLines(passThroughTransactionLines.organisationId(), List.of()),
-                new TransactionLines(passThroughTransactionLines.organisationId(), List.of()),
-                Set.of());
-    }
-
-    public static TransformationResult create(TransactionLines passThroughTransactionLines,
-                                              TransactionLines ignoredTransactionLines,
-                                              Set<Violation> violations) {
-        return new TransformationResult(passThroughTransactionLines,
-                new TransactionLines(passThroughTransactionLines.organisationId(), List.of()),
-                new TransactionLines(passThroughTransactionLines.organisationId(), List.of()),
-                violations);
-    }
 
 }

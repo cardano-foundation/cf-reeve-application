@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @Getter
+@ToString
 public class TransactionLine {
 
     // mandatory values
@@ -89,6 +91,23 @@ public class TransactionLine {
          */
         public boolean isDispatchable() {
             return this == NOT_DISPATCHED;
+        }
+
+    }
+
+    public record WithPossibleViolation(TransactionLine transactionLine,
+                                        Optional<Violation> violation) {
+
+        public static WithPossibleViolation create(TransactionLine transactionLine) {
+            return new WithPossibleViolation(transactionLine, Optional.empty());
+        }
+
+        public static WithPossibleViolation create(TransactionLine transactionLine, Violation violation) {
+            return new WithPossibleViolation(transactionLine, Optional.of(violation));
+        }
+
+        public static WithPossibleViolation create(TransactionLine transactionLine, Optional<Violation> violation) {
+            return new WithPossibleViolation(transactionLine, violation);
         }
 
     }

@@ -11,7 +11,7 @@ import java.util.Optional;
 @Component
 public class StaticOrganisationCurrencyRepository implements OrganisationCurrencyRepository {
 
-    private List<OrganisationCurrency> organisationCurrencies = new ArrayList<>();
+    private final List<OrganisationCurrency> organisationCurrencies = new ArrayList<>();
 
     @PostConstruct
     public void init() {

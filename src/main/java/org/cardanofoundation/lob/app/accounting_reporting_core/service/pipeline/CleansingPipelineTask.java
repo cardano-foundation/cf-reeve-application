@@ -5,22 +5,24 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
-import org.springframework.stereotype.Service;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static java.math.BigDecimal.ZERO;
 
-@Service
-public class CleansingService {
+public class CleansingPipelineTask implements PipelineTask {
 
-    public TransformationResult run(TransactionLines incomingPassThroughTransactionLines,
-                                    TransactionLines ignoredTransactionLines) {
+    public TransformationResult run(TransactionLines passedTransactionLines,
+                                    TransactionLines ignoredTransactionLines,
+                                    TransactionLines filteredTransactionLines,
+                                    Set<Violation> violations) {
 //        val byTransactionNumber = passThroughTransactionLines.txLines()
 //                .stream()
 //                .collect(groupingBy(TransactionLine::getInternalTransactionNumber));
 
-        val txLines = incomingPassThroughTransactionLines.entries();
+        val txLines = passedTransactionLines.entries();
 
         val passed = txLines.stream()
                 .filter(this::isNonZeroBalance)
@@ -30,14 +32,11 @@ public class CleansingService {
                 .stream()
                 .toList();
 
-        val passThroughTransactionLines = new TransactionLines(incomingPassThroughTransactionLines.organisationId(), passed);
-        val filteredTransactionLines = new TransactionLines(passThroughTransactionLines.organisationId(), filtered);
-
         return new TransformationResult(
-                passThroughTransactionLines,
+                new TransactionLines(passedTransactionLines.organisationId(), passed),
                 ignoredTransactionLines,
-                filteredTransactionLines,
-                Set.of()
+                new TransactionLines(passedTransactionLines.organisationId(), Stream.concat(filteredTransactionLines.entries().stream(), filtered.stream()).toList()),
+                violations
         );
     }
 

@@ -9,29 +9,26 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-@Service
-@Slf4j
 @RequiredArgsConstructor
-public class GenesisService {
+@Slf4j
+public class PreProcessingService implements PipelineTask {
 
     private final AccountingCoreRepository accountingCoreRepository;
 
-    @Transactional
-    // TODO find better business name for this
-    public TransformationResult run(TransactionLines incomingPassthoughTransactionLines,
-                                    TransactionLines ignoredTransactionLines) {
-        val violations = new HashSet<Violation>();
+    @Override
+    public TransformationResult run(TransactionLines passedTransactionLines,
+                                    TransactionLines ignoredTransactionLines,
+                                    TransactionLines filteredTransactionLines,
+                                    Set<Violation> violations) {
+        val organisationId = passedTransactionLines.organisationId();
 
-        val organisationId = incomingPassthoughTransactionLines.organisationId();
-
-        val txLines = incomingPassthoughTransactionLines
+        val txLines = passedTransactionLines
                 .entries()
                 .stream()
                 .toList();
@@ -49,22 +46,26 @@ public class GenesisService {
                 .filter(txLine -> dispatchedTxLineIds.contains(txLine.getId()))
                 .toList();
 
-        dispatchedTxLines.forEach(txLine -> {
-            val v = Violation.create(
-                    txLine.getId(),
-                    Violation.Priority.HIGH,
-                    txLine.getInternalTransactionNumber(),
+        val newViolations = dispatchedTxLines.stream().map(dispatchedTxLine -> {
+            return Violation.create(
+                    Violation.Priority.NORMAL,
+                    Violation.Type.ERROR,
+                    dispatchedTxLine.getId(),
+                    dispatchedTxLine.getInternalTransactionNumber(),
                     "CANNOT_UPDATE_TX_LINES_ERROR"
             );
+        }).collect(Collectors.toSet());
 
-            violations.add(v);
-        });
-
-        val notDispatchedTxLines = Sets.difference(Set.copyOf(incomingPassthoughTransactionLines.entries()), Set.copyOf(dispatchedTxLines))
+        val notDispatchedTxLines = Sets.difference(Set.copyOf(passedTransactionLines.entries()), Set.copyOf(dispatchedTxLines))
                 .stream()
                 .toList();
 
-        return new TransformationResult(new TransactionLines(organisationId, notDispatchedTxLines), new TransactionLines(organisationId, dispatchedTxLines), new TransactionLines(organisationId, List.of()), violations);
+        return new TransformationResult(
+                new TransactionLines(organisationId, notDispatchedTxLines),
+                new TransactionLines(organisationId, dispatchedTxLines),
+                new TransactionLines(organisationId, List.of()),
+                Stream.concat(violations.stream(), newViolations.stream()).collect(Collectors.toSet())
+        );
     }
 
 }

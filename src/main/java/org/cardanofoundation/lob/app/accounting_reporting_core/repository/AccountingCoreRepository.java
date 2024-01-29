@@ -1,6 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.repository;
 
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLineEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,9 +19,10 @@ public interface AccountingCoreRepository extends JpaRepository<TransactionLineE
     List<String> findDoneTxLineIds(@Param("organisationId") String organisationId,
                                                         @Param("txLineIds") List<String> txLineIds);
 
-    @Query("SELECT tl FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.ledgerDispatchStatus in :dispatchStatuses")
+    @Query("SELECT tl FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.ledgerDispatchStatus IN :dispatchStatuses AND tl.validationStatus IN :validationStatuses")
     List<TransactionLineEntity> findByPendingTransactionLinesByOrganisationAndDispatchStatus(@Param("organisationId") String organisationId,
-                                                                                             @Param("dispatchStatuses") List<TransactionLine.LedgerDispatchStatus> dispatchStatuses);
+                                                                                             @Param("dispatchStatuses") List<TransactionLine.LedgerDispatchStatus> dispatchStatuses,
+                                                                                             @Param("validationStatuses") List<ValidationStatus> validationStatuses);
 
 }
 

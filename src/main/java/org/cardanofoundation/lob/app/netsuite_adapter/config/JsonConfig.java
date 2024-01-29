@@ -1,6 +1,7 @@
 package org.cardanofoundation.lob.app.netsuite_adapter.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.val;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.NetSuiteDateTimeDeserialiser;
@@ -23,7 +24,8 @@ public class JsonConfig {
         return new ObjectMapper()
                 .setSerializationInclusion(NON_NULL)
                 .enable(ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
-                .registerModule(new JavaTimeModule());
+                .registerModules(new JavaTimeModule(), new Jdk8Module())
+                ;
     }
 
 }
