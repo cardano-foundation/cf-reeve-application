@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.TransactionLineConverter;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class IngestionPipelineProcessor {
     private final CleansingService cleansingService;
 
     @Transactional
-    public TransactionLines runPipeline(TransactionLines transactionLines) {
+    public TransformationResult runPipeline(TransactionLines transactionLines) {
         val genesisTransactionsResult = genesisService.run(
                 transactionLines,
                 new TransactionLines(transactionLines.organisationId(), List.of())
@@ -70,7 +71,12 @@ public class IngestionPipelineProcessor {
 
         syncToDb(postValidationTransactionsResult.passThroughTransactionLines(), postValidationTransactionsResult.filteredTransactionLines());
 
-        return postValidationTransactionsResult.passThroughTransactionLines();
+        return new TransformationResult(
+                postValidationTransactionsResult.passThroughTransactionLines(),
+                postValidationTransactionsResult.ignoredTransactionLines(),
+                postValidationTransactionsResult.filteredTransactionLines(),
+                postValidationTransactionsResult.violations()
+        );
     }
 
     @Transactional
