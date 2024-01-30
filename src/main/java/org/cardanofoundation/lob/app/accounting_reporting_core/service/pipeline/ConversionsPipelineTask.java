@@ -9,6 +9,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -34,10 +35,8 @@ public class ConversionsPipelineTask implements PipelineTask {
                 .map(this::currencyCode)
                 .toList();
 
-        val newViolations = converted.stream()
-                .filter(p -> p.violation().isPresent())
-                .map(p -> p.violation().orElseThrow())
-                .collect(toSet());
+        val newViolations = new HashSet<>(violations);
+        converted.forEach(p -> newViolations.addAll(p.violations()));
 
         val passedTxLines = converted.stream()
                 .map(TransactionLine.WithPossibleViolation::transactionLine)
@@ -74,15 +73,14 @@ public class ConversionsPipelineTask implements PipelineTask {
                 return TransactionLine.WithPossibleViolation.create(transactionLine
                         .toBuilder()
                         .validationStatus(FAILED)
-                        .build(),
-                        v);
+                        .build(), Set.of(v));
             }
 
             val vat = vatM.get();
 
             return TransactionLine.WithPossibleViolation
                     .create(transactionLine.toBuilder().vatRate(Optional.of(vat.rate()))
-                            .build(), violationTransactionLine.violation());
+                            .build(), violationTransactionLine.violations());
         }
 
         return violationTransactionLine;
@@ -110,14 +108,14 @@ public class ConversionsPipelineTask implements PipelineTask {
                         .create(transactionLine.toBuilder()
                                 .validationStatus(FAILED)
                                 .build(),
-                                v);
+                                Set.of(v));
             }
             val organisationCurrencyByInternalId = organisationCurrencyByInternalIdM.orElseThrow();
 
             return TransactionLine.WithPossibleViolation.create(transactionLine
                     .toBuilder()
                     .targetCurrencyId(Optional.of(organisationCurrencyByInternalId.currencyId()))
-                    .build(), violationTransactionLine.violation());
+                    .build(), violationTransactionLine.violations());
         }
 
         return violationTransactionLine;

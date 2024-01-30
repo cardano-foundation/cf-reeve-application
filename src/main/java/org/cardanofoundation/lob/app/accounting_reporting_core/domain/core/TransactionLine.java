@@ -7,8 +7,9 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -79,6 +80,11 @@ public class TransactionLine {
         return this.equals(transactionLine);
     }
 
+    public static Map<String, List<TransactionLine>> toTransactionsProjection(List<TransactionLine> transactionLines) {
+        return transactionLines.stream()
+                .collect(groupingBy(TransactionLine::getInternalTransactionNumber));
+    }
+
     public enum LedgerDispatchStatus {
         NOT_DISPATCHED, // not dispatched to blockchain(s) yet
 
@@ -100,18 +106,14 @@ public class TransactionLine {
     }
 
     public record WithPossibleViolation(TransactionLine transactionLine,
-                                        Optional<Violation> violation) {
+                                        Set<Violation> violations) {
 
         public static WithPossibleViolation create(TransactionLine transactionLine) {
-            return new WithPossibleViolation(transactionLine, Optional.empty());
+            return new WithPossibleViolation(transactionLine, Set.of());
         }
 
-        public static WithPossibleViolation create(TransactionLine transactionLine, Violation violation) {
-            return new WithPossibleViolation(transactionLine, Optional.of(violation));
-        }
-
-        public static WithPossibleViolation create(TransactionLine transactionLine, Optional<Violation> violation) {
-            return new WithPossibleViolation(transactionLine, violation);
+        public static WithPossibleViolation create(TransactionLine transactionLine, Set<Violation> violations) {
+            return new WithPossibleViolation(transactionLine, violations);
         }
 
     }

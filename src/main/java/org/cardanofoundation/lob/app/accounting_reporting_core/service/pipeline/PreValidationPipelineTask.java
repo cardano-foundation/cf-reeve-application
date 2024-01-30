@@ -2,17 +2,14 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
-import static java.math.BigDecimal.ZERO;
-import static java.util.stream.Collectors.toSet;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
@@ -25,33 +22,57 @@ public class PreValidationPipelineTask implements PipelineTask {
                                     TransactionLines filteredTransactionLines,
                                     Set<Violation> violations) {
 
+        // transaction line level checks
         val converted = passedTransactionLines.entries().stream()
                 .map(TransactionLine.WithPossibleViolation::create)
-                .map(this::amountsLcyAmountsFcyChecks)
+                .map(this::amountsFcyCheck)
+                .map(this::amountsLcyCheck)
                 .toList();
 
-        val newViolations = converted.stream()
-                .filter(p -> p.violation().isPresent())
-                .map(p -> p.violation().orElseThrow())
-                .collect(toSet());
+        val newViolations = new HashSet<>(violations);
+
+        converted.forEach(p -> newViolations.addAll(p.violations()));
 
         val passedTxLines = converted.stream()
                 .map(TransactionLine.WithPossibleViolation::transactionLine)
                 .toList();
 
+        val checkedTxLines = new TransactionLines(passedTransactionLines.organisationId(), passedTxLines);
+
+        // now transaction level checks
+
+        val transactions = checkedTxLines.toTransactions();
+
+        val transactionsWithPossibleViolation = transactions
+                .stream()
+                .map(Transaction.WithPossibleViolation::create)
+                .map(this::hasTransactionLinesCheck)
+                .map(this::balanceZerosOutLcyCheck)
+                .map(this::balanceZerosOutFcyCheck)
+                .toList();
+
+        val finalTxLinesList = new ArrayList<TransactionLine>();
+
+        transactionsWithPossibleViolation.forEach(p -> {
+            finalTxLinesList.addAll(p.transaction().getTransactionLines());
+            newViolations.addAll(p.violations());
+        });
+
+        val finalTxLines = new TransactionLines(passedTransactionLines.organisationId(), finalTxLinesList);
+
         return new TransformationResult(
-                new TransactionLines(passedTransactionLines.organisationId(), passedTxLines),
+                finalTxLines,
                 ignoredTransactionLines,
                 filteredTransactionLines,
-                Stream.concat(violations.stream(), newViolations.stream()).collect(toSet())
+                newViolations
         );
     }
 
-    public TransactionLine.WithPossibleViolation amountsLcyAmountsFcyChecks(TransactionLine.WithPossibleViolation violationTransactionLine) {
+    public TransactionLine.WithPossibleViolation amountsFcyCheck(TransactionLine.WithPossibleViolation violationTransactionLine) {
         val transactionLine = violationTransactionLine.transactionLine();
 
         if (transactionLine.getTransactionType() != FxRevaluation) {
-            if (!transactionLine.getAmountLcy().equals(ZERO) && transactionLine.getAmountFcy().equals(ZERO)) {
+            if (transactionLine.getAmountLcy().signum() != 0 && transactionLine.getAmountFcy().signum() == 0) {
                 val v = Violation.create(
                         Violation.Priority.HIGH,
                         Violation.Type.FATAL,
@@ -65,11 +86,17 @@ public class PreValidationPipelineTask implements PipelineTask {
                                 .toBuilder()
                                 .validationStatus(FAILED)
                                 .build(),
-                        v);
+                        Set.of(v));
             }
         }
 
-        if (transactionLine.getAmountLcy().equals(ZERO) && !transactionLine.getAmountFcy().equals(ZERO)) {
+        return violationTransactionLine;
+    }
+
+    public TransactionLine.WithPossibleViolation amountsLcyCheck(TransactionLine.WithPossibleViolation violationTransactionLine) {
+        val transactionLine = violationTransactionLine.transactionLine();
+
+        if (transactionLine.getAmountLcy().signum() == 0 && transactionLine.getAmountFcy().signum() != 0) {
             val v = Violation.create(
                     Violation.Priority.HIGH,
                     Violation.Type.FATAL,
@@ -83,10 +110,96 @@ public class PreValidationPipelineTask implements PipelineTask {
                             .toBuilder()
                             .validationStatus(FAILED)
                             .build(),
-                    v);
+                    Set.of(v));
         }
 
         return violationTransactionLine;
+    }
+
+    public Transaction.WithPossibleViolation hasTransactionLinesCheck(Transaction.WithPossibleViolation violationTransaction) {
+        val transaction = violationTransaction.transaction();
+
+        if (transaction.getTransactionLines().isEmpty()) {
+            val v = Violation.create(
+                    Violation.Priority.HIGH,
+                    Violation.Type.FATAL,
+                    transaction.getTransactionNumber(),
+                    "TRANSACTION_MUST_HAVE_TRANSACTION_LINES"
+            );
+
+            return Transaction.WithPossibleViolation.create(transaction
+                            .toBuilder()
+                            .transactionLines(transaction.getTransactionLines().stream()
+                                    .map(txLine -> txLine.toBuilder()
+                                            .validationStatus(FAILED)
+                                            .build())
+                                    .toList())
+                            .build(),
+                    v);
+        }
+
+        return violationTransaction;
+    }
+
+    public Transaction.WithPossibleViolation balanceZerosOutLcyCheck(Transaction.WithPossibleViolation violationTransaction) {
+        val transaction = violationTransaction.transaction();
+
+        if (transaction.getTransactionLines().size() >= 2) {
+            val transactionLines = transaction.getTransactionLines();
+
+            val lcySum = transactionLines.stream().map(TransactionLine::getAmountLcy).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            if (lcySum.signum() != 0) {
+                val v = Violation.create(
+                        Violation.Priority.HIGH,
+                        Violation.Type.FATAL,
+                        transaction.getTransactionNumber(),
+                        "LCY_BALANCE_MUST_BE_ZERO"
+                );
+
+                return Transaction.WithPossibleViolation.create(transaction
+                                .toBuilder()
+                                .transactionLines(transaction.getTransactionLines().stream()
+                                        .map(txLine -> txLine.toBuilder()
+                                                .validationStatus(FAILED)
+                                                .build())
+                                        .toList())
+                                .build(),
+                        v);
+            }
+        }
+
+        return violationTransaction;
+    }
+
+    public Transaction.WithPossibleViolation balanceZerosOutFcyCheck(Transaction.WithPossibleViolation violationTransaction) {
+        val transaction = violationTransaction.transaction();
+
+        if (transaction.getTransactionLines().size() >= 2) {
+            val transactionLines = transaction.getTransactionLines();
+
+            val fcySum = transactionLines.stream().map(TransactionLine::getAmountFcy).reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (fcySum.signum() != 0) {
+                val v = Violation.create(
+                        Violation.Priority.HIGH,
+                        Violation.Type.FATAL,
+                        transaction.getTransactionNumber(),
+                        "FCY_BALANCE_MUST_ZERO"
+                );
+
+                return Transaction.WithPossibleViolation.create(transaction
+                                .toBuilder()
+                                .transactionLines(transaction.getTransactionLines().stream()
+                                        .map(txLine -> txLine.toBuilder()
+                                                .validationStatus(FAILED)
+                                                .build())
+                                        .toList())
+                                .build(),
+                        v);
+            }
+        }
+
+        return violationTransaction;
     }
 
 }

@@ -19,7 +19,7 @@ public class NotificationGateway {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public void sendViolationNotifications(Set<Violation> violations) {
-        log.info("Sending violation notification..., count:{}", violations.size());
+        log.info("Sending violations notification..., count:{}", violations.size());
 
         // TODO this is quite clunky, perhaps we need to translate this better
 

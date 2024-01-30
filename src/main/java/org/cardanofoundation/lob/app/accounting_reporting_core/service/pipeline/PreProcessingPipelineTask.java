@@ -10,10 +10,9 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -46,15 +45,19 @@ public class PreProcessingPipelineTask implements PipelineTask {
                 .filter(txLine -> dispatchedTxLineIds.contains(txLine.getId()))
                 .toList();
 
-        val newViolations = dispatchedTxLines.stream().map(dispatchedTxLine -> {
-            return Violation.create(
+        val newViolations = new HashSet<>(violations);
+
+        dispatchedTxLines.forEach(dispatchedTxLine -> {
+            val v = Violation.create(
                     Violation.Priority.NORMAL,
                     Violation.Type.WARN,
                     dispatchedTxLine.getId(),
                     dispatchedTxLine.getInternalTransactionNumber(),
                     "CANNOT_UPDATE_TX_LINES_ERROR"
             );
-        }).collect(Collectors.toSet());
+
+            newViolations.add(v);
+        });
 
         val notDispatchedTxLines = Sets.difference(Set.copyOf(passedTransactionLines.entries()), Set.copyOf(dispatchedTxLines))
                 .stream()
@@ -64,7 +67,7 @@ public class PreProcessingPipelineTask implements PipelineTask {
                 new TransactionLines(organisationId, notDispatchedTxLines),
                 new TransactionLines(organisationId, dispatchedTxLines),
                 new TransactionLines(organisationId, List.of()),
-                Stream.concat(violations.stream(), newViolations.stream()).collect(Collectors.toSet())
+                newViolations
         );
     }
 

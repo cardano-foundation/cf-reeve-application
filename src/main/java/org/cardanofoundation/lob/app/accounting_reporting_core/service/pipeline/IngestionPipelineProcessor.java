@@ -68,10 +68,10 @@ public class IngestionPipelineProcessor implements PipelineTask {
 
         passedTransactionLines = new TransactionLines(passedTransactionLines.organisationId(), txLines);
 
-        log.info("pre-passedTransactionLinesCount: {}", passedTransactionLines.entries().size());
-        log.info("pre-ignoredTransactionLinesCount: {}", ignoredTransactionLines.entries().size());
-        log.info("pre-filteredTransactionLinesCount: {}", filteredTransactionLines.entries().size());
-        log.info("pre-violationsCount: {}", violations.size());
+//        log.info("pre-passedTransactionLinesCount: {}", passedTransactionLines.entries().size());
+//        log.info("pre-ignoredTransactionLinesCount: {}", ignoredTransactionLines.entries().size());
+//        log.info("pre-filteredTransactionLinesCount: {}", filteredTransactionLines.entries().size());
+//        log.info("pre-violationsCount: {}", violations.size());
 
         for (val pipelineTask : pipelineTasks) {
             log.info("Running pipelineTask: {}", pipelineTask.getClass().getSimpleName());
@@ -88,14 +88,17 @@ public class IngestionPipelineProcessor implements PipelineTask {
             filteredTransactionLines = transformationResult.filteredTransactionLines();
             violations = transformationResult.violations();
 
-            for (val passedTransactionLine : passedTransactionLines.entries()) {
-                log.info("passedTransactionLine: {}", passedTransactionLine);
-            }
+//            log.info("post-passedTransactionLinesCount: {}", passedTransactionLines.entries().size());
+//            log.info("post-ignoredTransactionLinesCount: {}", ignoredTransactionLines.entries().size());
+//            log.info("post-filteredTransactionLinesCount: {}", filteredTransactionLines.entries().size());
+           log.info("post-violationsCount: {}", violations.size());
 
-            log.info("post-passedTransactionLinesCount: {}", passedTransactionLines.entries().size());
-            log.info("post-ignoredTransactionLinesCount: {}", ignoredTransactionLines.entries().size());
-            log.info("post-filteredTransactionLinesCount: {}", filteredTransactionLines.entries().size());
-            log.info("post-violationsCount: {}", violations.size());
+            violations.forEach(violation -> {
+                if (violation.type() == Violation.Type.FATAL) {
+                    log.warn("violation: {}", violation);
+                }
+            });
+
         }
 
         val finalTransformationResult = new TransformationResult(
