@@ -21,6 +21,7 @@ import org.cardanofoundation.lob.app.notification_gateway.domain.event.Notificat
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
@@ -57,7 +58,7 @@ public class NetSuiteService {
         return netSuiteAPI.retrieveLatestNetsuiteTransactionLines();
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void startIngestion(String initiator, FilteringParameters filteringParameters) throws JsonProcessingException {
         log.info("Running ingestion...");
 

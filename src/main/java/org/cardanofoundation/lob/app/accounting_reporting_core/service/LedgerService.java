@@ -12,6 +12,7 @@ import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class LedgerService {
 
     private final PIIDataFilteringService piiDataFilteringService;
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void updateTransactionLines(Map<String, TransactionLine.LedgerDispatchStatus> statusMap) {
         log.info("Updating dispatch status for statusMapCount: {}", statusMap.size());
 
@@ -51,7 +52,7 @@ public class LedgerService {
         log.info("Updated dispatch status for statusMapCount: {} completed.", statusMap.size());
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void publishLedgerEvents() {
         log.info("publishLedgerEvents...");
 
@@ -69,7 +70,7 @@ public class LedgerService {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     private List<TransactionLine> readPendingTransactionLines(Organisation organisation) {
         // TODO what about order by entry date or transaction internal number, etc?
         return accountingCoreRepository

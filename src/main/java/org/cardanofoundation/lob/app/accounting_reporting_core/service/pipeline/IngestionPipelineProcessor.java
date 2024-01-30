@@ -22,6 +22,12 @@ import java.util.Set;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 
+// call to start extraction
+
+// call to approve transaction line ids
+
+//
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
