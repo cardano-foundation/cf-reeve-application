@@ -82,6 +82,8 @@ public class TransactionLine {
     public enum LedgerDispatchStatus {
         NOT_DISPATCHED, // not dispatched to blockchain(s) yet
 
+        SAVE_ACK, // acking that we stored in the database
+
         DISPATCHED, // dispatched to blockchain(s)
 
         COMPLETED,

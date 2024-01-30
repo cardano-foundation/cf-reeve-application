@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
@@ -23,14 +24,17 @@ public class BlockchainPublisherService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
-    public void dispatchTransactionsToBlockchains(String organisationId,
+    public void dispatchTransactionsToBlockchains(UUID uploadId,
                                                   TransactionLines transactionLines) {
-        log.info("dispatchTransactionsToBlockchains...");
+        log.info("dispatchTransactionsToBlockchains..., uploadId:{}", uploadId);
 
-        val blockchainDispatchedTxLineIds = transactionLines.entries()
+        val blockchainDispatchedTxLineIds = transactionLines
+                .entries()
                 .stream()
                 .map(TransactionLine::getId)
                 .toList();
+
+        // store to the local db
 
         // TODO send data to the blockchain
         // or prepare data to be sent to the blockchain
@@ -43,7 +47,7 @@ public class BlockchainPublisherService {
         if (!statusesMap.isEmpty()) {
             log.info("Publishing LedgerChangeEvent command, statusesMapCount: {}", statusesMap.size());
 
-            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(organisationId, statusesMap));
+            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(transactionLines.organisationId(), statusesMap));
         }
     }
 

@@ -6,7 +6,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Viola
 
 import java.util.Set;
 
-public class PostValidationBusinessRulesPipelineTask implements PipelineTask {
+public class PostValidationPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(TransactionLines passedTransactionLines,

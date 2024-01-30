@@ -11,11 +11,11 @@ import java.util.List;
 
 public interface AccountingCoreRepository extends JpaRepository<TransactionLineEntity, String> {
 
-    @Query("SELECT tl.id FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('NOT_DISPATCHED', 'FAILED')")
+    @Query("SELECT tl.uploadId FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.uploadId in :txLineIds AND tl.ledgerDispatchStatus IN ('NOT_DISPATCHED', 'FAILED')")
     List<String> findNotYetDispatchedAndFailedTxLineIds(@Param("organisationId") String organisationId,
                                                         @Param("txLineIds") List<String> txLineIds);
 
-    @Query("SELECT tl.id FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('DISPATCHED', 'COMPLETED', 'FINALISED')")
+    @Query("SELECT tl.uploadId FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.uploadId in :txLineIds AND tl.ledgerDispatchStatus IN ('SAVE_ACK', 'DISPATCHED', 'COMPLETED', 'FINALISED')")
     List<String> findDoneTxLineIds(@Param("organisationId") String organisationId,
                                                         @Param("txLineIds") List<String> txLineIds);
 

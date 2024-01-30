@@ -4,7 +4,7 @@ public record Organisation(String id,
                            String shortName,
                            String longName,
                            AccountSystemProvider accountSystemProvider,
-                           String accountSystemProviderId, // foreign system account id
+                           String accountSystemProviderId, // foreign system account uploadId
                            OrganisationCurrency baseCurrency
                            ) {
 }

@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Slf4j
-public class PreProcessingService implements PipelineTask {
+public class PreProcessingPipelineTask implements PipelineTask {
 
     private final AccountingCoreRepository accountingCoreRepository;
 
