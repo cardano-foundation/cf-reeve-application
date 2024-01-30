@@ -8,6 +8,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -20,6 +22,12 @@ public class AccountingCoreService {
         log.info("scheduleIngestion, parameters: {}", fp);
 
         applicationEventPublisher.publishEvent(new ScheduledIngestionEvent(fp, "system"));
+    }
+
+    @Transactional
+    public List<String> approveTransactions(List<String> transactionLineIds) {
+
+        return transactionLineIds;
     }
 
 }
