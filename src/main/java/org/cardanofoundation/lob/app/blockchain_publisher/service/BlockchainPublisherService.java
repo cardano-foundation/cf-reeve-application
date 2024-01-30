@@ -8,6 +8,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -23,7 +24,7 @@ public class BlockchainPublisherService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void dispatchTransactionsToBlockchains(UUID uploadId,
                                                   TransactionLines transactionLines) {
         log.info("dispatchTransactionsToBlockchains..., uploadId:{}", uploadId);

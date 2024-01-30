@@ -7,7 +7,6 @@ import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationCurren
 import org.cardanofoundation.lob.app.organisation.repository.CurrencyRepository;
 import org.cardanofoundation.lob.app.organisation.repository.OrganisationCurrencyRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
