@@ -42,6 +42,7 @@ CREATE TABLE accounting_core_transaction_line (
    account_name_debit VARCHAR(255),
    account_credit VARCHAR(255),
    validation_status VARCHAR(255) NOT NULL,
+   ledger_dispatch_approved BOOLEAN NOT NULL,
 
    amount_fcy DECIMAL NOT NULL,
    amount_lcy DECIMAL NOT NULL,

@@ -19,10 +19,10 @@ public interface AccountingCoreRepository extends JpaRepository<TransactionLineE
     List<String> findDoneTxLineIds(@Param("organisationId") String organisationId,
                                                         @Param("txLineIds") List<String> txLineIds);
 
-    @Query("SELECT tl FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.ledgerDispatchStatus IN :dispatchStatuses AND tl.validationStatus IN :validationStatuses")
-    List<TransactionLineEntity> findByPendingTransactionLinesByOrganisationAndDispatchStatus(@Param("organisationId") String organisationId,
-                                                                                             @Param("dispatchStatuses") List<TransactionLine.LedgerDispatchStatus> dispatchStatuses,
-                                                                                             @Param("validationStatuses") List<ValidationStatus> validationStatuses);
+    @Query("SELECT tl FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.ledgerDispatchStatus IN :dispatchStatuses AND tl.validationStatus IN :validationStatuses AND tl.ledgerDispatchApproved = true")
+    List<TransactionLineEntity> findLedgerDispatchPendingTransactionLines(@Param("organisationId") String organisationId,
+                                                                          @Param("dispatchStatuses") List<TransactionLine.LedgerDispatchStatus> dispatchStatuses,
+                                                                          @Param("validationStatuses") List<ValidationStatus> validationStatuses);
 
 }
 
