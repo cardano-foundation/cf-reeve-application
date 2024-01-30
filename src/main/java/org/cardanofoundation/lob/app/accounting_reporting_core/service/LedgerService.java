@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -67,14 +65,12 @@ public class LedgerService {
     @Transactional(readOnly = true)
     private List<TransactionLine> readPendingTransactionLines(Organisation organisation) {
         // TODO what about order by entry date or transaction internal number, etc?
-        val pendingTransactionLines = accountingCoreRepository
-                .findByPendingTransactionLinesByOrganisationAndDispatchStatus(
+        return accountingCoreRepository
+                .findLedgerDispatchPendingTransactionLines(
                         organisation.id(),
                         List.of(TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED),
                         List.of(ValidationStatus.VALIDATED)
-                );
-
-        return pendingTransactionLines
+                )
                 .stream()
                 .map(transactionLineConverter::convert)
                 .toList();

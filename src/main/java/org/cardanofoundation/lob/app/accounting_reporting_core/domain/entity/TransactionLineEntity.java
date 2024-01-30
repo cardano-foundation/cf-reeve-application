@@ -113,4 +113,7 @@ public class TransactionLineEntity {
     @Column(name = "amount_lcy", nullable = false)
     BigDecimal amountLcy;
 
+    @Column(name = "ledger_dispatch_approved", nullable = false)
+    Boolean ledgerDispatchApproved;
+
 }

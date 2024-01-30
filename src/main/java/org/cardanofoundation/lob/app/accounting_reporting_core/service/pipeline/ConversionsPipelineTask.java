@@ -39,8 +39,6 @@ public class ConversionsPipelineTask implements PipelineTask {
                 .map(p -> p.violation().orElseThrow())
                 .collect(toSet());
 
-        log.info("converted newViolations: {}", newViolations);
-
         val passedTxLines = converted.stream()
                 .map(TransactionLine.WithPossibleViolation::transactionLine)
                 .toList();
@@ -87,7 +85,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                             .build(), violationTransactionLine.violation());
         }
 
-        return TransactionLine.WithPossibleViolation.create(transactionLine, violationTransactionLine.violation());
+        return violationTransactionLine;
     }
 
     public TransactionLine.WithPossibleViolation currencyCode(TransactionLine.WithPossibleViolation violationTransactionLine) {
@@ -122,7 +120,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                     .build(), violationTransactionLine.violation());
         }
 
-        return TransactionLine.WithPossibleViolation.create(transactionLine, violationTransactionLine.violation());
+        return violationTransactionLine;
     }
 
 }

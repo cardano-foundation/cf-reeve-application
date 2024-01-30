@@ -68,7 +68,8 @@ public class TransactionLineConverter {
                 normaliseString(searchResultTransactionItem.accountMain()),
                 NOT_VALIDATED,
                 substractNullFriendly(searchResultTransactionItem.amountDebitForeignCurrency(), searchResultTransactionItem.amountCreditForeignCurrency()),
-                substractNullFriendly(searchResultTransactionItem.amountDebit(), searchResultTransactionItem.amountCredit())
+                substractNullFriendly(searchResultTransactionItem.amountDebit(), searchResultTransactionItem.amountCredit()),
+                true // TODO for production this should be false, for now only for testing
         );
     }
 

@@ -49,7 +49,7 @@ public class PreProcessingService implements PipelineTask {
         val newViolations = dispatchedTxLines.stream().map(dispatchedTxLine -> {
             return Violation.create(
                     Violation.Priority.NORMAL,
-                    Violation.Type.ERROR,
+                    Violation.Type.WARN,
                     dispatchedTxLine.getId(),
                     dispatchedTxLine.getInternalTransactionNumber(),
                     "CANNOT_UPDATE_TX_LINES_ERROR"

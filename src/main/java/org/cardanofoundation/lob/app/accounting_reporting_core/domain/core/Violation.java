@@ -32,8 +32,12 @@ public record Violation(Priority priority,
     }
 
     public enum Type {
+
+        WARN,
+
         ERROR,
-        FATAL,
+
+        FATAL, // will fail the whole transaction line
     }
 
 }

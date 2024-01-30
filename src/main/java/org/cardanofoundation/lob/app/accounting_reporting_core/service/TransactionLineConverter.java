@@ -50,6 +50,7 @@ public class TransactionLineConverter {
 
         entityTxLine.setAmountFcy(txLine.getAmountFcy());
         entityTxLine.setAmountLcy(txLine.getAmountLcy());
+        entityTxLine.setLedgerDispatchApproved(txLine.isLedgerDispatchApproved());
 
         return entityTxLine;
     }
@@ -86,7 +87,8 @@ public class TransactionLineConverter {
                 Optional.ofNullable(entityTxLine.getAccountCredit()),
                 entityTxLine.getValidationStatus(),
                 entityTxLine.getAmountFcy(),
-                entityTxLine.getAmountLcy()
+                entityTxLine.getAmountLcy(),
+                entityTxLine.getLedgerDispatchApproved()
         );
     }
 

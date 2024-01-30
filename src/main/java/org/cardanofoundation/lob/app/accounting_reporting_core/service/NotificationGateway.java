@@ -21,10 +21,6 @@ public class NotificationGateway {
     public void sendViolationNotifications(Set<Violation> violations) {
         log.info("Sending violation notification..., count:{}", violations.size());
 
-        for (Violation violation : violations) {
-            log.info("Sending violation notification:{}", violation);
-        }
-
         // TODO this is quite clunky, perhaps we need to translate this better
 
         violations.forEach(violation -> {
@@ -37,4 +33,5 @@ public class NotificationGateway {
             ));
         });
     }
+
 }
