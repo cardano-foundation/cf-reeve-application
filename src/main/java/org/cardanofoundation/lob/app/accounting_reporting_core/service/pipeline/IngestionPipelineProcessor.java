@@ -13,6 +13,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.service.Notificat
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.TransactionLineConverter;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -38,15 +39,15 @@ public class IngestionPipelineProcessor implements PipelineTask {
 
     @PostConstruct
     public void init() {
-        pipelineTasks.add(new PreProcessingService(accountingCoreRepository));
+        pipelineTasks.add(new PreProcessingPipelineTask(accountingCoreRepository));
         pipelineTasks.add(new CleansingPipelineTask());
-        pipelineTasks.add(new PreValidationBusinessRulesPipelineTask());
+        pipelineTasks.add(new PreValidationPipelineTask());
         pipelineTasks.add(new ConversionsPipelineTask(organisationPublicApi));
-        pipelineTasks.add(new PostValidationBusinessRulesPipelineTask());
+        pipelineTasks.add(new PostValidationPipelineTask());
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public TransformationResult run(TransactionLines passedTransactionLines,
                                     TransactionLines ignoredTransactionLines,
                                     TransactionLines filteredTransactionLines,
@@ -55,12 +56,11 @@ public class IngestionPipelineProcessor implements PipelineTask {
                 .entries()
                 .stream()
                 .map(txLine -> txLine.toBuilder()
-                .validationStatus(VALIDATED).build())
+                        .validationStatus(VALIDATED)
+                        .build())
                 .toList();
 
         passedTransactionLines = new TransactionLines(passedTransactionLines.organisationId(), txLines);
-
-        val organisationId = passedTransactionLines.organisationId();
 
         log.info("pre-passedTransactionLinesCount: {}", passedTransactionLines.entries().size());
         log.info("pre-ignoredTransactionLinesCount: {}", ignoredTransactionLines.entries().size());
@@ -92,16 +92,8 @@ public class IngestionPipelineProcessor implements PipelineTask {
             log.info("post-violationsCount: {}", violations.size());
         }
 
-        val validatedTxLines = passedTransactionLines
-                .entries()
-                .stream()
-//                .filter(transactionLine -> transactionLine.getValidationStatus() != ValidationStatus.FAILED)
-//                .map(transactionLine -> transactionLine.toBuilder().validationStatus(ValidationStatus.VALIDATED)
-//                        .build())
-                .toList();
-
         val finalTransformationResult = new TransformationResult(
-                new TransactionLines(organisationId, validatedTxLines),
+                passedTransactionLines,
                 ignoredTransactionLines,
                 filteredTransactionLines,
                 violations
@@ -114,7 +106,7 @@ public class IngestionPipelineProcessor implements PipelineTask {
         return finalTransformationResult;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     private void syncToDb(TransformationResult transformationResult) {
         val passedTxLines = transformationResult.passThroughTransactionLines();
         val filteredTxLines = transformationResult.filteredTransactionLines();

@@ -17,7 +17,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
 @Slf4j
-public class PreValidationBusinessRulesPipelineTask implements PipelineTask {
+public class PreValidationPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(TransactionLines passedTransactionLines,

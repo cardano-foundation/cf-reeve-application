@@ -30,6 +30,8 @@ public class LedgerService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final PIIDataFilteringService piiDataFilteringService;
+
     @Transactional
     public void updateTransactionLines(Map<String, TransactionLine.LedgerDispatchStatus> statusMap) {
         log.info("Updating dispatch status for statusMapCount: {}", statusMap.size());
@@ -57,8 +59,13 @@ public class LedgerService {
             val pendingTxLines = readPendingTransactionLines(organisation);
             log.info("Processing organisationId: {} - pendingTxLinesCount: {}", organisation.id(), pendingTxLines.size());
 
+            log.info("Censoring transaction lines...");
+
+            val censoredTransactionLines = piiDataFilteringService.apply(new TransactionLines(organisation.id(), pendingTxLines));
+
             log.info("Publishing PublishToTheLedgerEvent...");
-            applicationEventPublisher.publishEvent(new LedgerUpdateCommand(organisation.id(), new TransactionLines(organisation.id(), pendingTxLines)));
+
+            applicationEventPublisher.publishEvent(LedgerUpdateCommand.create(censoredTransactionLines));
         }
     }
 

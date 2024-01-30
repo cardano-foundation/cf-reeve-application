@@ -15,9 +15,9 @@ public class BlockchainPublisherEventHandler {
 
     @ApplicationModuleListener
     public void handleLedgerUpdateCommand(LedgerUpdateCommand command) {
-        log.info("Received LedgerUpdateCommand command...");
+        log.info("Received LedgerUpdateCommand command..., uploadId: {}", command.uploadId());
 
-        blockchainPublisherService.dispatchTransactionsToBlockchains(command.organisationId(), command.transactionLines());
+        blockchainPublisherService.dispatchTransactionsToBlockchains(command.uploadId(), command.transactionLines());
     }
 
 }

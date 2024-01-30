@@ -31,7 +31,7 @@ public class TransactionLineConverter {
 
     public TransactionLine convert(UUID ingestionId,
                                    SearchResultTransactionItem searchResultTransactionItem) {
-        // TODO what if this id is 1 for multiple organisations?
+        // TODO what if this uploadId is 1 for multiple organisations?
         // we need some concept of a realm or something
 
         val organisationM = organisationPublicApi.findByForeignProvider(String.valueOf(searchResultTransactionItem.subsidiary()), NETSUITE);
