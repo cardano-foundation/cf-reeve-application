@@ -10,18 +10,12 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Viola
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static java.math.BigDecimal.ZERO;
-
 public class CleansingPipelineTask implements PipelineTask {
 
     public TransformationResult run(TransactionLines passedTransactionLines,
                                     TransactionLines ignoredTransactionLines,
                                     TransactionLines filteredTransactionLines,
                                     Set<Violation> violations) {
-//        val byTransactionNumber = passThroughTransactionLines.txLines()
-//                .stream()
-//                .collect(groupingBy(TransactionLine::getInternalTransactionNumber));
-
         val txLines = passedTransactionLines.entries();
 
         val passed = txLines.stream()
@@ -41,8 +35,8 @@ public class CleansingPipelineTask implements PipelineTask {
     }
 
     private boolean isZeroBalance(TransactionLine transactionLine) {
-        return transactionLine.getAmountLcy().equals(ZERO)
-                && transactionLine.getAmountFcy().equals(ZERO);
+        return transactionLine.getAmountLcy().signum() == 0
+                && transactionLine.getAmountFcy().signum() == 0;
     }
 
     private boolean isNonZeroBalance(TransactionLine transactionLine) {
