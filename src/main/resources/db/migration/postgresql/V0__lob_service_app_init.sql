@@ -26,7 +26,6 @@ CREATE TABLE accounting_core_transaction_line (
    ingestion_id UUID NOT NULL,
    entry_date DATE NOT NULL,
    transaction_internal_number VARCHAR(255),
-   account_code_debit VARCHAR(255) NOT NULL,
    base_currency_id VARCHAR(255),
    base_currency_internal_code VARCHAR(255) NOT NULL,
    target_currency_id VARCHAR(255),
@@ -39,8 +38,9 @@ CREATE TABLE accounting_core_transaction_line (
    project_internal_code VARCHAR(255),
    vat_internal_code VARCHAR(255),
    vat_rate DECIMAL,
+   account_code_debit VARCHAR(255),
    account_name_debit VARCHAR(255),
-   account_credit VARCHAR(255),
+   account_code_credit VARCHAR(255),
    validation_status VARCHAR(255) NOT NULL,
    ledger_dispatch_approved BOOLEAN NOT NULL,
 

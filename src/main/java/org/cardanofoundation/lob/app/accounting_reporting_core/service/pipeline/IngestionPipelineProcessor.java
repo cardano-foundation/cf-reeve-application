@@ -46,9 +46,13 @@ public class IngestionPipelineProcessor implements PipelineTask {
     @PostConstruct
     public void init() {
         pipelineTasks.add(new PreProcessingPipelineTask(accountingCoreRepository));
-        pipelineTasks.add(new CleansingPipelineTask());
+
+        pipelineTasks.add(new PreCleansingPipelineTask());
         pipelineTasks.add(new PreValidationPipelineTask());
+
         pipelineTasks.add(new ConversionsPipelineTask(organisationPublicApi));
+
+        pipelineTasks.add(new PostCleansingPipelineTask());
         pipelineTasks.add(new PostValidationPipelineTask());
     }
 
