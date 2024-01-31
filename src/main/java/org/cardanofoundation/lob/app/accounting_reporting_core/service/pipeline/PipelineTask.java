@@ -10,7 +10,6 @@ public interface PipelineTask {
 
     TransformationResult run(TransactionLines passedTransactionLines,
                              TransactionLines ignoredTransactionLines,
-                             TransactionLines filteredTransactionLines,
                              Set<Violation> violations);
 
 }

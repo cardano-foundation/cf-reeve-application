@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -114,6 +115,21 @@ public class TransactionLine {
 
         public static WithPossibleViolation create(TransactionLine transactionLine, Set<Violation> violations) {
             return new WithPossibleViolation(transactionLine, violations);
+        }
+
+    }
+
+    @Slf4j
+    public static class TransactionLineBuilder {
+
+        public TransactionLineBuilder validationStatus(ValidationStatus validationStatus) {
+            if (this.validationStatus == null || validationStatus.ordinal() > this.validationStatus.ordinal()) {
+                this.validationStatus = validationStatus;
+            } else {
+                log.warn("Validation status is not increasing: {} -> {}", this.validationStatus, validationStatus);
+            }
+
+            return this;
         }
 
     }
