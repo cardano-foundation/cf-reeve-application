@@ -4,8 +4,10 @@ public enum ValidationStatus {
 
     NOT_VALIDATED,
 
+    VALIDATED,
+
     FAILED,
 
-    VALIDATED
+    DISCARDED,
 
 }

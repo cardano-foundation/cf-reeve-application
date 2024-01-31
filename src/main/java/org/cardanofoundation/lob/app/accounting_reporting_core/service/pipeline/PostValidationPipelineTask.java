@@ -13,7 +13,6 @@ public class PostValidationPipelineTask implements PipelineTask {
     @Override
     public TransformationResult run(TransactionLines passedTransactionLines,
                                     TransactionLines ignoredTransactionLines,
-                                    TransactionLines filteredTransactionLines,
                                     Set<Violation> violations) {
         val converted = passedTransactionLines.entries().stream()
                 .map(TransactionLine.WithPossibleViolation::create)
@@ -34,7 +33,6 @@ public class PostValidationPipelineTask implements PipelineTask {
         return new TransformationResult(
                 checkedTxLines,
                 ignoredTransactionLines,
-                filteredTransactionLines,
                 newViolations
         );
     }

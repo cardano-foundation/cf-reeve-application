@@ -26,7 +26,6 @@ public class ConversionsPipelineTask implements PipelineTask {
 
     public TransformationResult run(TransactionLines passedTransactionLines,
                                     TransactionLines ignoredTransactionLines,
-                                    TransactionLines filteredTransactionLines,
                                     Set<Violation> violations
     ) {
         val converted = passedTransactionLines.entries().stream()
@@ -45,7 +44,6 @@ public class ConversionsPipelineTask implements PipelineTask {
         return new TransformationResult(
                 new TransactionLines(passedTransactionLines.organisationId(), passedTxLines),
                 ignoredTransactionLines,
-                filteredTransactionLines,
                 Stream.concat(violations.stream(), newViolations.stream()).collect(toSet())
         );
     }

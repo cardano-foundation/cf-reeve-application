@@ -3,10 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -16,38 +13,36 @@ public class PreCleansingPipelineTask implements PipelineTask {
 
     public TransformationResult run(TransactionLines passedTransactionLines,
                                     TransactionLines ignoredTransactionLines,
-                                    TransactionLines filteredTransactionLines,
                                     Set<Violation> violations) {
         val txLines = passedTransactionLines.entries();
 
         val passed = txLines.stream()
-                .filter(this::isNonZeroBalance)
+                .map(TransactionLine.WithPossibleViolation::create)
+                .map(this::zeroBalanceCheck)
                 .toList();
 
-        val filtered = Sets.difference(Set.copyOf(txLines), Set.copyOf(passed))
-                .stream()
+        val passedTxLines = passed.stream()
+                .map(TransactionLine.WithPossibleViolation::transactionLine)
                 .toList();
-
-        log.warn("Filtered lines: {}", filtered.size());
-        for (val transactionLine : filtered) {
-            log.warn("Filtered line, tx line id: {}, tx id:{}", transactionLine.getId(), transactionLine.getInternalTransactionNumber());
-        }
 
         return new TransformationResult(
-                new TransactionLines(passedTransactionLines.organisationId(), passed),
+                new TransactionLines(passedTransactionLines.organisationId(), passedTxLines),
                 ignoredTransactionLines,
-                new TransactionLines(passedTransactionLines.organisationId(), Stream.concat(filteredTransactionLines.entries().stream(), filtered.stream()).toList()),
                 violations
         );
     }
 
-    private boolean isZeroBalance(TransactionLine transactionLine) {
-        return transactionLine.getAmountLcy().signum() == 0
-                && transactionLine.getAmountFcy().signum() == 0;
-    }
+    private TransactionLine.WithPossibleViolation zeroBalanceCheck(TransactionLine.WithPossibleViolation transactionLineWithViolation) {
+        val transactionLine = transactionLineWithViolation.transactionLine();
 
-    private boolean isNonZeroBalance(TransactionLine transactionLine) {
-        return !isZeroBalance(transactionLine);
+        if (transactionLine.getAmountLcy().signum() == 0 && transactionLine.getAmountFcy().signum() == 0) {
+            return TransactionLine.WithPossibleViolation.create(transactionLine
+                    .toBuilder()
+                    .validationStatus(ValidationStatus.DISCARDED)
+                    .build());
+        }
+
+        return transactionLineWithViolation;
     }
 
 }

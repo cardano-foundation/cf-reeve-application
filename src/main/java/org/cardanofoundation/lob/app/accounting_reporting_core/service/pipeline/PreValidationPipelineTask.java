@@ -19,7 +19,6 @@ public class PreValidationPipelineTask implements PipelineTask {
     @Override
     public TransformationResult run(TransactionLines passedTransactionLines,
                                     TransactionLines ignoredTransactionLines,
-                                    TransactionLines filteredTransactionLines,
                                     Set<Violation> violations) {
 
         // transaction line level checks
@@ -63,7 +62,6 @@ public class PreValidationPipelineTask implements PipelineTask {
         return new TransformationResult(
                 finalTxLines,
                 ignoredTransactionLines,
-                filteredTransactionLines,
                 newViolations
         );
     }

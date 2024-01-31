@@ -30,7 +30,6 @@ public class AccountingCoreEventHandler {
         ingestionPipelineProcessor.run(
                 event.transactionLines(),
                 TransactionLines.empty(organisationId),
-                TransactionLines.empty(organisationId),
                 Set.of()
         );
 

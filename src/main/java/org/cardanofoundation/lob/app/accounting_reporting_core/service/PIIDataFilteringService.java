@@ -14,15 +14,21 @@ public class PIIDataFilteringService implements Function<TransactionLines, Trans
 
     @Override
     public TransactionLines apply(TransactionLines transactionLines) {
-        log.info("Filtering out transaction lines for organisation, {}", transactionLines.organisationId());
+        log.info("Filtering out transaction lines for organisation, org_id: {}", transactionLines.organisationId());
 
         val censoredTxLines = transactionLines
                 .entries()
                 .stream()
                 .map(transactionLine -> {
                     return transactionLine
-                            .toBuilder().
-                            vendorName(Optional.empty()).build();
+                            .toBuilder()
+                            .accountCodeCredit(Optional.empty())
+                            .accountNameDebit(Optional.empty())
+                            .accountCodeCredit(Optional.empty())
+                            .vendorName(Optional.empty())
+                            .internalProjectCode(Optional.empty())
+                            .internalCostCenterCode(Optional.empty())
+                            .build();
                 }).toList();
 
         return new TransactionLines(transactionLines.organisationId(), censoredTxLines);

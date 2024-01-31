@@ -23,7 +23,6 @@ public class PreProcessingPipelineTask implements PipelineTask {
     @Override
     public TransformationResult run(TransactionLines passedTransactionLines,
                                     TransactionLines ignoredTransactionLines,
-                                    TransactionLines filteredTransactionLines,
                                     Set<Violation> violations) {
         val organisationId = passedTransactionLines.organisationId();
 
@@ -66,7 +65,6 @@ public class PreProcessingPipelineTask implements PipelineTask {
         return new TransformationResult(
                 new TransactionLines(organisationId, notDispatchedTxLines),
                 new TransactionLines(organisationId, dispatchedTxLines),
-                new TransactionLines(organisationId, List.of()),
                 newViolations
         );
     }
