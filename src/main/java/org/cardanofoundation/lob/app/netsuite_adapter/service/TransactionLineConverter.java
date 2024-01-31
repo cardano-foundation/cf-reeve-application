@@ -50,7 +50,7 @@ public class TransactionLineConverter {
                 searchResultTransactionItem.date(),
                 searchResultTransactionItem.transactionNumber(),
                 ingestionId,
-                searchResultTransactionItem.number(),
+                normaliseString(searchResultTransactionItem.number()),
                 organisation.baseCurrency().internalId(),
                 organisation.baseCurrency().currencyId(),
                 String.valueOf(searchResultTransactionItem.currency()),
@@ -69,7 +69,7 @@ public class TransactionLineConverter {
                 NOT_VALIDATED,
                 substractNullFriendly(searchResultTransactionItem.amountDebitForeignCurrency(), searchResultTransactionItem.amountCreditForeignCurrency()),
                 substractNullFriendly(searchResultTransactionItem.amountDebit(), searchResultTransactionItem.amountCredit()),
-                true // TODO for production this should be false, for now only for testing
+                false
         );
     }
 

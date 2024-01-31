@@ -41,9 +41,6 @@ public class TransactionLineEntity {
     @Column(name = "transaction_internal_number", nullable = false)
     private String transactionInternalNumber;
 
-    @Column(name = "account_code_debit", nullable = false)
-    private String accountCodeDebit;
-
     @Column(name = "ledger_dispatch_status", nullable = false)
     @Enumerated(STRING)
     org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus ledgerDispatchStatus = TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
@@ -96,12 +93,16 @@ public class TransactionLineEntity {
     private BigDecimal vatRate;
 
     @Nullable
+    @Column(name = "account_code_debit")
+    private String accountCodeDebit;
+
+    @Nullable
     @Column(name = "account_name_debit")
     private String accountNameDebit;
 
     @Nullable
-    @Column(name = "account_credit")
-    private String accountCredit;
+    @Column(name = "account_code_credit")
+    private String accountCodeCredit;
 
     @Column(name = "validation_status", nullable = false)
     @Enumerated(STRING)

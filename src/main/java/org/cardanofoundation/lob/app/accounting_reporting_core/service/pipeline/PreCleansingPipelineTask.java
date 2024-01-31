@@ -1,6 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
 
 import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
@@ -10,7 +11,8 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Viola
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class CleansingPipelineTask implements PipelineTask {
+@Slf4j
+public class PreCleansingPipelineTask implements PipelineTask {
 
     public TransformationResult run(TransactionLines passedTransactionLines,
                                     TransactionLines ignoredTransactionLines,
@@ -25,6 +27,11 @@ public class CleansingPipelineTask implements PipelineTask {
         val filtered = Sets.difference(Set.copyOf(txLines), Set.copyOf(passed))
                 .stream()
                 .toList();
+
+        log.warn("Filtered lines: {}", filtered.size());
+        for (val transactionLine : filtered) {
+            log.warn("Filtered line, tx line id: {}, tx id:{}", transactionLine.getId(), transactionLine.getInternalTransactionNumber());
+        }
 
         return new TransformationResult(
                 new TransactionLines(passedTransactionLines.organisationId(), passed),

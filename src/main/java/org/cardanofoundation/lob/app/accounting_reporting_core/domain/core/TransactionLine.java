@@ -31,7 +31,7 @@ public class TransactionLine {
 
     UUID ingestionId;
 
-    String accountCodeDebit;
+    Optional<String> accountCodeDebit;
 
     // base currency specific value to the organisation
     String baseCurrencyInternalId;
@@ -65,7 +65,7 @@ public class TransactionLine {
 
     Optional<String> accountNameDebit;
 
-    Optional<String> accountCredit;
+    Optional<String> accountCodeCredit;
 
     ValidationStatus validationStatus;
 

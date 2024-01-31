@@ -22,7 +22,7 @@ public class TransactionLineConverter {
         entityTxLine.setTransactionType(txLine.getTransactionType());
         entityTxLine.setEntryDate(txLine.getEntryDate());
         entityTxLine.setTransactionInternalNumber(txLine.getInternalTransactionNumber());
-        entityTxLine.setAccountCodeDebit(txLine.getAccountCodeDebit());
+        entityTxLine.setAccountCodeDebit(txLine.getAccountCodeDebit().orElse(null));
         entityTxLine.setIngestionID(txLine.getIngestionId());
 
         entityTxLine.setBaseCurrencyInternalCode(txLine.getBaseCurrencyInternalId());
@@ -44,7 +44,7 @@ public class TransactionLineConverter {
         entityTxLine.setVatRate(txLine.getVatRate().orElse(null));
 
         entityTxLine.setAccountNameDebit(txLine.getAccountNameDebit().orElse(null));
-        entityTxLine.setAccountCredit(txLine.getAccountCredit().orElse(null));
+        entityTxLine.setAccountCodeCredit(txLine.getAccountCodeCredit().orElse(null));
 
         entityTxLine.setValidationStatus(txLine.getValidationStatus());
 
@@ -63,7 +63,7 @@ public class TransactionLineConverter {
                 entityTxLine.getEntryDate(),
                 entityTxLine.getTransactionInternalNumber(),
                 entityTxLine.getIngestionID(),
-                entityTxLine.getAccountCodeDebit(),
+                Optional.ofNullable(entityTxLine.getAccountCodeDebit()),
 
                 entityTxLine.getBaseCurrencyInternalCode(),
                 entityTxLine.getBaseCurrencyId(),
@@ -84,7 +84,7 @@ public class TransactionLineConverter {
                 Optional.ofNullable(entityTxLine.getVatRate()),
 
                 Optional.ofNullable(entityTxLine.getAccountNameDebit()),
-                Optional.ofNullable(entityTxLine.getAccountCredit()),
+                Optional.ofNullable(entityTxLine.getAccountCodeCredit()),
                 entityTxLine.getValidationStatus(),
                 entityTxLine.getAmountFcy(),
                 entityTxLine.getAmountLcy(),
