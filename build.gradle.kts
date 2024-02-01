@@ -37,8 +37,6 @@ dependencies {
 
     implementation("org.flywaydb:flyway-core")
 
-    //implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
-
     implementation("org.springframework.modulith:spring-modulith-starter-core")
     implementation("org.springframework.modulith:spring-modulith-starter-jdbc")
     implementation("org.springframework.modulith:spring-modulith-events-amqp")
@@ -88,7 +86,6 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
     testImplementation("io.rest-assured:rest-assured:5.4.0")
     testImplementation("org.wiremock:wiremock-standalone:3.3.1")
-
 }
 
 dependencyManagement {
