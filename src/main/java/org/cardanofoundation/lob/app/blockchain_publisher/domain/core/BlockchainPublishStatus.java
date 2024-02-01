@@ -2,9 +2,11 @@ package org.cardanofoundation.lob.app.blockchain_publisher.domain.core;
 
 public enum BlockchainPublishStatus {
 
-    SUBMITTED,
+    SAVE_ACK,
 
-    CONFIRMED, // confirmed onc-hain
+    SUBMITTED, // submitted and setting in the mem pool for now
+
+    CONFIRMED, // confirmed to be visible on-chain
 
     COMPLETED, // confirmed on-chain and a few blocks passed
 
