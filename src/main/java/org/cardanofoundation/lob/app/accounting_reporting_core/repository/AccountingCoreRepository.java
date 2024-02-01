@@ -11,15 +11,15 @@ import java.util.List;
 
 public interface AccountingCoreRepository extends JpaRepository<TransactionLineEntity, String> {
 
-    @Query("SELECT tl.id FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('NOT_DISPATCHED', 'FAILED')")
+    @Query("SELECT tl.id FROM accounting_reporting_core.TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('NOT_DISPATCHED', 'FAILED')")
     List<String> findNotYetDispatchedAndFailedTxLineIds(@Param("organisationId") String organisationId,
                                                         @Param("txLineIds") List<String> txLineIds);
 
-    @Query("SELECT tl.id FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('SAVE_ACK', 'DISPATCHED', 'COMPLETED', 'FINALISED')")
+    @Query("SELECT tl.id FROM accounting_reporting_core.TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('SAVE_ACK', 'DISPATCHED', 'COMPLETED', 'FINALISED')")
     List<String> findDoneTxLineIds(@Param("organisationId") String organisationId,
                                                         @Param("txLineIds") List<String> txLineIds);
 
-    @Query("SELECT tl FROM TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.ledgerDispatchStatus IN :dispatchStatuses AND tl.validationStatus IN :validationStatuses AND tl.ledgerDispatchApproved = true")
+    @Query("SELECT tl FROM accounting_reporting_core.TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.ledgerDispatchStatus IN :dispatchStatuses AND tl.validationStatus IN :validationStatuses AND tl.ledgerDispatchApproved = true")
     List<TransactionLineEntity> findLedgerDispatchPendingTransactionLines(@Param("organisationId") String organisationId,
                                                                           @Param("dispatchStatuses") List<TransactionLine.LedgerDispatchStatus> dispatchStatuses,
                                                                           @Param("validationStatuses") List<ValidationStatus> validationStatuses);

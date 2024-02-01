@@ -47,7 +47,31 @@ CREATE TABLE accounting_core_transaction_line (
    amount_fcy DECIMAL NOT NULL,
    amount_lcy DECIMAL NOT NULL,
    ledger_dispatch_status VARCHAR(255) NOT NULL,
-   CONSTRAINT pk_transaction_line PRIMARY KEY (id)
+   CONSTRAINT pk_accounting_core_transaction_line PRIMARY KEY (id)
+);
+
+CREATE TABLE blockchain_publisher_transaction_line (
+   id CHAR(64) NOT NULL,
+   organisation_id VARCHAR(255) NOT NULL,
+   upload_id UUID NOT NULL,
+   transaction_type VARCHAR(255) NOT NULL,
+   entry_date DATE NOT NULL,
+   transaction_internal_number VARCHAR(255),
+   base_currency_id VARCHAR(255),
+   base_currency_internal_code VARCHAR(255) NOT NULL,
+   target_currency_id VARCHAR(255),
+   target_currency_internal_code VARCHAR(255) NOT NULL,
+   fx_rate DECIMAL NOT NULL,
+   document_internal_number VARCHAR(255),
+   vendor_internal_code VARCHAR(255),
+   vat_internal_code VARCHAR(255),
+   vat_rate DECIMAL,
+   publish_status VARCHAR(255) NOT NULL,
+   assurance_level VARCHAR(255),
+
+   amount_fcy DECIMAL NOT NULL,
+   amount_lcy DECIMAL NOT NULL,
+   CONSTRAINT pk_blockchain_publisher_transaction_line PRIMARY KEY (id)
 );
 
 -- Spring Modulith

@@ -69,7 +69,7 @@ public class TransactionLineConverter {
                 NOT_VALIDATED,
                 substractNullFriendly(searchResultTransactionItem.amountDebitForeignCurrency(), searchResultTransactionItem.amountCreditForeignCurrency()),
                 substractNullFriendly(searchResultTransactionItem.amountDebit(), searchResultTransactionItem.amountCredit()),
-                false
+                true
         );
     }
 
