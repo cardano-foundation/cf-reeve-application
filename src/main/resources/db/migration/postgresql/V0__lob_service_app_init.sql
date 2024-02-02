@@ -68,6 +68,8 @@ CREATE TABLE blockchain_publisher_transaction_line (
    vat_rate DECIMAL,
    publish_status VARCHAR(255) NOT NULL,
    assurance_level VARCHAR(255),
+   l1_transaction_hash VARCHAR(255),
+   l1_absolute_slot BIGINT,
 
    amount_fcy DECIMAL NOT NULL,
    amount_lcy DECIMAL NOT NULL,
