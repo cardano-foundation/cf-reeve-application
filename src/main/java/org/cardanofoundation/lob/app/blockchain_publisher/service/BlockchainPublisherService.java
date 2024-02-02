@@ -16,7 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,7 +45,6 @@ public class BlockchainPublisherService {
                 .stream()
                 .map(TransactionLine::getId)
                 .toList();
-
 
         val loadedEntitiesTxs = blockchainPublisherRepository.findAllById(txLineIds)
                 .stream()
@@ -76,20 +78,25 @@ public class BlockchainPublisherService {
 
         val oldStoredStatusesMap = loadedEntitiesTxs
                 .stream()
-                .collect(toMap(Function.identity(), v -> validationStatus(v.getPublishStatus(), v.getOnChainAssuranceLevel())));
+                .collect(toMap(Function.identity(), v -> convertValidationStatus(v.getPublishStatus(), v.getOnChainAssuranceLevel())))
+                .entrySet()
+                .stream()
+                .collect(toMap(k -> k.getKey().getId(), Map.Entry::getValue));
 
         val combinedStatusesStream = Stream.concat(oldStoredStatusesMap.entrySet().stream(), newStoredStatusesMap.entrySet().stream());
+
         val combinedStatusesMap = combinedStatusesStream.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+        log.info("combinedStatusesMap: {}", combinedStatusesMap);
 
         if (!combinedStatusesMap.isEmpty()) {
             log.info("Publishing LedgerChangeEvent command, statusesMapCount: {}", combinedStatusesMap.size());
 
-            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(transactionLines.organisationId(), newStoredStatusesMap));
+            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(transactionLines.organisationId(), combinedStatusesMap));
         }
     }
 
-    private TransactionLine.LedgerDispatchStatus validationStatus(BlockchainPublishStatus blockchainPublishStatus,
-                                                                  Optional<OnChainAssuranceLevel> assuranceLevelM) {
+    private TransactionLine.LedgerDispatchStatus convertValidationStatus(BlockchainPublishStatus blockchainPublishStatus,
+                                                                         Optional<OnChainAssuranceLevel> assuranceLevelM) {
         return switch (blockchainPublishStatus) {
             case STORED, ROLLBACKED -> TransactionLine.LedgerDispatchStatus.STORED;
             case VISIBLE_ON_CHAIN, SUBMITTED -> TransactionLine.LedgerDispatchStatus.DISPATCHED;
@@ -97,6 +104,7 @@ public class BlockchainPublisherService {
                 if (level == OnChainAssuranceLevel.HIGH) {
                     return TransactionLine.LedgerDispatchStatus.COMPLETED;
                 }
+
                 return TransactionLine.LedgerDispatchStatus.DISPATCHED;
             }).orElse(TransactionLine.LedgerDispatchStatus.DISPATCHED);
             case FINALIZED -> TransactionLine.LedgerDispatchStatus.FINALIZED;

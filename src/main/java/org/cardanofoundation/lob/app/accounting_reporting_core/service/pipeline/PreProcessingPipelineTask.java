@@ -46,7 +46,6 @@ public class PreProcessingPipelineTask implements PipelineTask {
 
         val newViolations = new HashSet<>(violations);
 
-
         dispatchedTxLines.forEach(dispatchedTxLine -> {
             val v = Violation.create(
                     Violation.Priority.NORMAL,
