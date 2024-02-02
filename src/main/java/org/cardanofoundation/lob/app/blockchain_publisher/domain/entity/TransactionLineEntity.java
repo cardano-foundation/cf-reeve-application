@@ -87,6 +87,14 @@ public class TransactionLineEntity {
     private BlockchainPublishStatus publishStatus;
 
     @Nullable
+    @Column(name = "l1_transaction_hash")
+    private String l1TransactionHash;
+
+    @Nullable
+    @Column(name = "l1_absolute_slot")
+    private Long l1AbsoluteSlot;
+
+    @Nullable
     @Column(name = "assurance_level")
     @Enumerated(STRING)
     private OnChainAssuranceLevel assuranceLevel;
@@ -95,8 +103,36 @@ public class TransactionLineEntity {
         return Optional.ofNullable(assuranceLevel);
     }
 
-    public Optional<BigDecimal> getFxRate() {
-        return Optional.ofNullable(fxRate);
+    public Optional<String> getVendorInternalCode() {
+        return Optional.ofNullable(vendorInternalCode);
+    }
+
+    public Optional<String> getL1TransactionHash() {
+        return Optional.ofNullable(l1TransactionHash);
+    }
+
+    public Optional<Long> getL1AbsoluteSlot() {
+        return Optional.ofNullable(l1AbsoluteSlot);
+    }
+
+    public Optional<OnChainAssuranceLevel> getAssuranceLevel() {
+        return Optional.ofNullable(assuranceLevel);
+    }
+
+    public Optional<String> getVatInternalCode() {
+        return Optional.ofNullable(vatInternalCode);
+    }
+
+    public Optional<BigDecimal> getVatRate() {
+        return Optional.ofNullable(vatRate);
+    }
+
+    public Optional<String> getDocumentInternalNumber() {
+        return Optional.ofNullable(documentInternalNumber);
+    }
+
+    public Optional<String> getTransactionInternalNumber() {
+        return Optional.ofNullable(transactionInternalNumber);
     }
 
 }

@@ -16,16 +16,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus.SAVE_ACK;
 
 @Service("blockchainPublisherService")
 @RequiredArgsConstructor
@@ -46,6 +42,7 @@ public class BlockchainPublisherService {
                 .stream()
                 .map(TransactionLine::getId)
                 .toList();
+
 
         val loadedEntitiesTxs = blockchainPublisherRepository.findAllById(txLineIds)
                 .stream()
@@ -75,7 +72,7 @@ public class BlockchainPublisherService {
 
         val newStoredStatusesMap = newStoredIds
                 .stream()
-                .collect(toMap(Function.identity(), v -> SAVE_ACK));
+                .collect(toMap(Function.identity(), v -> TransactionLine.LedgerDispatchStatus.STORED));
 
         val oldStoredStatusesMap = loadedEntitiesTxs
                 .stream()
@@ -94,7 +91,7 @@ public class BlockchainPublisherService {
     private TransactionLine.LedgerDispatchStatus validationStatus(BlockchainPublishStatus blockchainPublishStatus,
                                                                   Optional<OnChainAssuranceLevel> assuranceLevelM) {
         return switch (blockchainPublishStatus) {
-            case SAVE_ACK -> SAVE_ACK;
+            case STORED, ROLLBACKED -> TransactionLine.LedgerDispatchStatus.STORED;
             case CONFIRMED, SUBMITTED -> TransactionLine.LedgerDispatchStatus.DISPATCHED;
             case COMPLETED -> assuranceLevelM.map(level -> {
                 if (level == OnChainAssuranceLevel.HIGH) {

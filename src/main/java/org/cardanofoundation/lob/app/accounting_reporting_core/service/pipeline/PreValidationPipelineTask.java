@@ -45,7 +45,6 @@ public class PreValidationPipelineTask implements PipelineTask {
         val transactionsWithPossibleViolation = transactions
                 .stream()
                 .map(Transaction.WithPossibleViolation::create)
-                .map(this::hasTransactionLinesCheck)
                 .map(this::balanceZerosOutLcyCheck)
                 .map(this::balanceZerosOutFcyCheck)
                 .toList();
@@ -112,31 +111,6 @@ public class PreValidationPipelineTask implements PipelineTask {
         }
 
         return violationTransactionLine;
-    }
-
-    public Transaction.WithPossibleViolation hasTransactionLinesCheck(Transaction.WithPossibleViolation violationTransaction) {
-        val transaction = violationTransaction.transaction();
-
-        if (transaction.getTransactionLines().isEmpty()) {
-            val v = Violation.create(
-                    Violation.Priority.HIGH,
-                    Violation.Type.FATAL,
-                    transaction.getTransactionNumber(),
-                    "TRANSACTION_MUST_HAVE_TRANSACTION_LINES"
-            );
-
-            return Transaction.WithPossibleViolation.create(transaction
-                            .toBuilder()
-                            .transactionLines(transaction.getTransactionLines().stream()
-                                    .map(txLine -> txLine.toBuilder()
-                                            .validationStatus(FAILED)
-                                            .build())
-                                    .toList())
-                            .build(),
-                    v);
-        }
-
-        return violationTransaction;
     }
 
     public Transaction.WithPossibleViolation balanceZerosOutLcyCheck(Transaction.WithPossibleViolation violationTransaction) {

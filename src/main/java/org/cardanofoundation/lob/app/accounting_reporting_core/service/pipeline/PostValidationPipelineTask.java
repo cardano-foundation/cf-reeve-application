@@ -40,22 +40,20 @@ public class PostValidationPipelineTask implements PipelineTask {
     private TransactionLine.WithPossibleViolation accountCodeDebitCheck(TransactionLine.WithPossibleViolation withPossibleViolation) {
         val transactionLine = withPossibleViolation.transactionLine();
 
-        if (transactionLine.getTransactionType() != TransactionType.FxRevaluation) {
-            if (transactionLine.getAccountCodeDebit().isEmpty())  {
-                val v = Violation.create(
-                        Violation.Priority.NORMAL,
-                        Violation.Type.FATAL,
-                        transactionLine.getId(),
-                        transactionLine.getInternalTransactionNumber(),
-                        "ACCOUNT_CODE_DEBIT_IS_EMPTY"
-                );
+        if (transactionLine.getAccountCodeDebit().isEmpty())  {
+            val v = Violation.create(
+                    Violation.Priority.NORMAL,
+                    Violation.Type.FATAL,
+                    transactionLine.getId(),
+                    transactionLine.getInternalTransactionNumber(),
+                    "ACCOUNT_CODE_DEBIT_IS_EMPTY"
+            );
 
-                return TransactionLine.WithPossibleViolation.create(transactionLine
-                                .toBuilder()
-                                .validationStatus(FAILED)
-                                .build(),
-                        Set.of(v));
-            }
+            return TransactionLine.WithPossibleViolation.create(transactionLine
+                            .toBuilder()
+                            .validationStatus(FAILED)
+                            .build(),
+                    Set.of(v));
         }
 
         return withPossibleViolation;

@@ -104,8 +104,8 @@ public class ConversionsPipelineTask implements PipelineTask {
 
                 return TransactionLine.WithPossibleViolation
                         .create(transactionLine.toBuilder()
-                                .validationStatus(FAILED)
-                                .build(),
+                                        .validationStatus(FAILED)
+                                        .build(),
                                 Set.of(v));
             }
             val organisationCurrencyByInternalId = organisationCurrencyByInternalIdM.orElseThrow();

@@ -1,10 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
@@ -22,6 +19,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Table(name = "accounting_core_transaction_line")
 @NoArgsConstructor
 @ToString
+@EqualsAndHashCode
 public class TransactionLineEntity {
 
     @Id

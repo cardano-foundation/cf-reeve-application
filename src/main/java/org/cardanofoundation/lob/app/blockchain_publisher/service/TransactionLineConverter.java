@@ -40,7 +40,7 @@ public class TransactionLineConverter {
 
         entityTxLine.setAmountFcy(txLine.getAmountFcy());
         entityTxLine.setAmountLcy(txLine.getAmountLcy());
-        entityTxLine.setPublishStatus(BlockchainPublishStatus.SAVE_ACK);
+        entityTxLine.setPublishStatus(BlockchainPublishStatus.STORED);
 
         return entityTxLine;
     }

@@ -77,6 +77,10 @@ dependencies {
     implementation("javax.xml.bind", "jaxb-api", "2.3.0")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2") // needed for OAuth 1.0 for NetSuite Module
 
+    implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.1")
+    implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.1")
+    implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.1")
+
     implementation("com.google.guava:guava:33.0.0-jre")
 
     compileOnly("org.projectlombok:lombok:1.18.30")

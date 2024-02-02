@@ -1,12 +1,10 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
 
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
 import java.util.Set;
-import java.util.stream.Stream;
 
 @Slf4j
 public class PreCleansingPipelineTask implements PipelineTask {
