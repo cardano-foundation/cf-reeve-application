@@ -92,7 +92,7 @@ public class BlockchainPublisherService {
                                                                   Optional<OnChainAssuranceLevel> assuranceLevelM) {
         return switch (blockchainPublishStatus) {
             case STORED, ROLLBACKED -> TransactionLine.LedgerDispatchStatus.STORED;
-            case CONFIRMED, SUBMITTED -> TransactionLine.LedgerDispatchStatus.DISPATCHED;
+            case VISIBLE_ON_CHAIN, SUBMITTED -> TransactionLine.LedgerDispatchStatus.DISPATCHED;
             case COMPLETED -> assuranceLevelM.map(level -> {
                 if (level == OnChainAssuranceLevel.HIGH) {
                     return TransactionLine.LedgerDispatchStatus.COMPLETED;
