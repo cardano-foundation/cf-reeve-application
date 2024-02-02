@@ -20,33 +20,16 @@ public class PreValidationPipelineTask implements PipelineTask {
     public TransformationResult run(TransactionLines passedTransactionLines,
                                     TransactionLines ignoredTransactionLines,
                                     Set<Violation> violations) {
-
-        // transaction line level checks
-        val converted = passedTransactionLines.entries().stream()
-                .map(TransactionLine.WithPossibleViolation::create)
-                .map(this::amountsFcyCheck)
-                .map(this::amountsLcyCheck)
-                .toList();
-
         val newViolations = new HashSet<>(violations);
-
-        converted.forEach(p -> newViolations.addAll(p.violations()));
-
-        val passedTxLines = converted.stream()
-                .map(TransactionLine.WithPossibleViolation::transactionLine)
-                .toList();
-
-        val checkedTxLines = new TransactionLines(passedTransactionLines.organisationId(), passedTxLines);
-
-        // now transaction level checks
-
-        val transactions = checkedTxLines.toTransactions();
+        val transactions = passedTransactionLines.toTransactions();
 
         val transactionsWithPossibleViolation = transactions
                 .stream()
                 .map(Transaction.WithPossibleViolation::create)
                 .map(this::balanceZerosOutLcyCheck)
                 .map(this::balanceZerosOutFcyCheck)
+                .map(this::amountsFcyCheck)
+                .map(this::amountsLcyCheck)
                 .toList();
 
         val finalTxLinesList = new ArrayList<TransactionLine>();
@@ -65,52 +48,66 @@ public class PreValidationPipelineTask implements PipelineTask {
         );
     }
 
-    public TransactionLine.WithPossibleViolation amountsFcyCheck(TransactionLine.WithPossibleViolation violationTransactionLine) {
-        val transactionLine = violationTransactionLine.transactionLine();
+    public Transaction.WithPossibleViolation amountsFcyCheck(Transaction.WithPossibleViolation violationTransaction) {
+        val transaction = violationTransaction.transaction();
 
-        if (transactionLine.getTransactionType() != FxRevaluation) {
-            if (transactionLine.getAmountLcy().signum() != 0 && transactionLine.getAmountFcy().signum() == 0) {
+        for (val transactionLine : transaction.getTransactionLines()) {
+            if (transactionLine.getTransactionType() != FxRevaluation) {
+                if (transactionLine.getAmountLcy().signum() != 0 && transactionLine.getAmountFcy().signum() == 0) {
+                    val v = Violation.create(
+                            Violation.Priority.HIGH,
+                            Violation.Type.FATAL,
+                            transactionLine.getId(),
+                            transactionLine.getInternalTransactionNumber(),
+                            "AMOUNT_FCY_IS_ZERO",
+                            Map.of("amountFcy", transactionLine.getAmountFcy(), "amountLcy", transactionLine.getAmountLcy())
+                    );
+
+                    return Transaction.WithPossibleViolation.create(transaction
+                                    .toBuilder()
+                                    .transactionNumber(transaction.getTransactionNumber())
+                                    .transactionLines(transaction.getTransactionLines().stream()
+                                            .map(txLine -> txLine.toBuilder()
+                                                    .validationStatus(FAILED)
+                                                    .build())
+                                            .toList())
+                                    .build(),
+                            Set.of(v));
+                }
+            }
+        }
+
+        return violationTransaction;
+    }
+
+    public Transaction.WithPossibleViolation amountsLcyCheck(Transaction.WithPossibleViolation violationTransaction) {
+        val transaction = violationTransaction.transaction();
+
+        for (val transactionLine : transaction.getTransactionLines()) {
+            if (transactionLine.getAmountLcy().signum() == 0 && transactionLine.getAmountFcy().signum() != 0) {
                 val v = Violation.create(
                         Violation.Priority.HIGH,
                         Violation.Type.FATAL,
                         transactionLine.getId(),
                         transactionLine.getInternalTransactionNumber(),
-                        "AMOUNT_FCY_IS_ZERO",
+                        "AMOUNT_LCY_IS_ZERO",
                         Map.of("amountFcy", transactionLine.getAmountFcy(), "amountLcy", transactionLine.getAmountLcy())
                 );
 
-                return TransactionLine.WithPossibleViolation.create(transactionLine
+                return Transaction.WithPossibleViolation.create(transaction
                                 .toBuilder()
-                                .validationStatus(FAILED)
+                                .transactionNumber(transaction.getTransactionNumber())
+                                .transactionLines(transaction.getTransactionLines().stream()
+                                        .map(txLine -> txLine.toBuilder()
+                                                .validationStatus(FAILED)
+                                                .build())
+                                        .toList())
                                 .build(),
                         Set.of(v));
             }
         }
 
-        return violationTransactionLine;
-    }
-
-    public TransactionLine.WithPossibleViolation amountsLcyCheck(TransactionLine.WithPossibleViolation violationTransactionLine) {
-        val transactionLine = violationTransactionLine.transactionLine();
-
-        if (transactionLine.getAmountLcy().signum() == 0 && transactionLine.getAmountFcy().signum() != 0) {
-            val v = Violation.create(
-                    Violation.Priority.HIGH,
-                    Violation.Type.FATAL,
-                    transactionLine.getId(),
-                    transactionLine.getInternalTransactionNumber(),
-                    "AMOUNT_LCY_IS_ZERO",
-                    Map.of("amountFcy", transactionLine.getAmountFcy(), "amountLcy", transactionLine.getAmountLcy())
-            );
-
-            return TransactionLine.WithPossibleViolation.create(transactionLine
-                            .toBuilder()
-                            .validationStatus(FAILED)
-                            .build(),
-                    Set.of(v));
-        }
-
-        return violationTransactionLine;
+        return violationTransaction;
     }
 
     public Transaction.WithPossibleViolation balanceZerosOutLcyCheck(Transaction.WithPossibleViolation violationTransaction) {
