@@ -6,7 +6,7 @@ public enum BlockchainPublishStatus {
 
     SUBMITTED, // submitted and setting in the mem pool for now
 
-    CONFIRMED, // confirmed to be visible on-chain
+    VISIBLE_ON_CHAIN, // confirmed to be visible on-chain
 
     COMPLETED, // confirmed on-chain and a few blocks passed
 

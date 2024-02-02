@@ -3,8 +3,8 @@ package org.cardanofoundation.lob.app.blockchain_publisher.service;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.metadata.MetadataMap;
 import lombok.val;
-import org.cardanofoundation.lob.app.blockchain_publisher.util.WithExtraIds;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionLineEntity;
+import org.cardanofoundation.lob.app.blockchain_publisher.util.WithExtraIds;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -34,13 +34,13 @@ public class MetadataSerialiser {
     }
 
     private static MetadataMap serialise(TransactionLineEntity transactionLine) {
-        var txLineMetadataMap = MetadataBuilder.createMap();
+        val txLineMetadataMap = MetadataBuilder.createMap();
 
         txLineMetadataMap.put("id", transactionLine.getId());
         txLineMetadataMap.put("organisation_id", transactionLine.getOrganisationId());
         txLineMetadataMap.put("type", transactionLine.getTransactionType().name().toUpperCase());
-        txLineMetadataMap.put("amount_lcy", transactionLine.getAmountLcy().toBigIntegerExact());
-        txLineMetadataMap.put("amount_fcy", transactionLine.getAmountFcy().toBigIntegerExact());
+        txLineMetadataMap.put("amount_lcy", transactionLine.getAmountLcy().toEngineeringString()); // keep it short
+        txLineMetadataMap.put("amount_fcy", transactionLine.getAmountFcy().toEngineeringString()); // keep it short
         txLineMetadataMap.put("base_currency_id", transactionLine.getBaseCurrencyId());
         txLineMetadataMap.put("base_currency_internal_code", transactionLine.getBaseCurrencyInternalCode());
         txLineMetadataMap.put("target_currency_id", transactionLine.getTargetCurrencyId());
