@@ -20,7 +20,7 @@ public record TransactionLines(
     }
 
     public List<Transaction> toTransactions() {
-        return Transaction.from(toTransactionsProjection(entries));
+        return Transaction.from(toTransactionsMap());
     }
 
 }
