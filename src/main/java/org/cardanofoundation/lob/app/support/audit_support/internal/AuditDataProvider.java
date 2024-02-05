@@ -13,7 +13,7 @@ public class AuditDataProvider implements AuditorAware<String>, DateTimeProvider
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        log.info("AuditDataProvider.getCurrentAuditor");
+        // log.info("AuditDataProvider.getCurrentAuditor");
 
 //        return Optional.ofNullable(SecurityContextHolder.getContext())
 //                .map(SecurityContext::getAuthentication)
@@ -28,7 +28,7 @@ public class AuditDataProvider implements AuditorAware<String>, DateTimeProvider
 
     @Override
     public Optional<TemporalAccessor> getNow() {
-        log.info("AuditDataProvider.getNow");
+        // log.info("AuditDataProvider.getNow");
 
         return Optional.of(LocalDateTime.now());
     }

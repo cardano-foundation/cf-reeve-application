@@ -5,6 +5,9 @@ import lombok.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.AuditEntity;
+import org.hibernate.envers.Audited;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -19,8 +22,10 @@ import static jakarta.persistence.EnumType.STRING;
 @Table(name = "accounting_core_transaction_line")
 @NoArgsConstructor
 @ToString
-@EqualsAndHashCode
-public class TransactionLineEntity {
+@EqualsAndHashCode(callSuper = true)
+@Audited
+@EntityListeners({AuditingEntityListener.class})
+public class TransactionLineEntity extends AuditEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -41,7 +46,7 @@ public class TransactionLineEntity {
 
     @Column(name = "ledger_dispatch_status", nullable = false)
     @Enumerated(STRING)
-    org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus ledgerDispatchStatus = TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
+    TransactionLine.LedgerDispatchStatus ledgerDispatchStatus = TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
 
     @Column(name = "base_currency_internal_code", nullable = false)
     private String baseCurrencyInternalCode;

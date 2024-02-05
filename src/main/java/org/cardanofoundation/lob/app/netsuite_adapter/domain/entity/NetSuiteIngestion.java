@@ -9,13 +9,13 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-//@EntityListeners({AuditingEntityListener.class})
 @Table(name = "netsuite_ingestion")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 //@Audited
+//@EntityListeners({AuditingEntityListener.class})
 public class NetSuiteIngestion extends AuditEntity {
 
     @Id

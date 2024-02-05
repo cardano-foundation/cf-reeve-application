@@ -15,7 +15,7 @@ public interface AccountingCoreRepository extends JpaRepository<TransactionLineE
     List<String> findNotYetDispatchedAndFailedTxLineIds(@Param("organisationId") String organisationId,
                                                         @Param("txLineIds") List<String> txLineIds);
 
-    @Query("SELECT tl.id FROM accounting_reporting_core.TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('SAVE_ACK', 'DISPATCHED', 'COMPLETED', 'FINALISED')")
+    @Query("SELECT tl.id FROM accounting_reporting_core.TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('STORED', 'DISPATCHED', 'COMPLETED', 'FINALISED')")
     List<String> findDoneTxLineIds(@Param("organisationId") String organisationId,
                                                         @Param("txLineIds") List<String> txLineIds);
 
