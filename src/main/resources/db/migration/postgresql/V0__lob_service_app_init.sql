@@ -1,3 +1,12 @@
+-- Spring Data Envers
+CREATE SEQUENCE IF NOT EXISTS revinfo_seq START WITH 1 INCREMENT BY 1;
+
+CREATE TABLE revinfo (
+   rev BIGINT NOT NULL,
+   rev_timestamp TIMESTAMP WITHOUT TIME ZONE,
+   CONSTRAINT pk_revinfo PRIMARY KEY (rev)
+);
+
 --CREATE SEQUENCE  IF NOT EXISTS netsuite_ingestion_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE netsuite_ingestion (
@@ -13,8 +22,8 @@ CREATE TABLE netsuite_ingestion (
 
 --CREATE TABLE netsuite_ingestion_audit (
 --   id UUID NOT NULL,
---   revision INTEGER NOT NULL,
---   revision_type SMALLINT,
+--   rev INTEGER NOT NULL,
+--   revtype SMALLINT,
 --   ingestion_body TEXT,
 --   ingestion_body_checksum VARCHAR(255)
 --);
@@ -56,7 +65,7 @@ CREATE TABLE accounting_core_transaction_line (
    CONSTRAINT pk_accounting_core_transaction_line PRIMARY KEY (id)
 );
 
-CREATE TABLE accounting_core_transaction_line_audit (
+CREATE TABLE accounting_core_transaction_line_aud (
    id CHAR(64) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
    transaction_type VARCHAR(255) NOT NULL,
@@ -91,10 +100,13 @@ CREATE TABLE accounting_core_transaction_line_audit (
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
    -- special for audit tables
-   revision INTEGER NOT NULL,
-   revision_type SMALLINT
+   rev INTEGER NOT NULL,
+   revtype SMALLINT,
 
-   --CONSTRAINT pk_accounting_core_transaction_line_audit PRIMARY KEY (id)
+   CONSTRAINT acc_core_transaction_line_aud_pkey PRIMARY KEY (id, rev),
+   CONSTRAINT acc_core_transaction_line_aud_revinfo FOREIGN KEY (rev)
+   REFERENCES revinfo (rev) MATCH SIMPLE
+   ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE TABLE blockchain_publisher_transaction_line (
@@ -129,7 +141,7 @@ CREATE TABLE blockchain_publisher_transaction_line (
    CONSTRAINT pk_blockchain_publisher_transaction_line PRIMARY KEY (id)
 );
 
-CREATE TABLE blockchain_publisher_transaction_line_audit (
+CREATE TABLE blockchain_publisher_transaction_line_aud (
    id CHAR(64) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
    upload_id UUID NOT NULL,
@@ -159,10 +171,13 @@ CREATE TABLE blockchain_publisher_transaction_line_audit (
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
    -- special for audit tables
-   revision INTEGER NOT NULL,
-   revision_type SMALLINT
+   rev INTEGER NOT NULL,
+   revtype SMALLINT,
 
-   --CONSTRAINT pk_blockchain_publisher_transaction_line_audit PRIMARY KEY (id)
+   CONSTRAINT blockchain_transaction_line_aud_pkey PRIMARY KEY (id, rev),
+   CONSTRAINT blockchain_transaction_line_aud_revinfo FOREIGN KEY (rev)
+   REFERENCES revinfo (rev) MATCH SIMPLE
+   ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 -- Spring Modulith
@@ -176,11 +191,3 @@ CREATE TABLE IF NOT EXISTS event_publication(
   PRIMARY KEY (id)
 );
 
--- Spring Data Envers
-CREATE SEQUENCE IF NOT EXISTS revinfo_seq START WITH 1 INCREMENT BY 1;
-
-CREATE TABLE revinfo (
-   rev BIGINT NOT NULL,
-   rev_timestamp TIMESTAMP WITHOUT TIME ZONE,
-   CONSTRAINT pk_revinfo PRIMARY KEY (rev)
-);
