@@ -8,6 +8,9 @@ import lombok.ToString;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.OnChainAssuranceLevel;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.AuditEntity;
+import org.hibernate.envers.Audited;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -23,7 +26,9 @@ import static jakarta.persistence.EnumType.STRING;
 @Table(name = "blockchain_publisher_transaction_line")
 @NoArgsConstructor
 @ToString
-public class TransactionLineEntity {
+@Audited
+@EntityListeners({AuditingEntityListener.class})
+public class TransactionLineEntity extends AuditEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -95,7 +100,7 @@ public class TransactionLineEntity {
     private Long l1AbsoluteSlot;
 
     @Nullable
-    @Column(name = "assurance_level")
+    @Column(name = "l1_assurance_level")
     @Enumerated(STRING)
     private OnChainAssuranceLevel assuranceLevel;
 
