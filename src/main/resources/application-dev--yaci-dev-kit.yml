@@ -1,0 +1,16 @@
+# here we specify only properties to override from the default values specified in the application.properties file
+
+# local YaciDevKit network, see: https://github.com/bloxbean/yaci-devkit
+
+lob:
+  cardano:
+    network: "DEV"
+
+  blockfrost:
+    url: "http://localhost:8080/api/v1/"
+  # locally YaciDevKit runs on port 8080
+    api:
+      key: ""
+
+#spring.profiles.active=dev--yaci-dev-kit
+

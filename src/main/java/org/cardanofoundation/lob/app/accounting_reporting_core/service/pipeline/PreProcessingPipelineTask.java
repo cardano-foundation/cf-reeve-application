@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus.*;
+
 @RequiredArgsConstructor
 @Slf4j
 public class PreProcessingPipelineTask implements PipelineTask {
@@ -35,7 +37,7 @@ public class PreProcessingPipelineTask implements PipelineTask {
                 .map(TransactionLine::getId)
                 .toList();
 
-        val dispatchedTxLineIds = accountingCoreRepository.findDoneTxLineIds(organisationId, txLineIds);
+        val dispatchedTxLineIds = accountingCoreRepository.findTransactionLinesByLedgerDispatchStatus(organisationId, txLineIds, List.of(STORED, DISPATCHED, COMPLETED, FINALIZED));
 
         log.info("dispatchedTxLineIdsCount: {}", dispatchedTxLineIds.size());
 

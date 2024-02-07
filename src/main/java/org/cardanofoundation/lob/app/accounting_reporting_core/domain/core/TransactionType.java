@@ -8,6 +8,9 @@ public enum TransactionType {
     Journal,
     FxRevaluation,
     Transfer,
-    CustomerPayment
+    CustomerPayment,
+    ExpenseReport,
+    VendorPayment,
+    BillCredit
 
 }

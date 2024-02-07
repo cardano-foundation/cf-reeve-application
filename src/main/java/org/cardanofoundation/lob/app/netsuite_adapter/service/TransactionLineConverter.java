@@ -88,6 +88,9 @@ public class TransactionLineConverter {
             case FxReval -> TransactionType.FxRevaluation;
             case Transfer -> TransactionType.Transfer;
             case CustPymt -> TransactionType.CustomerPayment;
+            case ExpRept -> TransactionType.ExpenseReport;
+            case VendPymt -> TransactionType.VendorPayment;
+            case VendCred -> TransactionType.BillCredit;
         };
     }
 

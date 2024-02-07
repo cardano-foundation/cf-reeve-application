@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.cardanofoundation.lob.app.support.audit_support.internal.AuditEntity;
 
 import java.util.UUID;
 

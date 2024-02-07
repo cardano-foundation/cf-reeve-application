@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.netsuite_adapter.domain.entity;
+package org.cardanofoundation.lob.app.support.audit_support.internal;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import static jakarta.persistence.TemporalType.TIMESTAMP;
 
