@@ -8,7 +8,7 @@ import lombok.ToString;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.OnChainAssuranceLevel;
-import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.AuditEntity;
+import org.cardanofoundation.lob.app.support.audit_support.internal.AuditEntity;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 

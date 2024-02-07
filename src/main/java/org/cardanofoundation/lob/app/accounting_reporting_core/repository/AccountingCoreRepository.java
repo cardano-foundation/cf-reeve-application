@@ -11,13 +11,10 @@ import java.util.List;
 
 public interface AccountingCoreRepository extends JpaRepository<TransactionLineEntity, String> {
 
-    @Query("SELECT tl.id FROM accounting_reporting_core.TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('NOT_DISPATCHED', 'FAILED')")
-    List<String> findNotYetDispatchedAndFailedTxLineIds(@Param("organisationId") String organisationId,
-                                                        @Param("txLineIds") List<String> txLineIds);
-
-    @Query("SELECT tl.id FROM accounting_reporting_core.TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN ('STORED', 'DISPATCHED', 'COMPLETED', 'FINALISED')")
-    List<String> findDoneTxLineIds(@Param("organisationId") String organisationId,
-                                                        @Param("txLineIds") List<String> txLineIds);
+    @Query("SELECT tl.id FROM accounting_reporting_core.TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.id in :txLineIds AND tl.ledgerDispatchStatus IN :ledgerDispatchStatus")
+    List<String> findTransactionLinesByLedgerDispatchStatus(@Param("organisationId") String organisationId,
+                                                            @Param("txLineIds") List<String> txLineIds,
+                                                            @Param("ledgerDispatchStatus") List<TransactionLine.LedgerDispatchStatus> ledgerDispatchStatuses);
 
     @Query("SELECT tl FROM accounting_reporting_core.TransactionLineEntity tl WHERE tl.organisationId = :organisationId AND tl.ledgerDispatchStatus IN :dispatchStatuses AND tl.validationStatus IN :validationStatuses AND tl.ledgerDispatchApproved = true")
     List<TransactionLineEntity> findLedgerDispatchPendingTransactionLines(@Param("organisationId") String organisationId,

@@ -7,6 +7,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLineEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service("accounting_reporting_core.TransactionLineConverter")
@@ -51,6 +52,10 @@ public class TransactionLineConverter {
         entityTxLine.setAmountFcy(txLine.getAmountFcy());
         entityTxLine.setAmountLcy(txLine.getAmountLcy());
         entityTxLine.setLedgerDispatchApproved(txLine.isLedgerDispatchApproved());
+        entityTxLine.setCreatedAt(LocalDateTime.now());
+        entityTxLine.setUpdatedAt(LocalDateTime.now());
+        entityTxLine.setCreatedBy("system");
+        entityTxLine.setUpdatedBy("system");
 
         return entityTxLine;
     }

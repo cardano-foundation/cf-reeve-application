@@ -7,5 +7,10 @@ public enum Type {
     CardRfnd,
     FxReval,
     Transfer,
-    CustPymt
+    CustPymt,
+
+    ExpRept,
+
+    VendPymt,
+    VendCred
 }

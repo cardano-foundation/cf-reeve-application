@@ -5,7 +5,7 @@ import lombok.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
-import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.AuditEntity;
+import org.cardanofoundation.lob.app.support.audit_support.internal.AuditEntity;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 

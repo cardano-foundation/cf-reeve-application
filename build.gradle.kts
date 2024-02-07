@@ -45,7 +45,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-amqp")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+//    developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     runtimeOnly("org.postgresql:postgresql")
@@ -82,6 +82,8 @@ dependencies {
     implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.1")
 
     implementation("com.google.guava:guava:33.0.0-jre")
+
+    implementation("org.apache.commons:commons-collections4:4.4")
 
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")

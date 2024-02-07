@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class MetadataSerialiser {
 
-    public List<WithExtraIds<MetadataMap>> serialiseToMetadataMap(List<TransactionLineEntity> transactionLines,
+    public WithExtraIds<MetadataMap> serialiseToMetadataMap(List<TransactionLineEntity> transactionLines,
                                                                   long slot) {
         val globalMetadataMap = MetadataBuilder.createMap();
         globalMetadataMap.put("creationSlot", BigInteger.valueOf(slot));
@@ -30,7 +30,7 @@ public class MetadataSerialiser {
 
         globalMetadataMap.put("transactions", txList);
 
-        return List.of(new WithExtraIds<>(txLineIds, globalMetadataMap));
+        return new WithExtraIds<>(txLineIds, globalMetadataMap);
     }
 
     private static MetadataMap serialise(TransactionLineEntity transactionLine) {
@@ -38,7 +38,7 @@ public class MetadataSerialiser {
 
         txLineMetadataMap.put("id", transactionLine.getId());
         txLineMetadataMap.put("organisation_id", transactionLine.getOrganisationId());
-        txLineMetadataMap.put("type", transactionLine.getTransactionType().name().toUpperCase());
+        txLineMetadataMap.put("tx_type", transactionLine.getTransactionType().name().toUpperCase());
         txLineMetadataMap.put("amount_lcy", transactionLine.getAmountLcy().toEngineeringString()); // keep it short
         txLineMetadataMap.put("amount_fcy", transactionLine.getAmountFcy().toEngineeringString()); // keep it short
         txLineMetadataMap.put("base_currency_id", transactionLine.getBaseCurrencyId());
@@ -46,13 +46,13 @@ public class MetadataSerialiser {
         txLineMetadataMap.put("target_currency_id", transactionLine.getTargetCurrencyId());
         txLineMetadataMap.put("target_currency_internal_code", transactionLine.getTargetCurrencyInternalCode());
         txLineMetadataMap.put("entry_date", transactionLine.getEntryDate().toString());
+        txLineMetadataMap.put("fx_rate", transactionLine.getFxRate().toEngineeringString());
+
         transactionLine.getTransactionInternalNumber().ifPresent(txInternalNumber -> txLineMetadataMap.put("transaction_internal_number", txInternalNumber));
         transactionLine.getDocumentInternalNumber().ifPresent(docInternalNumber -> txLineMetadataMap.put("document_internal_number", docInternalNumber));
         transactionLine.getVatInternalCode().ifPresent(vatInternalCode -> txLineMetadataMap.put("vat_internal_code", vatInternalCode));
-        transactionLine.getVatRate().ifPresent(vatRate -> txLineMetadataMap.put("vat_rate", vatRate.toBigIntegerExact()));
+        transactionLine.getVatRate().ifPresent(vatRate -> txLineMetadataMap.put("vat_rate", vatRate.toEngineeringString()));
         transactionLine.getVendorInternalCode().ifPresent(vendorInternalCode -> txLineMetadataMap.put("vendor_internal_code", vendorInternalCode));
-
-        txLineMetadataMap.put("fx_rate", transactionLine.getFxRate().toBigIntegerExact());
 
         return txLineMetadataMap;
     }

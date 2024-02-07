@@ -1,3 +1,6 @@
+server:
+  port: 9000
+
 spring:
   docker:
     compose:
@@ -100,3 +103,8 @@ lob:
       consumer_secret: 330100b0a2be6dc76f50ba7f3c7077a9d00f4a4685dfd64e862b389b960b7ff6
       token: 1496b695d6cb266b1505b363a549b1db3a0566ed28459d03d7c013fdad0669a4
       url: https://6766746-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=384&deploy=1&searchname=transaction_search_cm
+
+  l1:
+    transaction:
+      metadata:
+        label: "22222"

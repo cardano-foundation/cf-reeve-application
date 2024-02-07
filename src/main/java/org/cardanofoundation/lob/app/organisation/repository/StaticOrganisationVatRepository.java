@@ -59,7 +59,35 @@ public class StaticOrganisationVatRepository implements OrganisationVatRepositor
                 BigDecimal.valueOf(0.0D)
         ));
 
-        // TODO rest of mapping codes goes here
+        organisationVatList.add(new OrganisationVat(
+                "CF",
+                "12",
+                BigDecimal.valueOf(0.0D)
+        ));
+
+        organisationVatList.add(new OrganisationVat(
+                "CF",
+                "9",
+                BigDecimal.valueOf(3.7D)
+        ));
+
+        organisationVatList.add(new OrganisationVat(
+                "CF",
+                "6",
+                BigDecimal.valueOf(2.5D)
+        ));
+
+        organisationVatList.add(new OrganisationVat(
+                "CF",
+                "10",
+                BigDecimal.valueOf(2.5D)
+        ));
+
+        organisationVatList.add(new OrganisationVat(
+                "CF",
+                "18",
+                BigDecimal.valueOf(100D)
+        ));
     }
 
     @Override

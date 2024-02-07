@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import jakarta.validation.constraints.*;
-import org.cardanofoundation.lob.app.netsuite_adapter.util.validation.EnumNamePattern;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -26,7 +25,6 @@ public record SearchResultTransactionItem(
         Integer subsidiary,
 
         @JsonProperty("Type")
-        @EnumNamePattern(regexp =  "Journal|CardChrg|VendBill|CardRfnd|FxReval|Transfer|CustPymt")
         Type type,
 
 //        @JsonProperty("Date Created")
