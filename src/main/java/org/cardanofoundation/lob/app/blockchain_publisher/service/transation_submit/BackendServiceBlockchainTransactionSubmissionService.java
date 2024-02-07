@@ -4,6 +4,7 @@ import com.bloxbean.cardano.client.backend.api.BackendService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ public class BackendServiceBlockchainTransactionSubmissionService implements Blo
     @SneakyThrows
     @Override
     public String submitTransaction(byte[] txData) {
-        var result = backendService.getTransactionService().submitTransaction(txData);
+        val result = backendService.getTransactionService().submitTransaction(txData);
 
         if (result.isSuccessful()) {
             return result.getValue();

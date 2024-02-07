@@ -9,23 +9,25 @@ import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.quicktx.QuickTxBuilder;
 import com.bloxbean.cardano.client.quicktx.Tx;
 import com.bloxbean.cardano.client.transaction.util.TransactionUtil;
+import com.google.common.collect.Sets;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.commons.collections4.iterators.PeekingIterator;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainTransactionWithLines;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionLineEntity;
-import org.cardanofoundation.lob.app.blockchain_publisher.util.WithExtraIds;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.collections4.iterators.PeekingIterator.peekingIterator;
 
 @Service
 @Slf4j
@@ -45,31 +47,26 @@ public class L1TransactionCreator {
     @Value("${l1.transaction.metadata.label:22222}")
     private int metadataLabel;
 
-    public Either<Problem, List<WithExtraIds<byte[]>>> createTransactions(List<TransactionLineEntity> txLines) {
+    public Either<Problem, Optional<BlockchainTransactionWithLines>> pullBlockchainTransaction(String organisationId,
+                                                                                               List<TransactionLineEntity> txLines) {
         val chainTipE = blockchainDataChainTipService.latestChainTip();
 
-        return chainTipE.map(chainTip -> splitIntoBlockchainTransactions(txLines, chainTip.absoluteSlot()));
+        return chainTipE.map(chainTip -> createTransaction(organisationId, txLines, chainTip.absoluteSlot()));
     }
 
-    private List<WithExtraIds<byte[]>> splitIntoBlockchainTransactions(List<TransactionLineEntity> transactionLines,
+    private Optional<BlockchainTransactionWithLines> createTransaction(String organisationId,
+                                                                       List<TransactionLineEntity> transactionLines,
                                                                        long creationSlot) {
         log.info("Splitting {} transaction lines into blockchain transactions", transactionLines.size());
 
         val transactionsBatch = new ArrayList<TransactionLineEntity>();
 
-        val blockchainTransactions = new ArrayList<WithExtraIds<byte[]>>();
-
-        for (var it = PeekingIterator.peekingIterator(transactionLines.iterator()); it.hasNext();) {
+        for (var it = peekingIterator(transactionLines.iterator()); it.hasNext();) {
             val txLine = it.next();
 
             transactionsBatch.add(txLine);
 
             val txBytes = serialiseTransactionChunk(transactionsBatch, creationSlot);
-
-
-            val extraIds = new WithExtraIds<>(transactionsBatch.stream()
-                    .map(TransactionLineEntity::getId)
-                    .collect(toSet()), txBytes);
 
             val transactionLinePeek = it.peek();
             if (transactionLinePeek == null) { // next one is last element
@@ -78,12 +75,13 @@ public class L1TransactionCreator {
             val newChunkTxBytes = serialiseTransactionChunk(Stream.concat(transactionsBatch.stream(), Stream.of(transactionLinePeek)).toList(), creationSlot);
 
             if (newChunkTxBytes.length >= CARDANO_MAX_TRANSACTION_SIZE_BYTES) {
-                log.info("Blockchain transaction created, id:{}", TransactionUtil.getTxHash(extraIds.getCompanion()));
+                log.info("Blockchain transaction created, id:{}", TransactionUtil.getTxHash(txBytes));
 
                 log.info("Physical transaction size:{}", txBytes.length);
 
-                blockchainTransactions.add(extraIds);
-                transactionsBatch.clear();
+                final var remaining = calculateRemainingTransactionLines(transactionLines, transactionsBatch);
+
+                return Optional.of(new BlockchainTransactionWithLines(organisationId, transactionsBatch, remaining, txBytes));
             }
         }
 
@@ -95,17 +93,19 @@ public class L1TransactionCreator {
 
             log.info("Transaction size: {}", txBytes.length);
 
-            val extraIds = new WithExtraIds<>(transactionsBatch.stream()
-                    .map(TransactionLineEntity::getId)
-                    .collect(toSet()), txBytes);
+            final var remaining = calculateRemainingTransactionLines(transactionLines, transactionsBatch);
 
-            blockchainTransactions.add(extraIds);
-            transactionsBatch.clear();
+            return Optional.of(new BlockchainTransactionWithLines(organisationId, transactionsBatch, remaining, txBytes));
         }
 
-        log.info("Created {} blockchain transactions", blockchainTransactions.size());
+        return Optional.empty();
+    }
 
-        return blockchainTransactions;
+    private static List<TransactionLineEntity> calculateRemainingTransactionLines(
+            List<TransactionLineEntity> transactionLines,
+            List<TransactionLineEntity> transactionsBatch) {
+
+        return Sets.difference(new HashSet<>(transactionLines), new HashSet<>(transactionsBatch)).stream().toList();
     }
 
     private byte[] serialiseTransactionChunk(List<TransactionLineEntity> transactionsBatch,

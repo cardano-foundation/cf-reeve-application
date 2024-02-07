@@ -13,7 +13,7 @@ public class TransactionDispatcherJob {
 
     private final BlockchainTransactionsDispatcher blockchainTransactionsDispatcher;
 
-    @Scheduled(fixedDelayString = "PT5M", initialDelayString = "PT1S")
+    @Scheduled(fixedDelayString = "PT10M", initialDelayString = "PT2M")
     public void execute() {
         log.info("Pooling for blockchain transactions to be send to the blockchain...");
 

@@ -102,10 +102,10 @@ public class TransactionLineEntity extends AuditEntity {
     @Nullable
     @Column(name = "l1_assurance_level")
     @Enumerated(STRING)
-    private OnChainAssuranceLevel assuranceLevel;
+    private OnChainAssuranceLevel l1AssuranceLevel;
 
     public Optional<OnChainAssuranceLevel> getOnChainAssuranceLevel() {
-        return Optional.ofNullable(assuranceLevel);
+        return Optional.ofNullable(l1AssuranceLevel);
     }
 
     public Optional<String> getVendorInternalCode() {
@@ -120,8 +120,8 @@ public class TransactionLineEntity extends AuditEntity {
         return Optional.ofNullable(l1AbsoluteSlot);
     }
 
-    public Optional<OnChainAssuranceLevel> getAssuranceLevel() {
-        return Optional.ofNullable(assuranceLevel);
+    public Optional<OnChainAssuranceLevel> getL1AssuranceLevel() {
+        return Optional.ofNullable(l1AssuranceLevel);
     }
 
     public Optional<String> getVatInternalCode() {
