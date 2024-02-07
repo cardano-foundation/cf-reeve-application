@@ -6,6 +6,14 @@ spring:
     compose:
       lifecycle-management: start-and-stop
 
+  task:
+    execution:
+      thread-name-prefix: lob-service-task-executor-
+      pool:
+        core-size: 2
+        max-size: 50
+        queue-capacity: 10000
+
   threads:
     virtual:
       enabled: true

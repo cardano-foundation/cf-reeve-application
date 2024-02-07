@@ -5,8 +5,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import java.util.UUID;
 
 /**
- *
- * @param organisationId
  * @param transactionLines
  */
 public record LedgerUpdateCommand(UUID uploadId,

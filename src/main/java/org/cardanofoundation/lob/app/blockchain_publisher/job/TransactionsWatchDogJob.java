@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TransactionsWatchDogJob {
 
-    @Scheduled(fixedDelayString = "PT1M", initialDelayString = "PT10S")
+    @Scheduled(fixedDelayString = "PT10M", initialDelayString = "PT2M")
     public void execute() {
-        log.info("Polling for to check for transaction statuses...");
+        //log.info("Polling for to check for transaction statuses...");
 
         // gets transaction lines from the database which have not been finalished yet
         // checks if transaction is finalised.
