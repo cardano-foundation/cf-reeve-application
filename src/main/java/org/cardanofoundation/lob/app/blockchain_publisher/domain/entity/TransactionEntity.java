@@ -15,16 +15,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.EAGER;
 
 @Getter
 @Setter
 @Entity(name = "blockchain_publisher.TransactionEntity")
 @Table(name = "blockchain_publisher_transaction")
 @NoArgsConstructor
-//@Audited
 @Builder
 @AllArgsConstructor
+//@Audited
 //@EntityListeners({AuditingEntityListener.class})
 public class TransactionEntity extends AuditEntity {
 
@@ -57,21 +59,9 @@ public class TransactionEntity extends AuditEntity {
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
 
-//    @Nullable
-//    @Column(name = "document_internal_number")
-//    private String documentInternalNumber;
-
-    @Nullable
-    @Column(name = "vendor_internal_code")
-    private String vendorInternalCode;
-
-    @Nullable
-    @Column(name = "vat_internal_code")
-    private String vatInternalCode;
-
-    @Nullable
-    @Column(name = "vat_rate")
-    private BigDecimal vatRate;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "document_id")
+    private DocumentEntity document;
 
     @Column(name = "publish_status", nullable = false)
     @Enumerated(STRING)
@@ -90,16 +80,12 @@ public class TransactionEntity extends AuditEntity {
     @Enumerated(STRING)
     private OnChainAssuranceLevel l1AssuranceLevel;
 
-    @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     @Builder.Default
-    private Set<TransactionLineEntity> lines = new LinkedHashSet<>();
+    private Set<TransactionItemEntity> lines = new LinkedHashSet<>();
 
     public Optional<OnChainAssuranceLevel> getOnChainAssuranceLevel() {
         return Optional.ofNullable(l1AssuranceLevel);
-    }
-
-    public Optional<String> getVendorInternalCode() {
-        return Optional.ofNullable(vendorInternalCode);
     }
 
     public Optional<String> getL1TransactionHash() {
@@ -114,17 +100,9 @@ public class TransactionEntity extends AuditEntity {
         return Optional.ofNullable(l1AssuranceLevel);
     }
 
-    public Optional<String> getVatInternalCode() {
-        return Optional.ofNullable(vatInternalCode);
+    public Optional<DocumentEntity> getDocument() {
+        return Optional.ofNullable(document);
     }
-
-    public Optional<BigDecimal> getVatRate() {
-        return Optional.ofNullable(vatRate);
-    }
-
-//    public Optional<String> getDocumentInternalNumber() {
-//        return Optional.ofNullable(documentInternalNumber);
-//    }
 
     @Override
     public int hashCode() {

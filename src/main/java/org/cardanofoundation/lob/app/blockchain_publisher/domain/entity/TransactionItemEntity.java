@@ -8,28 +8,31 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@Entity(name = "blockchain_publisher.TransactionLineEntity")
-@Table(name = "blockchain_publisher_transaction_line")
+@Entity(name = "blockchain_publisher.TransactionItemEntity")
+@Table(name = "blockchain_publisher_transaction_item")
 @NoArgsConstructor
 @ToString
 @Builder
 @AllArgsConstructor
 //@Audited
 //@EntityListeners({AuditingEntityListener.class})
-public class TransactionLineEntity extends AuditEntity {
+public class TransactionItemEntity extends AuditEntity {
 
     @Id
-    @Column(name = "transaction_line_id", nullable = false)
+    @Column(name = "transaction_item_id", nullable = false)
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "transaction_id")
+    @JoinColumn(name = "transaction_id", nullable = false)
     private TransactionEntity transaction;
 
     @Column(name = "amount_fcy", nullable = false)
     private BigDecimal amountFcy;
 
-    @Column(name = "amount_lcy", nullable = false)
-    private BigDecimal amountLcy;
+//    @Column(name = "amount_lcy", nullable = false)
+//    private BigDecimal amountLcy;
+
+    @Column(name = "event_code")
+    private BigDecimal eventCode;
 
 }

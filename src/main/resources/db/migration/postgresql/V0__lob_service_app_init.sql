@@ -20,14 +20,6 @@ CREATE TABLE netsuite_ingestion (
    CONSTRAINT pk_netsuite_ingestion PRIMARY KEY (id)
 );
 
---CREATE TABLE netsuite_ingestion_audit (
---   id UUID NOT NULL,
---   rev INTEGER NOT NULL,
---   revtype SMALLINT,
---   ingestion_body TEXT,
---   ingestion_body_checksum VARCHAR(255)
---);
-
 CREATE TABLE accounting_core_transaction_line (
    id CHAR(64) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
@@ -109,6 +101,21 @@ CREATE TABLE accounting_core_transaction_line_aud (
    ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
+CREATE TABLE blockchain_publisher_document (
+   internal_document_number VARCHAR(64) NOT NULL,
+
+   vat_internal_code VARCHAR(255),
+   vat_rate DECIMAL,
+   vendor_internal_code VARCHAR(255),
+
+   created_by VARCHAR(255),
+   updated_by VARCHAR(255),
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
+
+   CONSTRAINT pk_blockchain_publisher_document PRIMARY KEY (internal_document_number)
+);
+
 CREATE TABLE blockchain_publisher_transaction (
    transaction_internal_number VARCHAR(255) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
@@ -119,10 +126,8 @@ CREATE TABLE blockchain_publisher_transaction (
    target_currency_id VARCHAR(255),
    target_currency_internal_code VARCHAR(255) NOT NULL,
    fx_rate DECIMAL NOT NULL,
-   document_internal_number VARCHAR(255),
-   vendor_internal_code VARCHAR(255),
-   vat_internal_code VARCHAR(255),
-   vat_rate DECIMAL,
+
+   document_id VARCHAR(255) REFERENCES blockchain_publisher_document(internal_document_number),
 
    l1_assurance_level VARCHAR(255),
    l1_transaction_hash VARCHAR(255),
@@ -137,20 +142,22 @@ CREATE TABLE blockchain_publisher_transaction (
    CONSTRAINT pk_blockchain_publisher_transaction PRIMARY KEY (transaction_internal_number)
 );
 
-CREATE TABLE blockchain_publisher_transaction_line (
-   transaction_line_id CHAR(64) NOT NULL,
+CREATE TABLE blockchain_publisher_transaction_item (
+   transaction_item_id CHAR(64) NOT NULL,
    transaction_id VARCHAR(255) NOT NULL REFERENCES blockchain_publisher_transaction(transaction_internal_number),
 
    amount_fcy DECIMAL NOT NULL,
-   amount_lcy DECIMAL NOT NULL,
+
+   event_code VARCHAR(255),
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT pk_blockchain_publisher_transaction_line PRIMARY KEY (transaction_line_id)
+   CONSTRAINT pk_blockchain_publisher_transaction_item PRIMARY KEY (transaction_item_id)
 );
+
 
 --CREATE TABLE blockchain_publisher_transaction_line_aud (
 --   id CHAR(64) NOT NULL,
