@@ -1,8 +1,8 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Event used after data has been sent or updated on the blockchain
@@ -10,6 +10,8 @@ import java.util.Map;
  * @param statusUpdates
  */
 public record LedgerUpdatedEvent(String organisationId,
-                                 Map<String, TransactionLine.LedgerDispatchStatus> statusUpdates) {
+                                 Set<TxStatusUpdate> statusUpdates) {
+
+    public record TxStatusUpdate(String txId, LedgerDispatchStatus status) {}
 
 }

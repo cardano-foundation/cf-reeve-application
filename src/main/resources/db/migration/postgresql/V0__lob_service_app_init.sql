@@ -34,7 +34,7 @@ CREATE TABLE accounting_core_transaction_line (
    transaction_type VARCHAR(255) NOT NULL,
    ingestion_id UUID NOT NULL,
    entry_date DATE NOT NULL,
-   transaction_internal_number VARCHAR(255),
+   transaction_internal_number VARCHAR(255) NOT NULL,
    base_currency_id VARCHAR(255),
    base_currency_internal_code VARCHAR(255) NOT NULL,
    target_currency_id VARCHAR(255),
@@ -109,26 +109,37 @@ CREATE TABLE accounting_core_transaction_line_aud (
    ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
+CREATE TABLE blockchain_publisher_transaction (
+   transaction_internal_number VARCHAR(255) NOT NULL,
+   organisation_id VARCHAR(255) NOT NULL,
+   transaction_type VARCHAR(255) NOT NULL,
+   entry_date DATE NOT NULL,
+   base_currency_id VARCHAR(255),
+   base_currency_internal_code VARCHAR(255) NOT NULL,
+   target_currency_id VARCHAR(255),
+   target_currency_internal_code VARCHAR(255) NOT NULL,
+   fx_rate DECIMAL NOT NULL,
+   document_internal_number VARCHAR(255),
+   vendor_internal_code VARCHAR(255),
+   vat_internal_code VARCHAR(255),
+   vat_rate DECIMAL,
+
+   l1_assurance_level VARCHAR(255),
+   l1_transaction_hash VARCHAR(255),
+   l1_absolute_slot BIGINT,
+   publish_status VARCHAR(255) NOT NULL,
+
+   created_by VARCHAR(255),
+   updated_by VARCHAR(255),
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
+
+   CONSTRAINT pk_blockchain_publisher_transaction PRIMARY KEY (transaction_internal_number)
+);
+
 CREATE TABLE blockchain_publisher_transaction_line (
-   id CHAR(64) NOT NULL,
-   organisation_id VARCHAR(255) NOT NULL,
-   upload_id UUID NOT NULL,
-   transaction_type VARCHAR(255) NOT NULL,
-   entry_date DATE NOT NULL,
-   transaction_internal_number VARCHAR(255),
-   base_currency_id VARCHAR(255),
-   base_currency_internal_code VARCHAR(255) NOT NULL,
-   target_currency_id VARCHAR(255),
-   target_currency_internal_code VARCHAR(255) NOT NULL,
-   fx_rate DECIMAL NOT NULL,
-   document_internal_number VARCHAR(255),
-   vendor_internal_code VARCHAR(255),
-   vat_internal_code VARCHAR(255),
-   vat_rate DECIMAL,
-   publish_status VARCHAR(255) NOT NULL,
-   l1_assurance_level VARCHAR(255),
-   l1_transaction_hash VARCHAR(255),
-   l1_absolute_slot BIGINT,
+   transaction_line_id CHAR(64) NOT NULL,
+   transaction_id VARCHAR(255) NOT NULL REFERENCES blockchain_publisher_transaction(transaction_internal_number),
 
    amount_fcy DECIMAL NOT NULL,
    amount_lcy DECIMAL NOT NULL,
@@ -138,47 +149,47 @@ CREATE TABLE blockchain_publisher_transaction_line (
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT pk_blockchain_publisher_transaction_line PRIMARY KEY (id)
+   CONSTRAINT pk_blockchain_publisher_transaction_line PRIMARY KEY (transaction_line_id)
 );
 
-CREATE TABLE blockchain_publisher_transaction_line_aud (
-   id CHAR(64) NOT NULL,
-   organisation_id VARCHAR(255) NOT NULL,
-   upload_id UUID NOT NULL,
-   transaction_type VARCHAR(255) NOT NULL,
-   entry_date DATE NOT NULL,
-   transaction_internal_number VARCHAR(255),
-   base_currency_id VARCHAR(255),
-   base_currency_internal_code VARCHAR(255) NOT NULL,
-   target_currency_id VARCHAR(255),
-   target_currency_internal_code VARCHAR(255) NOT NULL,
-   fx_rate DECIMAL NOT NULL,
-   document_internal_number VARCHAR(255),
-   vendor_internal_code VARCHAR(255),
-   vat_internal_code VARCHAR(255),
-   vat_rate DECIMAL,
-   publish_status VARCHAR(255) NOT NULL,
-   l1_assurance_level VARCHAR(255),
-   l1_transaction_hash VARCHAR(255),
-   l1_absolute_slot BIGINT,
-
-   amount_fcy DECIMAL NOT NULL,
-   amount_lcy DECIMAL NOT NULL,
-
-   created_by VARCHAR(255),
-   updated_by VARCHAR(255),
-   created_at TIMESTAMP WITHOUT TIME ZONE,
-   updated_at TIMESTAMP WITHOUT TIME ZONE,
-
-   -- special for audit tables
-   rev INTEGER NOT NULL,
-   revtype SMALLINT,
-
-   CONSTRAINT blockchain_transaction_line_aud_pkey PRIMARY KEY (id, rev),
-   CONSTRAINT blockchain_transaction_line_aud_revinfo FOREIGN KEY (rev)
-   REFERENCES revinfo (rev) MATCH SIMPLE
-   ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+--CREATE TABLE blockchain_publisher_transaction_line_aud (
+--   id CHAR(64) NOT NULL,
+--   organisation_id VARCHAR(255) NOT NULL,
+--   upload_id UUID NOT NULL,
+--   transaction_type VARCHAR(255) NOT NULL,
+--   entry_date DATE NOT NULL,
+--   transaction_internal_number VARCHAR(255),
+--   base_currency_id VARCHAR(255),
+--   base_currency_internal_code VARCHAR(255) NOT NULL,
+--   target_currency_id VARCHAR(255),
+--   target_currency_internal_code VARCHAR(255) NOT NULL,
+--   fx_rate DECIMAL NOT NULL,
+--   document_internal_number VARCHAR(255),
+--   vendor_internal_code VARCHAR(255),
+--   vat_internal_code VARCHAR(255),
+--   vat_rate DECIMAL,
+--   publish_status VARCHAR(255) NOT NULL,
+--   l1_assurance_level VARCHAR(255),
+--   l1_transaction_hash VARCHAR(255),
+--   l1_absolute_slot BIGINT,
+--
+--   amount_fcy DECIMAL NOT NULL,
+--   amount_lcy DECIMAL NOT NULL,
+--
+--   created_by VARCHAR(255),
+--   updated_by VARCHAR(255),
+--   created_at TIMESTAMP WITHOUT TIME ZONE,
+--   updated_at TIMESTAMP WITHOUT TIME ZONE,
+--
+--   -- special for audit tables
+--   rev INTEGER NOT NULL,
+--   revtype SMALLINT,
+--
+--   CONSTRAINT blockchain_transaction_line_aud_pkey PRIMARY KEY (id, rev),
+--   CONSTRAINT blockchain_transaction_line_aud_revinfo FOREIGN KEY (rev)
+--   REFERENCES revinfo (rev) MATCH SIMPLE
+--   ON UPDATE NO ACTION ON DELETE NO ACTION
+--);
 
 -- Spring Modulith
 CREATE TABLE IF NOT EXISTS event_publication(

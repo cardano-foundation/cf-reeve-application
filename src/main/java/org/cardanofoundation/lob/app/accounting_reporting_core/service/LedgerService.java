@@ -3,10 +3,12 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
@@ -16,7 +18,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -34,22 +36,20 @@ public class LedgerService {
     private final PIIDataFilteringService piiDataFilteringService;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void updateTransactionLines(Map<String, TransactionLine.LedgerDispatchStatus> statusMap) {
-        log.info("Updating dispatch status for statusMapCount: {}", statusMap.size());
+    public void updateTransactionsWithNewLedgerDispatchStatusesString(String organisationId,
+                                                                      Set<LedgerUpdatedEvent.TxStatusUpdate> txStatusUpdates) {
+        log.info("Updating dispatch status for statusMapCount: {}", txStatusUpdates.size());
 
-        for (val entry : statusMap.entrySet()) {
-            val txLineId = entry.getKey();
-            val status = entry.getValue();
+        for (val txStatusUpdate : txStatusUpdates) {
+            val txId = txStatusUpdate.txId();
+            val txLines = accountingCoreRepository.findByInternalTransactionNumber(organisationId, txId);
 
-            val txLineIdM = accountingCoreRepository.findById(txLineId);
-
-            txLineIdM.ifPresent(txLine -> {
-                txLine.setLedgerDispatchStatus(status);
-                accountingCoreRepository.saveAndFlush(txLine);
-            });
+            for (val txLine : txLines) {
+                txLine.setLedgerDispatchStatus(txStatusUpdate.status());
+            }
         }
 
-        log.info("Updated dispatch status for statusMapCount: {} completed.", statusMap.size());
+        log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdates.size());
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -76,7 +76,7 @@ public class LedgerService {
         return accountingCoreRepository
                 .findLedgerDispatchPendingTransactionLines(
                         organisation.id(),
-                        List.of(TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED),
+                        List.of(LedgerDispatchStatus.NOT_DISPATCHED),
                         List.of(ValidationStatus.VALIDATED)
                 )
                 .stream()

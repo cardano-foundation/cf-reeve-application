@@ -7,8 +7,8 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainTransactionWithLines;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1SubmissionData;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionLineEntity;
-import org.cardanofoundation.lob.app.blockchain_publisher.repository.BlockchainPublisherRepository;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepository;
 import org.cardanofoundation.lob.app.blockchain_publisher.service.transation_submit.TransactionSubmissionService;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toMap;
 import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus.*;
 import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.OnChainAssuranceLevel.VERY_LOW;
 import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
@@ -29,7 +29,7 @@ import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 @RequiredArgsConstructor
 public class BlockchainTransactionsDispatcher {
 
-    private final BlockchainPublisherRepository blockchainPublisherRepository;
+    private final TransactionEntityRepository transactionEntityRepository;
 
     private final OrganisationPublicApi organisationPublicApi;
 
@@ -41,29 +41,29 @@ public class BlockchainTransactionsDispatcher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    @Transactional(isolation = SERIALIZABLE)
     public void dispatchTransactions() {
         for (val organisation : organisationPublicApi.listAll()) {
             val organisationId = organisation.id();
-            val transactionsToDispatch = blockchainPublisherRepository
-                    .findTransactionsToDispatch(organisationId, List.of(STORED, ROLLBACKED));
+            val transactionsToDispatch = transactionEntityRepository.findTransactionsByStatus(organisationId, List.of(STORED, ROLLBACKED));
 
             log.info("Dispatching transactions for organisation:{}", organisationId);
 
-            processTransactions(organisationId, transactionsToDispatch);
+            createAndSendBlockchainTransactions(organisationId, transactionsToDispatch);
         }
     }
 
-    private Optional<BlockchainTransactionWithLines> processTransactions(String organisationId,
-                                                                         List<TransactionLineEntity> remainingLines) {
-        log.info("Processing transactions for organisation:{}, remaining size:{}", organisationId, remainingLines.size());
+    private Optional<BlockchainTransactionWithLines> createAndSendBlockchainTransactions(String organisationId,
+                                                                                         List<TransactionEntity> transactions) {
+        log.info("Processing transactions for organisation:{}, remaining size:{}", organisationId, transactions.size());
 
-        if (remainingLines.isEmpty()) {
+        if (transactions.isEmpty()) {
             log.info("No more transactions to dispatch for organisation:{}", organisationId);
 
             return Optional.empty();
         }
 
-        var serialisedTxE = l1TransactionCreator.pullBlockchainTransaction(organisationId, remainingLines);
+        var serialisedTxE = l1TransactionCreator.pullBlockchainTransaction(organisationId, transactions);
 
         if (serialisedTxE.isEmpty()) {
             log.warn("Error, there is more transactions to dispatch for organisation:{}", organisationId);
@@ -86,41 +86,46 @@ public class BlockchainTransactionsDispatcher {
             log.error("Error sending transaction on chain and updating db", e);
         }
 
-        return processTransactions(organisationId, serialisedTx.remainingTransactionLines());
+        return createAndSendBlockchainTransactions(organisationId, serialisedTx.remainingTransactions());
     }
 
     @Transactional(isolation = SERIALIZABLE)
     private void sendTransactionOnChainAndUpdateDb(BlockchainTransactionWithLines blockchainTransactionWithLines) throws InterruptedException, TimeoutException, ApiException {
-        val l1SubmissionData = transactionSubmissionService.submitTransactionWithConfirmation(blockchainTransactionWithLines.serialisedTxData());
+        val txData = blockchainTransactionWithLines.serialisedTxData();
+        val l1SubmissionData = transactionSubmissionService.submitTransactionWithConfirmation(txData);
 
         updateTransactionStatuses(l1SubmissionData, blockchainTransactionWithLines);
-        sendLedgerUpdatedEvents(blockchainTransactionWithLines);
+        sendLedgerUpdatedEvents(blockchainTransactionWithLines.organisationId(), blockchainTransactionWithLines.submittedTransactions());
 
         log.info("Blockchain transaction submitted, l1SubmissionData:{}", l1SubmissionData);
     }
 
-    private void updateTransactionStatuses(L1SubmissionData l1SubmissionData, BlockchainTransactionWithLines blockchainTransactionWithLines) {
-        blockchainTransactionWithLines.submittedTransactionLines().forEach(txLineEntity -> {
-            txLineEntity.setL1TransactionHash(l1SubmissionData.txHash());
-            txLineEntity.setL1AssuranceLevel(VERY_LOW);
-            txLineEntity.setPublishStatus(VISIBLE_ON_CHAIN);
-            txLineEntity.setL1AbsoluteSlot(l1SubmissionData.absoluteSlot());
+    private void updateTransactionStatuses(L1SubmissionData l1SubmissionData,
+                                           BlockchainTransactionWithLines blockchainTransactionWithLines) {
 
-            blockchainPublisherRepository.save(txLineEntity);
+        blockchainTransactionWithLines.submittedTransactions().forEach(txEntity -> {
+
+            txEntity.setL1TransactionHash(l1SubmissionData.txHash());
+            txEntity.setL1AssuranceLevel(VERY_LOW);
+            txEntity.setPublishStatus(VISIBLE_ON_CHAIN);
+            txEntity.setL1AbsoluteSlot(l1SubmissionData.absoluteSlot());
+
+            transactionEntityRepository.save(txEntity);
         });
     }
 
-    private void sendLedgerUpdatedEvents(BlockchainTransactionWithLines blockchainTransactionWithLines) {
-        val organisationId = blockchainTransactionWithLines.organisationId();
+    private void sendLedgerUpdatedEvents(String organisationId,
+                                         List<TransactionEntity> submittedTransactions) {
+        val txStatuses = submittedTransactions.stream()
+                .map(txEntity -> {
+                    val publishStatus = txEntity.getPublishStatus();
+                    val onChainAssuranceLevelM = txEntity.getOnChainAssuranceLevel();
 
-        val txStatuses = blockchainTransactionWithLines.submittedTransactionLines()
-                .stream()
-                .collect(toMap(TransactionLineEntity::getId, value -> {
-                    val publishStatus = value.getPublishStatus();
-                    val onChainAssuranceLevelM = value.getOnChainAssuranceLevel();
+                    val status = blockchainPublishStatusMapper.convert(publishStatus, onChainAssuranceLevelM);
 
-                    return blockchainPublishStatusMapper.convert(publishStatus, onChainAssuranceLevelM);
-                }));
+                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(), status);
+                })
+                .collect(Collectors.toSet());
 
         log.info("Sending ledger updated event for organisation:{}, statuses:{}", organisationId, txStatuses);
 

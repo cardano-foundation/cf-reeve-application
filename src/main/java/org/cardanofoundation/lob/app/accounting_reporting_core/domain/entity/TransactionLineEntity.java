@@ -2,10 +2,10 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
-import org.cardanofoundation.lob.app.support.audit_support.internal.AuditEntity;
+import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -46,7 +46,7 @@ public class TransactionLineEntity extends AuditEntity {
 
     @Column(name = "ledger_dispatch_status", nullable = false)
     @Enumerated(STRING)
-    TransactionLine.LedgerDispatchStatus ledgerDispatchStatus = TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
+    LedgerDispatchStatus ledgerDispatchStatus = LedgerDispatchStatus.NOT_DISPATCHED;
 
     @Column(name = "base_currency_internal_code", nullable = false)
     private String baseCurrencyInternalCode;
