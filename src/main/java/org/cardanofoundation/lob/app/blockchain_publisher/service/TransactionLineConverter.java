@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.DocumentEntity;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionLineEntity;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionItemEntity;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.Vat;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -32,10 +34,6 @@ public class TransactionLineConverter {
                 .targetCurrencyInternalCode(txLine.getTargetCurrencyInternalId())
                 .fxRate(txLine.getFxRate())
                 .entryDate(txLine.getEntryDate())
-                .vatRate(txLine.getVatRate().orElse(null))
-                .vatInternalCode(txLine.getVatInternalCode().orElse(null))
-                .vendorInternalCode(txLine.getInternalVendorCode().orElse(null))
-                //.documentInternalNumber(txLine.getInternalTransactionNumber())
                 .publishStatus(STORED)
                 .build();
 
@@ -44,18 +42,45 @@ public class TransactionLineConverter {
                 .map(tl -> convert(t, tl))
                 .collect(Collectors.toSet());
 
+        if (txLine.getInternalDocumentNumber().isPresent()) {
+            t.setDocument(convertDocument(txLine.getInternalDocumentNumber().orElseThrow(), t, txLine));
+        }
+
         t.setLines(txLineEntities);
 
         return t;
     }
 
+    private static DocumentEntity convertDocument(String internalDocumentNumber,
+                                                  TransactionEntity t,
+                                                  TransactionLine txLine) {
+        val document = new DocumentEntity();
+        document.setId(internalDocumentNumber);
+        document.setTransaction(t);
+        txLine.getInternalDocumentNumber().ifPresent(document::setId);
+
+        if (txLine.getVatInternalCode().isPresent() && txLine.getVatRate().isPresent()) {
+            document.setVat(Vat.builder()
+                    .internalCode(txLine.getVatInternalCode().get())
+                    .rate(txLine.getVatRate().get())
+                    .build()
+            );
+        }
+
+        if (txLine.getInternalVendorCode().isPresent()) {
+            document.setVendorInternalCode(txLine.getInternalVendorCode().get());
+        }
+
+        return document;
+    }
+
     @OneToOne
-    public TransactionLineEntity convert(TransactionEntity parent, TransactionLine tx) {
-        return TransactionLineEntity.builder()
+    public TransactionItemEntity convert(TransactionEntity parent,
+                                         TransactionLine tx) {
+        return TransactionItemEntity.builder()
                 .id(tx.getId())
                 .transaction(parent)
                 .amountFcy(tx.getAmountFcy())
-                .amountLcy(tx.getAmountLcy())
                 .build();
     }
 
