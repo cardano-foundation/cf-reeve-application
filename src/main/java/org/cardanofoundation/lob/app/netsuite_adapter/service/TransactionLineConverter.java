@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine.LedgerDispatchStatus.NOT_DISPATCHED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.NOT_VALIDATED;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
@@ -79,6 +79,7 @@ public class TransactionLineConverter {
         return SHA3.digest(String.format("%s::%s::%s::%s", NETSUITE, organisation.id(), transactionNumber, searchResultTransactionItem.lineID()));
     }
 
+    // TODO update this with full list
     private TransactionType transactionType(Type transType) {
         return switch(transType) {
             case CardChrg -> TransactionType.CardCharge;

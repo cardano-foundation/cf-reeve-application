@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.support.audit_support.internal;
+package org.cardanofoundation.lob.app.support.audit_support;
 
 import jakarta.persistence.*;
 import lombok.Getter;

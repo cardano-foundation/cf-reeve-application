@@ -34,7 +34,7 @@ public class TransactionLineConverter {
 
         entityTxLine.setFxRate(txLine.getFxRate());
 
-        entityTxLine.setDocumentInternalNumber(txLine.getInternalTransactionNumber());
+        entityTxLine.setDocumentInternalNumber(txLine.getInternalDocumentNumber().orElse(null));
 
         entityTxLine.setVendorInternalCode(txLine.getInternalVendorCode().orElse(null));
         entityTxLine.setVendorName(txLine.getVendorName().orElse(null));
