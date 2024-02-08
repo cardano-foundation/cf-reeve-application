@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity.ERROR;
@@ -50,7 +51,7 @@ public class NetSuiteService {
     private final TransactionLineConverter transactionLineConverter;
 
     @Transactional(readOnly = true)
-    public Optional<NetSuiteIngestion> findIngestionById(String id) {
+    public Optional<NetSuiteIngestion> findIngestionById(UUID id) {
         return ingestionRepository.findById(id);
     }
 

@@ -116,3 +116,8 @@ lob:
     transaction:
       metadata:
         label: "22222"
+
+  blockfrost:
+    url: ""
+    api:
+      key: ""

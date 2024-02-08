@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
+
+import java.util.UUID;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.zalando.problem.Status.NOT_FOUND;
@@ -52,7 +55,7 @@ public class NetSuiteResource {
         return ResponseEntity.ok().body(new Hello("hello"));
     }
 
-    @RequestMapping(value = "/ingestion/{currencyId}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/ingestion/{id}", method = GET, produces = "application/json")
     @Timed(value = "resource.netsuite.ingestion.find", histogram = true)
     @Operation(summary = "ingestion",
             description = "ingestion desc",
@@ -63,9 +66,9 @@ public class NetSuiteResource {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    public ResponseEntity<?> findNetSuiteIngestion(@Parameter(description = "ingestion currencyId", required = true)
+    public ResponseEntity<?> findNetSuiteIngestion(@Valid @Parameter(description = "ingestion id", required = true)
                                                    @PathVariable("id") String id) {
-        val r = netSuiteService.findIngestionById(id);
+        val r = netSuiteService.findIngestionById(UUID.fromString(id));
 
         if (r.isEmpty()) {
             var issue = Problem.builder()

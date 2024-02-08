@@ -15,7 +15,7 @@ import java.net.http.HttpClient;
 public class TransactionSubmissionConfig {
 
     @Bean
-    @Profile("dev--yaci-dev-kit")
+    @Profile(value = { "dev--yaci-dev-kit", "test"} )
     public BlockchainTransactionSubmissionService backendServiceTransactionSubmissionService(BackendService backendService) {
         return new BackendServiceBlockchainTransactionSubmissionService(backendService);
     }

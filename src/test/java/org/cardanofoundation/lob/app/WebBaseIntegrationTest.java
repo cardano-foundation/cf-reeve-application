@@ -19,9 +19,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 @EnableJpaRepositories
 @EntityScan
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ActiveProfiles({ "test" })
 @SpringJUnitConfig(classes = { LobServiceApp.class, LobServiceApplicationTest.class } )
 @Slf4j
+@ActiveProfiles("test")
 public class WebBaseIntegrationTest {
 
     @LocalServerPort
