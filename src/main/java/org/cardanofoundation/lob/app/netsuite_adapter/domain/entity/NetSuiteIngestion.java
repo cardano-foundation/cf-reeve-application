@@ -20,9 +20,9 @@ import java.util.UUID;
 public class NetSuiteIngestion extends AuditEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
-    protected UUID id;
+    private UUID id;
 
     @Column(name = "ingestion_body", nullable = false, length = 999_999, columnDefinition = "TEXT")
     private String ingestionBody;
