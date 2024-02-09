@@ -40,8 +40,8 @@ public class MetadataSerialiser {
     private static MetadataMap serialise(TransactionEntity transaction) {
         val metadataMap = MetadataBuilder.createMap();
 
-        metadataMap.put("id", transaction.getId());
-        metadataMap.put("organisation_id", transaction.getOrganisationId());
+        metadataMap.put("internal_tx_number", transaction.getId().getTransactionInternalNumber());
+        metadataMap.put("organisation_id", transaction.getId().getOrganisationId());
         metadataMap.put("tx_type", transaction.getTransactionType().name().toUpperCase());
 
         metadataMap.put("base_currency_id", transaction.getBaseCurrencyId());
@@ -60,9 +60,11 @@ public class MetadataSerialiser {
 
         val txLinesMetadataList = MetadataBuilder.createList();
 
-        for (val txLine : transaction.getLines()) {
+        for (val txLine : transaction.getItems()) {
             txLinesMetadataList.add(serialise(txLine));
         }
+
+        metadataMap.put("items", txLinesMetadataList);
 
         return metadataMap;
     }

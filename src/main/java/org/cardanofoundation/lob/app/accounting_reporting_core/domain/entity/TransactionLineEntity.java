@@ -34,15 +34,15 @@ public class TransactionLineEntity extends AuditEntity {
     @Column(name = "organisation_id", nullable = false)
     private String organisationId;
 
+    @Column(name = "transaction_internal_number", nullable = false)
+    private String transactionInternalNumber;
+
     @Column(name = "transaction_type", nullable = false)
     @Enumerated(STRING)
     private TransactionType transactionType;
 
     @Column(name = "entry_date", nullable = false)
     private LocalDate entryDate;
-
-    @Column(name = "transaction_internal_number", nullable = false)
-    private String transactionInternalNumber;
 
     @Column(name = "ledger_dispatch_status", nullable = false)
     @Enumerated(STRING)

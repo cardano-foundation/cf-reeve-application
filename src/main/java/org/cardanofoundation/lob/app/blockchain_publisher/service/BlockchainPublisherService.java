@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service("blockchainPublisherService")
@@ -25,14 +24,14 @@ public class BlockchainPublisherService {
     private final BlockchainPublishStatusMapper blockchainPublishStatusMapper;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void dispatchTransactionsToBlockchains(UUID uploadId,
+    public void dispatchTransactionsToBlockchains(String organisationId,
                                                   TransactionLines transactionLines) {
-        log.info("dispatchTransactionsToBlockchains..., uploadId:{}", uploadId);
+        log.info("dispatchTransactionsToBlockchains..., orgId:{}", organisationId);
 
         val transactions = transactionLines.toTransactions();
         val txEntities = transactions
                 .stream()
-                .map(tx -> transactionLineConverter.convert(uploadId, tx))
+                .map(tx -> transactionLineConverter.convert(organisationId, tx))
                 .toList();
 
         val allTxEntitiesMerged = transactionEntityRepositoryReader.storeOnlyNewTransactions(txEntities);
@@ -42,7 +41,7 @@ public class BlockchainPublisherService {
                 .map(txEntity -> {
                     val status = blockchainPublishStatusMapper.convert(txEntity.getPublishStatus(), txEntity.getOnChainAssuranceLevel());
 
-                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(), status);
+                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId().getTransactionInternalNumber(), status);
                 })
                 .collect(Collectors.toSet());
 

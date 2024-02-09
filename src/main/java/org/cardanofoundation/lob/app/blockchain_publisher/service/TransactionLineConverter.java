@@ -5,29 +5,25 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.DocumentEntity;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionItemEntity;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.Vat;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.*;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
 import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus.STORED;
 
 @Service
 @Slf4j
 public class TransactionLineConverter {
 
-    public TransactionEntity convert(UUID uploadId, Transaction tx) {
+    public TransactionEntity convert(String organisationId, Transaction tx) {
         // TODO this is hacky but currently core model is way too clunky
         val txLine = tx.getTransactionLines().stream().findAny().orElseThrow();
 
         val t = TransactionEntity.builder()
-                .id(tx.getTransactionNumber())
+                .id(new TransactionId(organisationId, tx.getTransactionNumber()))
                 .transactionType(txLine.getTransactionType())
-                .organisationId(txLine.getOrganisationId())
                 .baseCurrencyId(txLine.getBaseCurrencyId())
                 .baseCurrencyInternalCode(txLine.getBaseCurrencyInternalId())
                 .targetCurrencyId(txLine.getTargetCurrencyId().orElseThrow())
@@ -37,16 +33,16 @@ public class TransactionLineConverter {
                 .publishStatus(STORED)
                 .build();
 
-        val txLineEntities = tx.getTransactionLines()
+        val txEntityItems = tx.getTransactionLines()
                 .stream()
                 .map(tl -> convert(t, tl))
-                .collect(Collectors.toSet());
+                .collect(toSet());
 
         if (txLine.getInternalDocumentNumber().isPresent()) {
             t.setDocument(convertDocument(txLine.getInternalDocumentNumber().orElseThrow(), t, txLine));
         }
 
-        t.setLines(txLineEntities);
+        t.setItems(txEntityItems);
 
         return t;
     }
@@ -57,12 +53,13 @@ public class TransactionLineConverter {
         val document = new DocumentEntity();
         document.setId(internalDocumentNumber);
         document.setTransaction(t);
+
         txLine.getInternalDocumentNumber().ifPresent(document::setId);
 
         if (txLine.getVatInternalCode().isPresent() && txLine.getVatRate().isPresent()) {
             document.setVat(Vat.builder()
-                    .internalCode(txLine.getVatInternalCode().get())
-                    .rate(txLine.getVatRate().get())
+                    .internalCode(txLine.getVatInternalCode().orElseThrow())
+                    .rate(txLine.getVatRate().orElseThrow())
                     .build()
             );
         }
@@ -76,11 +73,11 @@ public class TransactionLineConverter {
 
     @OneToOne
     public TransactionItemEntity convert(TransactionEntity parent,
-                                         TransactionLine tx) {
+                                         TransactionLine txLine) {
         return TransactionItemEntity.builder()
-                .id(tx.getId())
+                .id(txLine.getId())
                 .transaction(parent)
-                .amountFcy(tx.getAmountFcy())
+                .amountFcy(txLine.getAmountFcy())
                 .build();
     }
 

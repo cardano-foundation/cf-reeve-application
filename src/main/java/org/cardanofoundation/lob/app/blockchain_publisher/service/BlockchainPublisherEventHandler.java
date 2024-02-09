@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
+import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BlockchainPublisherEventHandler {
 
-    public final BlockchainPublisherService blockchainPublisherService;
+    private final BlockchainPublisherService blockchainPublisherService;
+
+    private final OrganisationPublicApi organisationPublicApi;
 
     @ApplicationModuleListener
     public void handleLedgerUpdateCommand(LedgerUpdateCommand command) {
@@ -21,7 +24,12 @@ public class BlockchainPublisherEventHandler {
 
         log.info("Received LedgerUpdateCommand command..., uploadId: {}", uploadId);
 
-        blockchainPublisherService.dispatchTransactionsToBlockchains(uploadId, transactionLines);
+        for (val organisation : organisationPublicApi.listAll()) {
+            val organisationId = organisation.id();
+            log.info("Dispatching transactions for organisation:{}", organisationId);
+
+            blockchainPublisherService.dispatchTransactionsToBlockchains(organisationId, transactionLines);
+        }
     }
 
 }

@@ -26,8 +26,8 @@ public class DocumentEntity extends AuditEntity {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "internalCode", column = @Column(name = "vat_internal_code")),
-            @AttributeOverride( name = "rate", column = @Column(name = "vat_rate")),
+            @AttributeOverride(name = "internalCode", column = @Column(name = "vat_internal_code")),
+            @AttributeOverride(name = "rate", column = @Column(name = "vat_rate")),
     })
     @Nullable
     private Vat vat;

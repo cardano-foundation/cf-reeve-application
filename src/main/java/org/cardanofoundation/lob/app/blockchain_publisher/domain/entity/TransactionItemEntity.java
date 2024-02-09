@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @Entity(name = "blockchain_publisher.TransactionItemEntity")
 @Table(name = "blockchain_publisher_transaction_item")
 @NoArgsConstructor
-@ToString
 @Builder
 @AllArgsConstructor
 //@Audited
@@ -22,15 +21,19 @@ public class TransactionItemEntity extends AuditEntity {
     @Column(name = "transaction_item_id", nullable = false)
     private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "transaction_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "organisation_id", referencedColumnName = "organisation_id"),
+            @JoinColumn(name = "transaction_internal_number", referencedColumnName = "transaction_internal_number"),
+    })
+//    @PrimaryKeyJoinColumns(value = {
+//            @PrimaryKeyJoinColumn(name = "transaction_internal_number", referencedColumnName = "transaction_internal_number"),
+//            @PrimaryKeyJoinColumn(name = "organisation_id", referencedColumnName = "organisation_id"),
+//    })
     private TransactionEntity transaction;
 
     @Column(name = "amount_fcy", nullable = false)
     private BigDecimal amountFcy;
-
-//    @Column(name = "amount_lcy", nullable = false)
-//    private BigDecimal amountLcy;
 
     @Column(name = "event_code")
     private BigDecimal eventCode;

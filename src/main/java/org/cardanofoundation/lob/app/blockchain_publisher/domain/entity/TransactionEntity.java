@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Getter
 @Setter
@@ -30,12 +30,8 @@ import static jakarta.persistence.FetchType.EAGER;
 //@EntityListeners({AuditingEntityListener.class})
 public class TransactionEntity extends AuditEntity {
 
-    @Id
-    @Column(name = "transaction_internal_number", nullable = false)
-    private String id;
-
-    @Column(name = "organisation_id", nullable = false)
-    private String organisationId;
+    @EmbeddedId
+    private TransactionId id;
 
     @Column(name = "transaction_type", nullable = false)
     @Enumerated(STRING)
@@ -80,9 +76,9 @@ public class TransactionEntity extends AuditEntity {
     @Enumerated(STRING)
     private OnChainAssuranceLevel l1AssuranceLevel;
 
-    @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = EAGER)
+    @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = LAZY)
     @Builder.Default
-    private Set<TransactionItemEntity> lines = new LinkedHashSet<>();
+    private Set<TransactionItemEntity> items = new LinkedHashSet<>();
 
     public Optional<OnChainAssuranceLevel> getOnChainAssuranceLevel() {
         return Optional.ofNullable(l1AssuranceLevel);
