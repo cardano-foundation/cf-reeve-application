@@ -63,7 +63,7 @@ CREATE TABLE accounting_core_transaction_line_aud (
    transaction_type VARCHAR(255) NOT NULL,
    ingestion_id UUID NOT NULL,
    entry_date DATE NOT NULL,
-   transaction_internal_number VARCHAR(255),
+   transaction_internal_number VARCHAR(255) NOT NULL,
    base_currency_id VARCHAR(255),
    base_currency_internal_code VARCHAR(255) NOT NULL,
    target_currency_id VARCHAR(255),
@@ -117,8 +117,9 @@ CREATE TABLE blockchain_publisher_document (
 );
 
 CREATE TABLE blockchain_publisher_transaction (
-   transaction_internal_number VARCHAR(255) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
+   transaction_internal_number VARCHAR(255) NOT NULL,
+
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
    base_currency_id VARCHAR(255),
@@ -139,12 +140,16 @@ CREATE TABLE blockchain_publisher_transaction (
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT pk_blockchain_publisher_transaction PRIMARY KEY (transaction_internal_number)
+   PRIMARY KEY (organisation_id, transaction_internal_number)
 );
 
 CREATE TABLE blockchain_publisher_transaction_item (
    transaction_item_id CHAR(64) NOT NULL,
-   transaction_id VARCHAR(255) NOT NULL REFERENCES blockchain_publisher_transaction(transaction_internal_number),
+
+   organisation_id VARCHAR(255) NOT NULL,
+   transaction_internal_number VARCHAR(255) NOT NULL,
+
+   FOREIGN KEY (organisation_id, transaction_internal_number) REFERENCES blockchain_publisher_transaction (organisation_id, transaction_internal_number),
 
    amount_fcy DECIMAL NOT NULL,
 
@@ -155,9 +160,8 @@ CREATE TABLE blockchain_publisher_transaction_item (
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT pk_blockchain_publisher_transaction_item PRIMARY KEY (transaction_item_id)
+   PRIMARY KEY (transaction_item_id)
 );
-
 
 --CREATE TABLE blockchain_publisher_transaction_line_aud (
 --   id CHAR(64) NOT NULL,

@@ -123,7 +123,7 @@ public class BlockchainTransactionsDispatcher {
 
                     val status = blockchainPublishStatusMapper.convert(publishStatus, onChainAssuranceLevelM);
 
-                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(), status);
+                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId().getTransactionInternalNumber(), status);
                 })
                 .collect(Collectors.toSet());
 
