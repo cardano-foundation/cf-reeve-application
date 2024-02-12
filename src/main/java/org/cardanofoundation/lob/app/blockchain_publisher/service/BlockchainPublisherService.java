@@ -31,6 +31,7 @@ public class BlockchainPublisherService {
         val transactions = transactionLines.toTransactions();
         val txEntities = transactions
                 .stream()
+                .filter(tx -> !tx.getTransactionLines().isEmpty())
                 .map(tx -> transactionLineConverter.convert(organisationId, tx))
                 .toList();
 

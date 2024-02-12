@@ -26,8 +26,6 @@ public class PIIDataFilteringService implements Function<TransactionLines, Trans
                             .accountNameDebit(Optional.empty())
                             .accountCodeCredit(Optional.empty())
                             .vendorName(Optional.empty())
-                            .internalProjectCode(Optional.empty())
-                            .internalCostCenterCode(Optional.empty())
                             .build();
                 }).toList();
 

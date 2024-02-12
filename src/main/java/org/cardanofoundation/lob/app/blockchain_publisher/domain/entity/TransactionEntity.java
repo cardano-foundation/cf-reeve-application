@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.FetchType.EAGER;
 
 @Getter
 @Setter
@@ -55,9 +55,23 @@ public class TransactionEntity extends AuditEntity {
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "document_id")
-    private DocumentEntity document;
+    @Nullable
+    @Column(name = "cost_center_internal_code")
+    private String costCenterInternalCode;
+
+    @Nullable
+    @Column(name = "project_internal_code")
+    private String projectInternalCode;
+
+    @Nullable
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "internalDocumentNumber", column = @Column(name = "document_internal_document_number")),
+            @AttributeOverride(name = "vat.internalCode", column = @Column(name = "document_vat_internal_code")),
+            @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
+            @AttributeOverride(name = "vendorInternalCode", column = @Column(name = "document_vendor_internal_code")),
+    })
+    private Document document;
 
     @Column(name = "publish_status", nullable = false)
     @Enumerated(STRING)
@@ -76,7 +90,7 @@ public class TransactionEntity extends AuditEntity {
     @Enumerated(STRING)
     private OnChainAssuranceLevel l1AssuranceLevel;
 
-    @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = LAZY)
+    @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     @Builder.Default
     private Set<TransactionItemEntity> items = new LinkedHashSet<>();
 
@@ -96,7 +110,7 @@ public class TransactionEntity extends AuditEntity {
         return Optional.ofNullable(l1AssuranceLevel);
     }
 
-    public Optional<DocumentEntity> getDocument() {
+    public Optional<Document> getDocument() {
         return Optional.ofNullable(document);
     }
 

@@ -50,13 +50,17 @@ public class TransactionLineConverter {
                 searchResultTransactionItem.date(),
                 searchResultTransactionItem.transactionNumber(),
                 ingestionId,
-                normaliseString(searchResultTransactionItem.number()),
                 organisation.baseCurrency().internalId(),
                 organisation.baseCurrency().currencyId(),
                 String.valueOf(searchResultTransactionItem.currency()),
-                Optional.empty(),
                 searchResultTransactionItem.exchangeRate(),
                 NOT_DISPATCHED,
+                NOT_VALIDATED,
+                substractNullFriendly(searchResultTransactionItem.amountDebitForeignCurrency(), searchResultTransactionItem.amountCreditForeignCurrency()),
+                substractNullFriendly(searchResultTransactionItem.amountDebit(), searchResultTransactionItem.amountCredit()),
+                true,
+                normaliseString(searchResultTransactionItem.number()),
+                Optional.empty(),
                 normaliseString(searchResultTransactionItem.documentNumber()),
                 normaliseString(searchResultTransactionItem.id()),
                 normaliseString(searchResultTransactionItem.companyName()),
@@ -65,11 +69,7 @@ public class TransactionLineConverter {
                 normaliseString(searchResultTransactionItem.taxItem()),
                 Optional.empty(),
                 normaliseString(searchResultTransactionItem.name()),
-                normaliseString(searchResultTransactionItem.accountMain()),
-                NOT_VALIDATED,
-                substractNullFriendly(searchResultTransactionItem.amountDebitForeignCurrency(), searchResultTransactionItem.amountCreditForeignCurrency()),
-                substractNullFriendly(searchResultTransactionItem.amountDebit(), searchResultTransactionItem.amountCredit()),
-                true
+                normaliseString(searchResultTransactionItem.accountMain())
         );
     }
 

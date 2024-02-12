@@ -8,7 +8,10 @@ import java.util.Optional;
 public final class MoreString {
 
     public static Optional<String> normaliseString(@Nullable String s) {
-        if (StringUtils.isBlank(s)) {
+        if (s == null) {
+            return Optional.empty();
+        }
+        if (StringUtils.isBlank(s.trim())) {
             return Optional.empty();
         }
 

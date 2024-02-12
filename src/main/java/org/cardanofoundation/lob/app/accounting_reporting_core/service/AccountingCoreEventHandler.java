@@ -27,11 +27,14 @@ public class AccountingCoreEventHandler {
 
         val organisationId = event.transactionLines().organisationId();
 
-        ingestionPipelineProcessor.run(
+        val finalTransformationResult = ingestionPipelineProcessor.run(
                 event.transactionLines(),
                 TransactionLines.empty(organisationId),
                 Set.of()
         );
+
+        ingestionPipelineProcessor.syncToDb(finalTransformationResult);
+        ingestionPipelineProcessor.sendNotifications(finalTransformationResult.violations());
 
         log.info("Finished processing...");
     }

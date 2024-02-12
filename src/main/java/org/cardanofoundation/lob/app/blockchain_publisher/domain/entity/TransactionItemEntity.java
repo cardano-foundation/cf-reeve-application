@@ -21,15 +21,11 @@ public class TransactionItemEntity extends AuditEntity {
     @Column(name = "transaction_item_id", nullable = false)
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumns({
             @JoinColumn(name = "organisation_id", referencedColumnName = "organisation_id"),
             @JoinColumn(name = "transaction_internal_number", referencedColumnName = "transaction_internal_number"),
     })
-//    @PrimaryKeyJoinColumns(value = {
-//            @PrimaryKeyJoinColumn(name = "transaction_internal_number", referencedColumnName = "transaction_internal_number"),
-//            @PrimaryKeyJoinColumn(name = "organisation_id", referencedColumnName = "organisation_id"),
-//    })
     private TransactionEntity transaction;
 
     @Column(name = "amount_fcy", nullable = false)

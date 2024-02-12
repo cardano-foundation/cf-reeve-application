@@ -8,8 +8,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.*;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
-
 import static java.util.stream.Collectors.toSet;
 import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus.STORED;
 
@@ -30,6 +28,8 @@ public class TransactionLineConverter {
                 .targetCurrencyInternalCode(txLine.getTargetCurrencyInternalId())
                 .fxRate(txLine.getFxRate())
                 .entryDate(txLine.getEntryDate())
+                .projectInternalCode(txLine.getInternalProjectCode().orElse(null))
+                .costCenterInternalCode(txLine.getInternalCostCenterCode().orElse(null))
                 .publishStatus(STORED)
                 .build();
 
@@ -39,7 +39,7 @@ public class TransactionLineConverter {
                 .collect(toSet());
 
         if (txLine.getInternalDocumentNumber().isPresent()) {
-            t.setDocument(convertDocument(txLine.getInternalDocumentNumber().orElseThrow(), t, txLine));
+            t.setDocument(convertDocument(txLine.getInternalDocumentNumber().orElseThrow(), txLine));
         }
 
         t.setItems(txEntityItems);
@@ -47,14 +47,10 @@ public class TransactionLineConverter {
         return t;
     }
 
-    private static DocumentEntity convertDocument(String internalDocumentNumber,
-                                                  TransactionEntity t,
-                                                  TransactionLine txLine) {
-        val document = new DocumentEntity();
-        document.setId(internalDocumentNumber);
-        document.setTransaction(t);
-
-        txLine.getInternalDocumentNumber().ifPresent(document::setId);
+    private static Document convertDocument(String internalDocumentNumber,
+                                            TransactionLine txLine) {
+        val document = new Document();
+        document.setInternalDocumentNumber(internalDocumentNumber);
 
         if (txLine.getVatInternalCode().isPresent() && txLine.getVatRate().isPresent()) {
             document.setVat(Vat.builder()
@@ -65,7 +61,7 @@ public class TransactionLineConverter {
         }
 
         if (txLine.getInternalVendorCode().isPresent()) {
-            document.setVendorInternalCode(txLine.getInternalVendorCode().get());
+            document.setVendorInternalCode(txLine.getInternalVendorCode().orElseThrow());
         }
 
         return document;
@@ -77,6 +73,7 @@ public class TransactionLineConverter {
         return TransactionItemEntity.builder()
                 .id(txLine.getId())
                 .transaction(parent)
+                //.eventCode(null) // TODO
                 .amountFcy(txLine.getAmountFcy())
                 .build();
     }
