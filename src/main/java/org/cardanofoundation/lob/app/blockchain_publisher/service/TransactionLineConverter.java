@@ -15,12 +15,12 @@ import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.Blo
 @Slf4j
 public class TransactionLineConverter {
 
-    public TransactionEntity convert(String organisationId, Transaction tx) {
+    public TransactionEntity convert(Transaction tx) {
         // TODO this is hacky but currently core model is way too clunky
         val txLine = tx.getTransactionLines().stream().findAny().orElseThrow();
 
         val t = TransactionEntity.builder()
-                .id(new TransactionId(organisationId, tx.getTransactionNumber()))
+                .id(new TransactionId(tx.getOrgTransactionNumber().organisationId(), tx.getOrgTransactionNumber().transactionNumber()))
                 .transactionType(txLine.getTransactionType())
                 .baseCurrencyId(txLine.getBaseCurrencyId())
                 .baseCurrencyInternalCode(txLine.getBaseCurrencyInternalId())

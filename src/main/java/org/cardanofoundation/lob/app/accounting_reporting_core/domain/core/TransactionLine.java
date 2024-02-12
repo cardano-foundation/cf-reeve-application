@@ -83,9 +83,9 @@ public class TransactionLine {
         return this.equals(transactionLine);
     }
 
-    public static Map<String, List<TransactionLine>> toTransactionsProjection(List<TransactionLine> transactionLines) {
+    public static Map<OrgTransactionNumber, List<TransactionLine>> toTransactionsProjection(List<TransactionLine> transactionLines) {
         return transactionLines.stream()
-                .collect(groupingBy(TransactionLine::getInternalTransactionNumber));
+                .collect(groupingBy(t -> new OrgTransactionNumber(t.getOrganisationId(), t.getInternalTransactionNumber())));
     }
 
     public record WithPossibleViolation(TransactionLine transactionLine,

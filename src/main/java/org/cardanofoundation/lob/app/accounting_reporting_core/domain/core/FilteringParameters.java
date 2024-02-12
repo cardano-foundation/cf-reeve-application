@@ -13,12 +13,11 @@ import java.util.Optional;
 @ToString
 public class FilteringParameters {
 
-    public static final FilteringParameters EMPTY = new FilteringParameters(
-            Optional.empty(),
-            Optional.empty(),
-            List.of(),
-            List.of()
-    );
+    public static final FilteringParameters EMPTY = FilteringParameters.builder()
+            .build();
+
+    @Builder.Default
+    private List<TransactionType> transactionTypes = List.of();
 
     @Builder.Default
     private Optional<LocalDate> from = Optional.empty();

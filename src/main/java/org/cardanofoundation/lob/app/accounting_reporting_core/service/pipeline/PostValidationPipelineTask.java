@@ -77,7 +77,7 @@ public class PostValidationPipelineTask implements PipelineTask {
 
         return Transaction.WithPossibleViolations.create(transaction
                         .toBuilder()
-                        .transactionNumber(transaction.getTransactionNumber())
+                        .orgTransactionNumber(new OrgTransactionNumber(transaction.getOrgTransactionNumber().organisationId(), transaction.getOrgTransactionNumber().transactionNumber()))
                         .transactionLines(transaction.getTransactionLines().stream()
                                 .map(txLine -> txLine.toBuilder()
                                         .validationStatus(FAILED)
@@ -114,7 +114,7 @@ public class PostValidationPipelineTask implements PipelineTask {
 
         return Transaction.WithPossibleViolations.create(transaction
                         .toBuilder()
-                        .transactionNumber(transaction.getTransactionNumber())
+                        .orgTransactionNumber(new OrgTransactionNumber(transaction.getOrgTransactionNumber().organisationId(), transaction.getOrgTransactionNumber().transactionNumber()))
                         .transactionLines(transaction.getTransactionLines().stream()
                                 .map(txLine -> txLine.toBuilder()
                                         .validationStatus(FAILED)
@@ -150,7 +150,7 @@ public class PostValidationPipelineTask implements PipelineTask {
 
         return Transaction.WithPossibleViolations.create(transaction
                         .toBuilder()
-                        .transactionNumber(transaction.getTransactionNumber())
+                        .orgTransactionNumber(new OrgTransactionNumber(transaction.getOrgTransactionNumber().organisationId(), transaction.getOrgTransactionNumber().transactionNumber()))
                         .transactionLines(transaction.getTransactionLines().stream()
                                 .map(txLine -> txLine.toBuilder()
                                         .validationStatus(FAILED)

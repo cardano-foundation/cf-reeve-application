@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.service;
 
+import co.nstant.in.cbor.CborException;
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.backend.api.BackendService;
@@ -114,6 +115,12 @@ public class L1TransactionCreator {
 
         val metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, metadataMap);
+
+        try {
+            System.out.println(metadataMap.toJson());
+        } catch (CborException e) {
+            throw new RuntimeException(e);
+        }
 
         return serialiseTransaction(metadata);
     }
