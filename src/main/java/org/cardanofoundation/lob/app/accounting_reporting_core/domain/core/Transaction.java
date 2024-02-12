@@ -29,7 +29,8 @@ public class Transaction {
             result.add(Transaction.builder()
                     .orgTransactionNumber(orgTransactionNumber)
                     .transactionLines(transactionLines)
-                    .build());
+                    .build()
+            );
         });
 
         return result;

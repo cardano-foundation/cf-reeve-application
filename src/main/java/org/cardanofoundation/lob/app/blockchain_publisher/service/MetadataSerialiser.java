@@ -15,7 +15,8 @@ import java.util.List;
 @Service
 public class MetadataSerialiser {
 
-    public MetadataMap serialiseToMetadataMap(List<TransactionEntity> transactions,
+    public MetadataMap serialiseToMetadataMap(String organisationId,
+                                              List<TransactionEntity> transactions,
                                               long creationSlot) {
         val globalMetadataMap = MetadataBuilder.createMap();
         globalMetadataMap.put("metadata", createMetadata(creationSlot));
@@ -24,7 +25,11 @@ public class MetadataSerialiser {
 
         transactions.forEach(tx -> txList.add(serialise(tx)));
 
+        val organisationMap = MetadataBuilder.createMap();
+        organisationMap.put("id", organisationId);
+
         globalMetadataMap.put("transactions", txList);
+        globalMetadataMap.put("organisation", organisationMap);
 
         return globalMetadataMap;
     }
@@ -40,12 +45,11 @@ public class MetadataSerialiser {
     private static MetadataMap serialise(TransactionEntity transaction) {
         val metadataMap = MetadataBuilder.createMap();
 
-        val organisationMap = MetadataBuilder.createMap();
         val id = transaction.getId();
 
-        organisationMap.put("id", id.getOrganisationId());
+        metadataMap.put("id", transaction.getId().id());
+        metadataMap.put("internal_number", id.getTransactionInternalNumber());
 
-        metadataMap.put("number", id.getTransactionInternalNumber());
         metadataMap.put("type", transaction.getTransactionType().name().toUpperCase());
 
         val baseCurrencyMap = serialise(transaction.getBaseCurrencyInternalCode(), transaction.getBaseCurrencyId());
@@ -69,8 +73,6 @@ public class MetadataSerialiser {
 
         val txLinesMetadataList = MetadataBuilder.createList();
 
-        metadataMap.put("organisation", organisationMap);
-
         for (val txLine : transaction.getItems()) {
             txLinesMetadataList.add(serialise(txLine));
         }
@@ -86,7 +88,7 @@ public class MetadataSerialiser {
         val currencyMetadataMap = MetadataBuilder.createMap();
 
         currencyMetadataMap.put("id", currencyId);
-        currencyMetadataMap.put("code", currencyCode);
+        currencyMetadataMap.put("internal_code", currencyCode);
 
         return currencyMetadataMap;
     }
@@ -97,7 +99,13 @@ public class MetadataSerialiser {
         metadataMap.put("number", document.getInternalDocumentNumber());
 
         document.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
-        document.getVendorInternalCode().ifPresent(vendorInternalCode -> metadataMap.put("vendor_internal_code", vendorInternalCode));
+
+        val vendorMap = MetadataBuilder.createMap();
+        document.getVendor().ifPresent(vendor -> vendorMap.put("internal_code", vendor.getInternalCode()));
+
+        if (!vendorMap.keys().isEmpty()) {
+            metadataMap.put("vendor", vendorMap);
+        }
 
         return metadataMap;
     }

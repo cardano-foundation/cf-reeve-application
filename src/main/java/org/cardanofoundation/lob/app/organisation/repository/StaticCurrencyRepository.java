@@ -23,12 +23,13 @@ public class StaticCurrencyRepository implements CurrencyRepository {
     @PostConstruct
     public void init() {
         java.util.Currency.getAvailableCurrencies().forEach(currency -> {
-            val currencyId = Currency.id(ISO_4217, currency.getCurrencyCode());
+            val currencyId = Currency.id(ISO_4217, currency.getCurrencyCode(), Optional.empty());
 
             val c = new Currency(
                     currencyId,
                     ISO_4217,
                     currency.getCurrencyCode(),
+                    Optional.empty(),
                     currency.getDisplayName(ENGLISH)
             );
 
@@ -36,30 +37,34 @@ public class StaticCurrencyRepository implements CurrencyRepository {
         });
 
         currencies.add(new Currency(
-                Currency.id(ISO_24165, "ADA"),
+                Currency.id(ISO_24165, "ADA", Optional.of("HWGL1C2CK")),
                 ISO_24165,
                 "ADA",
+                Optional.of("HWGL1C2CK"),
                 "Cardano"
         ));
 
         currencies.add(new Currency(
-                Currency.id(ISO_24165, "BTC"),
+                Currency.id(ISO_24165, "BTC", Optional.of("4H95J0R2X")),
                 ISO_24165,
                 "BTC",
+                Optional.of("4H95J0R2X"),
                 "Bitcoin"
         ));
 
         currencies.add(new Currency(
-                Currency.id(ISO_24165, "BSV"),
+                Currency.id(ISO_24165, "BSV", Optional.of("2L8HS2MNP")),
                 ISO_24165,
                 "BSV",
+                Optional.of("2L8HS2MNP"),
                 "Bitcoin Satoshi Vision"
         ));
 
         currencies.add(new Currency(
-                Currency.id(ISO_24165, "BCH"),
+                Currency.id(ISO_24165, "BCH", Optional.of("J9K583ZGG")),
                 ISO_24165,
                 "BCH",
+                Optional.of("J9K583ZGG"),
                 "Bitcoin Cash"
         ));
 

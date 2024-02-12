@@ -67,13 +67,13 @@ public class L1TransactionCreator {
 
             transactionsBatch.add(txEntity);
 
-            val txBytes = serialiseTransactionChunk(transactionsBatch, creationSlot);
+            val txBytes = serialiseTransactionChunk(organisationId, transactionsBatch, creationSlot);
 
             val transactionLinePeek = it.peek();
             if (transactionLinePeek == null) { // next one is last element
                 continue;
             }
-            val newChunkTxBytes = serialiseTransactionChunk(Stream.concat(transactionsBatch.stream(), Stream.of(transactionLinePeek)).toList(), creationSlot);
+            val newChunkTxBytes = serialiseTransactionChunk(organisationId, Stream.concat(transactionsBatch.stream(), Stream.of(transactionLinePeek)).toList(), creationSlot);
 
             if (newChunkTxBytes.length >= CARDANO_MAX_TRANSACTION_SIZE_BYTES) {
                 log.info("Blockchain transaction created, id:{}", TransactionUtil.getTxHash(txBytes));
@@ -88,7 +88,7 @@ public class L1TransactionCreator {
         if (!transactionsBatch.isEmpty()) {
             log.info("Last batch size: {}", transactionsBatch.size());
 
-            val txBytes = serialiseTransactionChunk(transactionsBatch, creationSlot);
+            val txBytes = serialiseTransactionChunk(organisationId, transactionsBatch, creationSlot);
 
             log.info("Transaction size: {}", txBytes.length);
 
@@ -108,10 +108,11 @@ public class L1TransactionCreator {
         return Sets.difference(new HashSet<>(transactions), new HashSet<>(transactionsBatch)).stream().toList();
     }
 
-    private byte[] serialiseTransactionChunk(List<TransactionEntity> transactionsBatch,
+    private byte[] serialiseTransactionChunk(String organisationId,
+                                             List<TransactionEntity> transactionsBatch,
                                              long creationSlot) {
         val metadataMap =
-                metadataSerialiser.serialiseToMetadataMap(transactionsBatch, creationSlot);
+                metadataSerialiser.serialiseToMetadataMap(organisationId, transactionsBatch, creationSlot);
 
         val metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, metadataMap);
