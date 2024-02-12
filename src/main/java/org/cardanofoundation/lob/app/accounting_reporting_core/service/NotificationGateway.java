@@ -28,8 +28,8 @@ public class NotificationGateway {
                     NotificationSeverity.ERROR,
                     STR."VIOLATION_ \{violation.violationCode()}",
                     "Business Rule Violation",
-                    STR."Violation of Business Rule \{violation.violationCode()}",
-                    Map.of("violationParams", violation.bag())
+                    STR."Violation of Business Rule \{violation.violationCode()}"
+                    //Map.of("violationParams", violation.bag())
             ));
         });
     }

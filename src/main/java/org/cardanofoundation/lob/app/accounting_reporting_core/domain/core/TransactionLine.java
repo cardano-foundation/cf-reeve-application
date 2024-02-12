@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,61 +21,62 @@ public class TransactionLine {
 
     // mandatory values
 
-    String id;
+    @NotBlank String id;
 
-    String organisationId;
+    @Size(min = 1, max =  255) @NotBlank String organisationId;
 
+    @NotNull
     TransactionType transactionType;
 
+    @NotNull
     LocalDate entryDate;
 
-    String internalTransactionNumber;
+    @Size(min = 1, max =  255) @NotBlank String internalTransactionNumber;
 
-    UUID ingestionId;
-
-    Optional<String> accountCodeDebit;
+    @NotNull UUID ingestionId;
 
     // base currency specific value to the organisation
-    String baseCurrencyInternalId;
+    @Size(min = 1, max =  255) @NotBlank String baseCurrencyInternalId;
 
-    String baseCurrencyId;
+    @Size(min = 1, max =  255) @NotBlank String baseCurrencyId;
 
     // target currency to which we convert
-    String targetCurrencyInternalId;
+    @Size(min = 1, max =  255) @NotBlank String targetCurrencyInternalId;
 
-    Optional<String> targetCurrencyId;
+    @NotNull BigDecimal fxRate;
 
-    BigDecimal fxRate;
+    @NotNull LedgerDispatchStatus ledgerDispatchStatus;
 
-    LedgerDispatchStatus ledgerDispatchStatus;
+    @NotNull ValidationStatus validationStatus;
 
-    /// optionals below
+    @NotNull BigDecimal amountFcy;
 
-    Optional<String> internalDocumentNumber;
-
-    Optional<String> internalVendorCode;
-
-    Optional<String> vendorName;
-
-    Optional<String> internalCostCenterCode;
-
-    Optional<String> internalProjectCode;
-
-    Optional<String> vatInternalCode;
-
-    Optional<BigDecimal> vatRate;
-
-    Optional<String> accountNameDebit;
-
-    Optional<String> accountCodeCredit;
-
-    ValidationStatus validationStatus;
-
-    BigDecimal amountFcy;
-
-    BigDecimal amountLcy;
+    @NotNull BigDecimal amountLcy;
 
     boolean ledgerDispatchApproved;
+
+    /// optionals below
+    Optional<@Size(min = 1, max =  255) String> accountCodeDebit;
+
+    Optional<@Size(min = 1, max =  255) String> targetCurrencyId;
+
+    Optional<@Size(min = 1, max =  255) String> internalDocumentNumber;
+
+    Optional<@Size(min = 1, max =  255) String> internalVendorCode;
+
+    Optional<@Size(min = 1, max =  255) String> vendorName;
+
+    Optional<@Size(min = 1, max =  255) String> internalCostCenterCode;
+
+    Optional<@Size(min = 1, max =  255) String> internalProjectCode;
+
+    Optional<@Size(min = 1, max =  255) String> vatInternalCode;
+
+    Optional<@PositiveOrZero BigDecimal> vatRate;
+
+    Optional<@Size(min = 1, max =  255) String> accountNameDebit;
+
+    Optional<@Size(min = 1, max =  255) String> accountCodeCredit;
 
     // TODO equality in business sense will not include in the future e.g. ingestion_id
     public boolean isBusinessEqual(TransactionLine transactionLine) {

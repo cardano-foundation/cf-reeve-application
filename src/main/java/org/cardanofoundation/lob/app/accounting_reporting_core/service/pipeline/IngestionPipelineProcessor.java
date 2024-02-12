@@ -1,6 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -34,6 +35,8 @@ public class IngestionPipelineProcessor implements PipelineTask {
 
     private final NotificationGateway notificationGateway;
 
+    private final Validator validator;
+
     private final List<PipelineTask> pipelineTasks = new ArrayList<>();
 
     @PostConstruct
@@ -46,7 +49,7 @@ public class IngestionPipelineProcessor implements PipelineTask {
         pipelineTasks.add(new ConversionsPipelineTask(organisationPublicApi));
 
         pipelineTasks.add(new PostCleansingPipelineTask());
-        pipelineTasks.add(new PostValidationPipelineTask());
+        pipelineTasks.add(new PostValidationPipelineTask(validator));
     }
 
     @Override
@@ -87,21 +90,15 @@ public class IngestionPipelineProcessor implements PipelineTask {
 
         }
 
-        val finalTransformationResult = new TransformationResult(
+        return new TransformationResult(
                 passedTransactionLines,
                 ignoredTransactionLines,
                 violations
         );
-
-        syncToDb(finalTransformationResult);
-
-        notificationGateway.sendViolationNotifications(finalTransformationResult.violations());
-
-        return finalTransformationResult;
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    private void syncToDb(TransformationResult transformationResult) {
+    public void syncToDb(TransformationResult transformationResult) {
         val passedTxLines = transformationResult.passThroughTransactionLines();
 
         val passedTxLineEntities = passedTxLines.entries().stream()
@@ -109,6 +106,10 @@ public class IngestionPipelineProcessor implements PipelineTask {
                 .toList();
 
         accountingCoreRepository.saveAll(passedTxLineEntities);
+    }
+
+    public void sendNotifications(Set<Violation> violations) {
+        notificationGateway.sendViolationNotifications(violations);
     }
 
 }

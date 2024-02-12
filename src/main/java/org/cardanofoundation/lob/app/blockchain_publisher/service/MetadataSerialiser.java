@@ -3,7 +3,7 @@ package org.cardanofoundation.lob.app.blockchain_publisher.service;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.metadata.MetadataMap;
 import lombok.val;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.DocumentEntity;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.Document;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionItemEntity;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.Vat;
@@ -56,7 +56,9 @@ public class MetadataSerialiser {
         val documentsList = MetadataBuilder.createList();
         transaction.getDocument().ifPresent(doc -> documentsList.add(serialise(doc)));
 
-        metadataMap.put("documents", documentsList);
+        if (documentsList.size() > 0) {
+            metadataMap.put("documents", documentsList);
+        }
 
         val txLinesMetadataList = MetadataBuilder.createList();
 
@@ -64,18 +66,20 @@ public class MetadataSerialiser {
             txLinesMetadataList.add(serialise(txLine));
         }
 
-        metadataMap.put("items", txLinesMetadataList);
+        if (txLinesMetadataList.size() > 0) {
+            metadataMap.put("items", txLinesMetadataList);
+        }
 
         return metadataMap;
     }
 
-    private static MetadataMap serialise(DocumentEntity documentEntity) {
+    private static MetadataMap serialise(Document document) {
         val metadataMap = MetadataBuilder.createMap();
 
-        metadataMap.put("id", documentEntity.getId());
+        metadataMap.put("internal_code", document.getInternalDocumentNumber());
 
-        documentEntity.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
-        documentEntity.getVendorInternalCode().ifPresent(vendorInternalCode -> metadataMap.put("vendor_internal_code", vendorInternalCode));
+        document.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
+        document.getVendorInternalCode().ifPresent(vendorInternalCode -> metadataMap.put("vendor_internal_code", vendorInternalCode));
 
         return metadataMap;
     }

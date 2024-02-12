@@ -41,7 +41,6 @@ public class BlockchainTransactionsDispatcher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Transactional(isolation = SERIALIZABLE)
     public void dispatchTransactions() {
         for (val organisation : organisationPublicApi.listAll()) {
             val organisationId = organisation.id();

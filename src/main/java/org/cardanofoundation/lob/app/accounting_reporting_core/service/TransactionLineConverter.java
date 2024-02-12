@@ -68,16 +68,17 @@ public class TransactionLineConverter {
                 entityTxLine.getEntryDate(),
                 entityTxLine.getTransactionInternalNumber(),
                 entityTxLine.getIngestionID(),
-                Optional.ofNullable(entityTxLine.getAccountCodeDebit()),
-
                 entityTxLine.getBaseCurrencyInternalCode(),
                 entityTxLine.getBaseCurrencyId(),
-
                 entityTxLine.getTargetCurrencyInternalCode(),
-                Optional.ofNullable(entityTxLine.getTargetCurrencyId()),
-
                 entityTxLine.getFxRate(),
                 entityTxLine.getLedgerDispatchStatus(),
+                entityTxLine.getValidationStatus(),
+                entityTxLine.getAmountFcy(),
+                entityTxLine.getAmountLcy(),
+                entityTxLine.getLedgerDispatchApproved(),
+                Optional.ofNullable(entityTxLine.getAccountCodeDebit()),
+                Optional.ofNullable(entityTxLine.getTargetCurrencyId()),
                 Optional.ofNullable(entityTxLine.getDocumentInternalNumber()),
                 Optional.ofNullable(entityTxLine.getVendorInternalCode()),
 
@@ -89,11 +90,7 @@ public class TransactionLineConverter {
                 Optional.ofNullable(entityTxLine.getVatRate()),
 
                 Optional.ofNullable(entityTxLine.getAccountNameDebit()),
-                Optional.ofNullable(entityTxLine.getAccountCodeCredit()),
-                entityTxLine.getValidationStatus(),
-                entityTxLine.getAmountFcy(),
-                entityTxLine.getAmountLcy(),
-                entityTxLine.getLedgerDispatchApproved()
+                Optional.ofNullable(entityTxLine.getAccountCodeCredit())
         );
     }
 

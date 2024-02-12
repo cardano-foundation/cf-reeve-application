@@ -101,21 +101,6 @@ CREATE TABLE accounting_core_transaction_line_aud (
    ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
-CREATE TABLE blockchain_publisher_document (
-   internal_document_number VARCHAR(64) NOT NULL,
-
-   vat_internal_code VARCHAR(255),
-   vat_rate DECIMAL,
-   vendor_internal_code VARCHAR(255),
-
-   created_by VARCHAR(255),
-   updated_by VARCHAR(255),
-   created_at TIMESTAMP WITHOUT TIME ZONE,
-   updated_at TIMESTAMP WITHOUT TIME ZONE,
-
-   CONSTRAINT pk_blockchain_publisher_document PRIMARY KEY (internal_document_number)
-);
-
 CREATE TABLE blockchain_publisher_transaction (
    organisation_id VARCHAR(255) NOT NULL,
    transaction_internal_number VARCHAR(255) NOT NULL,
@@ -128,7 +113,13 @@ CREATE TABLE blockchain_publisher_transaction (
    target_currency_internal_code VARCHAR(255) NOT NULL,
    fx_rate DECIMAL NOT NULL,
 
-   document_id VARCHAR(255) REFERENCES blockchain_publisher_document(internal_document_number),
+   cost_center_internal_code VARCHAR(255),
+   project_internal_code VARCHAR(255),
+
+   document_internal_document_number VARCHAR(255),
+   document_vendor_internal_code VARCHAR(255),
+   document_vat_internal_code VARCHAR(255),
+   document_vat_rate DECIMAL,
 
    l1_assurance_level VARCHAR(255),
    l1_transaction_hash VARCHAR(255),
