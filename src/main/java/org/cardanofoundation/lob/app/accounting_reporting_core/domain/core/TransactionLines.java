@@ -15,7 +15,7 @@ public record TransactionLines(
         return new TransactionLines(organisationId, new ArrayList<>());
     }
 
-    public Map<String, List<TransactionLine>> toTransactionsMap() {
+    public Map<OrgTransactionNumber, List<TransactionLine>> toTransactionsMap() {
         return toTransactionsProjection(entries);
     }
 

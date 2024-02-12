@@ -33,6 +33,9 @@ public class TransactionEntity extends AuditEntity {
     @EmbeddedId
     private TransactionId id;
 
+//  @Embedded
+//  private Organisation organisation;
+
     @Column(name = "transaction_type", nullable = false)
     @Enumerated(STRING)
     private TransactionType transactionType;
@@ -132,6 +135,14 @@ public class TransactionEntity extends AuditEntity {
         }
 
         return false;
+    }
+
+    public Optional<String> getCostCenterInternalCode() {
+        return Optional.ofNullable(costCenterInternalCode);
+    }
+
+    public Optional<String> getProjectInternalCode() {
+        return Optional.ofNullable(projectInternalCode);
     }
 
 }

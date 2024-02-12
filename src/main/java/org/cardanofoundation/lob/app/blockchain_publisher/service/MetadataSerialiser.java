@@ -32,7 +32,7 @@ public class MetadataSerialiser {
     private static MetadataMap createMetadata(long creationSlot) {
         val metadataMap = MetadataBuilder.createMap();
 
-        metadataMap.put("creationSlot", BigInteger.valueOf(creationSlot));
+        metadataMap.put("creation_slot", BigInteger.valueOf(creationSlot));
 
         return metadataMap;
     }
@@ -40,27 +40,36 @@ public class MetadataSerialiser {
     private static MetadataMap serialise(TransactionEntity transaction) {
         val metadataMap = MetadataBuilder.createMap();
 
-        metadataMap.put("internal_tx_number", transaction.getId().getTransactionInternalNumber());
-        metadataMap.put("organisation_id", transaction.getId().getOrganisationId());
-        metadataMap.put("tx_type", transaction.getTransactionType().name().toUpperCase());
+        val organisationMap = MetadataBuilder.createMap();
+        val id = transaction.getId();
 
-        metadataMap.put("base_currency_id", transaction.getBaseCurrencyId());
-        metadataMap.put("base_currency_internal_code", transaction.getBaseCurrencyInternalCode());
+        organisationMap.put("id", id.getOrganisationId());
 
-        metadataMap.put("target_currency_id", transaction.getTargetCurrencyId());
-        metadataMap.put("target_currency_internal_code", transaction.getTargetCurrencyInternalCode());
+        metadataMap.put("number", id.getTransactionInternalNumber());
+        metadataMap.put("type", transaction.getTransactionType().name().toUpperCase());
 
-        metadataMap.put("entry_date", transaction.getEntryDate().toString());
+        val baseCurrencyMap = serialise(transaction.getBaseCurrencyInternalCode(), transaction.getBaseCurrencyId());
+        val targetCurrencyMap = serialise(transaction.getTargetCurrencyInternalCode(), transaction.getTargetCurrencyId());
+
+        transaction.getCostCenterInternalCode().ifPresent(costCenter -> metadataMap.put("cost_center", costCenter));
+        transaction.getProjectInternalCode().ifPresent(project -> metadataMap.put("project_code", project));
+
+        metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
 
         val documentsList = MetadataBuilder.createList();
         transaction.getDocument().ifPresent(doc -> documentsList.add(serialise(doc)));
+
+        metadataMap.put("base_currency", baseCurrencyMap);
+        metadataMap.put("target_currency", targetCurrencyMap);
 
         if (documentsList.size() > 0) {
             metadataMap.put("documents", documentsList);
         }
 
         val txLinesMetadataList = MetadataBuilder.createList();
+
+        metadataMap.put("organisation", organisationMap);
 
         for (val txLine : transaction.getItems()) {
             txLinesMetadataList.add(serialise(txLine));
@@ -73,10 +82,19 @@ public class MetadataSerialiser {
         return metadataMap;
     }
 
+    private static MetadataMap serialise(String currencyCode, String currencyId) {
+        val currencyMetadataMap = MetadataBuilder.createMap();
+
+        currencyMetadataMap.put("id", currencyId);
+        currencyMetadataMap.put("code", currencyCode);
+
+        return currencyMetadataMap;
+    }
+
     private static MetadataMap serialise(Document document) {
         val metadataMap = MetadataBuilder.createMap();
 
-        metadataMap.put("internal_code", document.getInternalDocumentNumber());
+        metadataMap.put("number", document.getInternalDocumentNumber());
 
         document.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
         document.getVendorInternalCode().ifPresent(vendorInternalCode -> metadataMap.put("vendor_internal_code", vendorInternalCode));
@@ -96,7 +114,7 @@ public class MetadataSerialiser {
         val metadataMap = MetadataBuilder.createMap();
 
         metadataMap.put("id", transactionItemEntity.getId());
-        metadataMap.put("amount_fcy", transactionItemEntity.getAmountFcy().toEngineeringString());
+        metadataMap.put("amount", transactionItemEntity.getAmountFcy().toEngineeringString());
 
         return metadataMap;
     }

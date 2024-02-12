@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
+import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
+
 @Service("blockchainPublisherService")
 @RequiredArgsConstructor
 @Slf4j
@@ -23,7 +25,7 @@ public class BlockchainPublisherService {
     private final TransactionEntityRepositoryReader transactionEntityRepositoryReader;
     private final BlockchainPublishStatusMapper blockchainPublishStatusMapper;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public void dispatchTransactionsToBlockchains(String organisationId,
                                                   TransactionLines transactionLines) {
         log.info("dispatchTransactionsToBlockchains..., orgId:{}", organisationId);
@@ -32,7 +34,7 @@ public class BlockchainPublisherService {
         val txEntities = transactions
                 .stream()
                 .filter(tx -> !tx.getTransactionLines().isEmpty())
-                .map(tx -> transactionLineConverter.convert(organisationId, tx))
+                .map(transactionLineConverter::convert)
                 .toList();
 
         val allTxEntitiesMerged = transactionEntityRepositoryReader.storeOnlyNewTransactions(txEntities);

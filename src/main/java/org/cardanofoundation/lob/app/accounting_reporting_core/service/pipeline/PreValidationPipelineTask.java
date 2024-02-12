@@ -76,7 +76,7 @@ public class PreValidationPipelineTask implements PipelineTask {
 
         return Transaction.WithPossibleViolations.create(transaction
                         .toBuilder()
-                        .transactionNumber(transaction.getTransactionNumber())
+                        .orgTransactionNumber(transaction.getOrgTransactionNumber())
                         .transactionLines(transaction.getTransactionLines().stream()
                                 .map(txLine -> txLine.toBuilder()
                                         .validationStatus(FAILED)
@@ -111,7 +111,7 @@ public class PreValidationPipelineTask implements PipelineTask {
 
         return Transaction.WithPossibleViolations.create(transaction
                         .toBuilder()
-                        .transactionNumber(transaction.getTransactionNumber())
+                        .orgTransactionNumber(transaction.getOrgTransactionNumber())
                         .transactionLines(transaction.getTransactionLines().stream()
                                 .map(txLine -> txLine.toBuilder()
                                         .validationStatus(FAILED)
@@ -133,7 +133,8 @@ public class PreValidationPipelineTask implements PipelineTask {
                 val v = Violation.create(
                         Violation.Priority.HIGH,
                         Violation.Type.FATAL,
-                        transaction.getTransactionNumber(),
+                        transaction.getOrgTransactionNumber().organisationId(),
+                        transaction.getOrgTransactionNumber().transactionNumber(),
                         "LCY_BALANCE_MUST_BE_ZERO"
                 );
 
@@ -163,7 +164,8 @@ public class PreValidationPipelineTask implements PipelineTask {
                 val v = Violation.create(
                         Violation.Priority.HIGH,
                         Violation.Type.FATAL,
-                        transaction.getTransactionNumber(),
+                        transaction.getOrgTransactionNumber().organisationId(),
+                        transaction.getOrgTransactionNumber().transactionNumber(),
                         "FCY_BALANCE_MUST_ZERO"
                 );
 

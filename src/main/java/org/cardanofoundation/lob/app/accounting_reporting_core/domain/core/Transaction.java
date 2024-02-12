@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,17 +17,19 @@ import java.util.Set;
 @ToString
 public class Transaction {
 
-    private String transactionNumber;
-
     @Builder.Default
     private List<TransactionLine> transactionLines = new ArrayList<>();
 
+    @NotBlank OrgTransactionNumber orgTransactionNumber;
 
-    public static List<Transaction> from(Map<String, List<TransactionLine>> transactions) {
+    public static List<Transaction> from(Map<OrgTransactionNumber, List<TransactionLine>> transactions) {
         List<Transaction> result = new ArrayList<>();
 
-        transactions.forEach((transactionNumber, transactionLines) -> {
-            result.add(new Transaction(transactionNumber, transactionLines));
+        transactions.forEach((orgTransactionNumber, transactionLines) -> {
+            result.add(Transaction.builder()
+                    .orgTransactionNumber(orgTransactionNumber)
+                    .transactionLines(transactionLines)
+                    .build());
         });
 
         return result;

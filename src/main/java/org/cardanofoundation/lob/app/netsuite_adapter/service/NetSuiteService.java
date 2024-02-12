@@ -139,6 +139,7 @@ public class NetSuiteService {
         val coreTransactionLines = validatedTransactionLineItems.stream()
                 .map(item -> transactionLineConverter.convert(netSuiteIngestion.getId(), item))
                 .filter(line -> filteringParameters.getFrom().isEmpty() || filteringParameters.getFrom().map(date -> line.getEntryDate().isAfter(date)).orElse(false))
+                .filter(line -> filteringParameters.getTransactionTypes().isEmpty() || filteringParameters.getTransactionTypes().contains(line.getTransactionType()))
                 .filter(line -> filteringParameters.getTo().isEmpty() || filteringParameters.getTo().map(date -> line.getEntryDate().isBefore(date)).orElse(false))
                 .filter(line -> filteringParameters.getOrganisationIds().isEmpty() || filteringParameters.getOrganisationIds().contains(line.getOrganisationId()))
                 .filter(line -> filteringParameters.getProjectCodes().isEmpty() || line.getInternalProjectCode().map(projectCode -> filteringParameters.getProjectCodes().contains(projectCode)).orElse(false))
