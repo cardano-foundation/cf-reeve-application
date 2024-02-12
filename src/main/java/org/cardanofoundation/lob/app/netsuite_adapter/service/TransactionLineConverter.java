@@ -76,7 +76,7 @@ public class TransactionLineConverter {
     public String createTxLineId(Organisation organisation, SearchResultTransactionItem searchResultTransactionItem) {
         val transactionNumber  = searchResultTransactionItem.transactionNumber();
 
-        return SHA3.digest(String.format("%s::%s::%s::%s", NETSUITE, organisation.id(), transactionNumber, searchResultTransactionItem.lineID()));
+        return SHA3.digest(STR."\{NETSUITE.name()}::\{organisation.id()}::\{transactionNumber}::\{searchResultTransactionItem.lineID()}");
     }
 
     // TODO update this with full list

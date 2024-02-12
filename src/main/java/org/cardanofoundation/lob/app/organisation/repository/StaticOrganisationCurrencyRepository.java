@@ -42,12 +42,12 @@ public class StaticOrganisationCurrencyRepository implements OrganisationCurrenc
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_24165:ADA",
+                "ISO_24165:ADA:HWGL1C2CK",
                 "6"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_24165:BTC",
+                "ISO_24165:BTC:4H95J0R2X",
                 "7"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
@@ -57,12 +57,12 @@ public class StaticOrganisationCurrencyRepository implements OrganisationCurrenc
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_24165:BCH",
+                "ISO_24165:BCH:J9K583ZGG",
                 "9"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
                 "CF",
-                "ISO_24165:BSV",
+                "ISO_24165:BSV:2L8HS2MNP",
                 "10"
         ));
         organisationCurrencies.add(new OrganisationCurrency(

@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
+import org.cardanofoundation.lob.app.netsuite_adapter.util.SHA3;
 
 import java.io.Serializable;
 
@@ -20,5 +21,9 @@ public class TransactionId implements Serializable {
 
     @Column(name = "transaction_internal_number", nullable = false)
     private String transactionInternalNumber;
+
+    public String id() {
+        return SHA3.digest(STR."\{organisationId}::\{transactionInternalNumber}");
+    }
 
 }

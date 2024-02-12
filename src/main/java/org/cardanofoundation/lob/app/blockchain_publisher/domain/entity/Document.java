@@ -23,14 +23,15 @@ public class Document {
     private Vat vat;
 
     @Nullable
-    private String vendorInternalCode;
+    @Embedded
+    private Vendor vendor;
 
     public Optional<Vat> getVat() {
         return Optional.ofNullable(vat);
     }
 
-    public Optional<String> getVendorInternalCode() {
-        return Optional.ofNullable(vendorInternalCode);
+    public Optional<Vendor> getVendor() {
+        return Optional.ofNullable(vendor);
     }
 
 }

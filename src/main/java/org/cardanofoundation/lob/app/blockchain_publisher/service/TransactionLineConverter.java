@@ -61,7 +61,8 @@ public class TransactionLineConverter {
         }
 
         if (txLine.getInternalVendorCode().isPresent()) {
-            document.setVendorInternalCode(txLine.getInternalVendorCode().orElseThrow());
+            val vendor = new Vendor(txLine.getInternalVendorCode().orElseThrow());
+            document.setVendor(vendor);
         }
 
         return document;
