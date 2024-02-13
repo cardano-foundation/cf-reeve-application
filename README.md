@@ -1,4 +1,4 @@
-# Ledger on the Blockchain
+# Ledger on the Blockchain (LoB)
 
 <p align="left">
 <img alt="Tests" src="https://github.com/cardano-foundation/cf-explorer-api/actions/workflows/tests.yaml/badge.svg" />
@@ -11,12 +11,30 @@ For the project adopters, it will provide the opportunity to advance the use of 
 ## Architecture Overview
 ![LOB-Overview drawio](https://github.com/cardano-foundation/cf-lob/assets/2879295/c1d7339a-c333-4998-a487-07273d2ac610)
 
+
+## Quickstart
+
+
+The `lob` executable is an HTTP server that manages...:
+
+Prerequisties:
+- 100GB of disk space
+- 10GB of RAM
+
 ## How to build
 
 ```
 git clone git@github.com:cardano-foundation/cf-lob.git
 cd cf-lob
-mvn clean package
+gradlew clean build
+```
+
+## How to build
+
+```
+git clone git@github.com:cardano-foundation/cf-lob.git
+cd cf-lob
+gradlew clen bootRun
 ```
 
 ## How to test
@@ -24,3 +42,18 @@ mvn clean package
 Test instructions for individual modules are provided in the corresponding sub folder README files.
 
 System level integration test instructions go here: TBD
+
+
+## Documentation
+
+| Link                                                                                             | Audience                                                     |
+|--------------------------------------------------------------------------------------------------| ------------------------------------------------------------ |
+| [Documentation](https://github.com/cardano-foundation/cf-lob/)                                   |                                                              |
+| • [User Manual](https://github.com/cardano-foundation/cf-lob/)                                   | Users of LoB                                      |
+| • [Contributor Manual](https://cardano-foundation.github.io/cardano-wallet/contributor)          | Anyone interested in the project and our development process |
+
+<hr/>
+
+<p align="center">
+  <a href="https://github.com/cardano-foundation/cardano-wallet/blob/master/LICENSE"><img src="https://img.shields.io/github/license/cardano-foundation/cardano-wallet.svg?style=for-the-badge" /></a>
+</p>
