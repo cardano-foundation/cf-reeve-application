@@ -100,11 +100,11 @@ public class MetadataSerialiser {
 
         document.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
 
-        val vendorMap = MetadataBuilder.createMap();
-        document.getVendor().ifPresent(vendor -> vendorMap.put("internal_code", vendor.getInternalCode()));
+        val counterpartyMap = MetadataBuilder.createMap();
+        document.getCounterparty().ifPresent(counterparty -> counterpartyMap.put("internal_code", counterparty.getInternalCode()));
 
-        if (!vendorMap.keys().isEmpty()) {
-            metadataMap.put("vendor", vendorMap);
+        if (!counterpartyMap.keys().isEmpty()) {
+            metadataMap.put("counterparty", counterpartyMap);
         }
 
         return metadataMap;

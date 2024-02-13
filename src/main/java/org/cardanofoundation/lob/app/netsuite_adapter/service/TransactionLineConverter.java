@@ -49,7 +49,6 @@ public class TransactionLineConverter {
                 transactionType(searchResultTransactionItem.type()),
                 searchResultTransactionItem.date(),
                 searchResultTransactionItem.transactionNumber(),
-                ingestionId,
                 organisation.baseCurrency().internalId(),
                 organisation.baseCurrency().currencyId(),
                 String.valueOf(searchResultTransactionItem.currency()),

@@ -12,7 +12,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -64,20 +63,17 @@ public class TransactionLineEntity extends AuditEntity {
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
 
-    @Column(name = "ingestion_id", nullable = false)
-    private UUID ingestionID;
-
     @Nullable
     @Column(name = "document_internal_number")
     private String documentInternalNumber;
 
     @Nullable
-    @Column(name = "vendor_internal_code")
-    private String vendorInternalCode;
+    @Column(name = "counterparty_internal_code")
+    private String counterpartyInternalCode;
 
     @Nullable
-    @Column(name = "vendor_name")
-    private String vendorName;
+    @Column(name = "counterparty_name")
+    private String counterpartyName;
 
     @Nullable
     @Column(name = "cost_center_internal_code")
