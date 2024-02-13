@@ -23,7 +23,7 @@ public class TransactionId implements Serializable {
     private String transactionInternalNumber;
 
     public String id() {
-        return SHA3.digest(STR."\{organisationId}::\{transactionInternalNumber}");
+        return SHA3.digestAsBase64(STR."\{organisationId}::\{transactionInternalNumber}");
     }
 
 }
