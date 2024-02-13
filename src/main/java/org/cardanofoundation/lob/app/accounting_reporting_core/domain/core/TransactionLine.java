@@ -33,8 +33,6 @@ public class TransactionLine {
 
     @Size(min = 1, max =  255) @NotBlank String internalTransactionNumber;
 
-    @NotNull UUID ingestionId;
-
     // base currency specific value to the organisation
     @Size(min = 1, max =  255) @NotBlank String baseCurrencyInternalId;
 
@@ -62,9 +60,9 @@ public class TransactionLine {
 
     Optional<@Size(min = 1, max =  255) String> internalDocumentNumber;
 
-    Optional<@Size(min = 1, max =  255) String> internalVendorCode;
+    Optional<@Size(min = 1, max =  255) String> internalCounterpartyCode;
 
-    Optional<@Size(min = 1, max =  255) String> vendorName;
+    Optional<@Size(min = 1, max =  255) String> internalCounterpartyName;
 
     Optional<@Size(min = 1, max =  255) String> internalCostCenterCode;
 

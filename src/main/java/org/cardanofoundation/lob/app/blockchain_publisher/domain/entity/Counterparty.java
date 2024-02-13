@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Builder
 @Setter
-public class Vendor {
+public class Counterparty {
 
     private String internalCode;
 

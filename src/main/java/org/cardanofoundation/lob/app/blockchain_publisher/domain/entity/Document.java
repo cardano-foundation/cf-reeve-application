@@ -24,14 +24,14 @@ public class Document {
 
     @Nullable
     @Embedded
-    private Vendor vendor;
+    private Counterparty counterparty;
 
     public Optional<Vat> getVat() {
         return Optional.ofNullable(vat);
     }
 
-    public Optional<Vendor> getVendor() {
-        return Optional.ofNullable(vendor);
+    public Optional<Counterparty> getCounterparty() {
+        return Optional.ofNullable(counterparty);
     }
 
 }

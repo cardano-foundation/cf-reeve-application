@@ -60,9 +60,9 @@ public class TransactionLineConverter {
             );
         }
 
-        if (txLine.getInternalVendorCode().isPresent()) {
-            val vendor = new Vendor(txLine.getInternalVendorCode().orElseThrow());
-            document.setVendor(vendor);
+        if (txLine.getInternalCounterpartyCode().isPresent()) {
+            val counterparty = new Counterparty(txLine.getInternalCounterpartyCode().orElseThrow());
+            document.setCounterparty(counterparty);
         }
 
         return document;

@@ -72,7 +72,7 @@ public class TransactionEntity extends AuditEntity {
             @AttributeOverride(name = "internalDocumentNumber", column = @Column(name = "document_internal_document_number")),
             @AttributeOverride(name = "vat.internalCode", column = @Column(name = "document_vat_internal_code")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
-            @AttributeOverride(name = "vendor.internalCode", column = @Column(name = "document_vendor_internal_code")),
+            @AttributeOverride(name = "counterparty.internalCode", column = @Column(name = "document_counterparty_internal_code")),
     })
     private Document document;
 

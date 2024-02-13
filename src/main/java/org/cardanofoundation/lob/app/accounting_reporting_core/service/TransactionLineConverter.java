@@ -24,7 +24,6 @@ public class TransactionLineConverter {
         entityTxLine.setEntryDate(txLine.getEntryDate());
         entityTxLine.setTransactionInternalNumber(txLine.getInternalTransactionNumber());
         entityTxLine.setAccountCodeDebit(txLine.getAccountCodeDebit().orElse(null));
-        entityTxLine.setIngestionID(txLine.getIngestionId());
 
         entityTxLine.setBaseCurrencyInternalCode(txLine.getBaseCurrencyInternalId());
         entityTxLine.setBaseCurrencyId(txLine.getBaseCurrencyId());
@@ -36,8 +35,8 @@ public class TransactionLineConverter {
 
         entityTxLine.setDocumentInternalNumber(txLine.getInternalDocumentNumber().orElse(null));
 
-        entityTxLine.setVendorInternalCode(txLine.getInternalVendorCode().orElse(null));
-        entityTxLine.setVendorName(txLine.getVendorName().orElse(null));
+        entityTxLine.setCounterpartyInternalCode(txLine.getInternalCounterpartyCode().orElse(null));
+        entityTxLine.setCounterpartyName(txLine.getInternalCounterpartyName().orElse(null));
         entityTxLine.setCostCenterInternalCode(txLine.getInternalCostCenterCode().orElse(null));
         entityTxLine.setProjectInternalCode(txLine.getInternalProjectCode().orElse(null));
 
@@ -67,7 +66,6 @@ public class TransactionLineConverter {
                 entityTxLine.getTransactionType(),
                 entityTxLine.getEntryDate(),
                 entityTxLine.getTransactionInternalNumber(),
-                entityTxLine.getIngestionID(),
                 entityTxLine.getBaseCurrencyInternalCode(),
                 entityTxLine.getBaseCurrencyId(),
                 entityTxLine.getTargetCurrencyInternalCode(),
@@ -80,9 +78,9 @@ public class TransactionLineConverter {
                 Optional.ofNullable(entityTxLine.getAccountCodeDebit()),
                 Optional.ofNullable(entityTxLine.getTargetCurrencyId()),
                 Optional.ofNullable(entityTxLine.getDocumentInternalNumber()),
-                Optional.ofNullable(entityTxLine.getVendorInternalCode()),
+                Optional.ofNullable(entityTxLine.getCounterpartyInternalCode()),
 
-                Optional.ofNullable(entityTxLine.getVendorName()),
+                Optional.ofNullable(entityTxLine.getCounterpartyName()),
                 Optional.ofNullable(entityTxLine.getCostCenterInternalCode()),
                 Optional.ofNullable(entityTxLine.getProjectInternalCode()),
 
