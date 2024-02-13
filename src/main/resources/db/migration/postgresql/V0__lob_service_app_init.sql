@@ -21,7 +21,7 @@ CREATE TABLE netsuite_ingestion (
 );
 
 CREATE TABLE accounting_core_transaction_line (
-   id CHAR(64) NOT NULL,
+   id CHAR(44) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE accounting_core_transaction_line (
 );
 
 CREATE TABLE accounting_core_transaction_line_aud (
-   id CHAR(64) NOT NULL,
+   id CHAR(44) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE blockchain_publisher_transaction (
 );
 
 CREATE TABLE blockchain_publisher_transaction_item (
-   transaction_item_id CHAR(64) NOT NULL,
+   transaction_item_id CHAR(44) NOT NULL,
 
    organisation_id VARCHAR(255) NOT NULL,
    transaction_internal_number VARCHAR(255) NOT NULL,
@@ -153,7 +153,7 @@ CREATE TABLE blockchain_publisher_transaction_item (
 );
 
 --CREATE TABLE blockchain_publisher_transaction_line_aud (
---   id CHAR(64) NOT NULL,
+--   id CHAR(44) NOT NULL,
 --   organisation_id VARCHAR(255) NOT NULL,
 --   upload_id UUID NOT NULL,
 --   transaction_type VARCHAR(255) NOT NULL,

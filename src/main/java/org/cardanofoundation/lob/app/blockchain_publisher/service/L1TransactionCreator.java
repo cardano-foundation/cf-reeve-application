@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.service;
 
-import co.nstant.in.cbor.CborException;
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.backend.api.BackendService;
@@ -43,6 +42,8 @@ public class L1TransactionCreator {
 
     private final BlockchainDataChainTipService blockchainDataChainTipService;
 
+    private final MetadataChecker metadataChecker;
+
     private final Account organiserAccount;
 
     @Value("${l1.transaction.metadata.label:22222}")
@@ -67,13 +68,24 @@ public class L1TransactionCreator {
 
             transactionsBatch.add(txEntity);
 
-            val txBytes = serialiseTransactionChunk(organisationId, transactionsBatch, creationSlot);
+            val txBytesE = serialiseTransactionChunk(organisationId, transactionsBatch, creationSlot);
+            if (txBytesE.isLeft()) {
+                log.error("Error serialising transaction, abort processing, issue: {}", txBytesE.getLeft().getDetail());
+                return Optional.empty();
+            }
+
+            val txBytes = txBytesE.get();
 
             val transactionLinePeek = it.peek();
             if (transactionLinePeek == null) { // next one is last element
                 continue;
             }
-            val newChunkTxBytes = serialiseTransactionChunk(organisationId, Stream.concat(transactionsBatch.stream(), Stream.of(transactionLinePeek)).toList(), creationSlot);
+            val newChunkTxBytesE = serialiseTransactionChunk(organisationId, Stream.concat(transactionsBatch.stream(), Stream.of(transactionLinePeek)).toList(), creationSlot);
+            if (newChunkTxBytesE.isLeft()) {
+                log.error("Error serialising transaction, abort processing, issue: {}", newChunkTxBytesE.getLeft().getDetail());
+                return Optional.empty();
+            }
+            val newChunkTxBytes = newChunkTxBytesE.get();
 
             if (newChunkTxBytes.length >= CARDANO_MAX_TRANSACTION_SIZE_BYTES) {
                 log.info("Blockchain transaction created, id:{}", TransactionUtil.getTxHash(txBytes));
@@ -88,7 +100,14 @@ public class L1TransactionCreator {
         if (!transactionsBatch.isEmpty()) {
             log.info("Last batch size: {}", transactionsBatch.size());
 
-            val txBytes = serialiseTransactionChunk(organisationId, transactionsBatch, creationSlot);
+            val txBytesE = serialiseTransactionChunk(organisationId, transactionsBatch, creationSlot);
+
+            if (txBytesE.isEmpty()) {
+                log.error("Error serialising transaction, abort processing, issue: {}", txBytesE.getLeft().getDetail());
+                return Optional.empty();
+            }
+
+            val txBytes = txBytesE.get();
 
             log.info("Transaction size: {}", txBytes.length);
 
@@ -108,22 +127,26 @@ public class L1TransactionCreator {
         return Sets.difference(new HashSet<>(transactions), new HashSet<>(transactionsBatch)).stream().toList();
     }
 
-    private byte[] serialiseTransactionChunk(String organisationId,
-                                             List<TransactionEntity> transactionsBatch,
-                                             long creationSlot) {
+    private Either<Problem, byte[]> serialiseTransactionChunk(String organisationId,
+                                                              List<TransactionEntity> transactionsBatch,
+                                                              long creationSlot) {
         val metadataMap =
                 metadataSerialiser.serialiseToMetadataMap(organisationId, transactionsBatch, creationSlot);
 
         val metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, metadataMap);
 
-        try {
-            System.out.println(metadataMap.toJson());
-        } catch (CborException e) {
-            throw new RuntimeException(e);
+        val isValid = metadataChecker.checkTransactionMetadata(metadataMap);
+
+        if (!isValid) {
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_TRANSACTION_METADATA")
+                    .withDetail("Metadata is not valid according to the transaction schema!")
+                    .build()
+            );
         }
 
-        return serialiseTransaction(metadata);
+        return Either.right(serialiseTransaction(metadata));
     }
 
     @SneakyThrows
