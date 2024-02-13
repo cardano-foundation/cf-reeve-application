@@ -29,7 +29,7 @@ cd cf-lob
 gradlew clean build
 ```
 
-## How to build
+## How to run
 
 ```
 git clone git@github.com:cardano-foundation/cf-lob.git
