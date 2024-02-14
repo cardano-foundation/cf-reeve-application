@@ -74,6 +74,9 @@
           "cost_center": {
             "type": "string"
           },
+          "project_code": {
+            "type": "string"
+          },
           "target_currency": {
             "type": "object",
             "properties": {

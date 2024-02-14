@@ -6,24 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nullable;
-import java.math.BigDecimal;
-import java.util.Optional;
-
 @Embeddable
-@NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@NoArgsConstructor
 @Builder
-public class Vat {
+@Getter
+public class Counterparty {
 
     private String internalCode;
-
-    @Nullable
-    private BigDecimal rate;
-
-    public Optional<BigDecimal> getRate() {
-        return Optional.ofNullable(rate);
-    }
+    private String name;
 
 }

@@ -1,7 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionId;
 
 import java.util.Set;
 

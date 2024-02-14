@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
+package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -6,23 +6,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nullable;
-import java.util.Optional;
-
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Getter
+@Builder
 public class Currency {
 
-    @Nullable
     private String id;
 
     private String internalCode;
-
-    public Optional<String> getId() {
-        return Optional.ofNullable(id);
-    }
 
 }

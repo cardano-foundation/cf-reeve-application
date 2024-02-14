@@ -47,25 +47,19 @@ public class MetadataSerialiser {
 
         val id = transaction.getId();
 
-        metadataMap.put("id", transaction.getId().id());
-        metadataMap.put("internal_number", id.getTransactionInternalNumber());
+        metadataMap.put("id", transaction.getId());
+        metadataMap.put("internal_number", transaction.getInternalNumber());
 
         metadataMap.put("type", transaction.getTransactionType().name().toUpperCase());
 
-        val baseCurrencyMap = serialise(transaction.getBaseCurrencyInternalCode(), transaction.getBaseCurrencyId());
-        val targetCurrencyMap = serialise(transaction.getTargetCurrencyInternalCode(), transaction.getTargetCurrencyId());
-
-        transaction.getCostCenterInternalCode().ifPresent(costCenter -> metadataMap.put("cost_center", costCenter));
-        transaction.getProjectInternalCode().ifPresent(project -> metadataMap.put("project_code", project));
+        transaction.getCostCenterInternalCode().ifPresent(costCenterInternalCode -> metadataMap.put("cost_center_internal_code", costCenterInternalCode));
+        transaction.getProjectInternalCode().ifPresent(projectInternalCode -> metadataMap.put("project_internal_code", projectInternalCode));
 
         metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
 
         val documentsList = MetadataBuilder.createList();
-        transaction.getDocument().ifPresent(doc -> documentsList.add(serialise(doc)));
-
-        metadataMap.put("base_currency", baseCurrencyMap);
-        metadataMap.put("target_currency", targetCurrencyMap);
+        documentsList.add(serialise(transaction.getDocument()));
 
         if (documentsList.size() > 0) {
             metadataMap.put("documents", documentsList);
@@ -84,21 +78,15 @@ public class MetadataSerialiser {
         return metadataMap;
     }
 
-    private static MetadataMap serialise(String currencyCode, String currencyId) {
-        val currencyMetadataMap = MetadataBuilder.createMap();
-
-        currencyMetadataMap.put("id", currencyId);
-        currencyMetadataMap.put("internal_code", currencyCode);
-
-        return currencyMetadataMap;
-    }
-
     private static MetadataMap serialise(Document document) {
         val metadataMap = MetadataBuilder.createMap();
 
         metadataMap.put("number", document.getInternalDocumentNumber());
 
         document.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
+
+        metadataMap.put("currency_id", document.getCurrency().getId());
+        metadataMap.put("currency_internal_code", document.getCurrency().getInternalCode());
 
         val counterpartyMap = MetadataBuilder.createMap();
         document.getCounterparty().ifPresent(counterparty -> counterpartyMap.put("internal_code", counterparty.getInternalCode()));

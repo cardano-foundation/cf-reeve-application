@@ -1,6 +1,9 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,12 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static java.util.stream.Collectors.groupingBy;
 
 @Builder(toBuilder = true)
-@AllArgsConstructor
 @Getter
 @ToString
 public class TransactionLine {
@@ -33,13 +38,13 @@ public class TransactionLine {
 
     @Size(min = 1, max =  255) @NotBlank String internalTransactionNumber;
 
-    // base currency specific value to the organisation
-    @Size(min = 1, max =  255) @NotBlank String baseCurrencyInternalId;
+    @Size(min = 1, max =  255) @NotBlank String organisationCurrencyInternalId;
 
-    @Size(min = 1, max =  255) @NotBlank String baseCurrencyId;
+    @Size(min = 1, max =  255) @NotBlank String organisationCurrencyId;
 
-    // target currency to which we convert
-    @Size(min = 1, max =  255) @NotBlank String targetCurrencyInternalId;
+    @Size(min = 1, max =  255) @NotBlank String documentCurrencyInternalId;
+
+    @Size(min = 1, max =  255) @NotBlank String documentInternalNumber;
 
     @NotNull BigDecimal fxRate;
 
@@ -54,32 +59,35 @@ public class TransactionLine {
     boolean ledgerDispatchApproved;
 
     /// optionals below
-    Optional<@Size(min = 1, max =  255) String> accountCodeDebit;
+    @Builder.Default
+    Optional<@Size(min = 1, max =  255) String> accountCodeDebit = Optional.empty();
 
-    Optional<@Size(min = 1, max =  255) String> targetCurrencyId;
+    @Builder.Default
+    Optional<@Size(min = 1, max =  255) String> documentCurrencyId = Optional.empty();
 
-    Optional<@Size(min = 1, max =  255) String> internalDocumentNumber;
+    @Builder.Default
+    Optional<@Size(min = 1, max =  255) String> counterpartyInternalNumber = Optional.empty();
 
-    Optional<@Size(min = 1, max =  255) String> internalCounterpartyCode;
+    @Builder.Default
+    Optional<@Size(min = 1, max =  255) String> counterpartyInternalName = Optional.empty();
 
-    Optional<@Size(min = 1, max =  255) String> internalCounterpartyName;
+    @Builder.Default
+    Optional<@Size(min = 1, max =  255) String> costCenterInternalCode = Optional.empty();
 
-    Optional<@Size(min = 1, max =  255) String> internalCostCenterCode;
+    @Builder.Default
+    Optional<@Size(min = 1, max =  255) String> projectInternalCode = Optional.empty();
 
-    Optional<@Size(min = 1, max =  255) String> internalProjectCode;
+    @Builder.Default
+    Optional<@Size(min = 1, max =  255) String> documentVatInternalCode = Optional.empty();
 
-    Optional<@Size(min = 1, max =  255) String> vatInternalCode;
+    @Builder.Default
+    Optional<@PositiveOrZero BigDecimal> documentVatRate = Optional.empty();
 
-    Optional<@PositiveOrZero BigDecimal> vatRate;
+    @Builder.Default
+    Optional<@Size(min = 1, max =  255) String> accountNameDebit = Optional.empty();
 
-    Optional<@Size(min = 1, max =  255) String> accountNameDebit;
-
-    Optional<@Size(min = 1, max =  255) String> accountCodeCredit;
-
-    // TODO equality in business sense will not include in the future e.g. ingestion_id
-    public boolean isBusinessEqual(TransactionLine transactionLine) {
-        return this.equals(transactionLine);
-    }
+    @Builder.Default
+    Optional<@Size(min = 1, max =  255) String> accountCodeCredit = Optional.empty();
 
     public static Map<OrgTransactionNumber, List<TransactionLine>> toTransactionsProjection(List<TransactionLine> transactionLines) {
         return transactionLines.stream()
