@@ -30,11 +30,20 @@ import static jakarta.persistence.FetchType.EAGER;
 //@EntityListeners({AuditingEntityListener.class})
 public class TransactionEntity extends AuditEntity {
 
-    @EmbeddedId
-    private TransactionId id;
+    @Id
+    @Column(name = "transaction_id", nullable = false)
+    private String id;
 
-//  @Embedded
-//  private Organisation organisation;
+    @Column(name = "internal_number", nullable = false)
+    private String internalNumber;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),
+            @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id")),
+            @AttributeOverride(name = "currency.internalCode", column = @Column(name = "organisation_currency_internal_code"))
+    })
+    private Organisation organisation;
 
     @Column(name = "transaction_type", nullable = false)
     @Enumerated(STRING)
@@ -42,18 +51,6 @@ public class TransactionEntity extends AuditEntity {
 
     @Column(name = "entry_date", nullable = false)
     private LocalDate entryDate;
-
-    @Column(name = "base_currency_internal_code", nullable = false)
-    private String baseCurrencyInternalCode;
-
-    @Column(name = "base_currency_id", nullable = false)
-    private String baseCurrencyId;
-
-    @Column(name = "target_currency_internal_code", nullable = false)
-    private String targetCurrencyInternalCode;
-
-    @Column(name = "target_currency_id", nullable = false)
-    private String targetCurrencyId;
 
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
@@ -66,13 +63,14 @@ public class TransactionEntity extends AuditEntity {
     @Column(name = "project_internal_code")
     private String projectInternalCode;
 
-    @Nullable
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "internalDocumentNumber", column = @Column(name = "document_internal_document_number")),
             @AttributeOverride(name = "vat.internalCode", column = @Column(name = "document_vat_internal_code")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
             @AttributeOverride(name = "counterparty.internalCode", column = @Column(name = "document_counterparty_internal_code")),
+            @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
+            @AttributeOverride(name = "currency.internalCode", column = @Column(name = "document_currency_internal_code")),
     })
     private Document document;
 
@@ -111,10 +109,6 @@ public class TransactionEntity extends AuditEntity {
 
     public Optional<OnChainAssuranceLevel> getL1AssuranceLevel() {
         return Optional.ofNullable(l1AssuranceLevel);
-    }
-
-    public Optional<Document> getDocument() {
-        return Optional.ofNullable(document);
     }
 
     @Override

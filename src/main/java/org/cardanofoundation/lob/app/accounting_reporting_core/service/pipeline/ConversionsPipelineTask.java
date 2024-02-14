@@ -51,8 +51,8 @@ public class ConversionsPipelineTask implements PipelineTask {
     public TransactionLine.WithPossibleViolation vatConversion(TransactionLine.WithPossibleViolation violationTransactionLine) {
         val transactionLine = violationTransactionLine.transactionLine();
 
-        if (transactionLine.getVatInternalCode().isPresent() && transactionLine.getVatRate().isEmpty()) {
-            val vatInternalCode = transactionLine.getVatInternalCode().get();
+        if (transactionLine.getDocumentVatInternalCode().isPresent() && transactionLine.getDocumentVatRate().isEmpty()) {
+            val vatInternalCode = transactionLine.getDocumentVatInternalCode().get();
 
             val vatM = organisationPublicApi.findOrganisationVatByInternalId(vatInternalCode);
 
@@ -77,7 +77,7 @@ public class ConversionsPipelineTask implements PipelineTask {
             val vat = vatM.get();
 
             return TransactionLine.WithPossibleViolation
-                    .create(transactionLine.toBuilder().vatRate(Optional.of(vat.rate()))
+                    .create(transactionLine.toBuilder().documentVatRate(Optional.of(vat.rate()))
                             .build(), violationTransactionLine.violations());
         }
 
@@ -87,8 +87,8 @@ public class ConversionsPipelineTask implements PipelineTask {
     public TransactionLine.WithPossibleViolation currencyCode(TransactionLine.WithPossibleViolation violationTransactionLine) {
         val transactionLine = violationTransactionLine.transactionLine();
 
-        if (transactionLine.getTargetCurrencyId().isEmpty()) {
-            val targetCurrencyInternalId = transactionLine.getTargetCurrencyInternalId();
+        if (transactionLine.getDocumentCurrencyId().isEmpty()) {
+            val targetCurrencyInternalId = transactionLine.getDocumentCurrencyInternalId();
 
             val organisationCurrencyByInternalIdM = organisationPublicApi.findOrganisationCurrencyByInternalId(targetCurrencyInternalId);
 
@@ -112,7 +112,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
             return TransactionLine.WithPossibleViolation.create(transactionLine
                     .toBuilder()
-                    .targetCurrencyId(Optional.of(organisationCurrencyByInternalId.currencyId()))
+                    .documentCurrencyId(Optional.of(organisationCurrencyByInternalId.currencyId()))
                     .build(), violationTransactionLine.violations());
         }
 

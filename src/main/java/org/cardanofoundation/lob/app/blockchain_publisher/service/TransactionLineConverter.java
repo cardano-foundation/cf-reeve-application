@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import static java.util.stream.Collectors.toSet;
 import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus.STORED;
+import static org.cardanofoundation.lob.app.blockchain_publisher.util.SHA3.digestAsBase64;
 
 @Service
 @Slf4j
@@ -19,17 +20,21 @@ public class TransactionLineConverter {
         // TODO this is hacky but currently core model is way too clunky
         val txLine = tx.getTransactionLines().stream().findAny().orElseThrow();
 
+        val organisationId = tx.getOrgTransactionNumber().organisationId();
+        val txInternalNumber = tx.getOrgTransactionNumber().transactionNumber();
+
         val t = TransactionEntity.builder()
-                .id(new TransactionId(tx.getOrgTransactionNumber().organisationId(), tx.getOrgTransactionNumber().transactionNumber()))
+                .id(digestAsBase64(STR."\{organisationId}::\{ txInternalNumber }"))
+                .internalNumber(txInternalNumber)
                 .transactionType(txLine.getTransactionType())
-                .baseCurrencyId(txLine.getBaseCurrencyId())
-                .baseCurrencyInternalCode(txLine.getBaseCurrencyInternalId())
-                .targetCurrencyId(txLine.getTargetCurrencyId().orElseThrow())
-                .targetCurrencyInternalCode(txLine.getTargetCurrencyInternalId())
+                .organisation(new Organisation(organisationId, Currency.builder()
+                        .id(txLine.getOrganisationCurrencyId())
+                        .internalCode(txLine.getOrganisationCurrencyInternalId())
+                        .build()))
                 .fxRate(txLine.getFxRate())
                 .entryDate(txLine.getEntryDate())
-                .projectInternalCode(txLine.getInternalProjectCode().orElse(null))
-                .costCenterInternalCode(txLine.getInternalCostCenterCode().orElse(null))
+                .projectInternalCode(txLine.getProjectInternalCode().orElse(null))
+                .costCenterInternalCode(txLine.getCostCenterInternalCode().orElse(null))
                 .publishStatus(STORED)
                 .build();
 
@@ -38,30 +43,32 @@ public class TransactionLineConverter {
                 .map(tl -> convert(t, tl))
                 .collect(toSet());
 
-        if (txLine.getInternalDocumentNumber().isPresent()) {
-            t.setDocument(convertDocument(txLine.getInternalDocumentNumber().orElseThrow(), txLine));
-        }
+        t.setDocument(convertDocument(txLine));
 
         t.setItems(txEntityItems);
 
         return t;
     }
 
-    private static Document convertDocument(String internalDocumentNumber,
-                                            TransactionLine txLine) {
+    private static Document convertDocument(TransactionLine txLine) {
         val document = new Document();
-        document.setInternalDocumentNumber(internalDocumentNumber);
+        document.setInternalDocumentNumber(txLine.getDocumentInternalNumber());
 
-        if (txLine.getVatInternalCode().isPresent() && txLine.getVatRate().isPresent()) {
+        document.setCurrency(Currency.builder()
+                .id(txLine.getDocumentCurrencyId().orElseThrow()) // at this moment we must have currency id
+                .internalCode(txLine.getDocumentCurrencyInternalId())
+                .build());
+
+        if (txLine.getDocumentVatInternalCode().isPresent() && txLine.getDocumentVatRate().isPresent()) {
             document.setVat(Vat.builder()
-                    .internalCode(txLine.getVatInternalCode().orElseThrow())
-                    .rate(txLine.getVatRate().orElseThrow())
+                    .internalCode(txLine.getDocumentVatInternalCode().orElseThrow())
+                    .rate(txLine.getDocumentVatRate().orElseThrow())
                     .build()
             );
         }
 
-        if (txLine.getInternalCounterpartyCode().isPresent()) {
-            val counterparty = new Counterparty(txLine.getInternalCounterpartyCode().orElseThrow());
+        if (txLine.getCounterpartyInternalNumber().isPresent()) {
+            val counterparty = new Counterparty(txLine.getCounterpartyInternalNumber().orElseThrow());
             document.setCounterparty(counterparty);
         }
 

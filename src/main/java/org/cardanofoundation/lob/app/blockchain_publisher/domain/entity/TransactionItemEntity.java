@@ -22,10 +22,7 @@ public class TransactionItemEntity extends AuditEntity {
     private String id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumns({
-            @JoinColumn(name = "organisation_id", referencedColumnName = "organisation_id"),
-            @JoinColumn(name = "transaction_internal_number", referencedColumnName = "transaction_internal_number"),
-    })
+    @JoinColumn(name = "transaction_id")
     private TransactionEntity transaction;
 
     @Column(name = "amount_fcy", nullable = false)

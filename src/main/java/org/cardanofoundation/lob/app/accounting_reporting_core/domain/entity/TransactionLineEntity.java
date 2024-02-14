@@ -6,12 +6,11 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Ledge
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
-import org.hibernate.envers.Audited;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -22,16 +21,21 @@ import static jakarta.persistence.EnumType.STRING;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode(callSuper = true)
-@Audited
-@EntityListeners({AuditingEntityListener.class})
+//@Audited
+//@EntityListeners({AuditingEntityListener.class})
 public class TransactionLineEntity extends AuditEntity {
 
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "transaction_id", nullable = false)
     private String id;
 
-    @Column(name = "organisation_id", nullable = false)
-    private String organisationId;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),
+            @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id")),
+            @AttributeOverride(name = "currency.internalCode", column = @Column(name = "organisation_currency_internal_code"))
+    })
+    private Organisation organisation;
 
     @Column(name = "transaction_internal_number", nullable = false)
     private String transactionInternalNumber;
@@ -45,35 +49,25 @@ public class TransactionLineEntity extends AuditEntity {
 
     @Column(name = "ledger_dispatch_status", nullable = false)
     @Enumerated(STRING)
-    LedgerDispatchStatus ledgerDispatchStatus = LedgerDispatchStatus.NOT_DISPATCHED;
+    private LedgerDispatchStatus ledgerDispatchStatus = LedgerDispatchStatus.NOT_DISPATCHED;
 
-    @Column(name = "base_currency_internal_code", nullable = false)
-    private String baseCurrencyInternalCode;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "internalNumber", column = @Column(name = "document_internal_number")),
 
-    @Column(name = "base_currency_id", nullable = false)
-    private String baseCurrencyId;
+            @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
+            @AttributeOverride(name = "currency.internalCode", column = @Column(name = "document_currency_internal_code")),
 
-    @Column(name = "target_currency_internal_code", nullable = false)
-    private String targetCurrencyInternalCode;
+            @AttributeOverride(name = "vat.internalCode", column = @Column(name = "document_vat_internal_code")),
+            @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
 
-    @Column(name = "target_currency_id")
-    @Nullable
-    private String targetCurrencyId;
+            @AttributeOverride(name = "counterparty.internalCode", column = @Column(name = "document_counterparty_internal_code")),
+            @AttributeOverride(name = "counterparty.name", column = @Column(name = "document_counterparty_name")),
+    })
+    private Document document;
 
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
-
-    @Nullable
-    @Column(name = "document_internal_number")
-    private String documentInternalNumber;
-
-    @Nullable
-    @Column(name = "counterparty_internal_code")
-    private String counterpartyInternalCode;
-
-    @Nullable
-    @Column(name = "counterparty_name")
-    private String counterpartyName;
 
     @Nullable
     @Column(name = "cost_center_internal_code")
@@ -82,14 +76,6 @@ public class TransactionLineEntity extends AuditEntity {
     @Nullable
     @Column(name = "project_internal_code")
     private String projectInternalCode;
-
-    @Nullable
-    @Column(name = "vat_internal_code")
-    private String vatInternalCode;
-
-    @Nullable
-    @Column(name = "vat_rate")
-    private BigDecimal vatRate;
 
     @Nullable
     @Column(name = "account_code_debit")
@@ -115,5 +101,25 @@ public class TransactionLineEntity extends AuditEntity {
 
     @Column(name = "ledger_dispatch_approved", nullable = false)
     Boolean ledgerDispatchApproved;
+
+    public Optional<String> getCostCenterInternalCode() {
+        return Optional.ofNullable(costCenterInternalCode);
+    }
+
+    public Optional<String> getProjectInternalCode() {
+        return Optional.ofNullable(projectInternalCode);
+    }
+
+    public Optional<String> getAccountCodeDebit() {
+        return Optional.ofNullable(accountCodeDebit);
+    }
+
+    public Optional<String> getAccountNameDebit() {
+        return Optional.ofNullable(accountNameDebit);
+    }
+
+    public Optional<String> getAccountCodeCredit() {
+        return Optional.ofNullable(accountCodeCredit);
+    }
 
 }

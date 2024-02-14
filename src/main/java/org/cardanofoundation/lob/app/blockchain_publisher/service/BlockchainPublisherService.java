@@ -8,12 +8,9 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.Ledg
 import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepositoryReader;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
-
-import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 @Service("blockchainPublisherService")
 @RequiredArgsConstructor
@@ -44,7 +41,7 @@ public class BlockchainPublisherService {
                 .map(txEntity -> {
                     val status = blockchainPublishStatusMapper.convert(txEntity.getPublishStatus(), txEntity.getOnChainAssuranceLevel());
 
-                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId().getTransactionInternalNumber(), status);
+                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(), status);
                 })
                 .collect(Collectors.toSet());
 

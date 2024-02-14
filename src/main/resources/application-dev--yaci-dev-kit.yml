@@ -12,5 +12,11 @@ lob:
     api:
       key: ""
 
+  l1:
+    transaction:
+      metadata:
+        validation:
+          enable: false
+
 #spring.profiles.active=dev--yaci-dev-kit
 

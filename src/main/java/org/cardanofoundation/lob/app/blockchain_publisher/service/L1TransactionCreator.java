@@ -42,7 +42,7 @@ public class L1TransactionCreator {
 
     private final BlockchainDataChainTipService blockchainDataChainTipService;
 
-    private final MetadataChecker metadataChecker;
+    private final MetadataChecker jsonSchemaMetadataChecker;
 
     private final Account organiserAccount;
 
@@ -136,7 +136,7 @@ public class L1TransactionCreator {
         val metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, metadataMap);
 
-        val isValid = metadataChecker.checkTransactionMetadata(metadataMap);
+        val isValid = jsonSchemaMetadataChecker.checkTransactionMetadata(metadataMap);
 
         if (!isValid) {
             return Either.left(Problem.builder()

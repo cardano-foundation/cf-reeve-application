@@ -13,7 +13,6 @@ import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
@@ -43,36 +42,39 @@ public class TransactionLineConverter {
         val organisation = organisationM.orElseThrow();
         val organisationId = organisationM.orElseThrow().id();
 
-        return new TransactionLine(
-                createTxLineId(organisation, searchResultTransactionItem),
-                organisationId,
-                transactionType(searchResultTransactionItem.type()),
-                searchResultTransactionItem.date(),
-                searchResultTransactionItem.transactionNumber(),
-                organisation.baseCurrency().internalId(),
-                organisation.baseCurrency().currencyId(),
-                String.valueOf(searchResultTransactionItem.currency()),
-                searchResultTransactionItem.exchangeRate(),
-                NOT_DISPATCHED,
-                NOT_VALIDATED,
-                substractNullFriendly(searchResultTransactionItem.amountDebitForeignCurrency(), searchResultTransactionItem.amountCreditForeignCurrency()),
-                substractNullFriendly(searchResultTransactionItem.amountDebit(), searchResultTransactionItem.amountCredit()),
-                true,
-                normaliseString(searchResultTransactionItem.number()),
-                Optional.empty(),
-                normaliseString(searchResultTransactionItem.documentNumber()),
-                normaliseString(searchResultTransactionItem.id()),
-                normaliseString(searchResultTransactionItem.companyName()),
-                normaliseString(searchResultTransactionItem.costCenter()),
-                normaliseString(searchResultTransactionItem.project()),
-                normaliseString(searchResultTransactionItem.taxItem()),
-                Optional.empty(),
-                normaliseString(searchResultTransactionItem.name()),
-                normaliseString(searchResultTransactionItem.accountMain())
-        );
+        return TransactionLine.builder()
+                .id(createTxLineId(organisation, searchResultTransactionItem))
+                .internalTransactionNumber(searchResultTransactionItem.transactionNumber())
+                .transactionType(transactionType(searchResultTransactionItem.type()))
+                .entryDate(searchResultTransactionItem.date())
+
+                .organisationId(organisationId)
+                .organisationCurrencyInternalId(organisation.baseCurrency().internalId())
+                .organisationCurrencyId(organisation.baseCurrency().currencyId())
+
+                .documentInternalNumber(searchResultTransactionItem.documentNumber())
+                .documentCurrencyInternalId(String.valueOf(searchResultTransactionItem.currency()))
+                .documentVatInternalCode(normaliseString(searchResultTransactionItem.taxItem()))
+
+                .fxRate(searchResultTransactionItem.exchangeRate())
+                .ledgerDispatchStatus(NOT_DISPATCHED)
+                .validationStatus(NOT_VALIDATED)
+                .amountFcy(substractNullFriendly(searchResultTransactionItem.amountDebitForeignCurrency(), searchResultTransactionItem.amountCreditForeignCurrency()))
+                .amountLcy(substractNullFriendly(searchResultTransactionItem.amountDebit(), searchResultTransactionItem.amountCredit()))
+                .ledgerDispatchApproved(true)
+                .accountCodeDebit(normaliseString(searchResultTransactionItem.number()))
+                .projectInternalCode(normaliseString(searchResultTransactionItem.project()))
+                .costCenterInternalCode(normaliseString(searchResultTransactionItem.costCenter()))
+                .accountNameDebit(normaliseString(searchResultTransactionItem.name()))
+                .accountCodeCredit(normaliseString(searchResultTransactionItem.accountMain()))
+                .counterpartyInternalName(normaliseString(searchResultTransactionItem.companyName()))
+                .counterpartyInternalNumber(normaliseString(searchResultTransactionItem.id()))
+
+                .build();
     }
 
-    public String createTxLineId(Organisation organisation, SearchResultTransactionItem searchResultTransactionItem) {
+    public String createTxLineId(Organisation organisation,
+                                 SearchResultTransactionItem searchResultTransactionItem) {
         val transactionNumber  = searchResultTransactionItem.transactionNumber();
 
         return SHA3.digestAsBase64(STR."\{NETSUITE.name()}::\{organisation.id()}::\{transactionNumber}::\{searchResultTransactionItem.lineID()}");

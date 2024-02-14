@@ -142,7 +142,7 @@ public class NetSuiteService {
                 .filter(line -> filteringParameters.getTransactionTypes().isEmpty() || filteringParameters.getTransactionTypes().contains(line.getTransactionType()))
                 .filter(line -> filteringParameters.getTo().isEmpty() || filteringParameters.getTo().map(date -> line.getEntryDate().isBefore(date)).orElse(false))
                 .filter(line -> filteringParameters.getOrganisationIds().isEmpty() || filteringParameters.getOrganisationIds().contains(line.getOrganisationId()))
-                .filter(line -> filteringParameters.getProjectCodes().isEmpty() || line.getInternalProjectCode().map(projectCode -> filteringParameters.getProjectCodes().contains(projectCode)).orElse(false))
+                .filter(line -> filteringParameters.getProjectCodes().isEmpty() || line.getProjectInternalCode().map(projectCode -> filteringParameters.getProjectCodes().contains(projectCode)).orElse(false))
                 .toList();
 
         log.info("CoreTransactionLines count: {}", coreTransactionLines.size());

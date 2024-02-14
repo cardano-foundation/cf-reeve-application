@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionLineEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service("accounting_reporting_core.TransactionLineConverter")
 @Slf4j
@@ -19,29 +18,41 @@ public class TransactionLineConverter {
         val entityTxLine = new TransactionLineEntity();
 
         entityTxLine.setId(txLine.getId());
-        entityTxLine.setOrganisationId(txLine.getOrganisationId());
+        entityTxLine.setOrganisation(Organisation.builder()
+                .id(txLine.getOrganisationId())
+                .currency(Currency.builder()
+                        .id(txLine.getOrganisationCurrencyId())
+                        .internalCode(txLine.getOrganisationCurrencyInternalId())
+                        .build())
+                .build());
+
         entityTxLine.setTransactionType(txLine.getTransactionType());
         entityTxLine.setEntryDate(txLine.getEntryDate());
         entityTxLine.setTransactionInternalNumber(txLine.getInternalTransactionNumber());
         entityTxLine.setAccountCodeDebit(txLine.getAccountCodeDebit().orElse(null));
 
-        entityTxLine.setBaseCurrencyInternalCode(txLine.getBaseCurrencyInternalId());
-        entityTxLine.setBaseCurrencyId(txLine.getBaseCurrencyId());
-
-        entityTxLine.setTargetCurrencyInternalCode(txLine.getTargetCurrencyInternalId());
-        entityTxLine.setTargetCurrencyId(txLine.getTargetCurrencyId().orElse(null));
+        entityTxLine.setDocument(Document.builder()
+                .internalNumber(txLine.getDocumentCurrencyInternalId())
+                .currency(Currency.builder()
+                        .id(txLine.getDocumentCurrencyId().orElse(null))
+                        .internalCode(txLine.getDocumentCurrencyInternalId())
+                        .build())
+                .vat(txLine.getDocumentVatInternalCode().map(vatInternalCode -> Vat.builder()
+                        .internalCode(vatInternalCode)
+                        .rate(txLine.getDocumentVatRate().orElse(null))
+                        .build()).orElse(null))
+                .counterparty(txLine.getCounterpartyInternalNumber().map(counterPartyInternalCode -> {
+                    return Counterparty.builder()
+                            .internalCode(counterPartyInternalCode)
+                            .name(txLine.getCounterpartyInternalName().orElse(null))
+                            .build();
+                }).orElse(null))
+                .build());
 
         entityTxLine.setFxRate(txLine.getFxRate());
 
-        entityTxLine.setDocumentInternalNumber(txLine.getInternalDocumentNumber().orElse(null));
-
-        entityTxLine.setCounterpartyInternalCode(txLine.getInternalCounterpartyCode().orElse(null));
-        entityTxLine.setCounterpartyName(txLine.getInternalCounterpartyName().orElse(null));
-        entityTxLine.setCostCenterInternalCode(txLine.getInternalCostCenterCode().orElse(null));
-        entityTxLine.setProjectInternalCode(txLine.getInternalProjectCode().orElse(null));
-
-        entityTxLine.setVatInternalCode(txLine.getVatInternalCode().orElse(null));
-        entityTxLine.setVatRate(txLine.getVatRate().orElse(null));
+        entityTxLine.setCostCenterInternalCode(txLine.getCostCenterInternalCode().orElse(null));
+        entityTxLine.setProjectInternalCode(txLine.getProjectInternalCode().orElse(null));
 
         entityTxLine.setAccountNameDebit(txLine.getAccountNameDebit().orElse(null));
         entityTxLine.setAccountCodeCredit(txLine.getAccountCodeCredit().orElse(null));
@@ -60,36 +71,34 @@ public class TransactionLineConverter {
     }
 
     public TransactionLine convert(TransactionLineEntity entityTxLine) {
-        return new TransactionLine(
-                entityTxLine.getId(),
-                entityTxLine.getOrganisationId(),
-                entityTxLine.getTransactionType(),
-                entityTxLine.getEntryDate(),
-                entityTxLine.getTransactionInternalNumber(),
-                entityTxLine.getBaseCurrencyInternalCode(),
-                entityTxLine.getBaseCurrencyId(),
-                entityTxLine.getTargetCurrencyInternalCode(),
-                entityTxLine.getFxRate(),
-                entityTxLine.getLedgerDispatchStatus(),
-                entityTxLine.getValidationStatus(),
-                entityTxLine.getAmountFcy(),
-                entityTxLine.getAmountLcy(),
-                entityTxLine.getLedgerDispatchApproved(),
-                Optional.ofNullable(entityTxLine.getAccountCodeDebit()),
-                Optional.ofNullable(entityTxLine.getTargetCurrencyId()),
-                Optional.ofNullable(entityTxLine.getDocumentInternalNumber()),
-                Optional.ofNullable(entityTxLine.getCounterpartyInternalCode()),
-
-                Optional.ofNullable(entityTxLine.getCounterpartyName()),
-                Optional.ofNullable(entityTxLine.getCostCenterInternalCode()),
-                Optional.ofNullable(entityTxLine.getProjectInternalCode()),
-
-                Optional.ofNullable(entityTxLine.getVatInternalCode()),
-                Optional.ofNullable(entityTxLine.getVatRate()),
-
-                Optional.ofNullable(entityTxLine.getAccountNameDebit()),
-                Optional.ofNullable(entityTxLine.getAccountCodeCredit())
-        );
+        return TransactionLine.builder()
+                .id(entityTxLine.getId())
+                .organisationId(entityTxLine.getOrganisation().getId())
+                .transactionType(entityTxLine.getTransactionType())
+                .entryDate(entityTxLine.getEntryDate())
+                .internalTransactionNumber(entityTxLine.getTransactionInternalNumber())
+                .organisationCurrencyInternalId(entityTxLine.getOrganisation().getCurrency().getInternalCode())
+                .organisationCurrencyId(entityTxLine.getOrganisation().getCurrency().getId().orElse(null))
+                .documentCurrencyInternalId(entityTxLine.getDocument().getCurrency().getInternalCode())
+                .documentCurrencyId(entityTxLine.getDocument().getCurrency().getId())
+                .documentInternalNumber(entityTxLine.getDocument().getInternalNumber())
+                .fxRate(entityTxLine.getFxRate())
+                .ledgerDispatchStatus(entityTxLine.getLedgerDispatchStatus())
+                .validationStatus(entityTxLine.getValidationStatus())
+                .amountFcy(entityTxLine.getAmountFcy())
+                .amountLcy(entityTxLine.getAmountLcy())
+                .ledgerDispatchApproved(entityTxLine.getLedgerDispatchApproved())
+                .accountCodeDebit(entityTxLine.getAccountCodeDebit())
+                .accountCodeCredit(entityTxLine.getAccountCodeCredit())
+                .counterpartyInternalNumber(entityTxLine.getDocument().getCounterparty().map(Counterparty::getInternalCode))
+                .counterpartyInternalName(entityTxLine.getDocument().getCounterparty().map(Counterparty::getName))
+                .costCenterInternalCode(entityTxLine.getCostCenterInternalCode())
+                .projectInternalCode(entityTxLine.getProjectInternalCode())
+                .documentVatInternalCode(entityTxLine.getDocument().getVat().map(Vat::getInternalCode))
+                .documentVatRate(entityTxLine.getDocument().getVat().flatMap(Vat::getRate))
+                .accountNameDebit(entityTxLine.getAccountNameDebit())
+                .accountCodeCredit(entityTxLine.getAccountCodeCredit())
+                .build();
     }
 
 }

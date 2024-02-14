@@ -48,7 +48,7 @@ public class BlockchainTransactionsDispatcher {
 
             log.info("Dispatching transactions for organisation:{}", organisationId);
 
-            createAndSendBlockchainTransactions(organisationId, transactionsToDispatch);
+            createAndSendBlockchainTransactions(organisation.id(), transactionsToDispatch);
         }
     }
 
@@ -122,7 +122,7 @@ public class BlockchainTransactionsDispatcher {
 
                     val status = blockchainPublishStatusMapper.convert(publishStatus, onChainAssuranceLevelM);
 
-                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId().getTransactionInternalNumber(), status);
+                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(), status);
                 })
                 .collect(Collectors.toSet());
 
