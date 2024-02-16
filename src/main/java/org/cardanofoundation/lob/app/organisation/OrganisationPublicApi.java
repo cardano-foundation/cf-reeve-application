@@ -24,17 +24,22 @@ public class OrganisationPublicApi {
         return organisationService.listAll();
     }
 
-    public Optional<Organisation> findByForeignProvider(String foreignId,
-                                                        AccountSystemProvider accountSystemProvider) {
-        return organisationService.findByForeignProvider(foreignId, accountSystemProvider);
+    public Optional<Organisation> findBy(AccountSystemProvider accountSystemProvider,
+                                                  String connectorId,
+                                                  String foreignSystemId) {
+        return organisationService.findBy(accountSystemProvider, connectorId, foreignSystemId);
+    }
+
+    public Optional<Organisation> findByOrganisationId(String id) {
+        return organisationService.findById(id);
     }
 
     public Optional<OrganisationCurrency> findOrganisationCurrencyByInternalId(String internalCurrencyId) {
         return currencyService.findByOrganisationCurrencyInternalId(internalCurrencyId);
     }
 
-    public Optional<OrganisationVat> findOrganisationVatByInternalId(String internalVatId) {
-        return organisationVatRepository.findByInternalId(internalVatId);
+    public Optional<OrganisationVat> findOrganisationVatByInternalId(String organisationId, String internalNumber) {
+        return organisationVatRepository.findByOrganisationAndInternalNumber(organisationId, internalNumber);
     }
 
     public Optional<Currency> findByCurrencyId(String currencyId) {

@@ -41,7 +41,7 @@ public class TransactionEntity extends AuditEntity {
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),
             @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id")),
-            @AttributeOverride(name = "currency.internalCode", column = @Column(name = "organisation_currency_internal_code"))
+            @AttributeOverride(name = "currency.internalNumber", column = @Column(name = "organisation_currency_internal_number"))
     })
     private Organisation organisation;
 
@@ -56,21 +56,21 @@ public class TransactionEntity extends AuditEntity {
     private BigDecimal fxRate;
 
     @Nullable
-    @Column(name = "cost_center_internal_code")
-    private String costCenterInternalCode;
+    @Column(name = "cost_center_internal_number")
+    private String costCenterInternalNumber;
 
     @Nullable
-    @Column(name = "project_internal_code")
-    private String projectInternalCode;
+    @Column(name = "project_internal_number")
+    private String projectInternalNumber;
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "internalDocumentNumber", column = @Column(name = "document_internal_document_number")),
-            @AttributeOverride(name = "vat.internalCode", column = @Column(name = "document_vat_internal_code")),
+            @AttributeOverride(name = "vat.internalNumber", column = @Column(name = "document_vat_internal_number")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
-            @AttributeOverride(name = "counterparty.internalCode", column = @Column(name = "document_counterparty_internal_code")),
+            @AttributeOverride(name = "counterparty.internalNumber", column = @Column(name = "document_counterparty_internal_number")),
             @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
-            @AttributeOverride(name = "currency.internalCode", column = @Column(name = "document_currency_internal_code")),
+            @AttributeOverride(name = "currency.internalNumber", column = @Column(name = "document_currency_internal_number")),
     })
     private Document document;
 
@@ -131,12 +131,12 @@ public class TransactionEntity extends AuditEntity {
         return false;
     }
 
-    public Optional<String> getCostCenterInternalCode() {
-        return Optional.ofNullable(costCenterInternalCode);
+    public Optional<String> getCostCenterInternalNumber() {
+        return Optional.ofNullable(costCenterInternalNumber);
     }
 
-    public Optional<String> getProjectInternalCode() {
-        return Optional.ofNullable(projectInternalCode);
+    public Optional<String> getProjectInternalNumber() {
+        return Optional.ofNullable(projectInternalNumber);
     }
 
 }

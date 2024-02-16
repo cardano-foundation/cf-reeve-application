@@ -22,7 +22,7 @@ public class OrganisationService {
         return organisationRepository.listAll();
     }
 
-    //@Transactional(readOnly = true)
+//  @Transactional(readOnly = true)
     public Optional<Organisation> findById(String id) {
         return organisationRepository.listAll().stream()
                 .filter(organisation -> organisation.id().equals(id))
@@ -30,12 +30,10 @@ public class OrganisationService {
     }
 
     //@Transactional(readOnly = true)
-    public Optional<Organisation> findByForeignProvider(String foreignId,
-                                                        AccountSystemProvider accountSystemProvider) {
-        return organisationRepository.listAll().stream()
-                .filter(organisation -> organisation.accountSystemProviderId().equals(foreignId))
-                .filter(organisation -> organisation.accountSystemProvider().equals(accountSystemProvider))
-                .findFirst();
+    public Optional<Organisation> findBy(AccountSystemProvider accountSystemProvider, // e.g. NETSUITE
+                                         String connectorId, // e.g. jhu765
+                                         String foreignSystemId) { // e.g. 1 (CF = 1)
+        return findById(Organisation.id(accountSystemProvider, connectorId, foreignSystemId));
     }
 
 }

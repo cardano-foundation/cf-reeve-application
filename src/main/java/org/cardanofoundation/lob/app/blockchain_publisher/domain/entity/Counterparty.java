@@ -11,6 +11,6 @@ import lombok.*;
 @Setter
 public class Counterparty {
 
-    private String internalCode;
+    private String internalNumber;
 
 }

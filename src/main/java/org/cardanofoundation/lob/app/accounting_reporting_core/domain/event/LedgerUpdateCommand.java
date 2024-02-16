@@ -1,17 +1,17 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 
 import java.util.UUID;
 
 /**
- * @param transactionLines
+ * @param organisationTransactions
  */
 public record LedgerUpdateCommand(UUID uploadId,
-                                 TransactionLines transactionLines) {
+                                 OrganisationTransactions organisationTransactions) {
 
-    public static LedgerUpdateCommand create(TransactionLines transactionLines) {
-        return new LedgerUpdateCommand(UUID.randomUUID(), transactionLines);
+    public static LedgerUpdateCommand create(OrganisationTransactions organisationTransactions) {
+        return new LedgerUpdateCommand(UUID.randomUUID(), organisationTransactions);
     }
 
 }

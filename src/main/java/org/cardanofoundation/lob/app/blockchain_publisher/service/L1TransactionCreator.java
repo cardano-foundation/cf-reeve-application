@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainTransactionWithLines;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainTransactions;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -49,16 +49,16 @@ public class L1TransactionCreator {
     @Value("${l1.transaction.metadata.label:22222}")
     private int metadataLabel;
 
-    public Either<Problem, Optional<BlockchainTransactionWithLines>> pullBlockchainTransaction(String organisationId,
-                                                                                               List<TransactionEntity> txs) {
+    public Either<Problem, Optional<BlockchainTransactions>> pullBlockchainTransaction(String organisationId,
+                                                                                       List<TransactionEntity> txs) {
         val chainTipE = blockchainDataChainTipService.latestChainTip();
 
         return chainTipE.map(chainTip -> createTransaction(organisationId, txs, chainTip.absoluteSlot()));
     }
 
-    private Optional<BlockchainTransactionWithLines> createTransaction(String organisationId,
-                                                                       List<TransactionEntity> transactions,
-                                                                       long creationSlot) {
+    private Optional<BlockchainTransactions> createTransaction(String organisationId,
+                                                               List<TransactionEntity> transactions,
+                                                               long creationSlot) {
         log.info("Splitting {} transactions into blockchain transactions", transactions.size());
 
         val transactionsBatch = new ArrayList<TransactionEntity>();
@@ -92,7 +92,7 @@ public class L1TransactionCreator {
 
                 final var remaining = calculateRemainingTransactionLines(transactions, transactionsBatch);
 
-                return Optional.of(new BlockchainTransactionWithLines(organisationId, transactionsBatch, remaining, txBytes));
+                return Optional.of(new BlockchainTransactions(organisationId, transactionsBatch, remaining, txBytes));
             }
         }
 
@@ -113,7 +113,7 @@ public class L1TransactionCreator {
 
             final var remaining = calculateRemainingTransactionLines(transactions, transactionsBatch);
 
-            return Optional.of(new BlockchainTransactionWithLines(organisationId, transactionsBatch, remaining, txBytes));
+            return Optional.of(new BlockchainTransactions(organisationId, transactionsBatch, remaining, txBytes));
         }
 
         return Optional.empty();

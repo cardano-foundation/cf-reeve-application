@@ -1,46 +1,58 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
 
+import io.vavr.Predicates;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class PreCleansingPipelineTask implements PipelineTask {
 
-    public TransformationResult run(TransactionLines passedTransactionLines,
-                                    TransactionLines ignoredTransactionLines,
+    public TransformationResult run(OrganisationTransactions passedOrganisationTransactions,
+                                    OrganisationTransactions ignoredOrganisationTransactions,
                                     Set<Violation> violations) {
-        val txLines = passedTransactionLines.entries();
+        val passedTransactions = passedOrganisationTransactions.transactions()
+                .stream()
+                .map(Transaction.WithPossibleViolations::create)
+                .map(this::discardZeroBalanceTransactionItems)
+                .collect(Collectors.toSet());
 
-        val passed = txLines.stream()
-                .map(TransactionLine.WithPossibleViolation::create)
-                .map(this::zeroBalanceCheck)
-                .toList();
+        val newViolations = new HashSet<>(violations);
+        val finalTransactions = new LinkedHashSet<Transaction>();
 
-        val passedTxLines = passed.stream()
-                .map(TransactionLine.WithPossibleViolation::transactionLine)
-                .toList();
+        for (val transactions : passedTransactions) {
+            finalTransactions.add(transactions.transaction());
+            newViolations.addAll(transactions.violations());
+        }
 
         return new TransformationResult(
-                new TransactionLines(passedTransactionLines.organisationId(), passedTxLines),
-                ignoredTransactionLines,
-                violations
+                new OrganisationTransactions(passedOrganisationTransactions.organisationId(), finalTransactions),
+                ignoredOrganisationTransactions,
+                newViolations
         );
     }
 
-    private TransactionLine.WithPossibleViolation zeroBalanceCheck(TransactionLine.WithPossibleViolation transactionLineWithViolation) {
-        val transactionLine = transactionLineWithViolation.transactionLine();
+    private Transaction.WithPossibleViolations discardZeroBalanceTransactionItems(Transaction.WithPossibleViolations violationTransaction) {
+        val tx = violationTransaction.transaction();
 
-        if (transactionLine.getAmountLcy().signum() == 0 && transactionLine.getAmountFcy().signum() == 0) {
-            return TransactionLine.WithPossibleViolation.create(transactionLine
-                    .toBuilder()
-                    .validationStatus(ValidationStatus.DISCARDED)
-                    .build());
-        }
+        val newItems = tx.getTransactionItems()
+                .stream()
+                .filter(Predicates.not(txItem -> txItem.getAmountLcy().signum() == 0 && txItem.getAmountFcy().signum() == 0))
+                .collect(Collectors.toSet());
 
-        return transactionLineWithViolation;
+        return Transaction.WithPossibleViolations.create(
+                tx.toBuilder()
+                        .transactionItems(newItems)
+                        .build()
+        );
     }
 
 }

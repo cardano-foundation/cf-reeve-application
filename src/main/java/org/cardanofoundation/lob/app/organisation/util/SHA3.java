@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.netsuite_adapter.util;
+package org.cardanofoundation.lob.app.organisation.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -19,6 +19,13 @@ public class SHA3 {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void main(String[] args) {
+        var netsuiteConnectorId = "jhu765";
+        var subsidiary = 1;
+
+        System.out.println(digestAsBase64(STR."NETSUITE::\{netsuiteConnectorId}::\{subsidiary}"));
     }
 
 }

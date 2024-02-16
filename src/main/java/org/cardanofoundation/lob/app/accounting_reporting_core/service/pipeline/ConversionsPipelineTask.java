@@ -3,10 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLine;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 
 import java.util.HashSet;
@@ -24,99 +21,115 @@ public class ConversionsPipelineTask implements PipelineTask {
 
     private final OrganisationPublicApi organisationPublicApi;
 
-    public TransformationResult run(TransactionLines passedTransactionLines,
-                                    TransactionLines ignoredTransactionLines,
+    public TransformationResult run(OrganisationTransactions passedOrganisationTransactions,
+                                    OrganisationTransactions ignoredOrganisationTransactions,
                                     Set<Violation> violations
     ) {
-        val converted = passedTransactionLines.entries().stream()
-                .map(TransactionLine.WithPossibleViolation::create)
+        val passedTransactions = passedOrganisationTransactions.transactions().stream()
+                .map(Transaction.WithPossibleViolations::create)
                 .map(this::vatConversion)
                 .map(this::currencyCode)
                 .toList();
 
         val newViolations = new HashSet<>(violations);
-        converted.forEach(p -> newViolations.addAll(p.violations()));
+        val finalTransactions = new HashSet<Transaction>();
 
-        val passedTxLines = converted.stream()
-                .map(TransactionLine.WithPossibleViolation::transactionLine)
-                .toList();
+        for (val transaction : passedTransactions) {
+            finalTransactions.add(transaction.transaction());
+            newViolations.addAll(transaction.violations());
+        }
 
         return new TransformationResult(
-                new TransactionLines(passedTransactionLines.organisationId(), passedTxLines),
-                ignoredTransactionLines,
+                new OrganisationTransactions(passedOrganisationTransactions.organisationId(), finalTransactions),
+                ignoredOrganisationTransactions,
                 Stream.concat(violations.stream(), newViolations.stream()).collect(toSet())
         );
     }
 
-    public TransactionLine.WithPossibleViolation vatConversion(TransactionLine.WithPossibleViolation violationTransactionLine) {
-        val transactionLine = violationTransactionLine.transactionLine();
+    public Transaction.WithPossibleViolations vatConversion(Transaction.WithPossibleViolations violationTransaction) {
+        val tx = violationTransaction.transaction();
 
-        if (transactionLine.getDocumentVatInternalCode().isPresent() && transactionLine.getDocumentVatRate().isEmpty()) {
-            val vatInternalCode = transactionLine.getDocumentVatInternalCode().get();
+        if (tx.getDocument().getVat().isPresent() && tx.getDocument().getVat().get().getRate().isEmpty()) {
 
-            val vatM = organisationPublicApi.findOrganisationVatByInternalId(vatInternalCode);
+            val vat = tx.getDocument().getVat().orElseThrow();
+
+            val vatM = organisationPublicApi.findOrganisationVatByInternalId(tx.getOrganisation().getId(), vat.getInternalNumber());
 
             if (vatM.isEmpty()) {
-                log.warn("VAT_RATE_NOT_FOUND: {}", vatInternalCode);
+                log.warn("VAT_RATE_NOT_FOUND: vatInternalNumber: {}", vat.getInternalNumber());
 
                 val v = Violation.create(
                         Violation.Priority.NORMAL,
                         Violation.Type.FATAL,
-                        transactionLine.getId(),
-                        transactionLine.getInternalTransactionNumber(),
+                        tx.getOrganisation().getId(),
+                        tx.getId(),
                         "VAT_RATE_NOT_FOUND",
-                        Map.of("vatInternalCode", vatInternalCode)
+                        Map.of("vatInternalNumber", vat.getInternalNumber())
                 );
 
-                return TransactionLine.WithPossibleViolation.create(transactionLine
+                return Transaction.WithPossibleViolations.create(tx
                         .toBuilder()
                         .validationStatus(FAILED)
-                        .build(), Set.of(v));
+                        .build(), v);
             }
 
-            val vat = vatM.get();
+            val organisationVat = vatM.orElseThrow();
 
-            return TransactionLine.WithPossibleViolation
-                    .create(transactionLine.toBuilder().documentVatRate(Optional.of(vat.rate()))
-                            .build(), violationTransactionLine.violations());
+            val enrichedVat = Vat.builder()
+                    .internalNumber(vat.getInternalNumber())
+                    .rate(Optional.of(organisationVat.rate()))
+                    .build();
+
+            return Transaction.WithPossibleViolations.create(tx.toBuilder()
+                    .document(tx.getDocument().toBuilder()
+                            .vat(Optional.of(enrichedVat))
+                            .build())
+                    .build());
         }
 
-        return violationTransactionLine;
+        return violationTransaction;
     }
 
-    public TransactionLine.WithPossibleViolation currencyCode(TransactionLine.WithPossibleViolation violationTransactionLine) {
-        val transactionLine = violationTransactionLine.transactionLine();
+    public Transaction.WithPossibleViolations currencyCode(Transaction.WithPossibleViolations violationTransaction) {
+        val tx = violationTransaction.transaction();
 
-        if (transactionLine.getDocumentCurrencyId().isEmpty()) {
-            val targetCurrencyInternalId = transactionLine.getDocumentCurrencyInternalId();
+        if (tx.getDocument().getCurrency().getId().isEmpty()) {
+            val internalNumber = tx.getDocument().getCurrency().getInternalNumber();
+            val organisationCurrencyM = organisationPublicApi.findOrganisationCurrencyByInternalId(internalNumber);
 
-            val organisationCurrencyByInternalIdM = organisationPublicApi.findOrganisationCurrencyByInternalId(targetCurrencyInternalId);
+            if (organisationCurrencyM.isEmpty()) {
+                log.warn("CURRENCY_RATE_NOT_FOUND: currencyInternalId: {}", internalNumber);
 
-            if (organisationCurrencyByInternalIdM.isEmpty()) {
                 val v = Violation.create(
                         Violation.Priority.NORMAL,
                         Violation.Type.FATAL,
-                        transactionLine.getId(),
-                        transactionLine.getInternalTransactionNumber(),
+                        tx.getOrganisation().getId(),
+                        tx.getId(),
                         "CURRENCY_RATE_NOT_FOUND",
-                        Map.of("currencyInternalId", targetCurrencyInternalId)
+                        Map.of("currencyInternalNumber", internalNumber)
                 );
 
-                return TransactionLine.WithPossibleViolation
-                        .create(transactionLine.toBuilder()
-                                        .validationStatus(FAILED)
-                                        .build(),
-                                Set.of(v));
+                return Transaction.WithPossibleViolations.create(tx
+                        .toBuilder()
+                        .validationStatus(FAILED)
+                        .build(), v);
             }
-            val organisationCurrencyByInternalId = organisationCurrencyByInternalIdM.orElseThrow();
 
-            return TransactionLine.WithPossibleViolation.create(transactionLine
-                    .toBuilder()
-                    .documentCurrencyId(Optional.of(organisationCurrencyByInternalId.currencyId()))
-                    .build(), violationTransactionLine.violations());
+            val organisationCurrency = organisationCurrencyM.orElseThrow();
+
+            val currency = org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
+                    .id(Optional.of(organisationCurrency.currencyId()))
+                    .internalNumber(organisationCurrency.internalNumber())
+                    .build();
+
+            return Transaction.WithPossibleViolations.create(tx.toBuilder()
+                    .document(tx.getDocument().toBuilder()
+                            .currency(currency)
+                            .build())
+                    .build());
         }
 
-        return violationTransactionLine;
+        return violationTransaction;
     }
 
 }

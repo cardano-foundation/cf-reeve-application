@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Counterparty {
 
-    private String internalCode;
+    private String internalNumber;
+
     private String name;
 
 }

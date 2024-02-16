@@ -5,46 +5,29 @@ import java.util.Optional;
 
 public record Violation(Priority priority,
                         Type type,
-                        Optional<String> txLineId,
                         String organisationId,
-                        String transactionNumber,
+                        String transactionId,
+                        Optional<String> txItemId,
                         String violationCode,
                         Map<String, Object> bag) {
 
     public static Violation create(Priority priority,
                                    Type type,
-                                   String txLineId,
                                    String organisationId,
-                                   String transactionNumber,
+                                   String transactionId,
                                    String violationCode,
                                    Map<String, Object> bag) {
-        return new Violation(priority, type, Optional.of(txLineId), organisationId, transactionNumber, violationCode, bag);
-    }
-
-    public static Violation create(Priority priority,
-                                   Type type,
-                                   String txLineId,
-                                   String organisationId,
-                                   String transactionNumber,
-                                   String violationCode) {
-        return new Violation(priority, type, Optional.of(txLineId), organisationId, transactionNumber, violationCode, Map.of());
+        return new Violation(priority, type, organisationId, transactionId, Optional.empty(), violationCode, bag);
     }
 
     public static Violation create(Priority priority,
                                    Type type,
                                    String organisationId,
-                                   String transactionNumber,
+                                   String transactionId,
+                                   String txItemId,
                                    String violationCode,
                                    Map<String, Object> bag) {
-        return new Violation(priority, type, Optional.empty(), organisationId, transactionNumber, violationCode, bag);
-    }
-
-    public static Violation create(Priority priority,
-                                   Type type,
-                                   String organisationId,
-                                   String transactionNumber,
-                                   String violationCode) {
-        return new Violation(priority, type, Optional.empty(), organisationId, transactionNumber, violationCode, Map.of());
+        return new Violation(priority, type, organisationId, transactionId, Optional.of(txItemId), violationCode, bag);
     }
 
     public enum Priority {

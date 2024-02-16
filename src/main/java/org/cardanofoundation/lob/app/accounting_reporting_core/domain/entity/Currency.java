@@ -1,6 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,10 +17,11 @@ import java.util.Optional;
 @Getter
 public class Currency {
 
-    @Nullable
+    @Nullable // sometimes we will resolve this later
     private String id;
 
-    private String internalCode;
+    @NotBlank
+    private String internalNumber;
 
     public Optional<String> getId() {
         return Optional.ofNullable(id);

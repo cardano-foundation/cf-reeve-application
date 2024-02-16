@@ -16,72 +16,72 @@ public class StaticOrganisationCurrencyRepository implements OrganisationCurrenc
     @PostConstruct
     public void init() {
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:CHF",
                 "1"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:USD",
                 "2"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:CAD",
                 "3"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:EUR",
                 "4"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:GBP",
                 "5"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_24165:ADA:HWGL1C2CK",
                 "6"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_24165:BTC:4H95J0R2X",
                 "7"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:CRC",
                 "8"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_24165:BCH:J9K583ZGG",
                 "9"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_24165:BSV:2L8HS2MNP",
                 "10"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:LKK",
                 "11"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:AED",
                 "12"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:GEL",
                 "13"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                "CF",
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "ISO_4217:KRW",
                 "14"
         ));
@@ -102,7 +102,7 @@ public class StaticOrganisationCurrencyRepository implements OrganisationCurrenc
     @Override
     public Optional<OrganisationCurrency> findByOrganisationCurrencyInternalId(String internalId) {
         return organisationCurrencies.stream()
-                .filter(organisationCurrency -> organisationCurrency.internalId().equals(internalId))
+                .filter(organisationCurrency -> organisationCurrency.internalNumber().equals(internalId))
                 .findFirst();
     }
 

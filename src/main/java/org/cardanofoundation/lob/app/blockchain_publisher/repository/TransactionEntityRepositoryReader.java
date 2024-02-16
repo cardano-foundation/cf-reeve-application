@@ -8,7 +8,6 @@ import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.Transact
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -22,7 +21,7 @@ public class TransactionEntityRepositoryReader {
     private final TransactionEntityRepository transactionEntityRepository;
 
     @Transactional
-    public Set<TransactionEntity> storeOnlyNewTransactions(List<TransactionEntity> transactionEntities) {
+    public Set<TransactionEntity> storeOnlyNewTransactions(Set<TransactionEntity> transactionEntities) {
         log.info("StoreOnlyNewTransactions..., transactionEntitiesCount:{}", transactionEntities.size());
 
         // check in db if transaction already exists
