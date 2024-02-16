@@ -1,5 +1,8 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 
 import java.util.Set;
@@ -9,10 +12,20 @@ import java.util.Set;
  *
  * @param statusUpdates
  */
-public record LedgerUpdatedEvent(String organisationId,
-                                 Set<TxStatusUpdate> statusUpdates) {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public final class LedgerUpdatedEvent {
 
-    public record TxStatusUpdate(String txId,
-                                 LedgerDispatchStatus status) {}
+    private String organisationId;
+    private Set<TxStatusUpdate> statusUpdates;
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TxStatusUpdate {
+        private String txId;
+        private LedgerDispatchStatus status;
+    }
 
 }

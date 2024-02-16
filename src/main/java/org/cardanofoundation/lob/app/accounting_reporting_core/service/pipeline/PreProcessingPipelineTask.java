@@ -46,10 +46,7 @@ public class PreProcessingPipelineTask implements PipelineTask {
             newViolations.add(v);
         }
         val dispatchedTransactionIds = dispatchedTransactions.stream().map(Transaction::getId).collect(Collectors.toSet());
-        log.info("dispatchedTransactionIds: {}", dispatchedTransactionIds);
-
         val notDispatchedTransactionIds = Sets.difference(allTransactionIds, dispatchedTransactionIds);
-        log.info("notDispatchedTransactionIds: {}", notDispatchedTransactionIds);
 
         val notDispatchedTransactions = transactions.stream()
                 .filter(tx -> notDispatchedTransactionIds.contains(tx.getId()))

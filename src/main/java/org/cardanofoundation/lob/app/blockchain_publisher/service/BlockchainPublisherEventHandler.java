@@ -19,8 +19,8 @@ public class BlockchainPublisherEventHandler {
 
     @ApplicationModuleListener
     public void handleLedgerUpdateCommand(LedgerUpdateCommand command) {
-        val uploadId = command.uploadId();
-        val transactionLines = command.organisationTransactions();
+        val uploadId = command.getUploadId();
+        val transactionLines = command.getOrganisationTransactions();
 
         log.info("Received LedgerUpdateCommand command..., uploadId: {}", uploadId);
 

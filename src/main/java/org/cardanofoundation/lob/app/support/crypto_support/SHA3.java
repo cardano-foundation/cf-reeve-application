@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.netsuite_adapter.util;
+package org.cardanofoundation.lob.app.support.crypto_support;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

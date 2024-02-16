@@ -2,7 +2,7 @@ package org.cardanofoundation.lob.app.organisation.domain.core;
 
 import java.util.List;
 
-import static org.cardanofoundation.lob.app.organisation.util.SHA3.digestAsBase64;
+import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsBase64;
 
 public record Organisation(
         // unique identifier for the organisation

@@ -3,10 +3,7 @@ package org.cardanofoundation.lob.app.blockchain_publisher.service;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.metadata.MetadataMap;
 import lombok.val;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.Document;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionItemEntity;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.Vat;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -29,7 +26,6 @@ public class MetadataSerialiser {
         organisationMap.put("id", organisationId);
 
         globalMetadataMap.put("transactions", txList);
-        globalMetadataMap.put("organisation", organisationMap);
 
         return globalMetadataMap;
     }
@@ -47,7 +43,7 @@ public class MetadataSerialiser {
 
         val id = transaction.getId();
 
-        metadataMap.put("id", transaction.getId());
+        metadataMap.put("id", id);
         metadataMap.put("internal_number", transaction.getInternalNumber());
 
         metadataMap.put("type", transaction.getTransactionType().name().toUpperCase());
@@ -57,6 +53,7 @@ public class MetadataSerialiser {
 
         metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
+        metadataMap.put("organisation", serialise(transaction.getOrganisation()));
 
         val documentsList = MetadataBuilder.createList();
         documentsList.add(serialise(transaction.getDocument()));
@@ -111,6 +108,20 @@ public class MetadataSerialiser {
 
         metadataMap.put("id", transactionItemEntity.getId());
         metadataMap.put("amount", transactionItemEntity.getAmountFcy().toEngineeringString());
+
+        return metadataMap;
+    }
+
+    private static MetadataMap serialise(Organisation org) {
+        val metadataMap = MetadataBuilder.createMap();
+
+        metadataMap.put("id", org.getId());
+
+        val currencyMetadataMap = MetadataBuilder.createMap();
+        currencyMetadataMap.put("internal_number", org.getCurrency().getInternalNumber());
+        currencyMetadataMap.put("id", org.getCurrency().getInternalNumber());
+
+        metadataMap.put("currency", currencyMetadataMap);
 
         return metadataMap;
     }
