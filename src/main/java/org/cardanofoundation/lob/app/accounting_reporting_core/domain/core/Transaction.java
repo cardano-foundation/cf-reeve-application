@@ -5,14 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import org.cardanofoundation.lob.app.accounting_reporting_core.util.SHA3;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsBase64;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -52,7 +52,8 @@ public class Transaction {
     Optional<@Size(min = 1, max =  255) String> projectInternalNumber = Optional.empty();
 
     @NotNull
-    private ValidationStatus validationStatus;
+    @Builder.Default
+    private ValidationStatus validationStatus = ValidationStatus.NOT_VALIDATED;
 
     @Builder.Default
     private boolean ledgerDispatchApproved = false;
@@ -61,24 +62,9 @@ public class Transaction {
     @NotEmpty
     private Set<TransactionItem> transactionItems = new HashSet<>();
 
-    // DO NOT DELETE - this is used to over-write the builder`
-    @Slf4j
-    public static class TransactionBuilder {
-        public Transaction.TransactionBuilder validationStatus(ValidationStatus validationStatus) {
-            if (this.validationStatus == null || validationStatus.ordinal() >= this.validationStatus.ordinal()) {
-                this.validationStatus = validationStatus;
-            } else {
-                log.warn("Validation status is not increasing: {} -> {}", this.validationStatus, validationStatus);
-            }
-
-            return this;
-        }
-
-    }
-
     public static String id(String organisationId,
                             String internalTransactionNumber) {
-        return SHA3.digestAsBase64(STR."\{organisationId}::\{internalTransactionNumber}");
+        return digestAsBase64(STR."\{organisationId}::\{internalTransactionNumber}");
     }
 
 

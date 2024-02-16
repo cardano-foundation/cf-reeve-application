@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
 
+import io.vavr.Predicates;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 
 @Service
@@ -49,17 +51,6 @@ public class IngestionPipelineProcessor implements PipelineTask {
     public TransformationResult run(OrganisationTransactions passedTransactions,
                                     OrganisationTransactions ignoredTransactions,
                                     Set<Violation> violations) {
-        // we pre-validate by default and potentially fail later
-        val validatedTransactions = passedTransactions
-                .transactions()
-                .stream()
-                .map(tx -> tx.toBuilder()
-                        .validationStatus(VALIDATED)
-                        .build())
-                .collect(Collectors.toSet());
-
-        passedTransactions = new OrganisationTransactions(passedTransactions.organisationId(), validatedTransactions);
-
         for (val pipelineTask : pipelineTasks) {
             log.info("Running pipelineTask: {}", pipelineTask.getClass().getSimpleName());
 
@@ -83,8 +74,18 @@ public class IngestionPipelineProcessor implements PipelineTask {
             });
         }
 
+        // those that didn't fail are validated
+        val finalTransactions = passedTransactions
+                .transactions()
+                .stream()
+                .filter(Predicates.not(tx -> tx.getValidationStatus() == FAILED))
+                .map(tx -> tx.toBuilder()
+                        .validationStatus(VALIDATED)
+                        .build())
+                .collect(Collectors.toSet());
+
         return new TransformationResult(
-                passedTransactions,
+                new OrganisationTransactions(passedTransactions.organisationId(), finalTransactions),
                 ignoredTransactions,
                 violations
         );

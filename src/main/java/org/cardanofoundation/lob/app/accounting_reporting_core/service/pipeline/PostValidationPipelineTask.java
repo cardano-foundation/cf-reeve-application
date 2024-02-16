@@ -9,6 +9,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
@@ -28,7 +29,7 @@ public class PostValidationPipelineTask implements PipelineTask {
                 .map(this::sanityCheckFields)
                 .map(this::accountCodeDebitCheck)
                 .map(this::accountCodeCreditCheck)
-                .toList();
+                .collect(Collectors.toSet());
 
         val newViolations = new HashSet<>(violations);
         val finalTransactions = new HashSet<Transaction>();

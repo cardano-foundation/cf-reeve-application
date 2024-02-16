@@ -34,14 +34,10 @@ public class CardanoSubmitApiBlockchainTransactionSubmissionService implements B
             var jNode = JsonUtil.parseJson(json);
             var txId  = jNode.asText();
 
-            log.info("txId:{}", txId);
-
             return txId;
         }
 
-        log.error("Error submitting transaction, status code: {}, body: {}", r.statusCode(), r.body());
-
-        throw new RuntimeException("Error submitting transaction: " + r.body());
+        throw new RuntimeException(STR."Error submitting transaction: \{r.body()}");
     }
 
 }

@@ -8,6 +8,4 @@ public enum ValidationStatus {
 
     FAILED,
 
-    DISCARDED,
-
 }

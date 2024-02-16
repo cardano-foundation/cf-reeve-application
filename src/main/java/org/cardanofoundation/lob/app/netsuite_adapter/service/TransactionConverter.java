@@ -102,7 +102,6 @@ public class TransactionConverter {
                 }
 
                 val transactionM = transactionE.get();
-                log.info("transactionM: {}", transactionM);
 
                 transactionM.ifPresent(transaction -> {
                     transactionsByOrganisations

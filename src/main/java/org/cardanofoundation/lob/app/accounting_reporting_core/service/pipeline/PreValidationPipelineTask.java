@@ -56,7 +56,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     "TRANSACTION_ITEMS_EMPTY",
-                    Map.of()
+                    Map.of("transactionId", tx.getId())
             );
 
             return Transaction.WithPossibleViolations.create(tx.toBuilder().validationStatus(FAILED).build(), v);

@@ -6,10 +6,11 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.cardanofoundation.lob.app.accounting_reporting_core.util.SHA3;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+
+import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsBase64;
 
 @Builder(toBuilder = true)
 @Getter
@@ -34,7 +35,7 @@ public class TransactionItem {
     public static String id(String organisationId,
                             String internalTransactionNumber,
                             String lineNo) {
-        return SHA3.digestAsBase64(STR."\{organisationId}::\{internalTransactionNumber}::\{lineNo}");
+        return digestAsBase64(STR."\{organisationId}::\{internalTransactionNumber}::\{lineNo}");
     }
 
 }

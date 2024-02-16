@@ -35,7 +35,7 @@ public class LedgerService {
         log.info("Updating dispatch status for statusMapCount: {}", txStatusUpdates.size());
 
         for (val txStatusUpdate : txStatusUpdates) {
-            val txId = txStatusUpdate.txId();
+            val txId = txStatusUpdate.getTxId();
             val transactionM = transactionRepository.findById(txId);
 
             if (transactionM.isEmpty()) {
@@ -44,7 +44,7 @@ public class LedgerService {
             }
 
             val transaction = transactionM.orElseThrow();
-            transaction.setLedgerDispatchStatus(txStatusUpdate.status());
+            transaction.setLedgerDispatchStatus(txStatusUpdate.getStatus());
             transactionRepository.save(transaction);
         }
 
