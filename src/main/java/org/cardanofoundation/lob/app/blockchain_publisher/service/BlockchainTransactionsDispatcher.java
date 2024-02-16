@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainTransactionWithLines;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainTransactions;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1SubmissionData;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepository;
@@ -52,8 +52,8 @@ public class BlockchainTransactionsDispatcher {
         }
     }
 
-    private Optional<BlockchainTransactionWithLines> createAndSendBlockchainTransactions(String organisationId,
-                                                                                         List<TransactionEntity> transactions) {
+    private Optional<BlockchainTransactions> createAndSendBlockchainTransactions(String organisationId,
+                                                                                 List<TransactionEntity> transactions) {
         log.info("Processing transactions for organisation:{}, remaining size:{}", organisationId, transactions.size());
 
         if (transactions.isEmpty()) {
@@ -89,32 +89,32 @@ public class BlockchainTransactionsDispatcher {
     }
 
     @Transactional(isolation = SERIALIZABLE)
-    private void sendTransactionOnChainAndUpdateDb(BlockchainTransactionWithLines blockchainTransactionWithLines) throws InterruptedException, TimeoutException, ApiException {
-        val txData = blockchainTransactionWithLines.serialisedTxData();
+    private void sendTransactionOnChainAndUpdateDb(BlockchainTransactions blockchainTransactions) throws InterruptedException, TimeoutException, ApiException {
+        val txData = blockchainTransactions.serialisedTxData();
         val l1SubmissionData = transactionSubmissionService.submitTransactionWithConfirmation(txData);
 
-        updateTransactionStatuses(l1SubmissionData, blockchainTransactionWithLines);
-        sendLedgerUpdatedEvents(blockchainTransactionWithLines.organisationId(), blockchainTransactionWithLines.submittedTransactions());
+        updateTransactionStatuses(l1SubmissionData, blockchainTransactions);
+        sendLedgerUpdatedEvents(blockchainTransactions.organisationId(), blockchainTransactions.submittedTransactions());
 
         log.info("Blockchain transaction submitted, l1SubmissionData:{}", l1SubmissionData);
     }
 
     private void updateTransactionStatuses(L1SubmissionData l1SubmissionData,
-                                           BlockchainTransactionWithLines blockchainTransactionWithLines) {
-
-        blockchainTransactionWithLines.submittedTransactions().forEach(txEntity -> {
-
+                                           BlockchainTransactions blockchainTransactions) {
+        for (val txEntity : blockchainTransactions.submittedTransactions()) {
             txEntity.setL1TransactionHash(l1SubmissionData.txHash());
             txEntity.setL1AssuranceLevel(VERY_LOW);
             txEntity.setPublishStatus(VISIBLE_ON_CHAIN);
             txEntity.setL1AbsoluteSlot(l1SubmissionData.absoluteSlot());
 
             transactionEntityRepository.save(txEntity);
-        });
+        }
     }
 
     private void sendLedgerUpdatedEvents(String organisationId,
                                          List<TransactionEntity> submittedTransactions) {
+        log.info("Sending ledger updated event for organisation:{}, submittedTransactions:{}", organisationId, submittedTransactions.size());
+
         val txStatuses = submittedTransactions.stream()
                 .map(txEntity -> {
                     val publishStatus = txEntity.getPublishStatus();

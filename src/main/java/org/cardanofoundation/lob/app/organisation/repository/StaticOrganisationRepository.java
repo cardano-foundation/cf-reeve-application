@@ -23,10 +23,11 @@ public class StaticOrganisationRepository implements OrganisationRepository {
     @PostConstruct
     public void init() {
         organisations.add(new Organisation(
+                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
                 "CF",
-                "CF",
-                "Cardano Foundation",
-                NETSUITE,
+                "Cardano Foundation (CH)",
+                List.of(NETSUITE),
+                "jhu765",
                 "1",
                 organisationCurrencyRepository.findByCurrencyId("ISO_4217:CHF").orElseThrow()
         ));

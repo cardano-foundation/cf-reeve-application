@@ -1,44 +1,57 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
 
+import io.vavr.Predicates;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class PostCleansingPipelineTask implements PipelineTask {
 
-    public TransformationResult run(TransactionLines passedTransactionLines,
-                                    TransactionLines ignoredTransactionLines,
+    public TransformationResult run(OrganisationTransactions passedOrganisationTransactions,
+                                    OrganisationTransactions ignoredOrganisationTransactions,
                                     Set<Violation> violations) {
-        val txLines = passedTransactionLines.entries();
 
-        val passed = txLines.stream()
-                .map(TransactionLine.WithPossibleViolation::create)
+        val passedTransactions = passedOrganisationTransactions.transactions().stream()
+                .map(Transaction.WithPossibleViolations::create)
                 .map(this::debitAccountCheck)
                 .toList();
 
-        val passedTxLines = passed.stream().map(TransactionLine.WithPossibleViolation::transactionLine).toList();
+        val newViolations = new HashSet<>(violations);
+        val finalTransactions = new HashSet<Transaction>();
+
+        for (val transaction : passedTransactions) {
+            finalTransactions.add(transaction.transaction());
+            newViolations.addAll(transaction.violations());
+        }
 
         return new TransformationResult(
-                new TransactionLines(passedTransactionLines.organisationId(), passedTxLines),
-                ignoredTransactionLines,
-                violations
+                new OrganisationTransactions(passedOrganisationTransactions.organisationId(), finalTransactions),
+                ignoredOrganisationTransactions,
+                newViolations
         );
     }
 
-    private TransactionLine.WithPossibleViolation debitAccountCheck(TransactionLine.WithPossibleViolation transactionLineWithViolation) {
-        val transactionLine = transactionLineWithViolation.transactionLine();
+    private Transaction.WithPossibleViolations debitAccountCheck(Transaction.WithPossibleViolations transactionLineWithViolation) {
+        val tx = transactionLineWithViolation.transaction();
 
-        if (transactionLine.getAccountCodeDebit().equals(transactionLine.getAccountCodeCredit())) {
-            return TransactionLine.WithPossibleViolation.create(transactionLine
-                    .toBuilder()
-                    .validationStatus(ValidationStatus.DISCARDED)
-                    .build());
-        }
+        val newItems = tx.getTransactionItems()
+                .stream()
+                .filter(Predicates.not(txItem -> (txItem.getAccountCodeDebit().equals(txItem.getAccountCodeCredit()))))
+                .collect(Collectors.toSet());
 
-        return transactionLineWithViolation;
+        return Transaction.WithPossibleViolations.create(tx
+                .toBuilder()
+                .transactionItems(newItems)
+                .build()
+        );
     }
 
 }

@@ -52,8 +52,8 @@ public class MetadataSerialiser {
 
         metadataMap.put("type", transaction.getTransactionType().name().toUpperCase());
 
-        transaction.getCostCenterInternalCode().ifPresent(costCenterInternalCode -> metadataMap.put("cost_center_internal_code", costCenterInternalCode));
-        transaction.getProjectInternalCode().ifPresent(projectInternalCode -> metadataMap.put("project_internal_code", projectInternalCode));
+        transaction.getCostCenterInternalNumber().ifPresent(costCenterInternalNumber -> metadataMap.put("cost_center_internal_number", costCenterInternalNumber));
+        transaction.getProjectInternalNumber().ifPresent(projectInternalNumber -> metadataMap.put("project_internal_number", projectInternalNumber));
 
         metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
@@ -86,10 +86,10 @@ public class MetadataSerialiser {
         document.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
 
         metadataMap.put("currency_id", document.getCurrency().getId());
-        metadataMap.put("currency_internal_code", document.getCurrency().getInternalCode());
+        metadataMap.put("currency_internal_code", document.getCurrency().getInternalNumber());
 
         val counterpartyMap = MetadataBuilder.createMap();
-        document.getCounterparty().ifPresent(counterparty -> counterpartyMap.put("internal_code", counterparty.getInternalCode()));
+        document.getCounterparty().ifPresent(counterparty -> counterpartyMap.put("internal_number", counterparty.getInternalNumber()));
 
         if (!counterpartyMap.keys().isEmpty()) {
             metadataMap.put("counterparty", counterpartyMap);
@@ -100,7 +100,7 @@ public class MetadataSerialiser {
 
     private static MetadataMap serialise(Vat vat) {
         val vatMetadataMap = MetadataBuilder.createMap();
-        vatMetadataMap.put("internal_code", vat.getInternalCode());
+        vatMetadataMap.put("internal_number", vat.getInternalNumber());
         vatMetadataMap.put("rate", vat.getRate().toEngineeringString());
 
         return vatMetadataMap;

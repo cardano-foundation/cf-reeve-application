@@ -1,7 +1,6 @@
 package org.cardanofoundation.lob.app.netsuite_adapter.service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ScheduledIngestionEvent;
@@ -16,10 +15,10 @@ public class NetSuiteEventHandler {
     private final NetSuiteService netSuiteService;
 
     @ApplicationModuleListener
-    public void handleScheduledIngestionEvent(ScheduledIngestionEvent event) throws JsonProcessingException {
+    public void handleScheduledIngestionEvent(ScheduledIngestionEvent event) {
         log.info("Handling ScheduledIngestionEvent...");
 
-        netSuiteService.startIngestion(event.initiator(), event.filteringParameters());
+        netSuiteService.startERPExtraction(event.initiator(), event.filteringParameters());
 
         log.info("Handled ScheduledIngestionEvent.");
     }

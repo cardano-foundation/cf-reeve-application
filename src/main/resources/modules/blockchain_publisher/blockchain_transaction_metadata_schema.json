@@ -32,7 +32,7 @@
           "base_currency": {
             "type": "object",
             "properties": {
-              "internal_code": {
+              "internal_number": {
                 "type": "string"
               },
               "id": {

@@ -5,20 +5,17 @@ import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreRepository;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.NotificationGateway;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.TransactionLineConverter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.TransactionRepositoryReader;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 
@@ -27,13 +24,9 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @Slf4j
 public class IngestionPipelineProcessor implements PipelineTask {
 
-    private final AccountingCoreRepository accountingCoreRepository;
-
-    private final TransactionLineConverter transactionLineConverter;
+    private final TransactionRepositoryReader transactionRepositoryReader;
 
     private final OrganisationPublicApi organisationPublicApi;
-
-    private final NotificationGateway notificationGateway;
 
     private final Validator validator;
 
@@ -41,7 +34,7 @@ public class IngestionPipelineProcessor implements PipelineTask {
 
     @PostConstruct
     public void init() {
-        pipelineTasks.add(new PreProcessingPipelineTask(accountingCoreRepository));
+        pipelineTasks.add(new PreProcessingPipelineTask(transactionRepositoryReader));
 
         pipelineTasks.add(new PreCleansingPipelineTask());
         pipelineTasks.add(new PreValidationPipelineTask());
@@ -53,31 +46,32 @@ public class IngestionPipelineProcessor implements PipelineTask {
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public TransformationResult run(TransactionLines passedTransactionLines,
-                                    TransactionLines ignoredTransactionLines,
+    public TransformationResult run(OrganisationTransactions passedTransactions,
+                                    OrganisationTransactions ignoredTransactions,
                                     Set<Violation> violations) {
-        val txLines = passedTransactionLines
-                .entries()
+        // we pre-validate by default and potentially fail later
+        val validatedTransactions = passedTransactions
+                .transactions()
                 .stream()
-                .map(txLine -> txLine.toBuilder()
+                .map(tx -> tx.toBuilder()
                         .validationStatus(VALIDATED)
                         .build())
-                .toList();
+                .collect(Collectors.toSet());
 
-        passedTransactionLines = new TransactionLines(passedTransactionLines.organisationId(), txLines);
+        passedTransactions = new OrganisationTransactions(passedTransactions.organisationId(), validatedTransactions);
 
         for (val pipelineTask : pipelineTasks) {
             log.info("Running pipelineTask: {}", pipelineTask.getClass().getSimpleName());
 
             val transformationResult = pipelineTask.run(
-                    passedTransactionLines,
-                    ignoredTransactionLines,
+                    passedTransactions,
+                    ignoredTransactions,
                     violations
             );
 
-            passedTransactionLines = transformationResult.passThroughTransactionLines();
-            ignoredTransactionLines = transformationResult.ignoredTransactionLines();
+            // TODO refactor this - we do not want to over-write passed in params (anti-pattern)
+            passedTransactions = transformationResult.passThroughTransactions();
+            ignoredTransactions = transformationResult.ignoredTransactions();
             violations = transformationResult.violations();
 
             log.info("post-violationsCount: {}", violations.size());
@@ -87,29 +81,13 @@ public class IngestionPipelineProcessor implements PipelineTask {
                     log.warn("violation: {}", violation);
                 }
             });
-
         }
 
         return new TransformationResult(
-                passedTransactionLines,
-                ignoredTransactionLines,
+                passedTransactions,
+                ignoredTransactions,
                 violations
         );
-    }
-
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void syncToDb(TransformationResult transformationResult) {
-        val passedTxLines = transformationResult.passThroughTransactionLines();
-
-        val passedTxLineEntities = passedTxLines.entries().stream()
-                .map(transactionLineConverter::convert)
-                .toList();
-
-        accountingCoreRepository.saveAll(passedTxLineEntities);
-    }
-
-    public void sendNotifications(Set<Violation> violations) {
-        notificationGateway.sendViolationNotifications(violations);
     }
 
 }

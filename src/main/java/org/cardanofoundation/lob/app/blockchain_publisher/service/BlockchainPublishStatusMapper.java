@@ -15,7 +15,7 @@ public class BlockchainPublishStatusMapper {
     public LedgerDispatchStatus convert(BlockchainPublishStatus blockchainPublishStatus,
                                         Optional<OnChainAssuranceLevel> assuranceLevelM) {
         return switch (blockchainPublishStatus) {
-            case STORED, ROLLBACKED -> LedgerDispatchStatus.STORED;
+            case STORED, ROLLBACKED -> LedgerDispatchStatus.MARK_DISPATCH;
             case VISIBLE_ON_CHAIN, SUBMITTED -> LedgerDispatchStatus.DISPATCHED;
             case COMPLETED -> assuranceLevelM.map(level -> {
                 if (level == OnChainAssuranceLevel.HIGH) {
@@ -25,6 +25,16 @@ public class BlockchainPublishStatusMapper {
                 return LedgerDispatchStatus.DISPATCHED;
             }).orElse(LedgerDispatchStatus.DISPATCHED);
             case FINALIZED -> LedgerDispatchStatus.FINALIZED;
+        };
+    }
+
+    public Optional<BlockchainPublishStatus> convert(LedgerDispatchStatus ledgerDispatchStatus) {
+        return switch (ledgerDispatchStatus) {
+            case NOT_DISPATCHED -> Optional.empty();
+            case MARK_DISPATCH -> Optional.of(BlockchainPublishStatus.STORED);
+            case DISPATCHED -> Optional.of(BlockchainPublishStatus.VISIBLE_ON_CHAIN);
+            case COMPLETED -> Optional.of(BlockchainPublishStatus.COMPLETED);
+            case FINALIZED -> Optional.of(BlockchainPublishStatus.FINALIZED);
         };
     }
 

@@ -3,7 +3,7 @@ package org.cardanofoundation.lob.app.blockchain_publisher.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionLines;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepositoryReader;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,21 +18,21 @@ import java.util.stream.Collectors;
 public class BlockchainPublisherService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final TransactionLineConverter transactionLineConverter;
+    private final TransactionConverter transactionConverter;
     private final TransactionEntityRepositoryReader transactionEntityRepositoryReader;
     private final BlockchainPublishStatusMapper blockchainPublishStatusMapper;
 
     @Transactional
     public void dispatchTransactionsToBlockchains(String organisationId,
-                                                  TransactionLines transactionLines) {
+                                                  OrganisationTransactions transactionLines) {
         log.info("dispatchTransactionsToBlockchains..., orgId:{}", organisationId);
 
-        val transactions = transactionLines.toTransactions();
+        val transactions = transactionLines.transactions();
+
         val txEntities = transactions
                 .stream()
-                .filter(tx -> !tx.getTransactionLines().isEmpty())
-                .map(transactionLineConverter::convert)
-                .toList();
+                .map(transactionConverter::convert)
+                .collect(Collectors.toSet());
 
         val allTxEntitiesMerged = transactionEntityRepositoryReader.storeOnlyNewTransactions(txEntities);
 

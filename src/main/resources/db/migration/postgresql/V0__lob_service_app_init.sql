@@ -20,11 +20,11 @@ CREATE TABLE netsuite_ingestion (
    CONSTRAINT pk_netsuite_ingestion PRIMARY KEY (id)
 );
 
-CREATE TABLE accounting_core_transaction_line (
+CREATE TABLE accounting_core_transaction (
    transaction_id CHAR(44) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
    organisation_currency_id VARCHAR(255) NOT NULL,
-   organisation_currency_internal_code VARCHAR(255) NOT NULL,
+   organisation_currency_internal_number VARCHAR(255) NOT NULL,
 
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
@@ -33,26 +33,20 @@ CREATE TABLE accounting_core_transaction_line (
 
    document_internal_number VARCHAR(255),
    document_currency_id VARCHAR(255),
-   document_currency_internal_code VARCHAR(255) NOT NULL,
+   document_currency_internal_number VARCHAR(255) NOT NULL,
 
-   document_vat_internal_code VARCHAR(255),
+   document_vat_internal_number VARCHAR(255),
    document_vat_rate DECIMAL,
 
-   document_counterparty_internal_code VARCHAR(255),
+   document_counterparty_internal_number VARCHAR(255),
    document_counterparty_name VARCHAR(255),
 
-   cost_center_internal_code VARCHAR(255),
-   project_internal_code VARCHAR(255),
-
-   account_code_debit VARCHAR(255),
-   account_name_debit VARCHAR(255),
-   account_code_credit VARCHAR(255),
+   cost_center_internal_number VARCHAR(255),
+   project_internal_number VARCHAR(255),
 
    validation_status VARCHAR(255) NOT NULL,
    ledger_dispatch_approved BOOLEAN NOT NULL,
 
-   amount_fcy DECIMAL NOT NULL,
-   amount_lcy DECIMAL NOT NULL,
    ledger_dispatch_status VARCHAR(255) NOT NULL,
 
    created_by VARCHAR(255),
@@ -61,6 +55,28 @@ CREATE TABLE accounting_core_transaction_line (
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
    PRIMARY KEY (transaction_id)
+);
+
+CREATE TABLE accounting_core_transaction_item (
+   transaction_item_id CHAR(44) NOT NULL,
+
+   transaction_id CHAR(44) NOT NULL,
+
+   FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
+
+   account_code_debit VARCHAR(255),
+   account_name_debit VARCHAR(255),
+   account_code_credit VARCHAR(255),
+
+   amount_fcy DECIMAL NOT NULL,
+   amount_lcy DECIMAL NOT NULL,
+
+   created_by VARCHAR(255),
+   updated_by VARCHAR(255),
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
+
+   PRIMARY KEY (transaction_item_id)
 );
 
 --CREATE TABLE accounting_core_transaction_line_aud (
@@ -112,22 +128,22 @@ CREATE TABLE blockchain_publisher_transaction (
    internal_number VARCHAR(255) NOT NULL,
 
    organisation_currency_id VARCHAR(255) NOT NULL,
-   organisation_currency_internal_code VARCHAR(255) NOT NULL,
+   organisation_currency_internal_number VARCHAR(255) NOT NULL,
 
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
 
    fx_rate DECIMAL NOT NULL,
 
-   cost_center_internal_code VARCHAR(255),
-   project_internal_code VARCHAR(255),
+   cost_center_internal_number VARCHAR(255),
+   project_internal_number VARCHAR(255),
 
    document_internal_document_number VARCHAR(255),
    document_currency_id VARCHAR(255) NOT NULL,
-   document_currency_internal_code VARCHAR(255) NOT NULL,
-   document_counterparty_internal_code VARCHAR(255),
+   document_currency_internal_number VARCHAR(255) NOT NULL,
+   document_counterparty_internal_number VARCHAR(255),
 
-   document_vat_internal_code VARCHAR(255),
+   document_vat_internal_number VARCHAR(255),
    document_vat_rate DECIMAL,
 
    l1_assurance_level VARCHAR(255),

@@ -43,6 +43,10 @@ public class NetSuiteAPI {
     @Value("${lob.netsuite.client.token_secret}")
     private String tokenSecret;
 
+    public String netsuiteUrl() {
+        return url;
+    }
+
     public Either<Problem, Optional<String>> retrieveLatestNetsuiteTransactionLines() {
         val response = callForTransactionLinesData();
 
