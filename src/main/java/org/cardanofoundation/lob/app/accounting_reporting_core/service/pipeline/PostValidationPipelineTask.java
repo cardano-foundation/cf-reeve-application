@@ -8,7 +8,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
@@ -21,17 +20,18 @@ public class PostValidationPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions,
-                                    Set<Violation> violations) {
+                                    OrganisationTransactions ignoredTransactions) {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
                 .map(Transaction.WithPossibleViolations::create)
                 .map(this::sanityCheckFields)
                 .map(this::accountCodeDebitCheck)
                 .map(this::accountCodeCreditCheck)
+                .map(this::documentMustBePresentCheck)
                 .collect(Collectors.toSet());
 
-        val newViolations = new HashSet<>(violations);
+        val newViolations = new HashSet<Violation>();
+
         val finalTransactions = new HashSet<Transaction>();
 
         for (val violationTransaction : transactionsWithPossibleViolation) {
@@ -128,6 +128,32 @@ public class PostValidationPipelineTask implements PipelineTask {
 
                 violations.add(v);
             }
+        }
+
+        if (!violations.isEmpty()) {
+            return Transaction.WithPossibleViolations
+                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
+        }
+
+        return withPossibleViolations;
+    }
+
+    private Transaction.WithPossibleViolations documentMustBePresentCheck(Transaction.WithPossibleViolations withPossibleViolations) {
+        val tx = withPossibleViolations.transaction();
+
+        val violations = new HashSet<Violation>();
+
+        if (tx.getDocument().isEmpty()) {
+            val v = Violation.create(
+                    Violation.Priority.NORMAL,
+                    Violation.Type.FATAL,
+                    tx.getOrganisation().getId(),
+                    tx.getId(),
+                    "DOCUMENT_MUST_BE_PRESENT",
+                    Map.of()
+            );
+
+            violations.add(v);
         }
 
         if (!violations.isEmpty()) {

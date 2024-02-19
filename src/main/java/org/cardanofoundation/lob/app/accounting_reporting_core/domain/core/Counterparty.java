@@ -16,6 +16,6 @@ public class Counterparty {
     private @Size(min = 1, max =  255) @NotBlank String internalNumber;
 
     @Builder.Default
-    private @Size(min = 1, max =  255) @NotBlank Optional<String> name = Optional.empty(); // this is default because we do not want to send this to the blockchain
+    private @Size(min = 1, max =  255) @NotBlank Optional<String> name = Optional.empty(); // this is optional because we do not want to send this to the blockchain
 
 }

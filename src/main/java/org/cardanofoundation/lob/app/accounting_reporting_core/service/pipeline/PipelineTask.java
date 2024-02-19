@@ -9,7 +9,6 @@ import java.util.Set;
 public interface PipelineTask {
 
     TransformationResult run(OrganisationTransactions passedOrganisationTransactions,
-                             OrganisationTransactions ignoredOrganisationTransactions,
-                             Set<Violation> violations);
+                             OrganisationTransactions ignoredOrganisationTransactions);
 
 }

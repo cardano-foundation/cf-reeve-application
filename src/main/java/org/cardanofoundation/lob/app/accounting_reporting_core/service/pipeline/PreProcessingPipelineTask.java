@@ -12,7 +12,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.service.Transacti
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -23,9 +22,8 @@ public class PreProcessingPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions,
-                                    Set<Violation> violations) {
-        val newViolations = new HashSet<>(violations);
+                                    OrganisationTransactions ignoredTransactions) {
+        val newViolations = new HashSet<Violation>();
 
         val organisationId = passedTransactions.organisationId();
         val transactions = passedTransactions.transactions();

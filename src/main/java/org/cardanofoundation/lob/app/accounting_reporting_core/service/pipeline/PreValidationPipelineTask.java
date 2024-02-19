@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static java.math.BigDecimal.ZERO;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
@@ -19,8 +18,7 @@ public class PreValidationPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions,
-                                    Set<Violation> violations) {
+                                    OrganisationTransactions ignoredTransactions) {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
                 .map(Transaction.WithPossibleViolations::create)
@@ -31,7 +29,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                 .map(this::isEmpty)
                 .toList();
 
-        val newViolations = new HashSet<>(violations);
+        val newViolations = new HashSet<Violation>();
         val finalTransactions = new LinkedHashSet<Transaction>();
 
         for (val transactions : transactionsWithPossibleViolation) {

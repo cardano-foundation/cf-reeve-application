@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +21,8 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
 
         return transactions.stream()
                 .map(trx -> {
-                    val document = trx.getDocument().toBuilder()
-                            .counterparty(trx.getDocument().getCounterparty()
-                                    .map(counterparty -> {
-                                        return counterparty.toBuilder()
-                                                .name(Optional.empty())
-                                                .build();
-                                    }))
-                            .build();
+                            val txItems = trx.getTransactionItems().stream()
 
-                    val txItems = trx.getTransactionItems().stream()
                             .map(item -> item.toBuilder()
                                     .accountNameDebit(Optional.empty())
                                     .accountCodeDebit(Optional.empty())
@@ -38,11 +31,21 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
                             .collect(Collectors.toSet());
 
                     return trx.toBuilder()
-                            .document(document)
+                            .document(convert(trx.getDocument()))
                             .transactionItems(txItems)
                             .build();
                 })
                 .collect(Collectors.toSet());
+    }
+
+    private Optional<Document> convert(Optional<Document> docM) {
+        return docM.map(doc -> doc.toBuilder()
+                .counterparty(doc.getCounterparty()
+                        .map(counterparty -> counterparty.toBuilder()
+                                .name(Optional.empty())
+                                .build()))
+                .build()
+        );
     }
 
 }

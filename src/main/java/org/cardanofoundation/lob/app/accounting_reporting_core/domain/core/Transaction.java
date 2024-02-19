@@ -32,8 +32,8 @@ public class Transaction {
     @NotNull
     private Organisation organisation;
 
-    @NotNull
-    private Document document;
+    @Builder.Default
+    private Optional<Document> document = Optional.empty(); // we allow empty but later as part of business rules we check if document is present
 
     @NotNull
     @Builder.Default
