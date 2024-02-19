@@ -134,11 +134,11 @@ public class L1TransactionCreator {
         val metadataMap =
                 metadataSerialiser.serialiseToMetadataMap(organisationId, transactionsBatch, creationSlot);
 
-        try {
-            System.out.println(metadataMap.toJson());
-        } catch (CborException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            System.out.println(metadataMap.toJson());
+//        } catch (CborException e) {
+//            throw new RuntimeException(e);
+//        }
 
         val metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, metadataMap);

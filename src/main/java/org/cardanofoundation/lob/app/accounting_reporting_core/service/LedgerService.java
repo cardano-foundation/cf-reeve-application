@@ -30,7 +30,7 @@ public class LedgerService {
 
     private final PIIDataFilteringService piiDataFilteringService;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public void updateTransactionsWithNewLedgerDispatchStatuses(Set<LedgerUpdatedEvent.TxStatusUpdate> txStatusUpdates) {
         log.info("Updating dispatch status for statusMapCount: {}", txStatusUpdates.size());
 
@@ -51,7 +51,7 @@ public class LedgerService {
         log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdates.size());
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public void publishLedgerEvents() {
         log.info("publishLedgerEvents...");
 
