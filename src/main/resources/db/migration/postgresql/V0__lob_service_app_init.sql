@@ -149,6 +149,7 @@ CREATE TABLE blockchain_publisher_transaction (
    l1_assurance_level VARCHAR(255),
    l1_transaction_hash VARCHAR(255),
    l1_absolute_slot BIGINT,
+   l1_creation_slot BIGINT,
    publish_status VARCHAR(255) NOT NULL,
 
    created_by VARCHAR(255),

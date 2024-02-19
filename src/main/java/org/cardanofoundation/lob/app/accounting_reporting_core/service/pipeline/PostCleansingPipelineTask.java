@@ -42,7 +42,7 @@ public class PostCleansingPipelineTask implements PipelineTask {
 
         val newItems = tx.getTransactionItems()
                 .stream()
-                .filter(Predicates.not(txItem -> (txItem.getAccountCodeDebit().equals(txItem.getAccountCodeCredit()))))
+                .filter(txItem -> !txItem.getAccountCodeDebit().equals(txItem.getAccountCodeCredit()))
                 .collect(Collectors.toSet());
 
         return Transaction.WithPossibleViolations.create(tx

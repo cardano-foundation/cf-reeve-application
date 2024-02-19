@@ -7,5 +7,6 @@ import java.util.List;
 public record BlockchainTransactions(String organisationId,
                                      List<TransactionEntity> submittedTransactions,
                                      List<TransactionEntity> remainingTransactions,
+                                     long creationSlot,
                                      byte[] serialisedTxData) {
 }

@@ -93,7 +93,7 @@ public class L1TransactionCreator {
 
                 final var remaining = calculateRemainingTransactionLines(transactions, transactionsBatch);
 
-                return Optional.of(new BlockchainTransactions(organisationId, transactionsBatch, remaining, txBytes));
+                return Optional.of(new BlockchainTransactions(organisationId, transactionsBatch, remaining, creationSlot, txBytes));
             }
         }
 
@@ -114,7 +114,7 @@ public class L1TransactionCreator {
 
             final var remaining = calculateRemainingTransactionLines(transactions, transactionsBatch);
 
-            return Optional.of(new BlockchainTransactions(organisationId, transactionsBatch, remaining, txBytes));
+            return Optional.of(new BlockchainTransactions(organisationId, transactionsBatch, remaining, creationSlot, txBytes));
         }
 
         return Optional.empty();
@@ -134,11 +134,11 @@ public class L1TransactionCreator {
         val metadataMap =
                 metadataSerialiser.serialiseToMetadataMap(organisationId, transactionsBatch, creationSlot);
 
-//        try {
-//            System.out.println(metadataMap.toJson());
-//        } catch (CborException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            System.out.println(metadataMap.toJson());
+        } catch (CborException e) {
+            throw new RuntimeException(e);
+        }
 
         val metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, metadataMap);

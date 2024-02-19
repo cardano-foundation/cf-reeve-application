@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus.*;
 import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.OnChainAssuranceLevel.VERY_LOW;
-import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 @Service
 @Slf4j
@@ -83,7 +82,7 @@ public class BlockchainTransactionsDispatcher {
         try {
             sendTransactionOnChainAndUpdateDb(serialisedTx);
         } catch (InterruptedException | TimeoutException | ApiException e) {
-            log.error("Error sending transaction on chain and updating db", e);
+            log.error("Error sending transaction on chain and / or updating db", e);
         }
 
         return createAndSendBlockchainTransactions(organisationId, serialisedTx.remainingTransactions());
@@ -107,6 +106,7 @@ public class BlockchainTransactionsDispatcher {
             txEntity.setL1AssuranceLevel(VERY_LOW);
             txEntity.setPublishStatus(VISIBLE_ON_CHAIN);
             txEntity.setL1AbsoluteSlot(l1SubmissionData.absoluteSlot());
+            txEntity.setL1CreationSlot(blockchainTransactions.creationSlot());
 
             transactionEntityRepository.save(txEntity);
         }
