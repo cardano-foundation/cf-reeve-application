@@ -3,11 +3,13 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@ToString
 public class ScheduledIngestionEvent {
 
     private FilteringParameters filteringParameters;

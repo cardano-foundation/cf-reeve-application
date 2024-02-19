@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@ToString
 public final class LedgerUpdatedEvent {
 
     private String organisationId;
@@ -23,6 +25,7 @@ public final class LedgerUpdatedEvent {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    @ToString
     public static class TxStatusUpdate {
         private String txId;
         private LedgerDispatchStatus status;

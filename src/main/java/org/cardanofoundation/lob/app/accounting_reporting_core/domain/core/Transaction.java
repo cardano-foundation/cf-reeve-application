@@ -1,10 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,6 +13,7 @@ import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAs
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 public class Transaction {

@@ -59,8 +59,7 @@ public class PostValidationPipelineTask implements PipelineTask {
                     transaction.getOrganisation().getId(),
                     transaction.getId(),
                     "INVALID_TRANSACTION",
-                    Map.of()
-                    //Map.of("errors", errors)
+                    Map.of("errors", errors)
             );
 
             violations.add(v);
