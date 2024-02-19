@@ -27,7 +27,9 @@ public class PreProcessingPipelineTask implements PipelineTask {
 
         val organisationId = passedTransactions.organisationId();
         val transactions = passedTransactions.transactions();
-        val allTransactionIds = transactions.stream().map(Transaction::getId).collect(Collectors.toSet());
+
+        val allTransactionIds = transactions.stream().map(Transaction::getId)
+                .collect(Collectors.toSet());
 
         val dispatchedTransactions = transactionRepositoryReader.findDispatchedTransactions(organisationId, transactions);
 
@@ -46,12 +48,22 @@ public class PreProcessingPipelineTask implements PipelineTask {
         val dispatchedTransactionIds = dispatchedTransactions.stream().map(Transaction::getId).collect(Collectors.toSet());
         val notDispatchedTransactionIds = Sets.difference(allTransactionIds, dispatchedTransactionIds);
 
-        val notDispatchedTransactions = transactions.stream()
-                .filter(tx -> notDispatchedTransactionIds.contains(tx.getId()))
+        // if transactions have failed before - we should ignore them and not process them again
+        val notDispatchedAndFailedTransactionIds = transactionRepositoryReader.findAllFailedTransactionIds(organisationId, notDispatchedTransactionIds);
+
+        val toDispatch = Sets.difference(notDispatchedTransactionIds, notDispatchedAndFailedTransactionIds);
+
+        log.info("Dispatched transactionsCount: {}", dispatchedTransactionIds.size());
+        log.info("Not dispatched transactionsCount: {}", notDispatchedTransactionIds.size());
+        log.info("notDispatchedAndFailedTransactionIds transactionsCount: {}", notDispatchedAndFailedTransactionIds.size());
+        log.info("toDispatch transactionsCount: {}", toDispatch.size());
+
+        val toDispatchTransactions = transactions.stream()
+                .filter(tx -> toDispatch.contains(tx.getId()))
                 .collect(Collectors.toSet());
 
         return new TransformationResult(
-                new OrganisationTransactions(organisationId, notDispatchedTransactions),
+                new OrganisationTransactions(organisationId, toDispatchTransactions),
                 new OrganisationTransactions(organisationId, dispatchedTransactions),
                 newViolations
         );
