@@ -53,7 +53,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                     Violation.Type.FATAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
-                    "TRANSACTION_ITEMS_EMPTY",
+                    Violation.Code.TRANSACTION_ITEMS_EMPTY,
                     Map.of("transactionId", tx.getId())
             );
 
@@ -78,7 +78,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                             tx.getOrganisation().getId(),
                             tx.getId(),
                             txItem.getId(),
-                            "AMOUNT_FCY_IS_ZERO",
+                            Violation.Code.AMOUNT_FCY_IS_ZERO,
                             Map.of("amountFcy", txItem.getAmountFcy(), "amountLcy", txItem.getAmountLcy())
                     );
 
@@ -107,7 +107,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),
-                        "AMOUNT_LCY_IS_ZERO",
+                        Violation.Code.AMOUNT_LCY_IS_ZERO,
                         Map.of("amountFcy", txItem.getAmountFcy(), "amountLcy", txItem.getAmountLcy())
                 );
 
@@ -134,7 +134,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                     Violation.Type.FATAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
-                    "LCY_BALANCE_MUST_BE_ZERO",
+                    Violation.Code.LCY_BALANCE_MUST_BE_ZERO,
                     Map.of()
             );
 
@@ -160,7 +160,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                     Violation.Type.FATAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
-                    "FCY_BALANCE_MUST_ZERO",
+                    Violation.Code.FCY_BALANCE_MUST_ZERO,
                     Map.of()
             );
 

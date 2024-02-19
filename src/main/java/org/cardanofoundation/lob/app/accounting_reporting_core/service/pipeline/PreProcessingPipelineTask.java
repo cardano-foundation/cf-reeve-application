@@ -39,7 +39,7 @@ public class PreProcessingPipelineTask implements PipelineTask {
                     Violation.Type.WARN,
                     organisationId,
                     dispatchedTransaction.getId(),
-                    "CANNOT_UPDATE_TRANSACTION",
+                    Violation.Code.TX_ALREADY_DISPATCHED,
                     Map.of()
             );
 

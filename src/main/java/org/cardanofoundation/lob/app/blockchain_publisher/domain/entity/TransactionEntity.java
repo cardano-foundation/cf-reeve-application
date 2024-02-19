@@ -87,6 +87,10 @@ public class TransactionEntity extends AuditEntity {
     private Long l1AbsoluteSlot;
 
     @Nullable
+    @Column(name = "l1_creation_slot")
+    private Long l1CreationSlot;
+
+    @Nullable
     @Column(name = "l1_assurance_level")
     @Enumerated(STRING)
     private OnChainAssuranceLevel l1AssuranceLevel;
@@ -103,8 +107,8 @@ public class TransactionEntity extends AuditEntity {
         return Optional.ofNullable(l1TransactionHash);
     }
 
-    public Optional<Long> getL1AbsoluteSlot() {
-        return Optional.ofNullable(l1AbsoluteSlot);
+    public Optional<Long> getL1CreationSlot() {
+        return Optional.ofNullable(l1CreationSlot);
     }
 
     public Optional<OnChainAssuranceLevel> getL1AssuranceLevel() {

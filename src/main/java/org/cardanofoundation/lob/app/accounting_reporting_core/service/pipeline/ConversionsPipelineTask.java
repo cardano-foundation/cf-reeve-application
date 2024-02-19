@@ -66,7 +66,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                         Violation.Type.FATAL,
                         tx.getOrganisation().getId(),
                         tx.getId(),
-                        "VAT_RATE_NOT_FOUND",
+                        Violation.Code.VAT_RATE_NOT_FOUND,
                         Map.of("vatInternalNumber", vat.getInternalNumber())
                 );
 
@@ -115,7 +115,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                         Violation.Type.FATAL,
                         tx.getOrganisation().getId(),
                         tx.getId(),
-                        "CURRENCY_RATE_NOT_FOUND",
+                        Violation.Code.CURRENCY_RATE_NOT_FOUND,
                         Map.of("currencyInternalNumber", internalNumber)
                 );
 

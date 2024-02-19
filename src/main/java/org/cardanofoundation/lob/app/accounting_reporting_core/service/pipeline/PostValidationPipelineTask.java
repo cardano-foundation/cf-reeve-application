@@ -58,7 +58,7 @@ public class PostValidationPipelineTask implements PipelineTask {
                     Violation.Type.FATAL,
                     transaction.getOrganisation().getId(),
                     transaction.getId(),
-                    "INVALID_TRANSACTION",
+                    Violation.Code.TX_SANITY_CHECK_FAIL,
                     Map.of("errors", errors)
             );
 
@@ -90,7 +90,7 @@ public class PostValidationPipelineTask implements PipelineTask {
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),
-                        "ACCOUNT_CODE_DEBIT_IS_EMPTY",
+                        Violation.Code.ACCOUNT_CODE_DEBIT_IS_EMPTY,
                         Map.of()
                 );
 
@@ -122,7 +122,7 @@ public class PostValidationPipelineTask implements PipelineTask {
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),
-                        "ACCOUNT_CODE_CREDIT_IS_EMPTY",
+                        Violation.Code.ACCOUNT_CODE_CREDIT_IS_EMPTY,
                         Map.of()
                 );
 
@@ -145,11 +145,11 @@ public class PostValidationPipelineTask implements PipelineTask {
 
         if (tx.getDocument().isEmpty()) {
             val v = Violation.create(
-                    Violation.Priority.NORMAL,
+                    Violation.Priority.HIGH,
                     Violation.Type.FATAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
-                    "DOCUMENT_MUST_BE_PRESENT",
+                    Violation.Code.DOCUMENT_MUST_BE_PRESENT,
                     Map.of()
             );
 
