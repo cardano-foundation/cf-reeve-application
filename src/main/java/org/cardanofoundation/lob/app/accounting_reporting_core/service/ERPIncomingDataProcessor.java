@@ -28,8 +28,7 @@ public class ERPIncomingDataProcessor {
     public void processIncomingERPEvent(OrganisationTransactions organisationTransactions) {
         val finalTransformationResult = ingestionPipelineProcessor.run(
                 organisationTransactions,
-                OrganisationTransactions.empty(organisationTransactions.organisationId()),
-                Set.of()
+                OrganisationTransactions.empty(organisationTransactions.organisationId())
         );
 
         syncToDb(finalTransformationResult);

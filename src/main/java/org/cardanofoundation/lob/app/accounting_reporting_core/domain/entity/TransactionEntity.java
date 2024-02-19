@@ -70,6 +70,7 @@ public class TransactionEntity extends AuditEntity {
             @AttributeOverride(name = "counterparty.internalNumber", column = @Column(name = "document_counterparty_internal_number")),
             @AttributeOverride(name = "counterparty.name", column = @Column(name = "document_counterparty_name")),
     })
+    @Nullable
     private Document document;
 
     @Column(name = "fx_rate", nullable = false)

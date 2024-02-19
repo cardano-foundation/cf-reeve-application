@@ -34,7 +34,7 @@ public class TransactionConverter {
                 .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
                 .build();
 
-        transactionEntity.setDocument(convertDocument(tx.getDocument()));
+        transactionEntity.setDocument(convertDocument(tx.getDocument().orElseThrow())); // at this point we must have document
         transactionEntity.setItems(convertTxItems(tx, transactionEntity));
 
         return transactionEntity;

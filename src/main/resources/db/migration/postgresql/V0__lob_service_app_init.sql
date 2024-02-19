@@ -33,7 +33,7 @@ CREATE TABLE accounting_core_transaction (
 
    document_internal_number VARCHAR(255),
    document_currency_id VARCHAR(255),
-   document_currency_internal_number VARCHAR(255) NOT NULL,
+   document_currency_internal_number VARCHAR(255),
 
    document_vat_internal_number VARCHAR(255),
    document_vat_rate DECIMAL,

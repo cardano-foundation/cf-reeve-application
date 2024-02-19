@@ -145,20 +145,6 @@ public class TransactionConverter {
         val baseCurrency = organisation.baseCurrency();
         val organisationCurrency = new Currency(Optional.of(baseCurrency.currencyId()), baseCurrency.internalNumber());
 
-        var documentInternalNumberM = normaliseString(first.documentNumber());
-
-        if (documentInternalNumberM.isEmpty()) {
-            val issue = Problem.builder()
-                    .withTitle("NETSUITE_ADAPTER::MISSING_DOCUMENT_NUMBER")
-                    .withDetail(STR."Missing document number for transaction: \{first.transactionNumber()}")
-                    .build();
-            log.warn("tx line issue: {}", issue);
-
-            return Either.right(Optional.empty());
-
-//            return Either.left(issue);
-        }
-
         return Either.right(Optional.of(Transaction.builder()
                 .id(Transaction.id(organisation.id(), first.transactionNumber()))
                 .internalTransactionNumber(first.transactionNumber())
@@ -170,16 +156,28 @@ public class TransactionConverter {
                 .fxRate(first.exchangeRate())
                 .ledgerDispatchApproved(true) // TODO remove this, for now only for testing
                 .validationStatus(NOT_VALIDATED)
-                .document(Document.builder()
-                        .internalNumber(first.documentNumber())
-                        .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.from(String.valueOf(first.currency())))
-                        .vat(results.stream().filter(r -> normaliseString(r.taxItem()).isPresent()).findFirst().map(SearchResultTransactionItem::taxItem).map(vatInternalNumber -> Vat.builder()
-                                .internalNumber(vatInternalNumber)
-                                .build()))
-                        .counterparty(convertCounterparty(first))
-                        .build())
+                .document(convertDocument(results, first))
                 .transactionItems(txItems)
                 .build()));
+    }
+
+    private static Optional<Document> convertDocument(List<SearchResultTransactionItem> results,
+                                                      SearchResultTransactionItem first) {
+        return normaliseString(first.documentNumber()).map(internalDocumentNumber -> {
+            val vatM = results.stream()
+                    .filter(r -> normaliseString(r.taxItem()).isPresent()).findFirst()
+                    .map(SearchResultTransactionItem::taxItem)
+                    .map(vatInternalNumber -> Vat.builder()
+                            .internalNumber(vatInternalNumber)
+                            .build());
+
+            return Document.builder()
+                    .internalNumber(internalDocumentNumber)
+                    .currency(Currency.from(String.valueOf(first.currency())))
+                    .vat(vatM)
+                    .counterparty(convertCounterparty(first))
+                    .build();
+        });
     }
 
     private static Optional<Counterparty> convertCounterparty(SearchResultTransactionItem first) {

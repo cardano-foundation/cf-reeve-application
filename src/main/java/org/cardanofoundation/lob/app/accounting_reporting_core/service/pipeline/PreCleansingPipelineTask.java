@@ -10,22 +10,20 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Viola
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class PreCleansingPipelineTask implements PipelineTask {
 
     public TransformationResult run(OrganisationTransactions passedOrganisationTransactions,
-                                    OrganisationTransactions ignoredOrganisationTransactions,
-                                    Set<Violation> violations) {
+                                    OrganisationTransactions ignoredOrganisationTransactions) {
         val passedTransactions = passedOrganisationTransactions.transactions()
                 .stream()
                 .map(Transaction.WithPossibleViolations::create)
                 .map(this::discardZeroBalanceTransactionItems)
                 .collect(Collectors.toSet());
 
-        val newViolations = new HashSet<>(violations);
+        val newViolations = new HashSet<Violation>();
         val finalTransactions = new LinkedHashSet<Transaction>();
 
         for (val transactions : passedTransactions) {

@@ -7,12 +7,10 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toSet;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
 @RequiredArgsConstructor
@@ -22,36 +20,41 @@ public class ConversionsPipelineTask implements PipelineTask {
     private final OrganisationPublicApi organisationPublicApi;
 
     public TransformationResult run(OrganisationTransactions passedOrganisationTransactions,
-                                    OrganisationTransactions ignoredOrganisationTransactions,
-                                    Set<Violation> violations
-    ) {
+                                    OrganisationTransactions ignoredOrganisationTransactions) {
         val passedTransactions = passedOrganisationTransactions.transactions().stream()
                 .map(Transaction.WithPossibleViolations::create)
                 .map(this::vatConversion)
                 .map(this::currencyCode)
                 .toList();
 
-        val newViolations = new HashSet<>(violations);
-        val finalTransactions = new HashSet<Transaction>();
+        val newViolations = new HashSet<Violation>();
+        val finalTransactions = new LinkedHashSet<Transaction>();
 
-        for (val transaction : passedTransactions) {
-            finalTransactions.add(transaction.transaction());
-            newViolations.addAll(transaction.violations());
+        for (val transactions : passedTransactions) {
+            finalTransactions.add(transactions.transaction());
+            newViolations.addAll(transactions.violations());
         }
 
         return new TransformationResult(
                 new OrganisationTransactions(passedOrganisationTransactions.organisationId(), finalTransactions),
                 ignoredOrganisationTransactions,
-                Stream.concat(violations.stream(), newViolations.stream()).collect(toSet())
+                newViolations
         );
     }
 
     public Transaction.WithPossibleViolations vatConversion(Transaction.WithPossibleViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
-        if (tx.getDocument().getVat().isPresent() && tx.getDocument().getVat().get().getRate().isEmpty()) {
+        val documentM = tx.getDocument();
 
-            val vat = tx.getDocument().getVat().orElseThrow();
+        if (documentM.isEmpty()) {
+            return violationTransaction;
+        }
+
+        val document = documentM.orElseThrow();
+
+        if (document.getVat().isPresent() && document.getVat().get().getRate().isEmpty()) {
+            val vat = document.getVat().orElseThrow();
 
             val vatM = organisationPublicApi.findOrganisationVatByInternalId(tx.getOrganisation().getId(), vat.getInternalNumber());
 
@@ -81,9 +84,9 @@ public class ConversionsPipelineTask implements PipelineTask {
                     .build();
 
             return Transaction.WithPossibleViolations.create(tx.toBuilder()
-                    .document(tx.getDocument().toBuilder()
+                    .document(Optional.of(document.toBuilder()
                             .vat(Optional.of(enrichedVat))
-                            .build())
+                            .build()))
                     .build());
         }
 
@@ -93,8 +96,15 @@ public class ConversionsPipelineTask implements PipelineTask {
     public Transaction.WithPossibleViolations currencyCode(Transaction.WithPossibleViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
-        if (tx.getDocument().getCurrency().getId().isEmpty()) {
-            val internalNumber = tx.getDocument().getCurrency().getInternalNumber();
+        val documentM = tx.getDocument();
+
+        if (documentM.isEmpty()) {
+            return violationTransaction;
+        }
+        val document = documentM.orElseThrow();
+
+        if (document.getCurrency().getId().isEmpty()) {
+            val internalNumber = document.getCurrency().getInternalNumber();
             val organisationCurrencyM = organisationPublicApi.findOrganisationCurrencyByInternalId(internalNumber);
 
             if (organisationCurrencyM.isEmpty()) {
@@ -123,9 +133,9 @@ public class ConversionsPipelineTask implements PipelineTask {
                     .build();
 
             return Transaction.WithPossibleViolations.create(tx.toBuilder()
-                    .document(tx.getDocument().toBuilder()
+                    .document(Optional.of(document.toBuilder()
                             .currency(currency)
-                            .build())
+                            .build()))
                     .build());
         }
 

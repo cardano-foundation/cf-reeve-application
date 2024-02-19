@@ -14,6 +14,7 @@ import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class IngestionPipelineProcessor implements PipelineTask {
+public class IngestionPipelineProcessor {
 
     private final TransactionRepositoryReader transactionRepositoryReader;
 
@@ -47,37 +48,36 @@ public class IngestionPipelineProcessor implements PipelineTask {
         pipelineTasks.add(new PostValidationPipelineTask(validator));
     }
 
-    @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions,
-                                    Set<Violation> violations) {
+                                    OrganisationTransactions ignoredTransactions) {
+        val allViolations = new HashSet<Violation>();
+
         for (val pipelineTask : pipelineTasks) {
             log.info("Running pipelineTask: {}", pipelineTask.getClass().getSimpleName());
 
             val transformationResult = pipelineTask.run(
                     passedTransactions,
-                    ignoredTransactions,
-                    violations
+                    ignoredTransactions
             );
 
             // TODO refactor this - we do not want to over-write passed in params (anti-pattern)
             passedTransactions = transformationResult.passThroughTransactions();
             ignoredTransactions = transformationResult.ignoredTransactions();
-            violations = transformationResult.violations();
+            log.info("post-violationsCount: {}", transformationResult.violations().size());
 
-            log.info("post-violationsCount: {}", violations.size());
-
-            violations.forEach(violation -> {
+            transformationResult.violations().forEach(violation -> {
                 if (violation.type() == Violation.Type.FATAL) {
                     log.warn("Violation: {}", violation);
                 }
             });
+
+            allViolations.addAll(transformationResult.violations());
         }
 
         return new TransformationResult(
                 new OrganisationTransactions(passedTransactions.organisationId(), validateNotFailedTransactions(passedTransactions)),
                 ignoredTransactions,
-                violations
+                allViolations
         );
     }
 

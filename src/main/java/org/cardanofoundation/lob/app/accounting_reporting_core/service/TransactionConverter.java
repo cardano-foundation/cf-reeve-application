@@ -8,6 +8,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.*;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,34 +26,8 @@ public class TransactionConverter {
         transactionEntity.setTransactionType(transaction.getTransactionType());
         transactionEntity.setEntryDate(transaction.getEntryDate());
 
-        transactionEntity.setOrganisation(Organisation.builder()
-                .id(transaction.getOrganisation().getId())
-                .currency(Currency.builder()
-                        .id(transaction.getOrganisation().getCurrency().getId().orElseThrow()) // currency ref if is mandatory in the organisation
-                        .internalNumber(transaction.getOrganisation().getCurrency().getInternalNumber())
-                        .build())
-                .build());
-
-        transactionEntity.setDocument(Document.builder()
-                .internalNumber(transaction.getDocument().getInternalNumber())
-
-                .currency(Currency.builder()
-                        .id(transaction.getDocument().getCurrency().getId().orElse(null))
-                        .internalNumber(transaction.getDocument().getCurrency().getInternalNumber())
-                        .build())
-
-                .vat(transaction.getDocument().getVat().map(vat -> Vat.builder()
-                        .internalNumber(vat.getInternalNumber())
-                        .rate(vat.getRate().orElseThrow())
-                        .build()).orElse(null))
-
-                .counterparty(transaction.getDocument().getCounterparty().map(counterparty -> Counterparty.builder()
-                        .internalNumber(counterparty.getInternalNumber())
-                        .name(counterparty.getName().orElseThrow())
-                        .build()).orElse(null))
-
-                .build());
-
+        transactionEntity.setOrganisation(convertOrganisation(transaction));
+        transactionEntity.setDocument(convert(transaction.getDocument()));
         transactionEntity.setFxRate(transaction.getFxRate());
 
         transactionEntity.setCostCenterInternalNumber(transaction.getCostCenterInternalNumber().orElse(null));
@@ -88,6 +63,39 @@ public class TransactionConverter {
         return transactionEntity;
     }
 
+    private static Organisation convertOrganisation(Transaction transaction) {
+        return Organisation.builder()
+                .id(transaction.getOrganisation().getId())
+                .currency(Currency.builder()
+                        .id(transaction.getOrganisation().getCurrency().getId().orElseThrow()) // currency ref if is mandatory in the organisation
+                        .internalNumber(transaction.getOrganisation().getCurrency().getInternalNumber())
+                        .build())
+                .build();
+    }
+
+    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Document convert(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document> docM) {
+        return docM.map(doc -> Document.builder()
+                        .internalNumber(doc.getInternalNumber())
+
+                        .currency(Currency.builder()
+                                .id(doc.getCurrency().getId().orElse(null))
+                                .internalNumber(doc.getCurrency().getInternalNumber())
+                                .build())
+
+                        .vat(doc.getVat().map(vat -> Vat.builder()
+                                .internalNumber(vat.getInternalNumber())
+                                .rate(vat.getRate().orElse(null))
+                                .build()).orElse(null))
+
+                        .counterparty(doc.getCounterparty().map(counterparty -> Counterparty.builder()
+                                .internalNumber(counterparty.getInternalNumber())
+                                .name(counterparty.getName().orElseThrow())
+                                .build()).orElse(null)))
+
+                .map(Document.DocumentBuilder::build)
+                .orElse(null);
+    }
+
     public Transaction convert(TransactionEntity transactionEntity) {
         // can you write a converter from transactionEntity to transaction
 
@@ -112,22 +120,7 @@ public class TransactionConverter {
                                 .internalNumber(transactionEntity.getOrganisation().getCurrency().getInternalNumber())
                                 .build())
                         .build())
-                .document(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document.builder()
-                        .internalNumber(transactionEntity.getDocument().getInternalNumber())
-                        .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
-                                .id(transactionEntity.getDocument().getCurrency().getId())
-                                .internalNumber(transactionEntity.getDocument().getCurrency().getInternalNumber())
-                                .build())
-                        .vat(transactionEntity.getDocument().getVat().map(vat -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Vat.builder()
-                                .internalNumber(vat.getInternalNumber())
-                                .rate(vat.getRate())
-                                .build()))
-                        .counterparty(transactionEntity.getDocument().getCounterparty().map(counterparty -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Counterparty.builder()
-                                .internalNumber(counterparty.getInternalNumber())
-                                .name(Optional.of(counterparty.getName()))
-                                .build()))
-                        .build())
-
+                .document(convert(transactionEntity.getDocument()))
                 .entryDate(transactionEntity.getEntryDate())
                 .validationStatus(transactionEntity.getValidationStatus())
                 .transactionType(transactionEntity.getTransactionType())
@@ -139,6 +132,28 @@ public class TransactionConverter {
                 .ledgerDispatchApproved(transactionEntity.getLedgerDispatchApproved())
                 .transactionItems(items)
                 .build();
+    }
+
+    private static Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document> convert(@Nullable Document doc) {
+        if (doc == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document.builder()
+                .internalNumber(doc.getInternalNumber())
+                .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
+                        .id(doc.getCurrency().getId())
+                        .internalNumber(doc.getCurrency().getInternalNumber())
+                        .build())
+                .vat(doc.getVat().map(vat -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Vat.builder()
+                        .internalNumber(vat.getInternalNumber())
+                        .rate(vat.getRate())
+                        .build()))
+                .counterparty(doc.getCounterparty().map(counterparty -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Counterparty.builder()
+                        .internalNumber(counterparty.getInternalNumber())
+                        .name(Optional.of(counterparty.getName()))
+                        .build()))
+                .build());
     }
 
 }
