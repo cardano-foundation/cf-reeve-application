@@ -59,7 +59,7 @@ public class LedgerService {
             val organisationId = organisation.id();
 
             val dispatchPendingTransactions = transactionRepositoryReader.readBlockchainDispatchPendingTransactions(organisationId);
-            log.info("Processing organisationId: {} - pendingTxLinesCount: {}", organisationId, dispatchPendingTransactions.size());
+            log.info("Processing organisationId: {} - dispatchPendingTransactionsSize: {}", organisationId, dispatchPendingTransactions.size());
 
             val piiFilteredOutTransactions = piiDataFilteringService.apply(dispatchPendingTransactions);
 

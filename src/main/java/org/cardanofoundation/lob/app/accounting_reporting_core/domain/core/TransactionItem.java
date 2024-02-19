@@ -3,9 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -14,6 +12,8 @@ import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAs
 
 @Builder(toBuilder = true)
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class TransactionItem {
 

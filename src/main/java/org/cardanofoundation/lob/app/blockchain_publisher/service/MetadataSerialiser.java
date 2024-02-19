@@ -62,14 +62,14 @@ public class MetadataSerialiser {
             metadataMap.put("documents", documentsList);
         }
 
-        val txLinesMetadataList = MetadataBuilder.createList();
+        val transactionItemsMetadataList = MetadataBuilder.createList();
 
         for (val txLine : transaction.getItems()) {
-            txLinesMetadataList.add(serialise(txLine));
+            transactionItemsMetadataList.add(serialise(txLine));
         }
 
-        if (txLinesMetadataList.size() > 0) {
-            metadataMap.put("items", txLinesMetadataList);
+        if (transactionItemsMetadataList.size() > 0) {
+            metadataMap.put("items", transactionItemsMetadataList);
         }
 
         return metadataMap;

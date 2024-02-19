@@ -1,12 +1,12 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
 
-import io.vavr.Predicates;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.TransactionRepositoryReader;
@@ -69,26 +69,32 @@ public class IngestionPipelineProcessor implements PipelineTask {
 
             violations.forEach(violation -> {
                 if (violation.type() == Violation.Type.FATAL) {
-                    log.warn("violation: {}", violation);
+                    log.warn("Violation: {}", violation);
                 }
             });
         }
 
-        // those that didn't fail are validated
-        val finalTransactions = passedTransactions
-                .transactions()
-                .stream()
-                .filter(Predicates.not(tx -> tx.getValidationStatus() == FAILED))
-                .map(tx -> tx.toBuilder()
-                        .validationStatus(VALIDATED)
-                        .build())
-                .collect(Collectors.toSet());
-
         return new TransformationResult(
-                new OrganisationTransactions(passedTransactions.organisationId(), finalTransactions),
+                new OrganisationTransactions(passedTransactions.organisationId(), validateNotFailedTransactions(passedTransactions)),
                 ignoredTransactions,
                 violations
         );
+    }
+
+    private static Set<Transaction> validateNotFailedTransactions(OrganisationTransactions passedTransactions) {
+        return passedTransactions
+                .transactions()
+                .stream()
+                .map(tx -> {
+                    if (tx.getValidationStatus() == FAILED) {
+                        return tx;
+                    }
+
+                    return tx.toBuilder()
+                            .validationStatus(VALIDATED)
+                            .build();
+                })
+                .collect(Collectors.toSet());
     }
 
 }

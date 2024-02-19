@@ -20,20 +20,18 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
 
         return transactions.stream()
                 .map(trx -> {
-                    val counterPartyM = trx.getDocument().getCounterparty()
-                            .map(counterparty -> {
-                                return counterparty.toBuilder()
-                                        .name(Optional.empty())
-                                        .build();
-                            });
-
                     val document = trx.getDocument().toBuilder()
-                            .counterparty(counterPartyM)
+                            .counterparty(trx.getDocument().getCounterparty()
+                                    .map(counterparty -> {
+                                        return counterparty.toBuilder()
+                                                .name(Optional.empty())
+                                                .build();
+                                    }))
                             .build();
 
                     val txItems = trx.getTransactionItems().stream()
                             .map(item -> item.toBuilder()
-                                    .accountCodeCredit(Optional.empty())
+                                    .accountNameDebit(Optional.empty())
                                     .accountCodeDebit(Optional.empty())
                                     .accountCodeCredit(Optional.empty())
                                     .build())
