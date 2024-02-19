@@ -41,6 +41,7 @@ public class BlockchainTransactionsDispatcher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    @Transactional
     public void dispatchTransactions() {
         for (val organisation : organisationPublicApi.listAll()) {
             val organisationId = organisation.id();
@@ -88,7 +89,7 @@ public class BlockchainTransactionsDispatcher {
         return createAndSendBlockchainTransactions(organisationId, serialisedTx.remainingTransactions());
     }
 
-    @Transactional(isolation = SERIALIZABLE)
+    @Transactional
     private void sendTransactionOnChainAndUpdateDb(BlockchainTransactions blockchainTransactions) throws InterruptedException, TimeoutException, ApiException {
         val txData = blockchainTransactions.serialisedTxData();
         val l1SubmissionData = transactionSubmissionService.submitTransactionWithConfirmation(txData);
