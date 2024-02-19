@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -55,6 +56,21 @@ public class TransactionRepositoryReader {
                         seenTransactionStatuses)
                 .stream()
                 .map(transactionConverter::convert)
+                .collect(Collectors.toSet());
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public Set<String> findAllFailedTransactionIds(String organisationId,
+                                                      Set<String> transactionIds) {
+        // TODO what about order by entry date or transaction internal number, etc?
+
+        return transactionRepository.findByValidationStatus(
+                        organisationId,
+                        transactionIds,
+                        Set.of(ValidationStatus.FAILED))
+                .stream()
+                .map(transactionConverter::convert)
+                .map(Transaction::getId)
                 .collect(Collectors.toSet());
     }
 
