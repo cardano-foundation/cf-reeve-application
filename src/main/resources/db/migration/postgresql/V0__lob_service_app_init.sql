@@ -229,3 +229,5 @@ CREATE TABLE IF NOT EXISTS event_publication(
   PRIMARY KEY (id)
 );
 
+CREATE INDEX IF NOT EXISTS event_publication_listener_id_serialized_event_idx ON event_publication (listener_id, serialized_event);
+CREATE INDEX IF NOT EXISTS event_publication_completion_date_idx ON event_publication (completion_date);
