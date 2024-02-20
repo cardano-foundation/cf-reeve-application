@@ -20,10 +20,12 @@ public class StaticOrganisationRepository implements OrganisationRepository {
 
     private List<Organisation> organisations = new ArrayList<>();
 
+    private final static String ORG_ID = "3Zs2g8qrcRxvlVzXQV0SdG2vNip9KOL6aoHs16P5Wgo=";
+
     @PostConstruct
     public void init() {
         organisations.add(new Organisation(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "CF",
                 "Cardano Foundation (CH)",
                 List.of(NETSUITE),

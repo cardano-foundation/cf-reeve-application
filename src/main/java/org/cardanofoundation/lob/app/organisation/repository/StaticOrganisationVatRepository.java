@@ -16,75 +16,77 @@ public class StaticOrganisationVatRepository implements OrganisationVatRepositor
 
     private List<OrganisationVat> organisationVatList = new ArrayList<>();
 
+    private final static String ORG_ID = "3Zs2g8qrcRxvlVzXQV0SdG2vNip9KOL6aoHs16P5Wgo=";
+
     @PostConstruct
     public void init() {
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "11",
                 BigDecimal.valueOf(0.077D)
         ));
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "7",
                 BigDecimal.valueOf(0.077D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "8",
                 BigDecimal.valueOf(0.0D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "5",
                 BigDecimal.valueOf(0.0D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "181",
                 BigDecimal.valueOf(0.0D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "181",
                 BigDecimal.valueOf(0.0D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "159",
                 BigDecimal.valueOf(0.0D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "12",
                 BigDecimal.valueOf(0.0D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "9",
                 BigDecimal.valueOf(3.7D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "6",
                 BigDecimal.valueOf(2.5D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "10",
                 BigDecimal.valueOf(2.5D)
         ));
 
         organisationVatList.add(new OrganisationVat(
-                "GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=",
+                ORG_ID,
                 "18",
                 BigDecimal.valueOf(100D)
         ));
