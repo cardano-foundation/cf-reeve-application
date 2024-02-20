@@ -9,6 +9,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Curre
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
+import org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.NOT_VALIDATED;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
-import static org.cardanofoundation.lob.app.organisation.domain.core.AccountSystemProvider.NETSUITE;
+import static org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource.NETSUITE;
 
 @Service("netsuite_adapter.TransactionLineConverter")
 @RequiredArgsConstructor
@@ -58,7 +59,7 @@ public class TransactionConverter {
                 return Either.left(issue);
             }
 
-            val organisationId = Organisation.id(NETSUITE, connectorId, String.valueOf(searchResultItem.subsidiary()));
+            val organisationId = Organisation.id(connectorId, String.valueOf(searchResultItem.subsidiary()));
             val organisationM = organisationPublicApi.findByOrganisationId(organisationId);
 
             if (organisationM.isEmpty()) {
@@ -142,11 +143,11 @@ public class TransactionConverter {
                 })
                 .collect(Collectors.toSet());
 
-        val baseCurrency = organisation.baseCurrency();
+        val baseCurrency = organisation.currency();
         val organisationCurrency = new Currency(Optional.of(baseCurrency.currencyId()), baseCurrency.internalNumber());
 
         return Either.right(Optional.of(Transaction.builder()
-                .id(Transaction.id(organisation.id(), first.transactionNumber()))
+                .id(Transaction.id(ERPDataSource.NETSUITE, organisation.id(), first.transactionNumber()))
                 .internalTransactionNumber(first.transactionNumber())
                 .entryDate(first.date())
                 .transactionType(transactionTypeMapper.apply(first.type()))

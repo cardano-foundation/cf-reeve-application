@@ -9,16 +9,17 @@ public record Organisation(
         String id, // GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=
         String shortName,  // CF
         String longName, // Cardano Foundation
-        List<AccountSystemProvider> accountSystemProviders,
+        List<ERPDataSource> ERPDataSources,
         String connectorId, // company id // application or entity id?
         String accountSystemProviderId, // foreign system id, e.g. in case of NetSuite this is 1 for CF
-        OrganisationCurrency baseCurrency
+        OrganisationCurrency currency
 ) {
 
-    public static String id(AccountSystemProvider accountSystemProvider,
-                            String connectorId,
-                            String foreignSystemId) {
-        return digestAsBase64(STR."\{accountSystemProvider.name()}::\{connectorId}::\{foreignSystemId}");
+    // TODO this needs to be thought through
+    public static String id(
+            String connectorId,
+            String foreignSystemId) {
+        return digestAsBase64(STR."\{connectorId}::\{foreignSystemId}");
     }
 
     // TODO refactor application to use concept of connectors

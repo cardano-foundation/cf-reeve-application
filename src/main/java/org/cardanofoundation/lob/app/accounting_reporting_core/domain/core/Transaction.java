@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -60,9 +61,10 @@ public class Transaction {
     @NotEmpty
     private Set<TransactionItem> transactionItems = new HashSet<>();
 
-    public static String id(String organisationId,
+    public static String id(ERPDataSource erpDataSource,
+                            String organisationId,
                             String internalTransactionNumber) {
-        return digestAsBase64(STR."\{organisationId}::\{internalTransactionNumber}");
+        return digestAsBase64(STR."\{erpDataSource.name()}::\{organisationId}::\{internalTransactionNumber}");
     }
 
 
