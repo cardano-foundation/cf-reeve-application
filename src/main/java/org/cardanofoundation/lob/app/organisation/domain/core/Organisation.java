@@ -6,7 +6,7 @@ import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAs
 
 public record Organisation(
         // unique identifier for the organisation
-        String id, // GtnHOQDfsvKg00evGWh3j/bo1MF5YAFFdd6plOSpeDw=
+        String id,
         String shortName,  // CF
         String longName, // Cardano Foundation
         List<ERPDataSource> ERPDataSources,
