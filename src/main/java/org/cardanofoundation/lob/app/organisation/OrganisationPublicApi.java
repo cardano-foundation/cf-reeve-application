@@ -2,7 +2,10 @@ package org.cardanofoundation.lob.app.organisation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardanofoundation.lob.app.organisation.domain.core.*;
+import org.cardanofoundation.lob.app.organisation.domain.core.Currency;
+import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
+import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationCurrency;
+import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationVat;
 import org.cardanofoundation.lob.app.organisation.repository.OrganisationVatRepository;
 import org.cardanofoundation.lob.app.organisation.service.CurrencyService;
 import org.cardanofoundation.lob.app.organisation.service.OrganisationService;
@@ -24,10 +27,9 @@ public class OrganisationPublicApi {
         return organisationService.listAll();
     }
 
-    public Optional<Organisation> findBy(AccountSystemProvider accountSystemProvider,
-                                                  String connectorId,
-                                                  String foreignSystemId) {
-        return organisationService.findBy(accountSystemProvider, connectorId, foreignSystemId);
+    public Optional<Organisation> findBy(String connectorId,
+                                         String foreignSystemId) {
+        return organisationService.findBy(connectorId, foreignSystemId);
     }
 
     public Optional<Organisation> findByOrganisationId(String id) {

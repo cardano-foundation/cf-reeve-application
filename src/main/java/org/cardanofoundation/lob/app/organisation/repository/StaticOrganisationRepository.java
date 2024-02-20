@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.cardanofoundation.lob.app.organisation.domain.core.AccountSystemProvider.NETSUITE;
+import static org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource.NETSUITE;
 
 @Component
 @Slf4j
