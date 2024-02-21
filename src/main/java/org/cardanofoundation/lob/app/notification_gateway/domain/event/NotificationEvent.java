@@ -17,7 +17,7 @@ import java.util.UUID;
  * @param message
  * @param problem
  */
-@Externalized("target")
+///@Externalized("target")
 // TODO add applicationId, organisationId and creationDate, expirationDate, acked notification?
 public record NotificationEvent(UUID id,
                                 NotificationSeverity severity,

@@ -9,7 +9,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organ
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.TransactionRepositoryReader;
+import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @Slf4j
 public class IngestionPipelineProcessor {
 
-    private final TransactionRepositoryReader transactionRepositoryReader;
+    private final TransactionRepositoryGateway transactionRepositoryGateway;
 
     private final OrganisationPublicApi organisationPublicApi;
 
@@ -37,7 +37,7 @@ public class IngestionPipelineProcessor {
 
     @PostConstruct
     public void init() {
-        pipelineTasks.add(new PreProcessingPipelineTask(transactionRepositoryReader));
+        pipelineTasks.add(new PreProcessingPipelineTask(transactionRepositoryGateway));
 
         pipelineTasks.add(new PreCleansingPipelineTask());
         pipelineTasks.add(new PreValidationPipelineTask());
@@ -53,7 +53,7 @@ public class IngestionPipelineProcessor {
         val allViolations = new HashSet<Violation>();
 
         for (val pipelineTask : pipelineTasks) {
-            log.info("Running pipelineTask: {}", pipelineTask.getClass().getSimpleName());
+            //log.info("Running pipelineTask: {}", pipelineTask.getClass().getSimpleName());
 
             val transformationResult = pipelineTask.run(
                     passedTransactions,
@@ -63,7 +63,7 @@ public class IngestionPipelineProcessor {
             // TODO refactor this - we do not want to over-write passed in params (anti-pattern)
             passedTransactions = transformationResult.passThroughTransactions();
             ignoredTransactions = transformationResult.ignoredTransactions();
-            log.info("post-violationsCount: {}", transformationResult.violations().size());
+            //log.info("post-violationsCount: {}", transformationResult.violations().size());
 
             transformationResult.violations().forEach(violation -> {
                 if (violation.type() == Violation.Type.FATAL) {

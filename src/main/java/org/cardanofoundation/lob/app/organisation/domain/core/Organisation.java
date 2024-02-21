@@ -15,6 +15,10 @@ public record Organisation(
         OrganisationCurrency currency
 ) {
 
+    public static String testOrgId() {
+        return "dd9b3683caab711c6f955cd7415d12746daf362a7d28e2fa6a81ecd7a3f95a0a";
+    }
+
     // TODO this needs to be thought through
     public static String id(
             String connectorId,

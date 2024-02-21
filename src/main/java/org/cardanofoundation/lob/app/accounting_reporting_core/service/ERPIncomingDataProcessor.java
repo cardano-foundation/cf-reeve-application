@@ -9,7 +9,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Viola
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline.IngestionPipelineProcessor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
@@ -24,7 +23,7 @@ public class ERPIncomingDataProcessor {
     private final TransactionConverter transactionConverter;
     private final TransactionRepository transactionRepository;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public void processIncomingERPEvent(OrganisationTransactions organisationTransactions) {
         val finalTransformationResult = ingestionPipelineProcessor.run(
                 organisationTransactions,
@@ -35,11 +34,12 @@ public class ERPIncomingDataProcessor {
         sendNotifications(finalTransformationResult.violations());
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     private void syncToDb(TransformationResult transformationResult) {
-        val passedTransactions = transformationResult.passThroughTransactions();
+        val organisationTransactions = transformationResult.passThroughTransactions();
+        val transactions = organisationTransactions.transactions();
 
-        val passTxEntities = passedTransactions.transactions().stream()
+        val passTxEntities = transactions.stream()
                 .map(transactionConverter::convert)
                 .toList();
 

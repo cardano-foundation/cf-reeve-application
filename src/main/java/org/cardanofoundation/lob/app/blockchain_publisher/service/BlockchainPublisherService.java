@@ -1,15 +1,19 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.service;
 
+import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
-import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepositoryReader;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepositoryGateway;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service("blockchainPublisherService")
@@ -19,37 +23,39 @@ public class BlockchainPublisherService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TransactionConverter transactionConverter;
-    private final TransactionEntityRepositoryReader transactionEntityRepositoryReader;
+    private final TransactionEntityRepositoryGateway transactionEntityRepositoryGateway;
     private final BlockchainPublishStatusMapper blockchainPublishStatusMapper;
 
+    @Value("${lob.blockchain_publisher.send.batch.size:25}")
+    private final int dispatchBatchSize = 25;
+
     @Transactional
-    public void dispatchTransactionsToBlockchains(String organisationId,
-                                                  OrganisationTransactions transactionLines) {
+    public void storeTransactionForDispatchLater(String organisationId,
+                                                 OrganisationTransactions organisationTransactions) {
         log.info("dispatchTransactionsToBlockchains..., orgId:{}", organisationId);
 
-        val transactions = transactionLines.transactions();
+        val transactions = organisationTransactions.transactions();
 
         val txEntities = transactions
                 .stream()
                 .map(transactionConverter::convert)
                 .collect(Collectors.toSet());
 
-        val allTxEntitiesMerged = transactionEntityRepositoryReader.storeOnlyNewTransactions(txEntities);
+        val allNewAndOldTransactionsStored = transactionEntityRepositoryGateway.storeOnlyNewTransactions(txEntities);
 
-        val txStatusUpdatesList = allTxEntitiesMerged
-                .stream()
-                .map(txEntity -> {
-                    val status = blockchainPublishStatusMapper.convert(txEntity.getPublishStatus(), txEntity.getOnChainAssuranceLevel());
+        notifyTransactionStored(organisationTransactions, allNewAndOldTransactionsStored);
+    }
 
-                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(), status);
-                })
-                .collect(Collectors.toSet());
+    @Transactional
+    private void notifyTransactionStored(OrganisationTransactions organisationTransactions, Set<TransactionEntity> allNewAndOldTransactionsStored) {
+        Iterables.partition(allNewAndOldTransactionsStored, dispatchBatchSize).forEach(txEntities -> {
+            val txStatusUpdates = txEntities.stream()
+                    .map(txEntity -> new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(),
+                            blockchainPublishStatusMapper.convert(txEntity.getPublishStatus(), txEntity.getOnChainAssuranceLevel())))
+                    .collect(Collectors.toSet());
 
-        if (!txStatusUpdatesList.isEmpty()) {
-            log.info("Publishing LedgerChangeEvent command, statusesMap: {}", txStatusUpdatesList);
-
-            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(transactionLines.organisationId(), txStatusUpdatesList));
-        }
+            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(organisationTransactions.organisationId(), txStatusUpdates));
+        });
     }
 
 }

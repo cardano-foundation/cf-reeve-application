@@ -8,12 +8,13 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class MetadataSerialiser {
 
     public MetadataMap serialiseToMetadataMap(String organisationId,
-                                              List<TransactionEntity> transactions,
+                                              Set<TransactionEntity> transactions,
                                               long creationSlot) {
         val globalMetadataMap = MetadataBuilder.createMap();
         globalMetadataMap.put("metadata", createMetadata(creationSlot));

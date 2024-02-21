@@ -1,6 +1,7 @@
 package org.cardanofoundation.lob.app.organisation.repository;
 
 import jakarta.annotation.PostConstruct;
+import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationCurrency;
 import org.springframework.stereotype.Component;
 
@@ -13,77 +14,75 @@ public class StaticOrganisationCurrencyRepository implements OrganisationCurrenc
 
     private final List<OrganisationCurrency> organisationCurrencies = new ArrayList<>();
 
-    private final static String ORG_ID = "3Zs2g8qrcRxvlVzXQV0SdG2vNip9KOL6aoHs16P5Wgo=";
-
     @PostConstruct
     public void init() {
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:CHF",
                 "1"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:USD",
                 "2"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:CAD",
                 "3"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:EUR",
                 "4"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:GBP",
                 "5"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_24165:ADA:HWGL1C2CK",
                 "6"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_24165:BTC:4H95J0R2X",
                 "7"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:CRC",
                 "8"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_24165:BCH:J9K583ZGG",
                 "9"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_24165:BSV:2L8HS2MNP",
                 "10"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:LKK",
                 "11"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:AED",
                 "12"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:GEL",
                 "13"
         ));
         organisationCurrencies.add(new OrganisationCurrency(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "ISO_4217:KRW",
                 "14"
         ));

@@ -13,11 +13,11 @@ public class LedgerNotifierJob {
 
     private final LedgerService ledgerService;
 
-    @Scheduled(fixedDelayString = "PT1M")
+    @Scheduled(fixedDelayString = "PT10S")
     public void execute() {
         log.info("Executing LedgerNotifierJob job...");
 
-        ledgerService.publishLedgerEvents();
+        ledgerService.dispatchTransactionsToBlockchainPublisher();
 
         log.info("Finished executing LedgerNotifierJob job.");
     }

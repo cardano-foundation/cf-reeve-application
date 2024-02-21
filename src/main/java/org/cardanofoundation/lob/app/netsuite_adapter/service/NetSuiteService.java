@@ -2,6 +2,8 @@ package org.cardanofoundation.lob.app.netsuite_adapter.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +53,9 @@ public class NetSuiteService {
     @Value("${lob.connector.id:jhu765}")
     private String connectorId;
 
+    @Value("${lob.netsuite.send.batch.size:25}")
+    private int sendBatchSize = 25;
+
     @Transactional(readOnly = true)
     public Optional<NetSuiteIngestion> findIngestionById(UUID id) {
         return ingestionRepository.findById(id);
@@ -60,7 +65,7 @@ public class NetSuiteService {
         return netSuiteAPI.retrieveLatestNetsuiteTransactionLines();
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public void startERPExtraction(String initiator,
                                    FilteringParameters filteringParameters) {
         val netsuiteTransactionLinesJsonE = retrieveAndStoreNetSuiteIngestion();
@@ -110,11 +115,15 @@ public class NetSuiteService {
 
             log.info("Publishing ERPIngestionEvent event, organisationId: {}, tx count: {}", organisationId, coreTransactions.size());
 
-            applicationEventPublisher.publishEvent(new ERPIngestionEvent(
-                    netsuiteIngestion.getId(),
-                    initiator,
-                    filteringParameters,
-                    new OrganisationTransactions(organisationId, filteredCoreTransactions)));
+            val netsuiteIngestionId = netsuiteIngestion.getId();
+
+            Iterables.partition(filteredCoreTransactions, sendBatchSize).forEach(txPartition -> {
+                applicationEventPublisher.publishEvent(new ERPIngestionEvent(
+                        netsuiteIngestionId,
+                        initiator,
+                        filteringParameters,
+                        new OrganisationTransactions(organisationId, Sets.newHashSet(txPartition))));
+            });
         });
 
         log.info("NetSuite ingestion completed.");
