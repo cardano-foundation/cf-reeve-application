@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.jmolecules.event.annotation.DomainEvent;
 
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@DomainEvent
 public class ERPIngestionEvent {
 
     private UUID extractionId;

@@ -11,16 +11,18 @@ import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.Transact
 import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepository;
 import org.cardanofoundation.lob.app.blockchain_publisher.service.transation_submit.TransactionSubmissionService;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus.*;
+import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus.VISIBLE_ON_CHAIN;
+import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus.toDispatchStatuses;
 import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.OnChainAssuranceLevel.VERY_LOW;
 
 @Service
@@ -40,20 +42,58 @@ public class BlockchainTransactionsDispatcher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    @Value("${lob.blockchain.publisher.pullBatchSize:50}")
+    private int pullBatchSize = 50;
+
+    @Value("${lob.blockchain.publisher.minTransactions:30}")
+    private int minTxCount = 35;
+
     @Transactional
     public void dispatchTransactions() {
+        log.info("Dispatching transactions to the cardano blockchain...");
+
+        val dispatchStatuses = toDispatchStatuses();
+
         for (val organisation : organisationPublicApi.listAll()) {
             val organisationId = organisation.id();
-            val transactionsToDispatch = transactionEntityRepository.findTransactionsByStatus(organisationId, List.of(STORED, ROLLBACKED));
 
-            log.info("Dispatching transactions for organisation:{}", organisationId);
+            val transactionsToDispatch = transactionEntityRepository.findTransactionsByStatus(organisationId, dispatchStatuses)
+                    .stream().limit(pullBatchSize)
+                    .collect(Collectors.toSet());
 
-            createAndSendBlockchainTransactions(organisation.id(), transactionsToDispatch);
+            // no point to dispatch less than 30 transactions per physical L1 transaction
+            if (transactionsToDispatch.size() < minTxCount) {
+                log.warn("Not enough transactions to dispatch for organisationId:{}", organisationId);
+                return;
+            }
+
+            dispatchTransactionsBatch(organisationId, transactionsToDispatch);
         }
     }
 
+    @Transactional
+    public void dispatchTransactionsBatch(String organisationId,
+                                          Set<TransactionEntity> transactionEntitiesBatch) {
+        log.info("Dispatching transactions for organisation: {}", organisationId);
+
+        val blockchainTransactionsM = createAndSendBlockchainTransactions(organisationId, transactionEntitiesBatch);
+
+        if (blockchainTransactionsM.isEmpty()) {
+            log.info("No more transactions to dispatch for organisationId: {}", organisationId);
+            return;
+        }
+
+        val blockchainTransactions = blockchainTransactionsM.orElseThrow();
+
+        val submittedTxCount = blockchainTransactions.submittedTransactions().size();
+        val remainingTxCount = blockchainTransactions.remainingTransactions().size();
+
+        log.info("Submitted tx count:{}, remainingTxCount:{}", submittedTxCount, remainingTxCount);
+    }
+
+    @Transactional
     private Optional<BlockchainTransactions> createAndSendBlockchainTransactions(String organisationId,
-                                                                                 List<TransactionEntity> transactions) {
+                                                                                 Set<TransactionEntity> transactions) {
         log.info("Processing transactions for organisation:{}, remaining size:{}", organisationId, transactions.size());
 
         if (transactions.isEmpty()) {
@@ -99,6 +139,7 @@ public class BlockchainTransactionsDispatcher {
         log.info("Blockchain transaction submitted, l1SubmissionData:{}", l1SubmissionData);
     }
 
+    @Transactional
     private void updateTransactionStatuses(L1SubmissionData l1SubmissionData,
                                            BlockchainTransactions blockchainTransactions) {
         for (val txEntity : blockchainTransactions.submittedTransactions()) {
@@ -112,8 +153,9 @@ public class BlockchainTransactionsDispatcher {
         }
     }
 
+    @Transactional
     private void sendLedgerUpdatedEvents(String organisationId,
-                                         List<TransactionEntity> submittedTransactions) {
+                                         Set<TransactionEntity> submittedTransactions) {
         log.info("Sending ledger updated event for organisation:{}, submittedTransactions:{}", organisationId, submittedTransactions.size());
 
         val txStatuses = submittedTransactions.stream()

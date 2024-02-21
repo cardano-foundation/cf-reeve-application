@@ -3,9 +3,10 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 import java.util.Set;
 
 public enum LedgerDispatchStatus {
+
     NOT_DISPATCHED, // not dispatched to blockchain(s) yet
 
-    MARK_DISPATCH, // acking that we stored in the database (marked for dispatch)
+    MARK_DISPATCH, // acking that we stored in the database of blockchain publisher (marked for dispatch)
 
     DISPATCHED, // dispatched to blockchain(s)
 

@@ -21,7 +21,7 @@ CREATE TABLE netsuite_ingestion (
 );
 
 CREATE TABLE accounting_core_transaction (
-   transaction_id CHAR(44) NOT NULL,
+   transaction_id CHAR(64) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
    organisation_currency_id VARCHAR(255) NOT NULL,
    organisation_currency_internal_number VARCHAR(255) NOT NULL,
@@ -58,9 +58,9 @@ CREATE TABLE accounting_core_transaction (
 );
 
 CREATE TABLE accounting_core_transaction_item (
-   transaction_item_id CHAR(44) NOT NULL,
+   transaction_item_id CHAR(64) NOT NULL,
 
-   transaction_id CHAR(44) NOT NULL,
+   transaction_id CHAR(64) NOT NULL,
 
    FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
 
@@ -80,7 +80,7 @@ CREATE TABLE accounting_core_transaction_item (
 );
 
 --CREATE TABLE accounting_core_transaction_line_aud (
---   id CHAR(44) NOT NULL,
+--   id CHAR(64) NOT NULL,
 --   organisation_id VARCHAR(255) NOT NULL,
 --   transaction_type VARCHAR(255) NOT NULL,
 --   entry_date DATE NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE accounting_core_transaction_item (
 --);
 
 CREATE TABLE blockchain_publisher_transaction (
-   transaction_id CHAR(44) NOT NULL,
+   transaction_id CHAR(64) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
    internal_number VARCHAR(255) NOT NULL,
 
@@ -147,7 +147,7 @@ CREATE TABLE blockchain_publisher_transaction (
    document_vat_rate DECIMAL,
 
    l1_assurance_level VARCHAR(255),
-   l1_transaction_hash VARCHAR(255),
+   l1_transaction_hash CHAR(64),
    l1_absolute_slot BIGINT,
    l1_creation_slot BIGINT,
    publish_status VARCHAR(255) NOT NULL,
@@ -161,9 +161,9 @@ CREATE TABLE blockchain_publisher_transaction (
 );
 
 CREATE TABLE blockchain_publisher_transaction_item (
-   transaction_item_id CHAR(44) NOT NULL,
+   transaction_item_id CHAR(64) NOT NULL,
 
-   transaction_id CHAR(44) NOT NULL,
+   transaction_id CHAR(64) NOT NULL,
 
    FOREIGN KEY (transaction_id) REFERENCES blockchain_publisher_transaction (transaction_id),
 
@@ -180,7 +180,7 @@ CREATE TABLE blockchain_publisher_transaction_item (
 );
 
 --CREATE TABLE blockchain_publisher_transaction_line_aud (
---   id CHAR(44) NOT NULL,
+--   id CHAR(64) NOT NULL,
 --   organisation_id VARCHAR(255) NOT NULL,
 --   upload_id UUID NOT NULL,
 --   transaction_type VARCHAR(255) NOT NULL,
@@ -229,3 +229,5 @@ CREATE TABLE IF NOT EXISTS event_publication(
   PRIMARY KEY (id)
 );
 
+--CREATE INDEX IF NOT EXISTS event_publication_listener_id_serialized_event_idx ON event_publication (listener_id, serialized_event);
+CREATE INDEX IF NOT EXISTS event_publication_completion_date_idx ON event_publication (completion_date);

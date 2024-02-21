@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.service;
 
-import co.nstant.in.cbor.CborException;
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.backend.api.BackendService;
@@ -22,10 +21,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.iterators.PeekingIterator.peekingIterator;
@@ -51,18 +50,18 @@ public class L1TransactionCreator {
     private int metadataLabel;
 
     public Either<Problem, Optional<BlockchainTransactions>> pullBlockchainTransaction(String organisationId,
-                                                                                       List<TransactionEntity> txs) {
+                                                                                       Set<TransactionEntity> txs) {
         val chainTipE = blockchainDataChainTipService.latestChainTip();
 
         return chainTipE.map(chainTip -> createTransaction(organisationId, txs, chainTip.absoluteSlot()));
     }
 
     private Optional<BlockchainTransactions> createTransaction(String organisationId,
-                                                               List<TransactionEntity> transactions,
+                                                               Set<TransactionEntity> transactions,
                                                                long creationSlot) {
         log.info("Splitting {} transactions into blockchain transactions", transactions.size());
 
-        val transactionsBatch = new ArrayList<TransactionEntity>();
+        val transactionsBatch = new LinkedHashSet<TransactionEntity>();
 
         for (var it = peekingIterator(transactions.iterator()); it.hasNext();) {
             val txEntity = it.next();
@@ -81,7 +80,7 @@ public class L1TransactionCreator {
             if (transactionLinePeek == null) { // next one is last element
                 continue;
             }
-            val newChunkTxBytesE = serialiseTransactionChunk(organisationId, Stream.concat(transactionsBatch.stream(), Stream.of(transactionLinePeek)).toList(), creationSlot);
+            val newChunkTxBytesE = serialiseTransactionChunk(organisationId, Stream.concat(transactionsBatch.stream(), Stream.of(transactionLinePeek)).collect(Collectors.toSet()), creationSlot);
             if (newChunkTxBytesE.isLeft()) {
                 log.error("Error serialising transaction, abort processing, issue: {}", newChunkTxBytesE.getLeft().getDetail());
                 return Optional.empty();
@@ -120,25 +119,24 @@ public class L1TransactionCreator {
         return Optional.empty();
     }
 
-    private static List<TransactionEntity> calculateRemainingTransactionLines(
-            List<TransactionEntity> transactions,
-            List<TransactionEntity> transactionsBatch) {
+    private static Set<TransactionEntity> calculateRemainingTransactionLines(
+            Set<TransactionEntity> transactions,
+            Set<TransactionEntity> transactionsBatch) {
 
-        // TODO maybe better that they were sets from the beginning
-        return Sets.difference(new HashSet<>(transactions), new HashSet<>(transactionsBatch)).stream().toList();
+        return Sets.difference(transactions, transactionsBatch);
     }
 
     private Either<Problem, byte[]> serialiseTransactionChunk(String organisationId,
-                                                              List<TransactionEntity> transactionsBatch,
+                                                              Set<TransactionEntity> transactionsBatch,
                                                               long creationSlot) {
         val metadataMap =
                 metadataSerialiser.serialiseToMetadataMap(organisationId, transactionsBatch, creationSlot);
 
-        try {
-            System.out.println(metadataMap.toJson());
-        } catch (CborException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            System.out.println(metadataMap.toJson());
+//        } catch (CborException e) {
+//            throw new RuntimeException(e);
+//        }
 
         val metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, metadataMap);

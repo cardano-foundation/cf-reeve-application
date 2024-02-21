@@ -67,7 +67,6 @@ public class Transaction {
         return digestAsBase64(STR."\{erpDataSource.name()}::\{organisationId}::\{internalTransactionNumber}");
     }
 
-
     public record WithPossibleViolations(Transaction transaction,
                                          Set<Violation> violations) {
 

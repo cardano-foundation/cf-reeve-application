@@ -18,16 +18,16 @@ public class AccountingCoreEventHandler {
 
     @ApplicationModuleListener
     public void handleERPIngestionEvent(ERPIngestionEvent event) {
-        log.info("Received handleERPIngestionEvent event....");
+        //log.info("Received handleERPIngestionEvent event...., event:{}", event);
 
         erpIncomingDataProcessor.processIncomingERPEvent(event.getOrganisationTransactions());
 
-        log.info("Finished processing...");
+        //log.info("Finished processing...");
     }
 
     @ApplicationModuleListener
     public void handleLedgerUpdatedEvent(LedgerUpdatedEvent event) {
-        log.info("Received LedgerUpdatedEvent event, eventCounts:{}", event.getStatusUpdates().size());
+        log.info("Received LedgerUpdatedEvent event, event:{}", event.getStatusUpdates());
 
         ledgerService.updateTransactionsWithNewLedgerDispatchStatuses(event.getStatusUpdates());
     }

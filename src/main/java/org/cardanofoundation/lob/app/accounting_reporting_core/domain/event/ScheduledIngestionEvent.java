@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
+import org.jmolecules.event.annotation.DomainEvent;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @ToString
+@DomainEvent
 public class ScheduledIngestionEvent {
 
     private FilteringParameters filteringParameters;

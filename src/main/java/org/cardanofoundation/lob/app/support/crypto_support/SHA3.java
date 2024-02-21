@@ -1,8 +1,9 @@
 package org.cardanofoundation.lob.app.support.crypto_support;
 
+import com.bloxbean.cardano.client.util.HexUtil;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -15,7 +16,7 @@ public class SHA3 {
             var hashbytes = digest.digest(
                     data.getBytes(UTF_8));
 
-            return Base64.getEncoder().encodeToString(hashbytes);
+            return HexUtil.encodeHexString(hashbytes);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

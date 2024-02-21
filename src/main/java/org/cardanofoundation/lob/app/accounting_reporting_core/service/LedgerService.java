@@ -7,10 +7,11 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organ
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
+import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
@@ -24,11 +25,14 @@ public class LedgerService {
 
     private final TransactionRepository transactionRepository;
 
-    private final TransactionRepositoryReader transactionRepositoryReader;
+    private final TransactionRepositoryGateway transactionRepositoryGateway;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
     private final PIIDataFilteringService piiDataFilteringService;
+
+    @Value("${lob.accounting_core.send.batch.size:25}")
+    private int dispatchBatchSize = 25;
 
     @Transactional
     public void updateTransactionsWithNewLedgerDispatchStatuses(Set<LedgerUpdatedEvent.TxStatusUpdate> txStatusUpdates) {
@@ -52,20 +56,20 @@ public class LedgerService {
     }
 
     @Transactional
-    public void publishLedgerEvents() {
-        log.info("publishLedgerEvents...");
+    public void dispatchTransactionsToBlockchainPublisher() {
+        log.info("dispatchTransactionsToBlockchainPublisher...");
 
         for (val organisation : organisationPublicApi.listAll()) {
             val organisationId = organisation.id();
 
-            val dispatchPendingTransactions = transactionRepositoryReader.readBlockchainDispatchPendingTransactions(organisationId);
+            val dispatchPendingTransactions = transactionRepositoryGateway.readBlockchainDispatchPendingTransactions(organisationId, dispatchBatchSize);
             log.info("Processing organisationId: {} - dispatchPendingTransactionsSize: {}", organisationId, dispatchPendingTransactions.size());
 
             val piiFilteredOutTransactions = piiDataFilteringService.apply(dispatchPendingTransactions);
 
-            log.info("Publishing PublishToTheLedgerEvent...");
-
             applicationEventPublisher.publishEvent(LedgerUpdateCommand.create(new OrganisationTransactions(organisationId, piiFilteredOutTransactions)));
+
+            log.info("Publishing PublishToTheLedgerEvent...");
         }
     }
 

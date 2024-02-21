@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
+import org.jmolecules.event.annotation.DomainEvent;
 
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @ToString
+@DomainEvent
 public final class LedgerUpdatedEvent {
 
     private String organisationId;

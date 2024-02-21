@@ -1,5 +1,7 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.domain.core;
 
+import java.util.Set;
+
 public enum BlockchainPublishStatus {
 
     STORED,
@@ -12,6 +14,18 @@ public enum BlockchainPublishStatus {
 
     ROLLBACKED, // signal to resubmit the transaction since it disappeared from on chain
 
-    FINALIZED,
+    FINALIZED; // 2140
+
+    public static Set<BlockchainPublishStatus> toDispatchStatuses() {
+        return Set.of(STORED, ROLLBACKED);
+    }
 
 }
+
+// 5
+
+//40
+// .. expotential
+// 2140
+
+//

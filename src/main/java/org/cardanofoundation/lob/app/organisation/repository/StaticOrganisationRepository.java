@@ -25,7 +25,7 @@ public class StaticOrganisationRepository implements OrganisationRepository {
     @PostConstruct
     public void init() {
         organisations.add(new Organisation(
-                ORG_ID,
+                Organisation.testOrgId(),
                 "CF",
                 "Cardano Foundation (CH)",
                 List.of(NETSUITE),

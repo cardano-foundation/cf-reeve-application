@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.toSet;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TransactionEntityRepositoryReader {
+public class TransactionEntityRepositoryGateway {
 
     private final TransactionEntityRepository transactionEntityRepository;
 
