@@ -31,7 +31,7 @@ public class LedgerService {
 
     private final PIIDataFilteringService piiDataFilteringService;
 
-    @Value("${lob.accounting_core.send.batch.size:25}")
+    @Value("${lob.accounting_core.to.blockchain_publisher.send.batch.size:25}")
     private int dispatchBatchSize = 25;
 
     @Transactional

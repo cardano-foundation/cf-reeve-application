@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
@@ -27,8 +29,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -53,7 +57,7 @@ public class NetSuiteService {
     @Value("${lob.connector.id:jhu765}")
     private String connectorId;
 
-    @Value("${lob.netsuite.send.batch.size:25}")
+    @Value("${lob.events.netsuite.to.core.send.batch.size:25}")
     private int sendBatchSize = 25;
 
     @Transactional(readOnly = true)
@@ -100,13 +104,7 @@ public class NetSuiteService {
         log.info("CoreTransactionLines count: {}", coreTransactionsToOrganisationMap.size());
 
         coreTransactionsToOrganisationMap.forEach((organisationId, coreTransactions) -> {
-            val filteredCoreTransactions = coreTransactions.stream()
-                    .filter(line -> filteringParameters.getFrom().isEmpty() || filteringParameters.getFrom().map(date -> line.getEntryDate().isAfter(date)).orElse(false))
-                    .filter(line -> filteringParameters.getTo().isEmpty() || filteringParameters.getTo().map(date -> line.getEntryDate().isBefore(date)).orElse(false))
-                    .filter(line -> filteringParameters.getTransactionTypes().isEmpty() || filteringParameters.getTransactionTypes().contains(line.getTransactionType()))
-                    .filter(line -> filteringParameters.getOrganisationIds().isEmpty() || filteringParameters.getOrganisationIds().contains(line.getOrganisation().getId()))
-                    .filter(line -> filteringParameters.getProjectInternalNumbers().isEmpty() || line.getProjectInternalNumber().map(projectCode -> filteringParameters.getProjectInternalNumbers().contains(projectCode)).orElse(false))
-                    .collect(Collectors.toSet());
+            val filteredCoreTransactions = applyExtractionParameters(filteringParameters, coreTransactions);
 
             if (filteredCoreTransactions.isEmpty()) {
                 log.warn("No core transactions to process for organisationId: {}", organisationId);
@@ -127,6 +125,45 @@ public class NetSuiteService {
         });
 
         log.info("NetSuite ingestion completed.");
+    }
+
+    private static Set<Transaction> applyExtractionParameters(FilteringParameters filteringParameters, Set<Transaction> coreTransactions) {
+        return coreTransactions.stream()
+                .filter(line -> {
+                    val fromM = filteringParameters.getFrom();
+
+                    return fromM.isEmpty()
+                            || fromM.map(date -> line.getEntryDate().isEqual(date)).orElse(true)
+                            || fromM.map(date -> line.getEntryDate().isAfter(date)).orElse(true);
+                })
+                .filter(line -> {
+                    val toM = filteringParameters.getTo();
+
+                    return toM.isEmpty()
+                            || toM.map(date -> line.getEntryDate().isEqual(date)).orElse(true)
+                            || toM.map(date -> line.getEntryDate().isBefore(date)).orElse(true);
+                })
+                .filter(line -> {
+                    val txTypes = filteringParameters.getTransactionTypes();
+
+                    return txTypes.isEmpty() || txTypes.contains(line.getTransactionType());
+                })
+                .filter(line -> {
+                    val organisationIds = filteringParameters.getOrganisationIds();
+
+                    return organisationIds.isEmpty() || organisationIds.contains(line.getOrganisation().getId());
+                })
+                .filter(line -> {
+                    val projectInternalNumbers = filteringParameters.getProjectInternalNumbers();
+
+                    return projectInternalNumbers.isEmpty() || line.getProjectInternalNumber().map(projectInternalNumbers::contains).orElse(true);
+                })
+                .filter(line -> {
+                    val costCenterInternalNumbers = filteringParameters.getCostCenterInternalNumbers();
+
+                    return costCenterInternalNumbers.isEmpty() || line.getCostCenterInternalNumber().map(costCenterInternalNumbers::contains).orElse(true);
+                })
+                .collect(Collectors.toSet());
     }
 
     private Either<Problem, NetSuiteIngestion> retrieveAndStoreNetSuiteIngestion() {

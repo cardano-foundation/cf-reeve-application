@@ -21,7 +21,8 @@ public class ConversionsPipelineTask implements PipelineTask {
 
     public TransformationResult run(OrganisationTransactions passedOrganisationTransactions,
                                     OrganisationTransactions ignoredOrganisationTransactions) {
-        val passedTransactions = passedOrganisationTransactions.transactions().stream()
+        val passedTransactions = passedOrganisationTransactions
+                .transactions().stream()
                 .map(Transaction.WithPossibleViolations::create)
                 .map(this::vatConversion)
                 .map(this::currencyCode)
