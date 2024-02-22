@@ -31,4 +31,7 @@ public class FilteringParameters {
     @Builder.Default
     private List<String> projectInternalNumbers = List.of();
 
+    @Builder.Default
+    private List<String> costCenterInternalNumbers = List.of();
+
 }
