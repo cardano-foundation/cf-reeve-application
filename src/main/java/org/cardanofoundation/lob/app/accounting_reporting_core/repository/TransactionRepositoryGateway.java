@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,18 +26,49 @@ public class TransactionRepositoryGateway {
     private final TransactionConverter transactionConverter;
 
     @Transactional
-    public Set<Transaction> readBlockchainDispatchPendingTransactions(String organisationId, int limit) {
+    public void approveTransactions(Set<String> transactionIds) {
+        log.info("Approving transactions: {}", transactionIds);
+
+        val transactions = transactionRepository.findAllById(transactionIds)
+                .stream()
+                .map(tx -> {
+                    tx.setLedgerDispatchApproved(true);
+
+                    return tx;
+                })
+                .collect(Collectors.toSet());
+
+        transactionRepository.saveAll(transactions);
+    }
+
+//    @Transactional
+//    public Set<Transaction> readBlockchainDispatchPendingTransactions(String organisationId, int limit) {
+//        // TODO what about order by entry date or transaction internal number, etc?
+//
+//        return transactionRepository
+//                .findBlockchainPublisherPendingTransactions(
+//                        organisationId,
+//                        List.of(NOT_DISPATCHED),
+//                        List.of(VALIDATED),
+//                        true)
+//                .stream()
+//                .limit(limit)
+//                .map(transactionConverter::convert)
+//                .collect(Collectors.toSet());
+//    }
+
+    @Transactional
+    public Set<String> readApprovalPendingBlockchainTransactionIds(String organisationId, int limit) {
         // TODO what about order by entry date or transaction internal number, etc?
 
         return transactionRepository
-                .findBlockchainPublisherPendingTransactions(
+                .findTransactionIdsByStatuses(
                         organisationId,
                         List.of(NOT_DISPATCHED),
                         List.of(VALIDATED),
-                        true)
+                        false)
                 .stream()
                 .limit(limit)
-                .map(transactionConverter::convert)
                 .collect(Collectors.toSet());
     }
 
@@ -57,6 +89,16 @@ public class TransactionRepositoryGateway {
                 .stream()
                 .map(transactionConverter::convert)
                 .collect(Collectors.toSet());
+    }
+
+    @Transactional
+    public Optional<Transaction> findById(String transactionId) {
+        return transactionRepository.findById(transactionId).map(transactionConverter::convert);
+    }
+
+    @Transactional
+    public Set<Transaction> findByAllId(Set<String> transactionIds) {
+        return transactionRepository.findAllById(transactionIds).stream().map(transactionConverter::convert).collect(Collectors.toSet());
     }
 
 //    @Transactional

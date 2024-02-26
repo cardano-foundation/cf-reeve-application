@@ -155,8 +155,8 @@ public class TransactionConverter {
                             .build();
                 }))
                 .fxRate(first.exchangeRate())
-                .ledgerDispatchApproved(true) // TODO remove this, for now only for testing
                 .validationStatus(NOT_VALIDATED)
+                .ledgerDispatchApproved(organisation.autoApproval())
                 .document(convertDocument(results, first))
                 .transactionItems(txItems)
                 .build());
