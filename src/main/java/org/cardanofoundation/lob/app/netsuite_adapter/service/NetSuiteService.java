@@ -8,10 +8,7 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
@@ -25,11 +22,9 @@ import org.cardanofoundation.lob.app.notification_gateway.domain.event.Notificat
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -127,7 +122,8 @@ public class NetSuiteService {
         log.info("NetSuite ingestion completed.");
     }
 
-    private static Set<Transaction> applyExtractionParameters(FilteringParameters filteringParameters, Set<Transaction> coreTransactions) {
+    private static Set<Transaction> applyExtractionParameters(FilteringParameters filteringParameters,
+                                                              Set<Transaction> coreTransactions) {
         return coreTransactions.stream()
                 .filter(line -> {
                     val fromM = filteringParameters.getFrom();
@@ -156,12 +152,12 @@ public class NetSuiteService {
                 .filter(line -> {
                     val projectInternalNumbers = filteringParameters.getProjectInternalNumbers();
 
-                    return projectInternalNumbers.isEmpty() || line.getProjectInternalNumber().map(projectInternalNumbers::contains).orElse(true);
+                    return projectInternalNumbers.isEmpty() || line.getProject().map(Project::getInternalNumber).map(projectInternalNumbers::contains).orElse(true);
                 })
                 .filter(line -> {
                     val costCenterInternalNumbers = filteringParameters.getCostCenterInternalNumbers();
 
-                    return costCenterInternalNumbers.isEmpty() || line.getCostCenterInternalNumber().map(costCenterInternalNumbers::contains).orElse(true);
+                    return costCenterInternalNumbers.isEmpty() || line.getCostCenter().map(CostCenter::getInternalNumber).map(costCenterInternalNumbers::contains).orElse(true);
                 })
                 .collect(Collectors.toSet());
     }

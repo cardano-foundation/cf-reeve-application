@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.NOT_VALIDATED;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
-import static org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource.NETSUITE;
 
 @Service("netsuite_adapter.TransactionLineConverter")
 @RequiredArgsConstructor
@@ -122,11 +121,6 @@ public class TransactionConverter {
         if (results.isEmpty()) {
             return Either.right(Optional.empty());
         }
-//
-//        for (val result : results) {
-//            log.info("tx_number: {}, tx_line_id:{}, project:{}", result.transactionNumber(), result.lineID(), result.project());
-//        }
-
         val first = results.getFirst();
 
         val txItems = results.stream().map(result -> {
@@ -152,8 +146,16 @@ public class TransactionConverter {
                 .entryDate(first.date())
                 .transactionType(transactionTypeMapper.apply(first.type()))
                 .organisation(new org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation(organisation.id(), organisationCurrency))
-                .costCenterInternalNumber(normaliseString(first.costCenter()))
-                .projectInternalNumber(normaliseString(first.project()))
+                .costCenter(normaliseString(first.costCenter()).map(internalNumber -> {
+                    return CostCenter.builder()
+                            .internalNumber(internalNumber)
+                            .build();
+                }))
+                .project(normaliseString(first.project()).map(internalNumber -> {
+                    return Project.builder()
+                            .internalNumber(internalNumber)
+                            .build();
+                }))
                 .fxRate(first.exchangeRate())
                 .ledgerDispatchApproved(true) // TODO remove this, for now only for testing
                 .validationStatus(NOT_VALIDATED)

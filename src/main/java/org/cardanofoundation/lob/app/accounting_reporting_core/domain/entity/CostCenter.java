@@ -11,20 +11,27 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 
 @Embeddable
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
-public class Currency {
-
-    @Nullable
-    private String id;
+public class CostCenter {
 
     @NotBlank
     private String internalNumber;
 
-    public Optional<String> getId() {
-        return Optional.ofNullable(id);
+    @Nullable
+    private String externalNumber;
+
+    @Nullable
+    private String name;
+
+    public Optional<String> getExternalNumber() {
+        return Optional.ofNullable(externalNumber);
+    }
+
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
     }
 
 }

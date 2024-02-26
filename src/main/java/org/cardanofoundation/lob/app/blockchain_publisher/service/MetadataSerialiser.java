@@ -7,7 +7,6 @@ import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -49,8 +48,8 @@ public class MetadataSerialiser {
 
         metadataMap.put("type", transaction.getTransactionType().name());
 
-        transaction.getCostCenterInternalNumber().ifPresent(costCenterInternalNumber -> metadataMap.put("cost_center_internal_number", costCenterInternalNumber));
-        transaction.getProjectInternalNumber().ifPresent(projectInternalNumber -> metadataMap.put("project_internal_number", projectInternalNumber));
+        transaction.getCostCenter().ifPresent(costCenter -> metadataMap.put("cost_center", serialise(costCenter)));
+        transaction.getProject().ifPresent(project -> metadataMap.put("project", serialise(project)));
 
         metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
@@ -72,6 +71,21 @@ public class MetadataSerialiser {
         if (transactionItemsMetadataList.size() > 0) {
             metadataMap.put("items", transactionItemsMetadataList);
         }
+
+        return metadataMap;
+    }
+
+    private static MetadataMap serialise(CostCenter costCenter) {
+        val metadataMap = MetadataBuilder.createMap();
+        metadataMap.put("name", costCenter.getName());
+
+        return metadataMap;
+    }
+
+    private static MetadataMap serialise(Project project) {
+        val metadataMap = MetadataBuilder.createMap();
+//        metadataMap.put("internal_number", project.getInternalNumber());
+        metadataMap.put("code", project.getCode());
 
         return metadataMap;
     }
@@ -98,15 +112,15 @@ public class MetadataSerialiser {
     private static MetadataMap serialise(Currency currency) {
         val metadataMap = MetadataBuilder.createMap();
         metadataMap.put("id", currency.getId());
-        metadataMap.put("internal_number", currency.getInternalNumber());
+        //metadataMap.put("internal_number", currency.getInternalNumber());
 
         return metadataMap;
     }
 
     private static MetadataMap serialise(Vat vat) {
         val vatMetadataMap = MetadataBuilder.createMap();
-        vatMetadataMap.put("internal_number", vat.getInternalNumber());
         vatMetadataMap.put("rate", vat.getRate().toEngineeringString());
+        //vatMetadataMap.put("internal_number", vat.getInternalNumber());
 
         return vatMetadataMap;
     }

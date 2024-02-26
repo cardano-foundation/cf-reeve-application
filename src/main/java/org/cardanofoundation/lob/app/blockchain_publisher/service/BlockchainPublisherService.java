@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.L1SubmissionData;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepositoryGateway;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,8 +51,14 @@ public class BlockchainPublisherService {
     private void notifyTransactionStored(OrganisationTransactions organisationTransactions, Set<TransactionEntity> allNewAndOldTransactionsStored) {
         Iterables.partition(allNewAndOldTransactionsStored, dispatchBatchSize).forEach(txEntities -> {
             val txStatusUpdates = txEntities.stream()
-                    .map(txEntity -> new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(),
-                            blockchainPublishStatusMapper.convert(txEntity.getPublishStatus(), txEntity.getOnChainAssuranceLevel())))
+                    .map(txEntity -> {
+                        val assuranceLevelM = txEntity.getL1SubmissionData()
+                                .flatMap(L1SubmissionData::getAssuranceLevel);
+                        val blockchainPublishStatusM = txEntity.getL1SubmissionData().flatMap(L1SubmissionData::getPublishStatus);
+
+                        return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(),
+                                blockchainPublishStatusMapper.convert(blockchainPublishStatusM, assuranceLevelM));
+                    })
                     .collect(Collectors.toSet());
 
             applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(organisationTransactions.organisationId(), txStatusUpdates));

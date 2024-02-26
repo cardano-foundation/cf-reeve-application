@@ -6,7 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainTransactions;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1SubmissionData;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1Submission;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.L1SubmissionData;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepository;
 import org.cardanofoundation.lob.app.blockchain_publisher.service.transation_submit.TransactionSubmissionService;
@@ -140,14 +141,16 @@ public class BlockchainTransactionsDispatcher {
     }
 
     @Transactional
-    private void updateTransactionStatuses(L1SubmissionData l1SubmissionData,
+    private void updateTransactionStatuses(L1Submission l1Submission,
                                            BlockchainTransactions blockchainTransactions) {
         for (val txEntity : blockchainTransactions.submittedTransactions()) {
-            txEntity.setL1TransactionHash(l1SubmissionData.txHash());
-            txEntity.setL1AssuranceLevel(VERY_LOW);
-            txEntity.setPublishStatus(VISIBLE_ON_CHAIN);
-            txEntity.setL1AbsoluteSlot(l1SubmissionData.absoluteSlot());
-            txEntity.setL1CreationSlot(blockchainTransactions.creationSlot());
+            txEntity.setL1SubmissionData(org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.L1SubmissionData.builder()
+                    .transactionHash(l1Submission.txHash())
+                    .absoluteSlot(l1Submission.absoluteSlot())
+                    .creationSlot(blockchainTransactions.creationSlot())
+                    .assuranceLevel(VERY_LOW)
+                    .publishStatus(VISIBLE_ON_CHAIN)
+                    .build());
 
             transactionEntityRepository.save(txEntity);
         }
@@ -160,8 +163,8 @@ public class BlockchainTransactionsDispatcher {
 
         val txStatuses = submittedTransactions.stream()
                 .map(txEntity -> {
-                    val publishStatus = txEntity.getPublishStatus();
-                    val onChainAssuranceLevelM = txEntity.getOnChainAssuranceLevel();
+                    val publishStatus = txEntity.getL1SubmissionData().flatMap(L1SubmissionData::getPublishStatus);
+                    val onChainAssuranceLevelM = txEntity.getL1SubmissionData().flatMap(L1SubmissionData::getAssuranceLevel);
 
                     val status = blockchainPublishStatusMapper.convert(publishStatus, onChainAssuranceLevelM);
 

@@ -30,8 +30,9 @@ public class TransactionConverter {
         transactionEntity.setDocument(convert(transaction.getDocument()));
         transactionEntity.setFxRate(transaction.getFxRate());
 
-        transactionEntity.setCostCenterInternalNumber(transaction.getCostCenterInternalNumber().orElse(null));
-        transactionEntity.setProjectInternalNumber(transaction.getProjectInternalNumber().orElse(null));
+        transactionEntity.setCostCenter(convertCostCenter(transaction.getCostCenter()));
+        transactionEntity.setProject(convertProject(transaction.getProject()));
+
         transactionEntity.setValidationStatus(transaction.getValidationStatus());
         transactionEntity.setLedgerDispatchStatus(transaction.getLedgerDispatchStatus());
         transactionEntity.setLedgerDispatchApproved(transaction.isLedgerDispatchApproved());
@@ -61,6 +62,23 @@ public class TransactionConverter {
         transactionEntity.setUpdatedBy("system");
 
         return transactionEntity;
+    }
+
+    private Project convertProject(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project> project) {
+        return project.map(p -> Project.builder()
+                .internalNumber(p.getInternalNumber())
+                .code(p.getCode().orElse(null))
+                .build())
+                .orElse(null);
+    }
+
+    private CostCenter convertCostCenter(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter> costCenter) {
+        return costCenter.map(cc -> CostCenter.builder()
+                .internalNumber(cc.getInternalNumber())
+                .externalNumber(cc.getExternalNumber().orElse(null))
+                .name(cc.getName().orElse(null))
+                .build())
+                .orElse(null);
     }
 
     private static Organisation convertOrganisation(Transaction transaction) {
@@ -126,8 +144,18 @@ public class TransactionConverter {
                 .transactionType(transactionEntity.getTransactionType())
                 .internalTransactionNumber(transactionEntity.getTransactionInternalNumber())
                 .fxRate(transactionEntity.getFxRate())
-                .costCenterInternalNumber(transactionEntity.getCostCenterInternalNumber())
-                .projectInternalNumber(transactionEntity.getProjectInternalNumber())
+
+                .costCenter(transactionEntity.getCostCenter().map(costCenter -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter.builder()
+                        .internalNumber(costCenter.getInternalNumber())
+                        .externalNumber(costCenter.getExternalNumber())
+                        .name(costCenter.getName())
+                        .build()))
+
+                .project(transactionEntity.getProject().map(project -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project.builder()
+                        .internalNumber(project.getInternalNumber())
+                        .code(project.getCode())
+                        .build()))
+
                 .ledgerDispatchStatus(transactionEntity.getLedgerDispatchStatus())
                 .ledgerDispatchApproved(transactionEntity.getLedgerDispatchApproved())
                 .transactionItems(items)

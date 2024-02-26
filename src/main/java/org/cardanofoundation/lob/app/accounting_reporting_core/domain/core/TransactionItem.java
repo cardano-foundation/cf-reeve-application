@@ -8,7 +8,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsBase64;
+import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsHex;
 
 @Builder(toBuilder = true)
 @Getter
@@ -35,7 +35,7 @@ public class TransactionItem {
     public static String id(String organisationId,
                             String internalTransactionNumber,
                             String lineNo) {
-        return digestAsBase64(STR."\{organisationId}::\{internalTransactionNumber}::\{lineNo}");
+        return digestAsHex(STR."\{organisationId}::\{internalTransactionNumber}::\{lineNo}");
     }
 
 }

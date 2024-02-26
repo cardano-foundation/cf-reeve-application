@@ -2,11 +2,10 @@ package org.cardanofoundation.lob.app.blockchain_publisher.service.transation_su
 
 import com.bloxbean.cardano.client.api.exception.ApiException;
 import com.bloxbean.cardano.client.backend.api.BackendService;
-import com.bloxbean.cardano.client.backend.model.TransactionContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1SubmissionData;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1Submission;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +36,7 @@ public class DefaultTransactionSubmissionService implements TransactionSubmissio
     }
 
     @Override
-    public L1SubmissionData submitTransactionWithConfirmation(byte[] txData) throws TimeoutException, InterruptedException, ApiException {
+    public L1Submission submitTransactionWithConfirmation(byte[] txData) throws TimeoutException, InterruptedException, ApiException {
         val txHash = submitTransaction(txData);
 
         val start = LocalDateTime.now(clock);
@@ -55,7 +54,7 @@ public class DefaultTransactionSubmissionService implements TransactionSubmissio
 
             val transactionContent = transactionDetailsR.getValue();
 
-            return new L1SubmissionData(transactionContent.getHash(), transactionContent.getSlot());
+            return new L1Submission(transactionContent.getHash(), transactionContent.getSlot());
         }
 
         throw new TimeoutException(STR."Transaction with txHash: \{txHash} not confirmed within timeout!");
