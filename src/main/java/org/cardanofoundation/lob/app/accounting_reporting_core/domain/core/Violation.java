@@ -57,6 +57,7 @@ public record Violation(Priority priority,
         TRANSACTION_ITEMS_EMPTY,
         VAT_RATE_NOT_FOUND,
         CURRENCY_RATE_NOT_FOUND,
+        COST_CENTER_NOT_FOUND,
     }
 
 }

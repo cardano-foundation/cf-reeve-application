@@ -1,0 +1,19 @@
+package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
+
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+
+@Embeddable
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
+@Builder
+@AllArgsConstructor
+public class Project {
+
+    @NotBlank
+    private String code;
+
+}

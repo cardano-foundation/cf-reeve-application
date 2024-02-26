@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsBase64;
+import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsHex;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -45,15 +45,16 @@ public class Transaction {
     private BigDecimal fxRate;
 
     @Builder.Default
-    Optional<@Size(min = 1, max =  255) String> costCenterInternalNumber = Optional.empty();
+    private Optional<CostCenter> costCenter = Optional.empty();
 
     @Builder.Default
-    Optional<@Size(min = 1, max =  255) String> projectInternalNumber = Optional.empty();
+    private Optional<Project> project = Optional.empty();
 
     @NotNull
     @Builder.Default
     private ValidationStatus validationStatus = ValidationStatus.NOT_VALIDATED;
 
+    // TODO turn this into two fields, apptrove and dispatch approve
     @Builder.Default
     private boolean ledgerDispatchApproved = false;
 
@@ -64,7 +65,7 @@ public class Transaction {
     public static String id(ERPDataSource erpDataSource,
                             String organisationId,
                             String internalTransactionNumber) {
-        return digestAsBase64(STR."\{erpDataSource.name()}::\{organisationId}::\{internalTransactionNumber}");
+        return digestAsHex(STR."\{erpDataSource.name()}::\{organisationId}::\{internalTransactionNumber}");
     }
 
     public record WithPossibleViolations(Transaction transaction,

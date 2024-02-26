@@ -3,8 +3,6 @@ package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.OnChainAssuranceLevel;
 import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
 
 import javax.annotation.Nullable;
@@ -41,7 +39,7 @@ public class TransactionEntity extends AuditEntity {
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),
             @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id")),
-            @AttributeOverride(name = "currency.internalNumber", column = @Column(name = "organisation_currency_internal_number"))
+            @AttributeOverride(name = "currency.externalNumber", column = @Column(name = "organisation_currency_internal_number"))
     })
     private Organisation organisation;
 
@@ -55,65 +53,45 @@ public class TransactionEntity extends AuditEntity {
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
 
+    @Embedded
     @Nullable
-    @Column(name = "cost_center_internal_number")
-    private String costCenterInternalNumber;
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
+    })
+    private CostCenter costCenter;
 
     @Nullable
-    @Column(name = "project_internal_number")
-    private String projectInternalNumber;
+    @AttributeOverrides({
+            @AttributeOverride(name = "internalNumber", column = @Column(name = "project_internal_number")),
+            @AttributeOverride(name = "code", column = @Column(name = "project_code"))
+    })
+    private Project project;
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "internalDocumentNumber", column = @Column(name = "document_internal_document_number")),
-            @AttributeOverride(name = "vat.internalNumber", column = @Column(name = "document_vat_internal_number")),
+            //@AttributeOverride(name = "vat.internalNumber", column = @Column(name = "document_vat_internal_number")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
             @AttributeOverride(name = "counterparty.internalNumber", column = @Column(name = "document_counterparty_internal_number")),
             @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
-            @AttributeOverride(name = "currency.internalNumber", column = @Column(name = "document_currency_internal_number")),
+            //@AttributeOverride(name = "currency.internalNumber", column = @Column(name = "document_currency_internal_number")),
     })
     private Document document;
 
-    @Column(name = "publish_status", nullable = false)
-    @Enumerated(STRING)
-    private BlockchainPublishStatus publishStatus;
-
     @Nullable
-    @Column(name = "l1_transaction_hash")
-    private String l1TransactionHash;
-
-    @Nullable
-    @Column(name = "l1_absolute_slot")
-    private Long l1AbsoluteSlot;
-
-    @Nullable
-    @Column(name = "l1_creation_slot")
-    private Long l1CreationSlot;
-
-    @Nullable
-    @Column(name = "l1_assurance_level")
-    @Enumerated(STRING)
-    private OnChainAssuranceLevel l1AssuranceLevel;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "transactionHash", column = @Column(name = "l1_transaction_hash")),
+            @AttributeOverride(name = "absoluteSlot", column = @Column(name = "l1_absolute_slot")),
+            @AttributeOverride(name = "creationSlot", column = @Column(name = "l1_creation_slot")),
+            @AttributeOverride(name = "assuranceLevel", column = @Column(name = "l1_assurance_level")),
+            @AttributeOverride(name = "publishStatus", column = @Column(name = "l1_publish_status"))
+    })
+    private L1SubmissionData l1SubmissionData;
 
     @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     @Builder.Default
     private Set<TransactionItemEntity> items = new LinkedHashSet<>();
-
-    public Optional<OnChainAssuranceLevel> getOnChainAssuranceLevel() {
-        return Optional.ofNullable(l1AssuranceLevel);
-    }
-
-    public Optional<String> getL1TransactionHash() {
-        return Optional.ofNullable(l1TransactionHash);
-    }
-
-    public Optional<Long> getL1CreationSlot() {
-        return Optional.ofNullable(l1CreationSlot);
-    }
-
-    public Optional<OnChainAssuranceLevel> getL1AssuranceLevel() {
-        return Optional.ofNullable(l1AssuranceLevel);
-    }
 
     @Override
     public int hashCode() {
@@ -135,12 +113,16 @@ public class TransactionEntity extends AuditEntity {
         return false;
     }
 
-    public Optional<String> getCostCenterInternalNumber() {
-        return Optional.ofNullable(costCenterInternalNumber);
+    public Optional<Project> getProject() {
+        return Optional.ofNullable(project);
     }
 
-    public Optional<String> getProjectInternalNumber() {
-        return Optional.ofNullable(projectInternalNumber);
+    public Optional<CostCenter> getCostCenter() {
+        return Optional.ofNullable(costCenter);
+    }
+
+    public Optional<L1SubmissionData> getL1SubmissionData() {
+        return Optional.ofNullable(l1SubmissionData);
     }
 
 }

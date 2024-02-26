@@ -10,7 +10,7 @@ public enum BlockchainPublishStatus {
 
     VISIBLE_ON_CHAIN, // confirmed to be visible on-chain
 
-    COMPLETED, // confirmed on-chain and a few blocks passed
+    COMPLETED, // confirmed on-chain and e.g. 5 - 40 blocks passed
 
     ROLLBACKED, // signal to resubmit the transaction since it disappeared from on chain
 
@@ -21,11 +21,3 @@ public enum BlockchainPublishStatus {
     }
 
 }
-
-// 5
-
-//40
-// .. expotential
-// 2140
-
-//

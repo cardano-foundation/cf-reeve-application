@@ -29,12 +29,14 @@ public class TransactionConverter {
                 .organisation(convertOrganisation(tx.getOrganisation()))
                 .fxRate(tx.getFxRate())
                 .entryDate(tx.getEntryDate())
-                .projectInternalNumber(tx.getProjectInternalNumber().orElse(null))
-                .costCenterInternalNumber(tx.getCostCenterInternalNumber().orElse(null))
-                .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
+                .costCenter(tx.getCostCenter().map(cc -> new CostCenter(cc.getName().orElseThrow())).orElse(null))
+                .project(tx.getProject().map(pc -> new Project(pc.getCode().orElseThrow())).orElse(null))
+                .l1SubmissionData(L1SubmissionData.builder()
+                        .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
+                        .build())
+                .document(convertDocument(tx.getDocument().orElseThrow()))
                 .build();
 
-        transactionEntity.setDocument(convertDocument(tx.getDocument().orElseThrow())); // at this point we must have document
         transactionEntity.setItems(convertTxItems(tx, transactionEntity));
 
         return transactionEntity;
@@ -52,7 +54,7 @@ public class TransactionConverter {
                 .id(org.getId())
                 .currency(Currency.builder()
                         .id(org.getCurrency().getId().orElseThrow()) // currency ref if is mandatory in the organisation
-                        .internalNumber(org.getCurrency().getInternalNumber())
+                        //.internalNumber(org.getCurrency().getInternalNumber())
                         .build())
                 .build();
     }
@@ -63,11 +65,11 @@ public class TransactionConverter {
 
         document.setCurrency(Currency.builder()
                 .id(doc.getCurrency().getId().orElseThrow()) // at this moment we must have currency id
-                .internalNumber(doc.getCurrency().getInternalNumber())
+                //.internalNumber(doc.getCurrency().getInternalNumber())
                 .build());
 
         document.setVat(doc.getVat().map(vat -> Vat.builder()
-                .internalNumber(vat.getInternalNumber())
+                //.internalNumber(vat.getInternalNumber())
                 .rate(vat.getRate().orElseThrow())
                 .build()).orElse(null));
 

@@ -42,11 +42,15 @@ CREATE TABLE accounting_core_transaction (
    document_counterparty_name VARCHAR(255),
 
    cost_center_internal_number VARCHAR(255),
+   cost_center_external_number VARCHAR(255),
+   cost_center_name VARCHAR(25),
+
    project_internal_number VARCHAR(255),
+   project_code VARCHAR(25),
 
    validation_status VARCHAR(255) NOT NULL,
-   ledger_dispatch_approved BOOLEAN NOT NULL,
 
+   ledger_dispatch_approved BOOLEAN NOT NULL,
    ledger_dispatch_status VARCHAR(255) NOT NULL,
 
    created_by VARCHAR(255),
@@ -128,29 +132,32 @@ CREATE TABLE blockchain_publisher_transaction (
    internal_number VARCHAR(255) NOT NULL,
 
    organisation_currency_id VARCHAR(255) NOT NULL,
-   organisation_currency_internal_number VARCHAR(255) NOT NULL,
+   --organisation_currency_internal_number VARCHAR(255) NOT NULL,
 
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
 
    fx_rate DECIMAL NOT NULL,
 
-   cost_center_internal_number VARCHAR(255),
-   project_internal_number VARCHAR(255),
+   --cost_center_internal_number VARCHAR(255),
+   cost_center_name VARCHAR(25),
+
+   --project_internal_number VARCHAR(255),
+   project_code VARCHAR(25),
 
    document_internal_document_number VARCHAR(255),
    document_currency_id VARCHAR(255) NOT NULL,
-   document_currency_internal_number VARCHAR(255) NOT NULL,
+   -- document_currency_internal_number VARCHAR(255) NOT NULL,
    document_counterparty_internal_number VARCHAR(255),
 
-   document_vat_internal_number VARCHAR(255),
+   -- document_vat_internal_number VARCHAR(255),
    document_vat_rate DECIMAL,
 
    l1_assurance_level VARCHAR(255),
    l1_transaction_hash CHAR(64),
    l1_absolute_slot BIGINT,
    l1_creation_slot BIGINT,
-   publish_status VARCHAR(255) NOT NULL,
+   l1_publish_status VARCHAR(255),
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),

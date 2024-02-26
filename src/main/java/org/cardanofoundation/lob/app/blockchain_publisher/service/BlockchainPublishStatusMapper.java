@@ -12,20 +12,22 @@ import java.util.Optional;
 @Slf4j
 public class BlockchainPublishStatusMapper {
 
-    public LedgerDispatchStatus convert(BlockchainPublishStatus blockchainPublishStatus,
+    public LedgerDispatchStatus convert(Optional<BlockchainPublishStatus> blockchainPublishStatus,
                                         Optional<OnChainAssuranceLevel> assuranceLevelM) {
-        return switch (blockchainPublishStatus) {
-            case STORED, ROLLBACKED -> LedgerDispatchStatus.MARK_DISPATCH;
-            case VISIBLE_ON_CHAIN, SUBMITTED -> LedgerDispatchStatus.DISPATCHED;
-            case COMPLETED -> assuranceLevelM.map(level -> {
-                if (level == OnChainAssuranceLevel.HIGH) {
-                    return LedgerDispatchStatus.COMPLETED;
-                }
+        return blockchainPublishStatus.map(status -> {
+            return switch (status) {
+                case STORED, ROLLBACKED -> LedgerDispatchStatus.MARK_DISPATCH;
+                case VISIBLE_ON_CHAIN, SUBMITTED -> LedgerDispatchStatus.DISPATCHED;
+                case COMPLETED -> assuranceLevelM.map(level -> {
+                    if (level == OnChainAssuranceLevel.HIGH) {
+                        return LedgerDispatchStatus.COMPLETED;
+                    }
 
-                return LedgerDispatchStatus.DISPATCHED;
-            }).orElse(LedgerDispatchStatus.DISPATCHED);
-            case FINALIZED -> LedgerDispatchStatus.FINALIZED;
-        };
+                    return LedgerDispatchStatus.DISPATCHED;
+                }).orElse(LedgerDispatchStatus.DISPATCHED);
+                case FINALIZED -> LedgerDispatchStatus.FINALIZED;
+            };
+        }).orElse(LedgerDispatchStatus.NOT_DISPATCHED);
     }
 
     public Optional<BlockchainPublishStatus> convert(LedgerDispatchStatus ledgerDispatchStatus) {

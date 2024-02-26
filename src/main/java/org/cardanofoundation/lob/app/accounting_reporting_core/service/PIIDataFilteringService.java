@@ -17,6 +17,10 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
 
     @Override
     public Set<Transaction> apply(Set<Transaction> transactions) {
+        if (transactions.isEmpty()) {
+            return transactions;
+        }
+
         log.info("Filtering PII from transactions, size:{}", transactions.size());
 
         return transactions.stream()
@@ -38,8 +42,8 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
                 .collect(Collectors.toSet());
     }
 
-    private Optional<Document> convert(Optional<Document> docM) {
-        return docM.map(doc -> doc.toBuilder()
+    private Optional<Document> convert(Optional<Document> documentM) {
+        return documentM.map(doc -> doc.toBuilder()
                 .counterparty(doc.getCounterparty()
                         .map(counterparty -> counterparty.toBuilder()
                                 .name(Optional.empty())

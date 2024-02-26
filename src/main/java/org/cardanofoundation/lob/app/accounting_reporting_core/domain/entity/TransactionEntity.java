@@ -20,6 +20,7 @@ import java.util.Set;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
 
 @Getter
 @Setter
@@ -55,7 +56,7 @@ public class TransactionEntity extends AuditEntity {
 
     @Column(name = "ledger_dispatch_status", nullable = false)
     @Enumerated(STRING)
-    private LedgerDispatchStatus ledgerDispatchStatus = LedgerDispatchStatus.NOT_DISPATCHED;
+    private LedgerDispatchStatus ledgerDispatchStatus = NOT_DISPATCHED;
 
     @Embedded
     @AttributeOverrides({
@@ -73,16 +74,25 @@ public class TransactionEntity extends AuditEntity {
     @Nullable
     private Document document;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "internalNumber", column = @Column(name = "cost_center_internal_number")),
+            @AttributeOverride(name = "externalNumber", column = @Column(name = "cost_center_external_number")),
+            @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
+    })
+    @Nullable
+    private CostCenter costCenter;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "internalNumber", column = @Column(name = "project_internal_number")),
+            @AttributeOverride(name = "code", column = @Column(name = "project_code"))
+    })
+    @Nullable
+    private Project project;
+
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
-
-    @Nullable
-    @Column(name = "cost_center_internal_number")
-    private String costCenterInternalNumber;
-
-    @Nullable
-    @Column(name = "project_internal_number")
-    private String projectInternalNumber;
 
     @Column(name = "validation_status", nullable = false)
     @Enumerated(STRING)
@@ -94,12 +104,13 @@ public class TransactionEntity extends AuditEntity {
     @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     private Set<TransactionItemEntity> items = new LinkedHashSet<>();
 
-    public Optional<String> getCostCenterInternalNumber() {
-        return Optional.ofNullable(costCenterInternalNumber);
+    public Optional<CostCenter> getCostCenter() {
+        return Optional.ofNullable(costCenter);
     }
 
-    public Optional<String> getProjectInternalNumber() {
-        return Optional.ofNullable(projectInternalNumber);
+    @Nullable
+    public Optional<Project> getProject() {
+        return Optional.ofNullable(project);
     }
 
 }

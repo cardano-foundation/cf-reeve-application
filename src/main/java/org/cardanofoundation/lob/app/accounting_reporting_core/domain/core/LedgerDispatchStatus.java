@@ -8,11 +8,11 @@ public enum LedgerDispatchStatus {
 
     MARK_DISPATCH, // acking that we stored in the database of blockchain publisher (marked for dispatch)
 
-    DISPATCHED, // dispatched to blockchain(s)
+    DISPATCHED, // dispatched to blockchain(s) - tx hash
 
-    COMPLETED,
+    COMPLETED, // tx hash
 
-    FINALIZED; // finalised on blockchain(s)
+    FINALIZED; // finalised on blockchain(s) - tx hash
 
     public static Set<LedgerDispatchStatus> allDispatchedStatuses() {
         return Set.of(MARK_DISPATCH, DISPATCHED, COMPLETED, FINALIZED);

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.COST_CENTER_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -25,7 +26,8 @@ public class ConversionsPipelineTask implements PipelineTask {
                 .transactions().stream()
                 .map(Transaction.WithPossibleViolations::create)
                 .map(this::vatConversion)
-                .map(this::currencyCode)
+                .map(this::currencyCodeConversion)
+                .map(this::costCenterConversion)
                 .toList();
 
         val newViolations = new HashSet<Violation>();
@@ -94,7 +96,7 @@ public class ConversionsPipelineTask implements PipelineTask {
         return violationTransaction;
     }
 
-    public Transaction.WithPossibleViolations currencyCode(Transaction.WithPossibleViolations violationTransaction) {
+    public Transaction.WithPossibleViolations currencyCodeConversion(Transaction.WithPossibleViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
         val documentM = tx.getDocument();
@@ -102,6 +104,7 @@ public class ConversionsPipelineTask implements PipelineTask {
         if (documentM.isEmpty()) {
             return violationTransaction;
         }
+
         val document = documentM.orElseThrow();
 
         if (document.getCurrency().getId().isEmpty()) {
@@ -141,6 +144,50 @@ public class ConversionsPipelineTask implements PipelineTask {
         }
 
         return violationTransaction;
+    }
+
+    public Transaction.WithPossibleViolations costCenterConversion(Transaction.WithPossibleViolations violationTransaction) {
+        val tx = violationTransaction.transaction();
+
+        val costCenterM = tx.getCostCenter();
+
+        if (costCenterM.isEmpty()) {
+            return violationTransaction;
+        }
+
+        val costCenter = costCenterM.orElseThrow();
+
+        val organisationId = tx.getOrganisation().getId();
+        val internalNumber = costCenter.getInternalNumber();
+        val costCenterMappingM = organisationPublicApi.findCostCenterMapping(organisationId, internalNumber);
+
+        if (costCenterMappingM.isEmpty()) {
+            log.warn("COST_CENTER_MAPPING_NOT_FOUND: costCenterInternalNumber: {}", internalNumber);
+
+            val v = Violation.create(
+                    Violation.Priority.NORMAL,
+                    Violation.Type.FATAL,
+                    organisationId,
+                    tx.getId(),
+                    COST_CENTER_NOT_FOUND,
+                    Map.of("internalNumber", internalNumber)
+            );
+
+            return Transaction.WithPossibleViolations.create(tx
+                            .toBuilder()
+                            .validationStatus(FAILED)
+                            .build(),
+                    v);
+        }
+
+        val costCenterMapping = costCenterMappingM.orElseThrow();
+
+        return Transaction.WithPossibleViolations.create(tx.toBuilder()
+                .costCenter(Optional.of(costCenter.toBuilder()
+                        .externalNumber(Optional.of(costCenterMapping.externalNumber()))
+                        .name(Optional.of(costCenterMapping.name()))
+                        .build()))
+                .build());
     }
 
 }

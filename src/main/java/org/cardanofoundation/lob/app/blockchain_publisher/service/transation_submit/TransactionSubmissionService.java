@@ -1,7 +1,7 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.service.transation_submit;
 
 import com.bloxbean.cardano.client.api.exception.ApiException;
-import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1SubmissionData;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1Submission;
 
 import java.util.concurrent.TimeoutException;
 
@@ -20,6 +20,6 @@ public interface TransactionSubmissionService {
      * @param txData
      * @return
      */
-    L1SubmissionData submitTransactionWithConfirmation(byte[] txData) throws TimeoutException, InterruptedException, ApiException;
+    L1Submission submitTransactionWithConfirmation(byte[] txData) throws TimeoutException, InterruptedException, ApiException;
 
 }

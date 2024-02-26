@@ -2,7 +2,7 @@ package org.cardanofoundation.lob.app.organisation.domain.core;
 
 import java.util.List;
 
-import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsBase64;
+import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsHex;
 
 public record Organisation(
         // unique identifier for the organisation
@@ -23,7 +23,7 @@ public record Organisation(
     public static String id(
             String connectorId,
             String foreignSystemId) {
-        return digestAsBase64(STR."\{connectorId}::\{foreignSystemId}");
+        return digestAsHex(STR."\{connectorId}::\{foreignSystemId}");
     }
 
     // TODO refactor application to use concept of connectors
