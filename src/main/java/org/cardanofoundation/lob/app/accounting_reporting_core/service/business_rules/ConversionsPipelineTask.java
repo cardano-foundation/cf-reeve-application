@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
+package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +28,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                 .map(this::vatConversion)
                 .map(this::currencyCodeConversion)
                 .map(this::costCenterConversion)
+                .map(this::projectConversion)
                 .toList();
 
         val newViolations = new HashSet<Violation>();
@@ -159,7 +160,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
         val organisationId = tx.getOrganisation().getId();
         val internalNumber = costCenter.getInternalNumber();
-        val costCenterMappingM = organisationPublicApi.findCostCenterMapping(organisationId, internalNumber);
+        val costCenterMappingM = organisationPublicApi.findCostCenter(organisationId, internalNumber);
 
         if (costCenterMappingM.isEmpty()) {
             log.warn("COST_CENTER_MAPPING_NOT_FOUND: costCenterInternalNumber: {}", internalNumber);
@@ -185,7 +186,51 @@ public class ConversionsPipelineTask implements PipelineTask {
         return Transaction.WithPossibleViolations.create(tx.toBuilder()
                 .costCenter(Optional.of(costCenter.toBuilder()
                         .externalNumber(Optional.of(costCenterMapping.externalNumber()))
-                        .name(Optional.of(costCenterMapping.name()))
+                        .code(Optional.of(costCenterMapping.code()))
+                        .build()))
+                .build());
+    }
+
+    private Transaction.WithPossibleViolations projectConversion(Transaction.WithPossibleViolations violationTransaction) {
+        val tx = violationTransaction.transaction();
+
+        val projectM = tx.getProject();
+
+        if (projectM.isEmpty()) {
+            return violationTransaction;
+        }
+
+        val project = projectM.orElseThrow();
+
+        val organisationId = tx.getOrganisation().getId();
+        val internalNumber = project.getInternalNumber();
+
+        val projectMappingM = organisationPublicApi.findProject(organisationId, internalNumber);
+
+        if (projectMappingM.isEmpty()) {
+            log.warn("PROJECT_CODE MAPPING NOT FOUND: internalNumber: {}", internalNumber);
+
+            val v = Violation.create(
+                    Violation.Priority.NORMAL,
+                    Violation.Type.FATAL,
+                    organisationId,
+                    tx.getId(),
+                    Violation.Code.PROJECT_CODE_NOT_FOUND,
+                    Map.of("internalNumber", internalNumber)
+            );
+
+            return Transaction.WithPossibleViolations.create(tx
+                            .toBuilder()
+                            .validationStatus(FAILED)
+                            .build(),
+                    v);
+        }
+
+        val projectMapping = projectMappingM.orElseThrow();
+
+        return Transaction.WithPossibleViolations.create(tx.toBuilder()
+                .project(Optional.of(project.toBuilder()
+                        .code(Optional.of(projectMapping.code()))
                         .build()))
                 .build());
     }

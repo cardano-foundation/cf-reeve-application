@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.TransactionConverter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 
 @Service
@@ -60,20 +59,20 @@ public class TransactionRepositoryGateway {
                 .collect(Collectors.toSet());
     }
 
-    @Transactional
-    public Set<String> findAllFailedTransactionIds(String organisationId,
-                                                   Set<String> transactionIds) {
-        // TODO what about order by entry date or transaction internal number, etc?
-
-        return transactionRepository.findByValidationStatus(
-                        organisationId,
-                        transactionIds,
-                        Set.of(FAILED))
-                .stream()
-                .map(transactionConverter::convert)
-                .map(Transaction::getId)
-                .collect(Collectors.toSet());
-    }
+//    @Transactional
+//    public Set<String> findAllFailedTransactionIds(String organisationId,
+//                                                   Set<String> transactionIds) {
+//        // TODO what about order by entry date or transaction internal number, etc?
+//
+//        return transactionRepository.findByValidationStatus(
+//                        organisationId,
+//                        transactionIds,
+//                        Set.of(FAILED))
+//                .stream()
+//                .map(transactionConverter::convert)
+//                .map(Transaction::getId)
+//                .collect(Collectors.toSet());
+//    }
 
     private static Set<String> transactionIds(Set<Transaction> passedTransactions) {
         return passedTransactions

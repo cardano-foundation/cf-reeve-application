@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Helper to indicate that all transactions belong to the same organisation
+ * Helper to indicate that all organisationTransactions belong to the same organisation
  *
  * @param organisationId
  * @param transactions

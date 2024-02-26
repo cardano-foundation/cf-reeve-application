@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core.service;
+package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -21,7 +21,7 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
             return transactions;
         }
 
-        log.info("Filtering PII from transactions, size:{}", transactions.size());
+        log.info("Filtering PII from organisationTransactions, size:{}", transactions.size());
 
         return transactions.stream()
                 .map(trx -> {

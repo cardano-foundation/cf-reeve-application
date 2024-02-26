@@ -2,7 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.resource;
 
 
 import lombok.RequiredArgsConstructor;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.AccountingCoreService;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.AccountingCoreService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +24,7 @@ public class AccountingCoreResource {
 //@RequestMapping("/api/netsuite")
 //@Slf4j
 //@RequiredArgsConstructor
-//@Tag(name = "NetSuite", description = "The NetSuite API")
+//@Tag(code = "NetSuite", description = "The NetSuite API")
 //public class NetSuiteResource {
 //
 //    private final NetSuiteService netSuiteService;

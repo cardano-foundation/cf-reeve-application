@@ -78,7 +78,7 @@ public class TransactionEntity extends AuditEntity {
     @AttributeOverrides({
             @AttributeOverride(name = "internalNumber", column = @Column(name = "cost_center_internal_number")),
             @AttributeOverride(name = "externalNumber", column = @Column(name = "cost_center_external_number")),
-            @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
+            @AttributeOverride(name = "code", column = @Column(name = "cost_center_code"))
     })
     @Nullable
     private CostCenter costCenter;

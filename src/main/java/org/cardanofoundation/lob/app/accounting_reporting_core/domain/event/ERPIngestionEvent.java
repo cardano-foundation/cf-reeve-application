@@ -20,7 +20,7 @@ import java.util.UUID;
 @DomainEvent
 public class ERPIngestionEvent {
 
-    private UUID extractionId;
+    private UUID lotId;
     private String initiator;
     private FilteringParameters filteringParameters;
     private OrganisationTransactions organisationTransactions;

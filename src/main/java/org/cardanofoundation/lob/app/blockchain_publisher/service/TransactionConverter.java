@@ -29,7 +29,7 @@ public class TransactionConverter {
                 .organisation(convertOrganisation(tx.getOrganisation()))
                 .fxRate(tx.getFxRate())
                 .entryDate(tx.getEntryDate())
-                .costCenter(tx.getCostCenter().map(cc -> new CostCenter(cc.getName().orElseThrow())).orElse(null))
+                .costCenter(tx.getCostCenter().map(cc -> new CostCenter(cc.getCode().orElseThrow())).orElse(null))
                 .project(tx.getProject().map(pc -> new Project(pc.getCode().orElseThrow())).orElse(null))
                 .l1SubmissionData(L1SubmissionData.builder()
                         .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))

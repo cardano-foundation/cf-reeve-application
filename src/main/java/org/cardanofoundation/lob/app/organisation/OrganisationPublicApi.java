@@ -49,12 +49,12 @@ public class OrganisationPublicApi {
         return currencyService.findByCurrencyId(currencyId);
     }
 
-    public Optional<CostCenterMapping> findCostCenterMapping(String organisationId, String costCenterInternalNumber) {
-        return costCenterMappingService.getCostCenter(organisationId, costCenterInternalNumber);
+    public Optional<CostCenterMapping> findCostCenter(String organisationId, String internalNumber) {
+        return costCenterMappingService.getCostCenter(organisationId, internalNumber);
     }
 
-    public Optional<ProjectMapping> findProject(String organisationId, String costCenterInternalNumber) {
-        return projectMappingService.getProject(organisationId, costCenterInternalNumber);
+    public Optional<ProjectMapping> findProject(String organisationId, String internalNumber) {
+        return projectMappingService.getProject(organisationId, internalNumber);
     }
 
 }
