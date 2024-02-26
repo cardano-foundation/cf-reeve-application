@@ -24,14 +24,14 @@ public class CostCenter {
     private String externalNumber;
 
     @Nullable
-    private String name;
+    private String code;
 
     public Optional<String> getExternalNumber() {
         return Optional.ofNullable(externalNumber);
     }
 
-    public Optional<String> getName() {
-        return Optional.ofNullable(name);
+    public Optional<String> getCode() {
+        return Optional.ofNullable(code);
     }
 
 }

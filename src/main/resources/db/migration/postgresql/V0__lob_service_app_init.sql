@@ -43,7 +43,7 @@ CREATE TABLE accounting_core_transaction (
 
    cost_center_internal_number VARCHAR(255),
    cost_center_external_number VARCHAR(255),
-   cost_center_name VARCHAR(25),
+   cost_center_code VARCHAR(25),
 
    project_internal_number VARCHAR(255),
    project_code VARCHAR(25),
@@ -140,7 +140,7 @@ CREATE TABLE blockchain_publisher_transaction (
    fx_rate DECIMAL NOT NULL,
 
    --cost_center_internal_number VARCHAR(255),
-   cost_center_name VARCHAR(25),
+   cost_center_code VARCHAR(25),
 
    --project_internal_number VARCHAR(255),
    project_code VARCHAR(25),

@@ -1,10 +1,8 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-
-import javax.annotation.Nullable;
-import java.util.Optional;
 
 @Embeddable
 @Getter
@@ -15,6 +13,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CostCenter {
 
-    private String name;
+    @NotBlank
+    private String code;
 
 }

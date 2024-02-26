@@ -77,7 +77,7 @@ public class MetadataSerialiser {
 
     private static MetadataMap serialise(CostCenter costCenter) {
         val metadataMap = MetadataBuilder.createMap();
-        metadataMap.put("name", costCenter.getName());
+        metadataMap.put("code", costCenter.getCode());
 
         return metadataMap;
     }

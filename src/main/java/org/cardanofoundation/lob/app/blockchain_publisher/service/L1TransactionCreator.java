@@ -59,7 +59,7 @@ public class L1TransactionCreator {
     private Optional<BlockchainTransactions> createTransaction(String organisationId,
                                                                Set<TransactionEntity> transactions,
                                                                long creationSlot) {
-        log.info("Splitting {} transactions into blockchain transactions", transactions.size());
+        log.info("Splitting {} organisationTransactions into blockchain organisationTransactions", transactions.size());
 
         val transactionsBatch = new LinkedHashSet<TransactionEntity>();
 

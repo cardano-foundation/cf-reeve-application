@@ -8,6 +8,7 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
+import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
@@ -22,6 +23,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.NOT_VALIDATED;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
+import static org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity.ERROR;
 
 @Service("netsuite_adapter.TransactionLineConverter")
 @RequiredArgsConstructor
@@ -44,20 +46,6 @@ public class TransactionConverter {
 
         val searchResultsByOrganisation = new ArrayList<OrganisationSearchResults>();
         for (val searchResultItem : searchResultTransactionItems) {
-            val validationIssues = validator.validate(searchResultItem);
-            val isValid = validationIssues.isEmpty();
-
-            if (!isValid) {
-                log.error("Invalid netsuite transaction line item: {}", searchResultItem);
-
-                val issue = Problem.builder()
-                        .withTitle("NETSUITE_ADAPTER::INVALID_TRANSACTION_LINE")
-                        .withDetail(STR."Invalid netsuite transaction line item, line: \{searchResultItem}")
-                        .build();
-
-                return Either.left(issue);
-            }
-
             val organisationId = Organisation.id(connectorId, String.valueOf(searchResultItem.subsidiary()));
             val organisationM = organisationPublicApi.findByOrganisationId(organisationId);
 
@@ -67,6 +55,20 @@ public class TransactionConverter {
                 val issue = Problem.builder()
                         .withTitle("NETSUITE_ADAPTER::ORGANISATION_MAPPING_NOT_FOUND")
                         .withDetail(STR."Organisation mapping not found for organisationId: \{organisationId}, subsidary: \{searchResultItem.subsidiary()}")
+                        .build();
+
+                return Either.left(issue);
+            }
+
+            val validationIssues = validator.validate(searchResultItem);
+            val isValid = validationIssues.isEmpty();
+
+            if (!isValid) {
+                log.error("Invalid netsuite transaction line item: {}", searchResultItem);
+
+                val issue = Problem.builder()
+                        .withTitle("NETSUITE_ADAPTER::INVALID_TRANSACTION_LINE")
+                        .withDetail(STR."Invalid netsuite transaction line item, line: \{searchResultItem}")
                         .build();
 
                 return Either.left(issue);
@@ -95,13 +97,7 @@ public class TransactionConverter {
             for (val transactionNumberEntry : searchResultItemsPerTransactionNumber.entrySet()) {
                 val searchResultItems = transactionNumberEntry.getValue();
 
-                val transactionE = createTransactionFromSearchResultItems(organisation, searchResultItems);
-
-                if (transactionE.isLeft()) {
-                    return Either.left(transactionE.getLeft());
-                }
-
-                val transactionM = transactionE.get();
+                val transactionM = createTransactionFromSearchResultItems(organisation, searchResultItems);
 
                 transactionM.ifPresent(transaction -> {
                     transactionsByOrganisations
@@ -116,11 +112,12 @@ public class TransactionConverter {
         return Either.right(transactionsByOrganisations);
     }
 
-    private Either<Problem, Optional<Transaction>> createTransactionFromSearchResultItems(Organisation organisation,
-                                                                                          List<SearchResultTransactionItem> results) {
+    private Optional<Transaction> createTransactionFromSearchResultItems(Organisation organisation,
+                                                                         List<SearchResultTransactionItem> results) {
         if (results.isEmpty()) {
-            return Either.right(Optional.empty());
+            return Optional.empty();
         }
+
         val first = results.getFirst();
 
         val txItems = results.stream().map(result -> {
@@ -138,9 +135,10 @@ public class TransactionConverter {
                 .collect(Collectors.toSet());
 
         val baseCurrency = organisation.currency();
-        val organisationCurrency = new Currency(Optional.of(baseCurrency.currencyId()), baseCurrency.internalNumber());
+        val organisationCurrency = new Currency(Optional.of(baseCurrency.currencyId()),
+                baseCurrency.internalNumber());
 
-        return Either.right(Optional.of(Transaction.builder()
+        return Optional.of(Transaction.builder()
                 .id(Transaction.id(ERPDataSource.NETSUITE, organisation.id(), first.transactionNumber()))
                 .internalTransactionNumber(first.transactionNumber())
                 .entryDate(first.date())
@@ -161,7 +159,7 @@ public class TransactionConverter {
                 .validationStatus(NOT_VALIDATED)
                 .document(convertDocument(results, first))
                 .transactionItems(txItems)
-                .build()));
+                .build());
     }
 
     private static Optional<Document> convertDocument(List<SearchResultTransactionItem> results,

@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core.service.pipeline;
+package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 
 @RequiredArgsConstructor
 @Slf4j
-public class PreProcessingPipelineTask implements PipelineTask {
+public class PostProcessorPipelineTask implements PipelineTask {
 
     private final TransactionRepositoryGateway transactionRepositoryGateway;
 
@@ -50,10 +50,7 @@ public class PreProcessingPipelineTask implements PipelineTask {
         val dispatchedTransactionIds = dispatchedTransactions.stream().map(Transaction::getId).collect(Collectors.toSet());
         val notDispatchedTransactionIds = Sets.difference(allTransactionIds, dispatchedTransactionIds);
 
-        // if transactions have failed before - we should ignore them and not process them again
-        val notDispatchedAndFailedTransactionIds = transactionRepositoryGateway.findAllFailedTransactionIds(organisationId, notDispatchedTransactionIds);
-
-        val toDispatch = Sets.difference(notDispatchedTransactionIds, notDispatchedAndFailedTransactionIds);
+        val toDispatch = Sets.difference(notDispatchedTransactionIds, dispatchedTransactionIds);
 
 //        log.info("Dispatched transactionsCount: {}", dispatchedTransactionIds.size());
 //        log.info("Not dispatched transactionsCount: {}", notDispatchedTransactionIds.size());

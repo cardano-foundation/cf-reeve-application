@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionDataSearchResult;
@@ -17,8 +18,6 @@ import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteInge
 import org.cardanofoundation.lob.app.netsuite_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MD5Hashing;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MoreCompress;
-import org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity;
-import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity.ERROR;
 
 @Service
 @Slf4j
@@ -47,6 +44,8 @@ public class NetSuiteService {
     private final ObjectMapper objectMapper;
 
     private final TransactionConverter transactionConverter;
+
+    private final BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
 
     // TODO this this over properly
     @Value("${lob.connector.id:jhu765}")
@@ -89,34 +88,45 @@ public class NetSuiteService {
         if (coreTransactionsE.isEmpty()) {
             val issue = coreTransactionsE.getLeft();
 
-            applicationEventPublisher.publishEvent(NotificationEvent.create(NotificationSeverity.ERROR, issue));
+            log.warn("Error converting NetSuite search, issue:{}",issue);
 
-            log.warn("Error converting NetSuite search result: {}", coreTransactionsE.getLeft().getDetail());
             return;
         }
         val coreTransactionsToOrganisationMap = coreTransactionsE.get();
 
         log.info("CoreTransactionLines count: {}", coreTransactionsToOrganisationMap.size());
 
-        coreTransactionsToOrganisationMap.forEach((organisationId, coreTransactions) -> {
-            val filteredCoreTransactions = applyExtractionParameters(filteringParameters, coreTransactions);
+        val lotId = netsuiteIngestion.getId();
 
-            if (filteredCoreTransactions.isEmpty()) {
-                log.warn("No core transactions to process for organisationId: {}", organisationId);
+        coreTransactionsToOrganisationMap.forEach((organisationId, coreTransactions) -> {
+            log.info("before business process rules tx count: {}", coreTransactions.size());
+
+            val transformationResult = businessRulesPipelineProcessor.run(
+                    new OrganisationTransactions(organisationId, coreTransactions),
+                    OrganisationTransactions.empty(organisationId));
+
+            val txs = transformationResult.organisationTransactions().transactions();
+            log.info("after business process tx count: {}", txs.size());
+
+            val transactionsWithExtractionParametersApplied = applyExtractionParameters(filteringParameters, txs);
+
+            log.info("after filtering tx count: {}", transactionsWithExtractionParametersApplied.size());
+
+            if (transactionsWithExtractionParametersApplied.isEmpty()) {
+                log.warn("No core organisationTransactions to process for organisationId: {}", organisationId);
                 return;
             }
 
             log.info("Publishing ERPIngestionEvent event, organisationId: {}, tx count: {}", organisationId, coreTransactions.size());
 
-            val netsuiteIngestionId = netsuiteIngestion.getId();
-
-            Iterables.partition(filteredCoreTransactions, sendBatchSize).forEach(txPartition -> {
+            Iterables.partition(transactionsWithExtractionParametersApplied, sendBatchSize).forEach(txPartition -> {
                 applicationEventPublisher.publishEvent(new ERPIngestionEvent(
-                        netsuiteIngestionId,
+                        lotId,
                         initiator,
                         filteringParameters,
                         new OrganisationTransactions(organisationId, Sets.newHashSet(txPartition))));
             });
+
         });
 
         log.info("NetSuite ingestion completed.");
@@ -150,14 +160,14 @@ public class NetSuiteService {
                     return organisationIds.isEmpty() || organisationIds.contains(line.getOrganisation().getId());
                 })
                 .filter(line -> {
-                    val projectInternalNumbers = filteringParameters.getProjectInternalNumbers();
+                    val projectCodes = filteringParameters.getProjectCodes();
 
-                    return projectInternalNumbers.isEmpty() || line.getProject().map(Project::getInternalNumber).map(projectInternalNumbers::contains).orElse(true);
+                    return projectCodes.isEmpty() || line.getProject().flatMap(Project::getCode).map(projectCodes::contains).orElse(true);
                 })
                 .filter(line -> {
-                    val costCenterInternalNumbers = filteringParameters.getCostCenterInternalNumbers();
+                    val costCenterNames = filteringParameters.getCostCenterNames();
 
-                    return costCenterInternalNumbers.isEmpty() || line.getCostCenter().map(CostCenter::getInternalNumber).map(costCenterInternalNumbers::contains).orElse(true);
+                    return costCenterNames.isEmpty() || line.getCostCenter().flatMap(CostCenter::getCode).map(costCenterNames::contains).orElse(true);
                 })
                 .collect(Collectors.toSet());
     }
@@ -175,8 +185,6 @@ public class NetSuiteService {
                     .withDetail(STR."Error retrieving data from NetSuite API, url: \{netSuiteAPI.netsuiteUrl()}")
                     .build();
 
-            applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
-
             return Either.left(netSuiteJsonE.getLeft());
         }
 
@@ -188,8 +196,6 @@ public class NetSuiteService {
                     .withTitle("NETSUITE_ADAPTER::NETSUITE_API_ERROR")
                     .withDetail(STR."No data to read from NetSuite API, url: \{netSuiteAPI.netsuiteUrl()}")
                     .build();
-
-            applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
 
             return Either.left(issue);
         }

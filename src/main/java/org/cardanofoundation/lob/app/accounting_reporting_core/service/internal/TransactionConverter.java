@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core.service;
+package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +76,7 @@ public class TransactionConverter {
         return costCenter.map(cc -> CostCenter.builder()
                 .internalNumber(cc.getInternalNumber())
                 .externalNumber(cc.getExternalNumber().orElse(null))
-                .name(cc.getName().orElse(null))
+                .code(cc.getCode().orElse(null))
                 .build())
                 .orElse(null);
     }
@@ -148,7 +148,7 @@ public class TransactionConverter {
                 .costCenter(transactionEntity.getCostCenter().map(costCenter -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter.builder()
                         .internalNumber(costCenter.getInternalNumber())
                         .externalNumber(costCenter.getExternalNumber())
-                        .name(costCenter.getName())
+                        .code(costCenter.getCode())
                         .build()))
 
                 .project(transactionEntity.getProject().map(project -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project.builder()

@@ -18,6 +18,6 @@ public class CostCenter {
     private Optional<@Size(min = 1, max =  255) String> externalNumber = Optional.empty();
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  25) String> name = Optional.empty();
+    private Optional<@Size(min = 1, max =  25) String> code = Optional.empty();
 
 }

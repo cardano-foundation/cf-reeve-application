@@ -29,9 +29,9 @@ public class FilteringParameters {
     private List<String> organisationIds = List.of();
 
     @Builder.Default
-    private List<String> projectInternalNumbers = List.of();
+    private List<String> projectCodes = List.of();
 
     @Builder.Default
-    private List<String> costCenterInternalNumbers = List.of();
+    private List<String> costCenterNames = List.of();
 
 }
