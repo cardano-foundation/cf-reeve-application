@@ -32,10 +32,9 @@ public class TransactionItem {
     @Builder.Default
     Optional<@Size(min = 1, max =  255) String> accountCodeCredit = Optional.empty();
 
-    public static String id(String organisationId,
-                            String internalTransactionNumber,
+    public static String id(String transactionId,
                             String lineNo) {
-        return digestAsHex(STR."\{organisationId}::\{internalTransactionNumber}::\{lineNo}");
+        return digestAsHex(STR."\{transactionId}::\{lineNo}");
     }
 
 }

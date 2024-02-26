@@ -28,10 +28,10 @@ public class OrganisationService {
                 .findFirst();
     }
 
-    //@Transactional(readOnly = true)
-    public Optional<Organisation> findBy(String connectorId, // e.g. jhu765
-                                         String foreignSystemId) { // e.g. 1 (CF = 1)
-        return findById(Organisation.id(connectorId, foreignSystemId));
-    }
+//    //@Transactional(readOnly = true)
+//    public Optional<Organisation> findBy(String connectorId, // e.g. jhu765
+//                                         String foreignSystemId) { // e.g. 1 (CF = 1)
+//        return findById(Organisation.id(connectorId, foreignSystemId));
+//    }
 
 }

@@ -9,7 +9,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Curre
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
-import org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.NOT_VALIDATED;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
+import static org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource.NETSUITE;
 
 @Service("netsuite_adapter.TransactionLineConverter")
 @RequiredArgsConstructor
@@ -34,9 +34,8 @@ public class TransactionConverter {
 
     private final TransactionTypeMapper transactionTypeMapper;
 
-    // TODO this this over properly
-    @Value("${lob.connector.id:jhu765}")
-    private String connectorId;
+    @Value("${lob.netsuite.connector.id:jhu765}")
+    private String netsuiteConnectorId;
 
     // split results across multiple organisations
     public Either<Problem, Map<String, Set<Transaction>>> convert(List<SearchResultTransactionItem> searchResultTransactionItems) {
@@ -44,7 +43,7 @@ public class TransactionConverter {
 
         val searchResultsByOrganisation = new ArrayList<OrganisationSearchResults>();
         for (val searchResultItem : searchResultTransactionItems) {
-            val organisationId = Organisation.id(connectorId, String.valueOf(searchResultItem.subsidiary()));
+            val organisationId = Organisation.id(NETSUITE, netsuiteConnectorId, String.valueOf(searchResultItem.subsidiary()));
             val organisationM = organisationPublicApi.findByOrganisationId(organisationId);
 
             if (organisationM.isEmpty()) {
@@ -118,8 +117,10 @@ public class TransactionConverter {
 
         val first = results.getFirst();
 
+        val txId = Transaction.id(organisation.id(), first.transactionNumber());
+
         val txItems = results.stream().map(result -> {
-                    val txLineId = TransactionItem.id(organisation.id(), result.transactionNumber(), result.lineID().toString());
+                    val txLineId = TransactionItem.id(txId, result.lineID().toString());
 
                     return TransactionItem.builder()
                             .id(txLineId)
@@ -137,7 +138,7 @@ public class TransactionConverter {
                 baseCurrency.internalNumber());
 
         return Optional.of(Transaction.builder()
-                .id(Transaction.id(ERPDataSource.NETSUITE, organisation.id(), first.transactionNumber()))
+                .id(Transaction.id(organisation.id(), first.transactionNumber()))
                 .internalTransactionNumber(first.transactionNumber())
                 .entryDate(first.date())
                 .transactionType(transactionTypeMapper.apply(first.type()))
