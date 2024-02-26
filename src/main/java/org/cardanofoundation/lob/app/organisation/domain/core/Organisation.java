@@ -11,25 +11,19 @@ public record Organisation(
         String longName, // Cardano Foundation
         List<ERPDataSource> ERPDataSources,
         String connectorId, // company id // application or entity id?
-        String accountSystemProviderId, // foreign system id, e.g. in case of NetSuite this is 1 for CF
+        String erpSystemCompanyId, // foreign system id, e.g. in case of NetSuite this is 1 for CF
         OrganisationCurrency currency
 ) {
 
     public static String testOrgId() {
-        return "dd9b3683caab711c6f955cd7415d12746daf362a7d28e2fa6a81ecd7a3f95a0a";
+        return "1ad9c73900dfb2f2a0d347af1968778ff6e8d4c17960014575dea994e4a9783c";
     }
 
-    // TODO this needs to be thought through
     public static String id(
-            String connectorId,
-            String foreignSystemId) {
-        return digestAsHex(STR."\{connectorId}::\{foreignSystemId}");
-    }
-
-    // TODO refactor application to use concept of connectors
-    // we can connect to multiple systems, e.g. NetSuite, QuickBooks, etc. for one organisation
-    public record Connector() {
-
+            ERPDataSource erpDataSource,
+            String erpSystemConnectorId,
+            String erpSystemCompanyId) {
+        return digestAsHex(STR."\{erpDataSource.name()}::\{erpSystemConnectorId}::\{erpSystemCompanyId}");
     }
 
 }

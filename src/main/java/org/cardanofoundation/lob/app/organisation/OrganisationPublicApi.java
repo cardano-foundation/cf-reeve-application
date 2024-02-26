@@ -28,10 +28,10 @@ public class OrganisationPublicApi {
         return organisationService.listAll();
     }
 
-    public Optional<Organisation> findBy(String connectorId,
-                                         String foreignSystemId) {
-        return organisationService.findBy(connectorId, foreignSystemId);
-    }
+//    public Optional<Organisation> findBy(String connectorId,
+//                                         String foreignSystemId) {
+//        return organisationService.findBy(connectorId, foreignSystemId);
+//    }
 
     public Optional<Organisation> findByOrganisationId(String id) {
         return organisationService.findById(id);
@@ -45,9 +45,9 @@ public class OrganisationPublicApi {
         return organisationVatRepository.findByOrganisationAndInternalNumber(organisationId, internalNumber);
     }
 
-    public Optional<Currency> findByCurrencyId(String currencyId) {
-        return currencyService.findByCurrencyId(currencyId);
-    }
+//    public Optional<Currency> findByCurrencyId(String currencyId) {
+//        return currencyService.findByCurrencyId(currencyId);
+//    }
 
     public Optional<CostCenterMapping> findCostCenter(String organisationId, String internalNumber) {
         return costCenterMappingService.getCostCenter(organisationId, internalNumber);
