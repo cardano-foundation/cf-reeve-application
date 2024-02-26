@@ -8,7 +8,6 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
-import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
@@ -23,7 +22,6 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.NOT_VALIDATED;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
-import static org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity.ERROR;
 
 @Service("netsuite_adapter.TransactionLineConverter")
 @RequiredArgsConstructor
@@ -156,7 +154,7 @@ public class TransactionConverter {
                 }))
                 .fxRate(first.exchangeRate())
                 .validationStatus(NOT_VALIDATED)
-                .ledgerDispatchApproved(organisation.autoApproval())
+                .ledgerDispatchApproved(false)
                 .document(convertDocument(results, first))
                 .transactionItems(txItems)
                 .build());

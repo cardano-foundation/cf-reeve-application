@@ -10,7 +10,6 @@ public record Organisation(
         String shortName,  // CF
         String longName, // Cardano Foundation
         List<ERPDataSource> ERPDataSources,
-        boolean autoApproval,
         String connectorId, // company id // application or entity id?
         String accountSystemProviderId, // foreign system id, e.g. in case of NetSuite this is 1 for CF
         OrganisationCurrency currency
