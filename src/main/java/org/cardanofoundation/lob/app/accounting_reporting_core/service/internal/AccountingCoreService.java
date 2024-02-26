@@ -2,13 +2,16 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ScheduledIngestionEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsApprovedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -16,6 +19,10 @@ import java.util.List;
 public class AccountingCoreService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    private final TransactionRepositoryGateway transactionRepositoryGateway;
+
+    private int maxApprovalBatchSize = 25;
 
     @Transactional
     public void scheduleIngestion(FilteringParameters fp) {
@@ -25,8 +32,26 @@ public class AccountingCoreService {
     }
 
     @Transactional
-    public List<String> approveTransactions(List<String> transactionIds) {
-        return transactionIds;
+    public void readBatchAndApproveTransactions(String organisationId) {
+        log.info("readBatchAndApproveTransactions, organisationId: {}, maxDispatchBatchSize: {}", organisationId, maxApprovalBatchSize);
+
+        val txIds = transactionRepositoryGateway.readApprovalPendingBlockchainTransactionIds(organisationId, maxApprovalBatchSize);
+
+        if (txIds.isEmpty()) {
+            log.info("No transactions to dispatch for organisation: {}", organisationId);
+            return;
+        }
+
+        approveTransactions(organisationId, txIds);
+    }
+
+    @Transactional
+    public void approveTransactions(String organisationId, Set<String> transactionIds) {
+        log.info("approveTransactions, transactionIds: {}", transactionIds);
+
+        transactionRepositoryGateway.approveTransactions(transactionIds);
+
+        applicationEventPublisher.publishEvent(new TxsApprovedEvent(organisationId, transactionIds));
     }
 
 }

@@ -54,7 +54,6 @@ public class Transaction {
     @Builder.Default
     private ValidationStatus validationStatus = ValidationStatus.NOT_VALIDATED;
 
-    // TODO turn this into two fields, apptrove and dispatch approve
     @Builder.Default
     private boolean ledgerDispatchApproved = false;
 
