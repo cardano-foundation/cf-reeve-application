@@ -107,7 +107,7 @@ public class TransactionConverter {
 
                         .counterparty(doc.getCounterparty().map(counterparty -> Counterparty.builder()
                                 .internalNumber(counterparty.getInternalNumber())
-                                .name(counterparty.getName().orElseThrow())
+                                .code(counterparty.getCode().orElseThrow())
                                 .build()).orElse(null)))
 
                 .map(Document.DocumentBuilder::build)
@@ -179,7 +179,7 @@ public class TransactionConverter {
                         .build()))
                 .counterparty(doc.getCounterparty().map(counterparty -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Counterparty.builder()
                         .internalNumber(counterparty.getInternalNumber())
-                        .name(Optional.of(counterparty.getName()))
+                        .code(Optional.of(counterparty.getCode()))
                         .build()))
                 .build());
     }
