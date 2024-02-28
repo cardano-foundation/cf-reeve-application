@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.COST_CENTER_NOT_FOUND;
@@ -29,6 +30,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                 .map(this::currencyCodeConversion)
                 .map(this::costCenterConversion)
                 .map(this::projectConversion)
+                .map(this::accountEventCodesConversion)
                 .toList();
 
         val newViolations = new HashSet<Violation>();
@@ -233,6 +235,77 @@ public class ConversionsPipelineTask implements PipelineTask {
                         .code(Optional.of(projectMapping.code()))
                         .build()))
                 .build());
+    }
+
+    private Transaction.WithPossibleViolations accountEventCodesConversion(Transaction.WithPossibleViolations violationTransaction) {
+        val tx = violationTransaction.transaction();
+
+        val violations = new HashSet<Violation>();
+
+        val items = tx.getTransactionItems().stream()
+                .map(item -> {
+                    val itemBuilder = item.toBuilder();
+
+                    if (item.getAccountCodeDebit().isPresent()) {
+                        val eventRefCodeM = organisationPublicApi.findEventCodeMapping(item.getAccountCodeDebit().orElseThrow());
+                        if (eventRefCodeM.isEmpty()) {
+                            log.warn("ACCOUNT_REF_CODE_MAPPING_NOT_FOUND: debit accountCode: {}", item.getAccountCodeDebit().orElseThrow());
+
+                            val v = Violation.create(
+                                    Violation.Priority.NORMAL,
+                                    Violation.Type.FATAL,
+                                    tx.getOrganisation().getId(),
+                                    tx.getId(),
+                                    Violation.Code.ACCOUNT_CODE_REF_MAPPING_NOT_FOUND,
+                                    Map.of("accountCode", item.getAccountCodeDebit().orElseThrow(), "type", "DEBIT")
+                            );
+
+                            violations.add(v);
+                        } else {
+                            itemBuilder.accountCodeRefDebit(Optional.of(eventRefCodeM.orElseThrow().refCode()));
+                        }
+                    }
+
+                    if (item.getAccountCodeCredit().isPresent()) {
+                        val eventRefCodeM = organisationPublicApi.findEventCodeMapping(item.getAccountCodeCredit().orElseThrow());
+                        if (eventRefCodeM.isEmpty()) {
+                            log.warn("ACCOUNT_REF_CODE_MAPPING_NOT_FOUND: credit accountCode: {}", item.getAccountCodeCredit().orElseThrow());
+
+                            val v = Violation.create(
+                                    Violation.Priority.NORMAL,
+                                    Violation.Type.FATAL,
+                                    tx.getOrganisation().getId(),
+                                    tx.getId(),
+                                    Violation.Code.ACCOUNT_CODE_REF_MAPPING_NOT_FOUND,
+                                    Map.of("accountCode", item.getAccountCodeCredit().orElseThrow(), "type", "CREDIT")
+                            );
+
+                            violations.add(v);
+                        } else {
+                            itemBuilder.accountCodeRefCredit(Optional.of(eventRefCodeM.orElseThrow().refCode()));
+                        }
+                    }
+
+                    val tempItem = itemBuilder.build();
+
+                    if (tempItem.getAccountCodeRefDebit().isPresent() && tempItem.getAccountCodeRefCredit().isPresent()) {
+                        val accountDebitRefCode = tempItem.getAccountCodeRefDebit().orElseThrow();
+                        val accountCreditRefCode = tempItem.getAccountCodeRefCredit().orElseThrow();
+                        val eventCode = STR."C:\{accountDebitRefCode}\{accountCreditRefCode}";
+
+                        log.info("eventCode:{}", eventCode);
+
+                        itemBuilder.accountEventCode(Optional.of(eventCode));
+                    }
+
+                    return itemBuilder.build();
+                })
+                .collect(Collectors.toSet());
+
+        return Transaction.WithPossibleViolations
+                .create(tx.toBuilder().transactionItems(items).build(),
+                        violations
+                );
     }
 
 }

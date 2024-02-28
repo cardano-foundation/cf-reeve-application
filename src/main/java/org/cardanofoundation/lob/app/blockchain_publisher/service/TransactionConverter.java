@@ -86,7 +86,7 @@ public class TransactionConverter {
         return TransactionItemEntity.builder()
                 .id(txLine.getId())
                 .transaction(parent)
-                //.eventCode(null) // TODO
+                .eventCode(txLine.getAccountEventCode().orElse(null))
                 .amountFcy(txLine.getAmountFcy())
                 .build();
     }

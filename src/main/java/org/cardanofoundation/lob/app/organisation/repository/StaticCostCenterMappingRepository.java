@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class StaticCostCenterMappingService implements CostCenterMappingService {
+public class StaticCostCenterMappingRepository implements CostCenterMappingRepository {
 
     private final Map<MappingKey, CostCenterMapping> mappings = new HashMap<>();
 

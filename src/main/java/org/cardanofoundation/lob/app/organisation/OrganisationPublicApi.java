@@ -3,11 +3,8 @@ package org.cardanofoundation.lob.app.organisation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.organisation.domain.core.*;
-import org.cardanofoundation.lob.app.organisation.repository.CostCenterMappingService;
 import org.cardanofoundation.lob.app.organisation.repository.OrganisationVatRepository;
-import org.cardanofoundation.lob.app.organisation.repository.ProjectMappingService;
-import org.cardanofoundation.lob.app.organisation.service.CurrencyService;
-import org.cardanofoundation.lob.app.organisation.service.OrganisationService;
+import org.cardanofoundation.lob.app.organisation.service.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,16 +19,12 @@ public class OrganisationPublicApi {
     private final CurrencyService currencyService;
     private final OrganisationVatRepository organisationVatRepository;
     private final CostCenterMappingService costCenterMappingService;
-    private final ProjectMappingService projectMappingService;
+    private final ProjectCodeMappingService projectCodeMappingService;
+    private final EventCodeMappingService eventCodeMappingService;
 
     public List<Organisation> listAll() {
         return organisationService.listAll();
     }
-
-//    public Optional<Organisation> findBy(String connectorId,
-//                                         String foreignSystemId) {
-//        return organisationService.findBy(connectorId, foreignSystemId);
-//    }
 
     public Optional<Organisation> findByOrganisationId(String id) {
         return organisationService.findById(id);
@@ -45,16 +38,16 @@ public class OrganisationPublicApi {
         return organisationVatRepository.findByOrganisationAndInternalNumber(organisationId, internalNumber);
     }
 
-//    public Optional<Currency> findByCurrencyId(String currencyId) {
-//        return currencyService.findByCurrencyId(currencyId);
-//    }
-
     public Optional<CostCenterMapping> findCostCenter(String organisationId, String internalNumber) {
         return costCenterMappingService.getCostCenter(organisationId, internalNumber);
     }
 
     public Optional<ProjectMapping> findProject(String organisationId, String internalNumber) {
-        return projectMappingService.getProject(organisationId, internalNumber);
+        return projectCodeMappingService.getProject(organisationId, internalNumber);
+    }
+
+    public Optional<EventCodeMapping> findEventCodeMapping(String accountCode) {
+        return eventCodeMappingService.getEventCodeMapping(accountCode);
     }
 
 }
