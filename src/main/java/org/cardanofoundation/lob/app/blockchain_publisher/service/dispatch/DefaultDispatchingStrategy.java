@@ -35,6 +35,8 @@ public class DefaultDispatchingStrategy implements DispatchingStrategy {
     public void init() {
         log.info("DefaultDispatchingStrategy initialized with pullBatchSize:{}, minTransactions:{}, maxDelay:{}",
                 pullBatchSize, minTxCount, maxTxDelay);
+
+
     }
 
     @Override
@@ -47,10 +49,16 @@ public class DefaultDispatchingStrategy implements DispatchingStrategy {
         val now = LocalDateTime.now(clock);
 
         val expiredTxs = txs.stream()
-             .filter(tx -> tx.getCreatedAt().plus(maxTxDelay).isAfter(now))
+             .filter(tx -> {
+                 val mustPublishDate = tx.getCreatedAt().plus(maxTxDelay);
+
+                 return now.isAfter(mustPublishDate);
+             })
              .collect(Collectors.toSet());
 
         if (!expiredTxs.isEmpty()) {
+            log.info("Found expired organisationTransactions for organisationId:{}, count:{}", organisationId, expiredTxs.size());
+
             return expiredTxs;
         }
 

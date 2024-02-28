@@ -30,6 +30,10 @@ public class OrganisationPublicApi {
         return organisationService.findById(id);
     }
 
+    public Optional<Organisation> findByErpInternalNumber(ERPDataSource erpDataSource, String erpInternalNumber) {
+        return organisationService.findByERPSystemId(erpDataSource, erpInternalNumber);
+    }
+
     public Optional<OrganisationCurrency> findOrganisationCurrencyByInternalId(String internalCurrencyId) {
         return currencyService.findByOrganisationCurrencyInternalId(internalCurrencyId);
     }
