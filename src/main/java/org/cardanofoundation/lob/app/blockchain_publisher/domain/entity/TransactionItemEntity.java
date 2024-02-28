@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
+import java.util.Optional;
+
+import static jakarta.persistence.FetchType.EAGER;
 
 @Getter
 @Setter
@@ -21,14 +25,19 @@ public class TransactionItemEntity extends AuditEntity {
     @Column(name = "transaction_item_id", nullable = false)
     private String id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "transaction_id")
     private TransactionEntity transaction;
 
     @Column(name = "amount_fcy", nullable = false)
     private BigDecimal amountFcy;
 
+    @Nullable
     @Column(name = "event_code")
-    private BigDecimal eventCode;
+    private String eventCode;
+
+    public Optional<String> getEventCode() {
+        return Optional.ofNullable(eventCode);
+    }
 
 }

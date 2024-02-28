@@ -130,6 +130,7 @@ public class MetadataSerialiser {
 
         metadataMap.put("id", transactionItemEntity.getId());
         metadataMap.put("amount", transactionItemEntity.getAmountFcy().toEngineeringString());
+        transactionItemEntity.getEventCode().ifPresent(eventCode -> metadataMap.put("event_code", eventCode));
 
         return metadataMap;
     }
@@ -138,7 +139,6 @@ public class MetadataSerialiser {
         val metadataMap = MetadataBuilder.createMap();
 
         metadataMap.put("id", org.getId());
-
         metadataMap.put("currency", serialise(org.getCurrency()));
 
         return metadataMap;

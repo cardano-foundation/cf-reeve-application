@@ -17,20 +17,29 @@ import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAs
 @ToString
 public class TransactionItem {
 
-    @NotBlank String id;
+    @NotBlank private String id;
 
-    @NotNull BigDecimal amountFcy;
+    @NotNull private BigDecimal amountFcy;
 
-    @NotNull BigDecimal amountLcy;
-
-    @Builder.Default
-    Optional<@Size(min = 1, max =  255) String> accountCodeDebit = Optional.empty();
+    @NotNull private BigDecimal amountLcy;
 
     @Builder.Default
-    Optional<@Size(min = 1, max =  255) String> accountNameDebit = Optional.empty();
+    private Optional<@Size(min = 1, max =  255) String> accountCodeDebit = Optional.empty();
 
     @Builder.Default
-    Optional<@Size(min = 1, max =  255) String> accountCodeCredit = Optional.empty();
+    private Optional<@Size(min = 1, max =  255) String> accountCodeRefDebit = Optional.empty();
+
+    @Builder.Default
+    private Optional<@Size(min = 1, max =  255) String> accountNameDebit = Optional.empty();
+
+    @Builder.Default
+    private Optional<@Size(min = 1, max =  255) String> accountCodeCredit = Optional.empty();
+
+    @Builder.Default
+    private Optional<@Size(min = 1, max =  255) String> accountCodeRefCredit = Optional.empty();
+
+    @Builder.Default
+    private Optional<@Size(min = 1, max =  255) String> accountEventCode = Optional.empty();
 
     public static String id(String transactionId,
                             String lineNo) {

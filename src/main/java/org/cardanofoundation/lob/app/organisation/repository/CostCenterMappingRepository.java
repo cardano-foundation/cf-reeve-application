@@ -4,7 +4,7 @@ import org.cardanofoundation.lob.app.organisation.domain.core.CostCenterMapping;
 
 import java.util.Optional;
 
-public interface CostCenterMappingService {
+public interface CostCenterMappingRepository {
 
     Optional<CostCenterMapping> getCostCenter(String organisationId, String internalNumber);
 

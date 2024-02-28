@@ -45,9 +45,15 @@ public class TransactionConverter {
                     txItem.setTransaction(transactionEntity);
                     txItem.setAmountLcy(txItemEntity.getAmountLcy());
                     txItem.setAmountFcy(txItemEntity.getAmountFcy());
+
                     txItem.setAccountCodeDebit(txItemEntity.getAccountCodeDebit().orElse(null));
+                    txItem.setAccountCodeRefDebit(txItemEntity.getAccountCodeRefDebit().orElse(null));
+
                     txItem.setAccountCodeCredit(txItemEntity.getAccountCodeCredit().orElse(null));
+                    txItem.setAccountCodeRefCredit(txItemEntity.getAccountCodeRefCredit().orElse(null));
+
                     txItem.setAccountNameDebit(txItemEntity.getAccountNameDebit().orElse(null));
+                    txItem.setAccountEventCode(txItemEntity.getAccountEventCode().orElse(null));
 
                     return txItem;
                 })
@@ -66,18 +72,18 @@ public class TransactionConverter {
 
     private Project convertProject(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project> project) {
         return project.map(p -> Project.builder()
-                .internalNumber(p.getInternalNumber())
-                .code(p.getCode().orElse(null))
-                .build())
+                        .internalNumber(p.getInternalNumber())
+                        .code(p.getCode().orElse(null))
+                        .build())
                 .orElse(null);
     }
 
     private CostCenter convertCostCenter(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter> costCenter) {
         return costCenter.map(cc -> CostCenter.builder()
-                .internalNumber(cc.getInternalNumber())
-                .externalNumber(cc.getExternalNumber().orElse(null))
-                .code(cc.getCode().orElse(null))
-                .build())
+                        .internalNumber(cc.getInternalNumber())
+                        .externalNumber(cc.getExternalNumber().orElse(null))
+                        .code(cc.getCode().orElse(null))
+                        .build())
                 .orElse(null);
     }
 
@@ -121,9 +127,17 @@ public class TransactionConverter {
                 .stream()
                 .map(txItemEntity -> TransactionItem.builder()
                         .id(txItemEntity.getId())
-                        .accountCodeCredit(txItemEntity.getAccountCodeCredit())
+
                         .accountCodeDebit(txItemEntity.getAccountCodeDebit())
+                        .accountCodeRefDebit(txItemEntity.getAccountCodeRefDebit())
+
+                        .accountCodeCredit(txItemEntity.getAccountCodeCredit())
+                        .accountCodeRefCredit(txItemEntity.getAccountCodeRefCredit())
+
                         .accountNameDebit(txItemEntity.getAccountNameDebit())
+
+                        .accountEventCode(txItemEntity.getAccountEventCode())
+
                         .amountFcy(txItemEntity.getAmountFcy())
                         .amountLcy(txItemEntity.getAmountLcy())
                         .build())

@@ -108,7 +108,6 @@ public class TransactionEntity extends AuditEntity {
         return Optional.ofNullable(costCenter);
     }
 
-    @Nullable
     public Optional<Project> getProject() {
         return Optional.ofNullable(project);
     }

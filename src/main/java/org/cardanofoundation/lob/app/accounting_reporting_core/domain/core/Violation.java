@@ -58,7 +58,7 @@ public record Violation(Priority priority,
         VAT_RATE_NOT_FOUND,
         CURRENCY_RATE_NOT_FOUND,
         COST_CENTER_NOT_FOUND,
-        PROJECT_CODE_NOT_FOUND,
+        PROJECT_CODE_NOT_FOUND, ACCOUNT_CODE_REF_MAPPING_NOT_FOUND,
     }
 
 }

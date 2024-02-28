@@ -69,8 +69,13 @@ CREATE TABLE accounting_core_transaction_item (
    FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
 
    account_code_debit VARCHAR(255),
-   account_name_debit VARCHAR(255),
+   account_code_ref_credit VARCHAR(255),
+
    account_code_credit VARCHAR(255),
+   account_code_ref_debit VARCHAR(255),
+
+   account_name_debit VARCHAR(255),
+   account_event_code VARCHAR(255),
 
    amount_fcy DECIMAL NOT NULL,
    amount_lcy DECIMAL NOT NULL,

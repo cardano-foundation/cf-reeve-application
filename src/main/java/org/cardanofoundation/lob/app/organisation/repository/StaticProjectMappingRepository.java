@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class StaticProjectMappingService implements ProjectMappingService {
+public class StaticProjectMappingRepository implements ProjectMappingRepository {
 
     private final Map<MappingKey, ProjectMapping> mappings = new HashMap<>();
 

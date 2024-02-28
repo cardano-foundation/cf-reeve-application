@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.cardanofoundation.lob.app.organisation.domain.core.OrganisationVat;
+import org.cardanofoundation.lob.app.organisation.repository.OrganisationVatRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
