@@ -10,7 +10,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
@@ -34,24 +33,19 @@ public class TransactionConverter {
 
     private final TransactionTypeMapper transactionTypeMapper;
 
-    @Value("${lob.netsuite.connector.id:jhu765}")
-    private String netsuiteConnectorId;
-
     // split results across multiple organisations
     public Either<Problem, Map<String, Set<Transaction>>> convert(List<SearchResultTransactionItem> searchResultTransactionItems) {
         log.info("transactionDataSearchResult count:{}", searchResultTransactionItems.size());
 
         val searchResultsByOrganisation = new ArrayList<OrganisationSearchResults>();
         for (val searchResultItem : searchResultTransactionItems) {
-            val organisationId = Organisation.id(NETSUITE, netsuiteConnectorId, String.valueOf(searchResultItem.subsidiary()));
-            val organisationM = organisationPublicApi.findByOrganisationId(organisationId);
-
+            val organisationM = organisationPublicApi.findByErpInternalNumber(NETSUITE, String.valueOf(searchResultItem.subsidiary()));
             if (organisationM.isEmpty()) {
-                log.error("Organisation mapping not found for organisationId: {}", organisationId);
+                log.error("Organisation mapping not found for netsuite internal number: {}", searchResultItem.subsidiary());
 
                 val issue = Problem.builder()
                         .withTitle("NETSUITE_ADAPTER::ORGANISATION_MAPPING_NOT_FOUND")
-                        .withDetail(STR."Organisation mapping not found for organisationId: \{organisationId}, subsidary: \{searchResultItem.subsidiary()}")
+                        .withDetail(STR."Organisation mapping not found for netsuite id: \{searchResultItem.subsidiary()}")
                         .build();
 
                 return Either.left(issue);
