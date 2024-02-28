@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface TransactionEntityRepository extends JpaRepository<TransactionEntity, String> {
 
-    @Query("SELECT t FROM blockchain_publisher.TransactionEntity t WHERE t.organisation.id = :organisationId AND t.l1SubmissionData.publishStatus IN :publishStatuses")
+    @Query("SELECT t FROM blockchain_publisher.TransactionEntity t WHERE t.organisation.id = :organisationId AND t.l1SubmissionData.publishStatus IN :publishStatuses ORDER BY t.createdAt ASC, t.id ASC")
     Streamable<TransactionEntity> findTransactionsByStatus(@Param("organisationId") String organisationId,
                                                            @Param("publishStatuses") Set<BlockchainPublishStatus> publishStatuses);
 

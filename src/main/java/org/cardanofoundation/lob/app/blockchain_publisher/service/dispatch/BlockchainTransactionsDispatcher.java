@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.blockchain_publisher.service;
+package org.cardanofoundation.lob.app.blockchain_publisher.service.dispatch;
 
 import com.bloxbean.cardano.client.api.exception.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +10,10 @@ import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1Submissi
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.L1SubmissionData;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepository;
+import org.cardanofoundation.lob.app.blockchain_publisher.service.BlockchainPublishStatusMapper;
+import org.cardanofoundation.lob.app.blockchain_publisher.service.L1TransactionCreator;
 import org.cardanofoundation.lob.app.blockchain_publisher.service.transation_submit.TransactionSubmissionService;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,11 +44,7 @@ public class BlockchainTransactionsDispatcher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Value("${lob.blockchain.publisher.pullBatchSize:50}")
-    private int pullBatchSize = 50;
-
-    @Value("${lob.blockchain.publisher.minTransactions:30}")
-    private int minTxCount = 35;
+    private final DispatchingStrategy dispatchingStrategy;
 
     @Transactional
     public void dispatchTransactions() {
@@ -58,17 +55,13 @@ public class BlockchainTransactionsDispatcher {
         for (val organisation : organisationPublicApi.listAll()) {
             val organisationId = organisation.id();
 
-            val transactionsToDispatch = transactionEntityRepository.findTransactionsByStatus(organisationId, dispatchStatuses)
-                    .stream().limit(pullBatchSize)
-                    .collect(Collectors.toSet());
+            val transactions = transactionEntityRepository.findTransactionsByStatus(organisationId, dispatchStatuses);
 
-            // no point to dispatch less than 30 organisationTransactions per physical L1 transaction
-            if (transactionsToDispatch.size() < minTxCount) {
-                log.warn("Not enough organisationTransactions to dispatch for organisationId:{}", organisationId);
-                return;
+            val transactionToDispatch = dispatchingStrategy.filter(organisationId, transactions);
+
+            if (!transactions.isEmpty()) {
+                dispatchTransactionsBatch(organisationId, transactionToDispatch);
             }
-
-            dispatchTransactionsBatch(organisationId, transactionsToDispatch);
         }
     }
 

@@ -293,8 +293,6 @@ public class ConversionsPipelineTask implements PipelineTask {
                         val accountCreditRefCode = tempItem.getAccountCodeRefCredit().orElseThrow();
                         val eventCode = STR."C:\{accountDebitRefCode}\{accountCreditRefCode}";
 
-                        log.info("eventCode:{}", eventCode);
-
                         itemBuilder.accountEventCode(Optional.of(eventCode));
                     }
 
