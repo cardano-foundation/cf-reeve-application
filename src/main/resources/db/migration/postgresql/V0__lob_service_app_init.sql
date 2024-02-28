@@ -39,7 +39,7 @@ CREATE TABLE accounting_core_transaction (
    document_vat_rate DECIMAL,
 
    document_counterparty_internal_number VARCHAR(255),
-   document_counterparty_name VARCHAR(255),
+   document_counterparty_code VARCHAR(255),
 
    cost_center_internal_number VARCHAR(255),
    cost_center_external_number VARCHAR(255),
