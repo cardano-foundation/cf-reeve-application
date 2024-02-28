@@ -7,6 +7,6 @@ import java.util.Set;
 
 public interface DispatchingStrategy {
 
-    Set<TransactionEntity> filter(String organisationId, Streamable<TransactionEntity> transactions);
+    Set<TransactionEntity> selectTransactions(String organisationId, Streamable<TransactionEntity> transactions);
 
 }
