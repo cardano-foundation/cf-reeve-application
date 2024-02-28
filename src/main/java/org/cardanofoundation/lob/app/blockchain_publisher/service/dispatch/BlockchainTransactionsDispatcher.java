@@ -57,7 +57,7 @@ public class BlockchainTransactionsDispatcher {
 
             val transactions = transactionEntityRepository.findTransactionsByStatus(organisationId, dispatchStatuses);
 
-            val transactionToDispatch = dispatchingStrategy.filter(organisationId, transactions);
+            val transactionToDispatch = dispatchingStrategy.selectTransactions(organisationId, transactions);
 
             if (!transactions.isEmpty()) {
                 dispatchTransactionsBatch(organisationId, transactionToDispatch);
