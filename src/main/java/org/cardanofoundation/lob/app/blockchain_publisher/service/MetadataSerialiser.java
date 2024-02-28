@@ -139,6 +139,7 @@ public class MetadataSerialiser {
         val metadataMap = MetadataBuilder.createMap();
 
         metadataMap.put("id", org.getId());
+        metadataMap.put("short_name", org.getShortName());
         metadataMap.put("currency", serialise(org.getCurrency()));
 
         return metadataMap;

@@ -15,6 +15,8 @@ public class Organisation {
 
     private String id;
 
+    private String shortName;
+
     private Currency currency;
 
 }

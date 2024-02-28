@@ -13,6 +13,8 @@ public class Organisation {
 
     @Size(min = 1, max =  255) @NotBlank  private String id;
 
+    @Size(min = 1, max =  50) @NotBlank  private String shortName;
+
     private Currency currency;
 
 }

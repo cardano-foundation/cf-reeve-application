@@ -185,7 +185,7 @@ public class NetSuiteService {
                     .withDetail(STR."Error retrieving data from NetSuite API, url: \{netSuiteAPI.netsuiteUrl()}")
                     .build();
 
-            return Either.left(netSuiteJsonE.getLeft());
+            return Either.left(issue);
         }
 
         val bodyM = netSuiteJsonE.get();

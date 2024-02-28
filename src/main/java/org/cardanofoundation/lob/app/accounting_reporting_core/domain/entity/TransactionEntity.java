@@ -42,6 +42,7 @@ public class TransactionEntity extends AuditEntity {
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),
+            @AttributeOverride(name = "shortName", column = @Column(name = "organisation_short_name")),
             @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id")),
             @AttributeOverride(name = "currency.internalNumber", column = @Column(name = "organisation_currency_internal_number"))
     })

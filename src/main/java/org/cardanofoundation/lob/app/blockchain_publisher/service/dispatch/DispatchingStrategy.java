@@ -4,9 +4,8 @@ import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.Transact
 import org.springframework.data.util.Streamable;
 
 import java.util.Set;
+import java.util.function.BiFunction;
 
-public interface DispatchingStrategy {
-
-    Set<TransactionEntity> selectTransactions(String organisationId, Streamable<TransactionEntity> transactions);
+public interface DispatchingStrategy extends BiFunction<String, Streamable<TransactionEntity>, Set<TransactionEntity>> {
 
 }

@@ -90,6 +90,7 @@ public class TransactionConverter {
     private static Organisation convertOrganisation(Transaction transaction) {
         return Organisation.builder()
                 .id(transaction.getOrganisation().getId())
+                .shortName(transaction.getOrganisation().getShortName())
                 .currency(Currency.builder()
                         .id(transaction.getOrganisation().getCurrency().getId().orElseThrow()) // currency ref if is mandatory in the organisation
                         .internalNumber(transaction.getOrganisation().getCurrency().getInternalNumber())
@@ -147,6 +148,7 @@ public class TransactionConverter {
                 .id(transactionEntity.getId())
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
                         .id(transactionEntity.getOrganisation().getId())
+                        .shortName(transactionEntity.getOrganisation().getShortName())
                         .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
                                 .id(transactionEntity.getOrganisation().getCurrency().getId())
                                 .internalNumber(transactionEntity.getOrganisation().getCurrency().getInternalNumber())

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,7 @@ public class DefaultDispatchingStrategy implements DispatchingStrategy {
     }
 
     @Override
-    public Set<TransactionEntity> selectTransactions(String organisationId,
+    public Set<TransactionEntity> apply(String organisationId,
                                                      Streamable<TransactionEntity> transactions) {
         val txs = transactions.stream()
                 .limit(pullBatchSize)
@@ -48,7 +47,7 @@ public class DefaultDispatchingStrategy implements DispatchingStrategy {
         val now = LocalDateTime.now(clock);
 
         val expiredTxs = txs.stream()
-             .filter(tx -> now.isAfter(tx.getCreatedAt().plus(maxTxDelay)))
+             .filter(tx -> tx.getCreatedAt().plus(maxTxDelay).isAfter(now))
              .collect(Collectors.toSet());
 
         if (!expiredTxs.isEmpty()) {
