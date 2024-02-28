@@ -23,6 +23,7 @@ CREATE TABLE netsuite_ingestion (
 CREATE TABLE accounting_core_transaction (
    transaction_id CHAR(64) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
+   organisation_short_name VARCHAR(50) NOT NULL,
    organisation_currency_id VARCHAR(255) NOT NULL,
    organisation_currency_internal_number VARCHAR(255) NOT NULL,
 
@@ -136,6 +137,7 @@ CREATE TABLE blockchain_publisher_transaction (
    organisation_id VARCHAR(255) NOT NULL,
    internal_number VARCHAR(255) NOT NULL,
 
+   organisation_short_name VARCHAR(50) NOT NULL,
    organisation_currency_id VARCHAR(255) NOT NULL,
    --organisation_currency_internal_number VARCHAR(255) NOT NULL,
 

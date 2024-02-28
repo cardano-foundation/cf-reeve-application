@@ -18,6 +18,9 @@ public class Organisation {
     @NotBlank
     private String id;
 
+    @NotBlank
+    private String shortName;
+
     @NotNull
     private Currency currency;
 

@@ -142,7 +142,11 @@ public class TransactionConverter {
                 .internalTransactionNumber(first.transactionNumber())
                 .entryDate(first.date())
                 .transactionType(transactionTypeMapper.apply(first.type()))
-                .organisation(new org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation(organisation.id(), organisationCurrency))
+                .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
+                        .id(organisation.id())
+                        .shortName(organisation.shortName())
+                        .currency(organisationCurrency).build()
+                )
                 .costCenter(normaliseString(first.costCenter()).map(internalNumber -> {
                     return CostCenter.builder()
                             .internalNumber(internalNumber)
