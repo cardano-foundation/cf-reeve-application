@@ -165,7 +165,7 @@ public class NetSuiteService {
                     return projectCodes.isEmpty() || line.getProject().flatMap(Project::getCode).map(projectCodes::contains).orElse(true);
                 })
                 .filter(line -> {
-                    val costCenterNames = filteringParameters.getCostCenterNames();
+                    val costCenterNames = filteringParameters.getCostCenterCodes();
 
                     return costCenterNames.isEmpty() || line.getCostCenter().flatMap(CostCenter::getCode).map(costCenterNames::contains).orElse(true);
                 })
