@@ -27,7 +27,6 @@ public class LedgerService {
 
     private final PIIDataFilteringService piiDataFilteringService;
 
-
     @Transactional
     public void updateTransactionsWithNewLedgerDispatchStatuses(Set<LedgerUpdatedEvent.TxStatusUpdate> txStatusUpdates) {
         log.info("Updating dispatch status for statusMapCount: {}", txStatusUpdates.size());
