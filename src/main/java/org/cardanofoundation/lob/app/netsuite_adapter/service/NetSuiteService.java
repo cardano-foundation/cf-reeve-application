@@ -88,7 +88,7 @@ public class NetSuiteService {
         if (coreTransactionsE.isEmpty()) {
             val issue = coreTransactionsE.getLeft();
 
-            log.warn("Error converting NetSuite search, issue:{}",issue);
+            log.warn("Error converting NetSuite search, issue:{}", issue);
 
             return;
         }

@@ -20,7 +20,7 @@ public class OrganisationPublicApi {
     private final OrganisationVatRepository organisationVatRepository;
     private final CostCenterMappingService costCenterMappingService;
     private final ProjectCodeMappingService projectCodeMappingService;
-    private final EventCodeMappingService eventCodeMappingService;
+    private final ChartOfAccountsService chartOfAccountsService;
 
     public List<Organisation> listAll() {
         return organisationService.listAll();
@@ -50,8 +50,12 @@ public class OrganisationPublicApi {
         return projectCodeMappingService.getProject(organisationId, internalNumber);
     }
 
-    public Optional<EventCodeMapping> findEventCodeMapping(String accountCode) {
-        return eventCodeMappingService.getEventCodeMapping(accountCode);
+    public Optional<CharterOfAccounts> getChartOfAccounts(String accountCode) {
+        return chartOfAccountsService.getChartAccount(accountCode);
+    }
+
+    public Optional<CharterOfAccounts> getChartOfAccounts(ERPDataSource erpDataSource, String internalNumber) {
+        return chartOfAccountsService.getChartAccount(erpDataSource, internalNumber);
     }
 
 }

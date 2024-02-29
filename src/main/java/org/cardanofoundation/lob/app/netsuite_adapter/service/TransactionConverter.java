@@ -9,6 +9,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Curre
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
+import org.cardanofoundation.lob.app.organisation.domain.core.CharterOfAccounts;
 import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -88,7 +89,13 @@ public class TransactionConverter {
             for (val transactionNumberEntry : searchResultItemsPerTransactionNumber.entrySet()) {
                 val searchResultItems = transactionNumberEntry.getValue();
 
-                val transactionM = createTransactionFromSearchResultItems(organisation, searchResultItems);
+                val transactionE = createTransactionFromSearchResultItems(organisation, searchResultItems);
+
+                if (transactionE.isEmpty()) {
+                    return Either.left(transactionE.getLeft());
+                }
+
+                val transactionM = transactionE.get();
 
                 transactionM.ifPresent(transaction -> {
                     transactionsByOrganisations
@@ -103,10 +110,10 @@ public class TransactionConverter {
         return Either.right(transactionsByOrganisations);
     }
 
-    private Optional<Transaction> createTransactionFromSearchResultItems(Organisation organisation,
-                                                                         List<SearchResultTransactionItem> results) {
+    private Either<Problem, Optional<Transaction>> createTransactionFromSearchResultItems(Organisation organisation,
+                                                                                          List<SearchResultTransactionItem> results) {
         if (results.isEmpty()) {
-            return Optional.empty();
+            return Either.right(Optional.empty());
         }
 
         val first = results.getFirst();
@@ -116,13 +123,22 @@ public class TransactionConverter {
         val txItems = results.stream().map(result -> {
                     val txLineId = TransactionItem.id(txId, result.lineID().toString());
 
+                    val accountCodeCreditM = normaliseString(result.accountMain())
+                            .flatMap(internalNumber -> organisationPublicApi.getChartOfAccounts(NETSUITE, internalNumber))
+                            .map(CharterOfAccounts::code);
+
+                    val amountLcy = substractNullFriendly(result.amountDebit(), result.amountCredit());
+                    val amountFcy = substractNullFriendly(result.amountDebitForeignCurrency(), result.amountCreditForeignCurrency());
+
                     return TransactionItem.builder()
                             .id(txLineId)
-                            .accountCodeCredit(normaliseString(result.accountMain()))
                             .accountNameDebit(normaliseString(result.name()))
                             .accountCodeDebit(normaliseString(result.number()))
-                            .amountLcy(substractNullFriendly(result.amountDebit(), result.amountCredit()))
-                            .amountFcy(substractNullFriendly(result.amountDebitForeignCurrency(), result.amountCreditForeignCurrency()))
+                            .accountCodeCredit(accountCodeCreditM)
+
+                            .amountLcy(amountLcy)
+                            .amountFcy(amountFcy)
+
                             .build();
                 })
                 .collect(Collectors.toSet());
@@ -131,7 +147,7 @@ public class TransactionConverter {
         val organisationCurrency = new Currency(Optional.of(baseCurrency.currencyId()),
                 baseCurrency.internalNumber());
 
-        return Optional.of(Transaction.builder()
+        return Either.right(Optional.of(Transaction.builder()
                 .id(Transaction.id(organisation.id(), first.transactionNumber()))
                 .internalTransactionNumber(first.transactionNumber())
                 .entryDate(first.date())
@@ -156,7 +172,7 @@ public class TransactionConverter {
                 .ledgerDispatchApproved(false)
                 .document(convertDocument(results, first))
                 .transactionItems(txItems)
-                .build());
+                .build()));
     }
 
     private static Optional<Document> convertDocument(List<SearchResultTransactionItem> results,

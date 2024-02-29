@@ -247,7 +247,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                     val itemBuilder = item.toBuilder();
 
                     if (item.getAccountCodeDebit().isPresent()) {
-                        val eventRefCodeM = organisationPublicApi.findEventCodeMapping(item.getAccountCodeDebit().orElseThrow());
+                        val eventRefCodeM = organisationPublicApi.getChartOfAccounts(item.getAccountCodeDebit().orElseThrow());
                         if (eventRefCodeM.isEmpty()) {
                             log.warn("ACCOUNT_REF_CODE_MAPPING_NOT_FOUND: debit accountCode: {}", item.getAccountCodeDebit().orElseThrow());
 
@@ -267,7 +267,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                     }
 
                     if (item.getAccountCodeCredit().isPresent()) {
-                        val eventRefCodeM = organisationPublicApi.findEventCodeMapping(item.getAccountCodeCredit().orElseThrow());
+                        val eventRefCodeM = organisationPublicApi.getChartOfAccounts(item.getAccountCodeCredit().orElseThrow());
                         if (eventRefCodeM.isEmpty()) {
                             log.warn("ACCOUNT_REF_CODE_MAPPING_NOT_FOUND: credit accountCode: {}", item.getAccountCodeCredit().orElseThrow());
 

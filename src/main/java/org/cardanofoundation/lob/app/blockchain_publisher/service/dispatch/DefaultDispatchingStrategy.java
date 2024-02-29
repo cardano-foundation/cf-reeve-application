@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -35,13 +37,11 @@ public class DefaultDispatchingStrategy implements DispatchingStrategy {
     public void init() {
         log.info("DefaultDispatchingStrategy initialized with pullBatchSize:{}, minTransactions:{}, maxDelay:{}",
                 pullBatchSize, minTxCount, maxTxDelay);
-
-
     }
 
     @Override
     public Set<TransactionEntity> apply(String organisationId,
-                                                     Streamable<TransactionEntity> transactions) {
+                                        Streamable<TransactionEntity> transactions) {
         val txs = transactions.stream()
                 .limit(pullBatchSize)
                 .collect(Collectors.toSet());
@@ -49,18 +49,21 @@ public class DefaultDispatchingStrategy implements DispatchingStrategy {
         val now = LocalDateTime.now(clock);
 
         val expiredTxs = txs.stream()
-             .filter(tx -> {
-                 val mustPublishDate = tx.getCreatedAt().plus(maxTxDelay);
+                .filter(tx -> {
+                    val mustPublishDate = tx.getCreatedAt().plus(maxTxDelay);
 
-                 return now.isAfter(mustPublishDate);
-             })
-             .collect(Collectors.toSet());
+                    return now.isAfter(mustPublishDate);
+                })
+                .collect(Collectors.toSet());
 
         if (!expiredTxs.isEmpty()) {
             log.info("Found expired organisationTransactions for organisationId:{}, count:{}", organisationId, expiredTxs.size());
 
-            return expiredTxs;
+            // prioritise expired transactions first since tail may not be even included in the blockchain in this run
+            return new LinkedHashSet<>(Stream.concat(expiredTxs.stream(), txs.stream()).toList());
         }
+
+        log.info("Extracted {} organisationTransactions for organisationId:{}", txs.size(), organisationId);
 
         if (txs.size() < minTxCount) {
             log.warn("Not enough organisationTransactions to dispatch for organisationId:{}", organisationId);
