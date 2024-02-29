@@ -14,7 +14,9 @@ import org.cardanofoundation.lob.app.blockchain_publisher.service.BlockchainPubl
 import org.cardanofoundation.lob.app.blockchain_publisher.service.L1TransactionCreator;
 import org.cardanofoundation.lob.app.blockchain_publisher.service.transation_submit.TransactionSubmissionService;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,9 @@ public class BlockchainTransactionsDispatcher {
 
     private final DispatchingStrategy dispatchingStrategy;
 
+    @Value("${lob.blockchain.publisher.pullBatchSize:50}")
+    private int pullTransactionsBatchSize = 50;
+
     @Transactional
     public void dispatchTransactions() {
         log.info("Dispatching organisationTransactions to the cardano blockchain...");
@@ -55,7 +60,7 @@ public class BlockchainTransactionsDispatcher {
         for (val organisation : organisationPublicApi.listAll()) {
             val organisationId = organisation.id();
 
-            val transactionsBatch = transactionEntityRepository.findTransactionsByStatus(organisationId, dispatchStatuses);
+            val transactionsBatch = transactionEntityRepository.findTransactionsByStatus(organisationId, dispatchStatuses, Limit.of(pullTransactionsBatchSize));
 
             val transactionToDispatch = dispatchingStrategy.apply(organisationId, transactionsBatch);
 

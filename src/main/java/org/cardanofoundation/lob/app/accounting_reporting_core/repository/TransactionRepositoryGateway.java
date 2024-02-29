@@ -6,6 +6,7 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,9 +67,9 @@ public class TransactionRepositoryGateway {
                         organisationId,
                         List.of(NOT_DISPATCHED),
                         List.of(VALIDATED),
-                        false)
+                        false,
+                        Limit.of(limit))
                 .stream()
-                .limit(limit)
                 .collect(Collectors.toSet());
     }
 
