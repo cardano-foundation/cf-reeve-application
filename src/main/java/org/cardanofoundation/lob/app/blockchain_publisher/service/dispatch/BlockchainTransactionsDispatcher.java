@@ -55,11 +55,11 @@ public class BlockchainTransactionsDispatcher {
         for (val organisation : organisationPublicApi.listAll()) {
             val organisationId = organisation.id();
 
-            val transactions = transactionEntityRepository.findTransactionsByStatus(organisationId, dispatchStatuses);
+            val transactionsBatch = transactionEntityRepository.findTransactionsByStatus(organisationId, dispatchStatuses);
 
-            val transactionToDispatch = dispatchingStrategy.apply(organisationId, transactions);
+            val transactionToDispatch = dispatchingStrategy.apply(organisationId, transactionsBatch);
 
-            if (!transactions.isEmpty()) {
+            if (!transactionToDispatch.isEmpty()) {
                 dispatchTransactionsBatch(organisationId, transactionToDispatch);
             }
         }
@@ -119,7 +119,8 @@ public class BlockchainTransactionsDispatcher {
             log.error("Error sending transaction on chain and / or updating db", e);
         }
 
-        return createAndSendBlockchainTransactions(organisationId, serialisedTx.remainingTransactions());
+        return Optional.empty();
+        //return createAndSendBlockchainTransactions(organisationId, serialisedTx.remainingTransactions());
     }
 
     @Transactional
