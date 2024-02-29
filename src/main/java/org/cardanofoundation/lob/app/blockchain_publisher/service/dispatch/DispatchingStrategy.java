@@ -6,6 +6,6 @@ import org.springframework.data.util.Streamable;
 import java.util.Set;
 import java.util.function.BiFunction;
 
-public interface DispatchingStrategy extends BiFunction<String, Streamable<TransactionEntity>, Set<TransactionEntity>> {
+public interface DispatchingStrategy extends BiFunction<String, Set<TransactionEntity>, Set<TransactionEntity>> {
 
 }

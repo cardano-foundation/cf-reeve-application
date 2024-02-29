@@ -1,6 +1,7 @@
 server:
   port: 9000
 
+
 spring:
   docker:
     compose:
@@ -25,6 +26,7 @@ spring:
           envers:
             audit_table_suffix: _AUD
     open-in-view: false
+#    show-sql: true
 
   sql:
     init:
