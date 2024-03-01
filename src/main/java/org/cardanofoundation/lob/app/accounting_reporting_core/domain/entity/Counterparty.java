@@ -15,6 +15,6 @@ public class Counterparty {
 
     private String internalNumber;
 
-    private String code;
+    private String name;
 
 }

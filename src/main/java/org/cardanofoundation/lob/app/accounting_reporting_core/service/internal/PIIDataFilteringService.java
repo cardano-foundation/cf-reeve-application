@@ -45,7 +45,7 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
         return documentM.map(doc -> doc.toBuilder()
                 .counterparty(doc.getCounterparty()
                         .map(counterparty -> counterparty.toBuilder()
-                                .code(Optional.empty())
+                                .name(Optional.empty())
                                 .build()))
                 .build()
         );
