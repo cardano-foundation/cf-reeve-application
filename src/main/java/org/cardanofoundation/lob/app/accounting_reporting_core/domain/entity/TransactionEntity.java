@@ -99,6 +99,9 @@ public class TransactionEntity extends AuditEntity {
     @Enumerated(STRING)
     private ValidationStatus validationStatus;
 
+    @Column(name = "transaction_approved", nullable = false)
+    private Boolean transactionApproved;
+
     @Column(name = "ledger_dispatch_approved", nullable = false)
     private Boolean ledgerDispatchApproved;
 

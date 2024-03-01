@@ -33,6 +33,22 @@ public class TransactionRepositoryGateway {
         val transactions = transactionRepository.findAllById(transactionIds)
                 .stream()
                 .map(tx -> {
+                    tx.setTransactionApproved(true);
+
+                    return tx;
+                })
+                .collect(Collectors.toSet());
+
+        transactionRepository.saveAll(transactions);
+    }
+
+    @Transactional
+    public void approveTransactionsDispatch(Set<String> transactionIds) {
+        log.info("Approving transactions dispatch: {}", transactionIds);
+
+        val transactions = transactionRepository.findAllById(transactionIds)
+                .stream()
+                .map(tx -> {
                     tx.setLedgerDispatchApproved(true);
 
                     return tx;
@@ -59,7 +75,11 @@ public class TransactionRepositoryGateway {
 //    }
 
     @Transactional
-    public Set<String> readApprovalPendingBlockchainTransactionIds(String organisationId, int limit) {
+    public Set<String> readApprovalPendingBlockchainTransactionIds(String organisationId,
+                                                                   int limit,
+                                                                   boolean transactionApprovalNeeded,
+                                                                   boolean ledgerApprovalNeeded
+                                                                   ) {
         // TODO what about order by entry date or transaction internal number, etc?
 
         return transactionRepository
@@ -67,7 +87,8 @@ public class TransactionRepositoryGateway {
                         organisationId,
                         List.of(NOT_DISPATCHED),
                         List.of(VALIDATED),
-                        false,
+                        transactionApprovalNeeded,
+                        ledgerApprovalNeeded,
                         Limit.of(limit))
                 .stream()
                 .collect(Collectors.toSet());

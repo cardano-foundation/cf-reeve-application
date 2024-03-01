@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -48,29 +49,15 @@ public class LedgerService {
         log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdates.size());
     }
 
-//    @Transactional
-//    public void dispatchTransactionsToBlockchainPublisher() {
-//        log.info("dispatchTransactionsToBlockchainPublisher...");
-//
-//        for (val organisation : organisationPublicApi.listAll()) {
-//            val organisationId = organisation.id();
-//
-//            val dispatchPendingTransactions = transactionRepositoryGateway.readBlockchainDispatchPendingTransactions(organisationId, dispatchBatchSize);
-//            log.info("Processing organisationId: {} - dispatchPendingTransactionsSize: {}", organisationId, dispatchPendingTransactions.size());
-//
-//            val piiFilteredOutTransactions = piiDataFilteringService.apply(dispatchPendingTransactions);
-//
-//            applicationEventPublisher.publishEvent(LedgerUpdateCommand.create(new OrganisationTransactions(organisationId, piiFilteredOutTransactions)));
-//
-//            log.info("Publishing PublishToTheLedgerEvent...");
-//        }
-//    }
-
     @Transactional
-    public void dispatchTransactionToBlockchainPublisher(String organisationId, Set<String> transactionIds) {
+    public void tryToDispatchTransactionToBlockchainPublisher(String organisationId,
+                                                              Set<String> transactionIds) {
         log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", transactionIds);
 
-        val dispatchPendingTransactions = transactionRepositoryGateway.findByAllId(transactionIds);
+        val dispatchPendingTransactions = transactionRepositoryGateway.findByAllId(transactionIds)
+                .stream()
+                .filter(tx -> tx.isTransactionApproved() && tx.isLedgerDispatchApproved())
+                .collect(Collectors.toSet());
 
         if (dispatchPendingTransactions.isEmpty()) {
             log.warn("Transaction not found for id: {}", transactionIds);

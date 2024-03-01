@@ -51,6 +51,7 @@ CREATE TABLE accounting_core_transaction (
 
    validation_status VARCHAR(255) NOT NULL,
 
+   transaction_approved BOOLEAN NOT NULL,
    ledger_dispatch_approved BOOLEAN NOT NULL,
    ledger_dispatch_status VARCHAR(255) NOT NULL,
 

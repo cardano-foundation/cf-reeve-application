@@ -22,7 +22,6 @@ public class StaticOrganisationRepository implements OrganisationRepository {
 
     @PostConstruct
     public void init() {
-
         organisations.add(new Organisation(
                 Organisation.id("CHE-184.477.354"),
                 "CF",

@@ -54,6 +54,9 @@ public class Transaction {
     private ValidationStatus validationStatus = ValidationStatus.NOT_VALIDATED;
 
     @Builder.Default
+    private boolean transactionApproved = false;
+
+    @Builder.Default
     private boolean ledgerDispatchApproved = false;
 
     @Builder.Default

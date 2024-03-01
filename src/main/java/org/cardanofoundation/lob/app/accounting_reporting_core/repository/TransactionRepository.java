@@ -30,12 +30,16 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
 //                                                                             @Param("validationStatuses") List<ValidationStatus> validationStatuses,
 //                                                                             @Param("ledgerDispatchApproved") boolean ledgerDispatchApproved);
 
-    @Query("SELECT t.id FROM accounting_reporting_core.TransactionEntity t WHERE t.organisation.id = :organisationId AND t.ledgerDispatchStatus IN :dispatchStatuses AND t.validationStatus IN :validationStatuses AND t.ledgerDispatchApproved = :ledgerDispatchApproved ORDER BY t.createdAt ASC")
+    @Query("SELECT t.id FROM accounting_reporting_core.TransactionEntity t WHERE t.organisation.id = :organisationId AND t.ledgerDispatchStatus IN :dispatchStatuses AND t.validationStatus IN :validationStatuses" +
+            " AND (t.ledgerDispatchApproved = :ledgerDispatchApproved" +
+            " OR t.transactionApproved = :transactionApproved) " +
+            " ORDER BY t.createdAt ASC")
     Set<String> findTransactionIdsByStatuses(@Param("organisationId") String organisationId,
-                                                    @Param("dispatchStatuses") List<LedgerDispatchStatus> dispatchStatuses,
-                                                    @Param("validationStatuses") List<ValidationStatus> validationStatuses,
-                                                    @Param("ledgerDispatchApproved") boolean ledgerDispatchApproved,
-                                                    Limit limit);
+                                             @Param("dispatchStatuses") List<LedgerDispatchStatus> dispatchStatuses,
+                                             @Param("validationStatuses") List<ValidationStatus> validationStatuses,
+                                             @Param("transactionApproved") boolean transactionApproved,
+                                             @Param("ledgerDispatchApproved") boolean ledgerDispatchApproved,
+                                             Limit limit);
 
 }
 

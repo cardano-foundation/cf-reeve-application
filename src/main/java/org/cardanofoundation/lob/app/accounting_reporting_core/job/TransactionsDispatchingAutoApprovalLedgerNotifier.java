@@ -13,20 +13,20 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class AutoApprovalLedgerNotifier {
+public class TransactionsDispatchingAutoApprovalLedgerNotifier {
 
     private final OrganisationPublicApi organisationPublicApi;
     private final AccountingCoreService accountingCoreService;
 
-    @Scheduled(fixedDelayString = "PT10S")
+    @Scheduled(fixedDelayString = "PT5S")
     public void execute() {
-        log.info("Executing AutoApprovalLedgerNotifier job...");
+        log.info("Executing TransactionsDispatchingAutoApprovalLedgerNotifier job...");
 
         for (val organisation : organisationPublicApi.listAll()) {
-            accountingCoreService.readBatchAndApproveTransactions(organisation.id());
+            accountingCoreService.readBatchAndApproveTransactionsWithDispatch(organisation.id());
         }
 
-        log.info("Finished executing AutoApprovalLedgerNotifier job.");
+        log.info("Finished executing TransactionsDispatchingAutoApprovalLedgerNotifier job.");
     }
 
 }
