@@ -26,7 +26,8 @@ public class BusinessRulesConfig {
         pipelineTasks.add(new ConversionsPipelineTask(organisationPublicApi));
 
         pipelineTasks.add(new PostCleansingPipelineTask());
-        pipelineTasks.add(new PostValidationPipelineTask(validator));
+        pipelineTasks.add(new PostValidationPipelineTask());
+        pipelineTasks.add(new LastSanityCheckProcessor(validator));
 
         return new DefaultBusinessRulesPipelineProcessor(pipelineTasks);
     }

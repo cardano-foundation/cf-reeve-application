@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules;
 
-import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -10,13 +9,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.Journal;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.*;
 
 @RequiredArgsConstructor
 @Slf4j
 public class PostValidationPipelineTask implements PipelineTask {
-
-    private final Validator validator;
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
@@ -24,10 +23,10 @@ public class PostValidationPipelineTask implements PipelineTask {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
                 .map(Transaction.WithPossibleViolations::create)
-                .map(this::sanityCheckFields)
                 .map(this::accountCodeDebitCheck)
                 .map(this::accountCodeCreditCheck)
                 .map(this::documentMustBePresentCheck)
+                .map(this::checkTransactionItemsEmpty)
                 .collect(Collectors.toSet());
 
         val newViolations = new HashSet<Violation>();
@@ -46,20 +45,19 @@ public class PostValidationPipelineTask implements PipelineTask {
         );
     }
 
-    private Transaction.WithPossibleViolations sanityCheckFields(Transaction.WithPossibleViolations withPossibleViolations) {
-        val transaction = withPossibleViolations.transaction();
+    private Transaction.WithPossibleViolations checkTransactionItemsEmpty(Transaction.WithPossibleViolations withPossibleViolations) {
+        val tx = withPossibleViolations.transaction();
+
         val violations = new HashSet<Violation>();
 
-        val errors = validator.validate(transaction);
-
-        if (!errors.isEmpty()) {
+        if (tx.getTransactionItems().isEmpty()) {
             val v = Violation.create(
-                    Violation.Priority.NORMAL,
+                    Violation.Priority.HIGH,
                     Violation.Type.FATAL,
-                    transaction.getOrganisation().getId(),
-                    transaction.getId(),
-                    Violation.Code.TX_SANITY_CHECK_FAIL,
-                    Map.of("errors", errors)
+                    tx.getOrganisation().getId(),
+                    tx.getId(),
+                    TRANSACTION_ITEMS_EMPTY,
+                    Map.of()
             );
 
             violations.add(v);
@@ -67,7 +65,7 @@ public class PostValidationPipelineTask implements PipelineTask {
 
         if (!violations.isEmpty()) {
             return Transaction.WithPossibleViolations
-                    .create(transaction.toBuilder().validationStatus(FAILED).build(), violations);
+                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
         }
 
         return withPossibleViolations;
@@ -90,7 +88,7 @@ public class PostValidationPipelineTask implements PipelineTask {
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),
-                        Violation.Code.ACCOUNT_CODE_DEBIT_IS_EMPTY,
+                        ACCOUNT_CODE_DEBIT_IS_EMPTY,
                         Map.of()
                 );
 
@@ -109,7 +107,7 @@ public class PostValidationPipelineTask implements PipelineTask {
     private Transaction.WithPossibleViolations accountCodeCreditCheck(Transaction.WithPossibleViolations withPossibleViolations) {
         val tx = withPossibleViolations.transaction();
 
-        if (tx.getTransactionType() == TransactionType.Journal) {
+        if (tx.getTransactionType() == Journal) {
             return withPossibleViolations;
         }
 
@@ -122,7 +120,7 @@ public class PostValidationPipelineTask implements PipelineTask {
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),
-                        Violation.Code.ACCOUNT_CODE_CREDIT_IS_EMPTY,
+                        ACCOUNT_CODE_CREDIT_IS_EMPTY,
                         Map.of()
                 );
 
@@ -149,7 +147,7 @@ public class PostValidationPipelineTask implements PipelineTask {
                     Violation.Type.FATAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
-                    Violation.Code.DOCUMENT_MUST_BE_PRESENT,
+                    DOCUMENT_MUST_BE_PRESENT,
                     Map.of()
             );
 

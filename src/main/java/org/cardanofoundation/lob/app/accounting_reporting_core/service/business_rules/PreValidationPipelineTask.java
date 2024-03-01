@@ -12,6 +12,7 @@ import java.util.Map;
 import static java.math.BigDecimal.ZERO;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.FCY_BALANCE_MUST_ZERO;
 
 @Slf4j
 public class PreValidationPipelineTask implements PipelineTask {
@@ -26,7 +27,6 @@ public class PreValidationPipelineTask implements PipelineTask {
                 .map(this::amountsLcyCheck)
                 .map(this::balanceZerosOutLcyCheck)
                 .map(this::balanceZerosOutFcyCheck)
-                .map(this::isEmpty)
                 .toList();
 
         val newViolations = new HashSet<Violation>();
@@ -44,26 +44,6 @@ public class PreValidationPipelineTask implements PipelineTask {
         );
     }
 
-    private Transaction.WithPossibleViolations isEmpty(Transaction.WithPossibleViolations violationTransaction) {
-        val tx = violationTransaction.transaction();
-
-        if (tx.getTransactionItems().isEmpty()) {
-            val v = Violation.create(
-                    Violation.Priority.HIGH,
-                    Violation.Type.FATAL,
-                    tx.getOrganisation().getId(),
-                    tx.getId(),
-                    Violation.Code.TRANSACTION_ITEMS_EMPTY,
-                    Map.of("transactionId", tx.getId())
-            );
-
-            return Transaction.WithPossibleViolations.create(tx.toBuilder().validationStatus(FAILED).build(), v);
-        }
-
-        // pass through
-        return violationTransaction;
-    }
-
     public Transaction.WithPossibleViolations amountsFcyCheck(Transaction.WithPossibleViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
@@ -79,7 +59,10 @@ public class PreValidationPipelineTask implements PipelineTask {
                             tx.getId(),
                             txItem.getId(),
                             Violation.Code.AMOUNT_FCY_IS_ZERO,
-                            Map.of("amountFcy", txItem.getAmountFcy(), "amountLcy", txItem.getAmountLcy())
+                            Map.of(
+                                    "amountFcy", txItem.getAmountFcy(),
+                                    "amountLcy", txItem.getAmountLcy()
+                            )
                     );
 
                     violations.add(v);
@@ -160,7 +143,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                     Violation.Type.FATAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
-                    Violation.Code.FCY_BALANCE_MUST_ZERO,
+                    FCY_BALANCE_MUST_ZERO,
                     Map.of()
             );
 
