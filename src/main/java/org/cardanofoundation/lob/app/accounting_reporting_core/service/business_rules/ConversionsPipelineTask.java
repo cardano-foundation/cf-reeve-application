@@ -6,10 +6,7 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
@@ -22,10 +19,11 @@ public class ConversionsPipelineTask implements PipelineTask {
     private final OrganisationPublicApi organisationPublicApi;
 
     public TransformationResult run(OrganisationTransactions passedOrganisationTransactions,
-                                    OrganisationTransactions ignoredOrganisationTransactions) {
+                                    OrganisationTransactions ignoredOrganisationTransactions,
+                                    Set<Violation> allViolationUntilNow) {
         val passedTransactions = passedOrganisationTransactions
                 .transactions().stream()
-                .map(Transaction.WithPossibleViolations::create)
+                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
                 .map(this::vatConversion)
                 .map(this::currencyCodeConversion)
                 .map(this::costCenterConversion)

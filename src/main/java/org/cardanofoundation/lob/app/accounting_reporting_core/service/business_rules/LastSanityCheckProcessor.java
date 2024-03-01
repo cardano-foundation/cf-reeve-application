@@ -11,6 +11,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Viola
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
@@ -24,10 +25,11 @@ public class LastSanityCheckProcessor implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions) {
+                                    OrganisationTransactions ignoredTransactions,
+                                    Set<Violation> allViolationUntilNow) {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
-                .map(Transaction.WithPossibleViolations::create)
+                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
                 .map(this::sanityCheckFields)
                 .collect(Collectors.toSet());
 
@@ -53,11 +55,11 @@ public class LastSanityCheckProcessor implements PipelineTask {
 
         val errors = validator.validate(transaction);
 
-        val alreadyFailed = withPossibleViolations.violations()
+        val notFailedYet = withPossibleViolations.violations()
                 .stream()
-                .anyMatch(v -> v.transactionId().equals(transaction.getId()));
+                .noneMatch(v -> v.transactionId().equals(transaction.getId()));
 
-        if (!errors.isEmpty() && !alreadyFailed) {
+        if (!errors.isEmpty() && notFailedYet) {
             val v = Violation.create(
                     Violation.Priority.NORMAL,
                     Violation.Type.FATAL,

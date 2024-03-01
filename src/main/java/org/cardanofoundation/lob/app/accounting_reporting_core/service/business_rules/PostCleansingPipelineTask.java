@@ -8,16 +8,18 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class PostCleansingPipelineTask implements PipelineTask {
 
     public TransformationResult run(OrganisationTransactions passedOrganisationTransactions,
-                                    OrganisationTransactions ignoredOrganisationTransactions) {
+                                    OrganisationTransactions ignoredOrganisationTransactions,
+                                    Set<Violation> allViolationUntilNow) {
 
         val passedTransactions = passedOrganisationTransactions.transactions().stream()
-                .map(Transaction.WithPossibleViolations::create)
+                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
                 .map(this::debitAccountCheck)
                 .toList();
 
@@ -39,9 +41,10 @@ public class PostCleansingPipelineTask implements PipelineTask {
     private Transaction.WithPossibleViolations debitAccountCheck(Transaction.WithPossibleViolations transactionLineWithViolation) {
         val tx = transactionLineWithViolation.transaction();
 
+        // we accept only transaction items that are NOT sending to the same account, if they are we discard them
         val newItems = tx.getTransactionItems()
                 .stream()
-                .filter(txItem -> !txItem.getAccountCodeRefDebit().equals(txItem.getAccountCodeRefCredit()))
+                .filter(txItem -> !txItem.getAccountCodeDebit().equals(txItem.getAccountCodeCredit()))
                 .collect(Collectors.toSet());
 
         return Transaction.WithPossibleViolations.create(tx
