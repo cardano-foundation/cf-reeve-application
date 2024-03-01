@@ -35,6 +35,7 @@ public class TransactionConverter {
 
         transactionEntity.setValidationStatus(transaction.getValidationStatus());
         transactionEntity.setLedgerDispatchStatus(transaction.getLedgerDispatchStatus());
+        transactionEntity.setTransactionApproved(transaction.isTransactionApproved());
         transactionEntity.setLedgerDispatchApproved(transaction.isLedgerDispatchApproved());
 
         val txItems = transaction.getTransactionItems()
@@ -173,6 +174,7 @@ public class TransactionConverter {
                         .build()))
 
                 .ledgerDispatchStatus(transactionEntity.getLedgerDispatchStatus())
+                .transactionApproved(transactionEntity.getTransactionApproved())
                 .ledgerDispatchApproved(transactionEntity.getLedgerDispatchApproved())
                 .transactionItems(items)
                 .build();
