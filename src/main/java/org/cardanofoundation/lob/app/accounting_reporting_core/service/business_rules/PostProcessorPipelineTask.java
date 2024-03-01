@@ -12,6 +12,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.repository.Transa
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TX_ALREADY_DISPATCHED;
@@ -24,13 +25,15 @@ public class PostProcessorPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions) {
+                                    OrganisationTransactions ignoredTransactions,
+                                    Set<Violation> allViolationUntilNow) {
         val newViolations = new HashSet<Violation>();
 
         val organisationId = passedTransactions.organisationId();
         val transactions = passedTransactions.transactions();
 
-        val allTransactionIds = transactions.stream().map(Transaction::getId)
+        val allTransactionIds = transactions.stream()
+                .map(Transaction::getId)
                 .collect(Collectors.toSet());
 
         val dispatchedTransactions = transactionRepositoryGateway.findDispatchedTransactions(organisationId, transactions);

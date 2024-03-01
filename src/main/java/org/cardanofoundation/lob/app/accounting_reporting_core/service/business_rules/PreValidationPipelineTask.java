@@ -8,21 +8,23 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static java.math.BigDecimal.ZERO;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.FCY_BALANCE_MUST_ZERO;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.*;
 
 @Slf4j
 public class PreValidationPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions) {
+                                    OrganisationTransactions ignoredTransactions,
+                                    Set<Violation> allViolationUntilNow) {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
-                .map(Transaction.WithPossibleViolations::create)
+                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
                 .map(this::amountsFcyCheck)
                 .map(this::amountsLcyCheck)
                 .map(this::balanceZerosOutLcyCheck)
@@ -58,7 +60,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                             tx.getOrganisation().getId(),
                             tx.getId(),
                             txItem.getId(),
-                            Violation.Code.AMOUNT_FCY_IS_ZERO,
+                            AMOUNT_FCY_IS_ZERO,
                             Map.of(
                                     "amountFcy", txItem.getAmountFcy(),
                                     "amountLcy", txItem.getAmountLcy()
@@ -90,7 +92,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),
-                        Violation.Code.AMOUNT_LCY_IS_ZERO,
+                        AMOUNT_LCY_IS_ZERO,
                         Map.of("amountFcy", txItem.getAmountFcy(), "amountLcy", txItem.getAmountLcy())
                 );
 
@@ -117,7 +119,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                     Violation.Type.FATAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
-                    Violation.Code.LCY_BALANCE_MUST_BE_ZERO,
+                    LCY_BALANCE_MUST_BE_ZERO,
                     Map.of()
             );
 

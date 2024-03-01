@@ -24,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,7 +100,8 @@ public class NetSuiteService {
 
             val transformationResult = businessRulesPipelineProcessor.run(
                     new OrganisationTransactions(organisationId, coreTransactions),
-                    OrganisationTransactions.empty(organisationId));
+                    OrganisationTransactions.empty(organisationId),
+                    new HashSet<>());
 
             val txs = transformationResult.organisationTransactions().transactions();
             log.info("after business process tx count: {}", txs.size());

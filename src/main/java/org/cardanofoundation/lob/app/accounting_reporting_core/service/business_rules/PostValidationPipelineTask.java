@@ -7,6 +7,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.Journal;
@@ -19,10 +20,11 @@ public class PostValidationPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions) {
+                                    OrganisationTransactions ignoredTransactions,
+                                    Set<Violation> allViolationUntilNow) {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
-                .map(Transaction.WithPossibleViolations::create)
+                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
                 .map(this::accountCodeDebitCheck)
                 .map(this::accountCodeCreditCheck)
                 .map(this::documentMustBePresentCheck)

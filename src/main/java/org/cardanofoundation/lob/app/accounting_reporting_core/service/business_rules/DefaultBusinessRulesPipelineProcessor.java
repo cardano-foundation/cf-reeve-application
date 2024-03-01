@@ -24,13 +24,14 @@ public class DefaultBusinessRulesPipelineProcessor implements BusinessRulesPipel
 
     @Override
     public TransformationResult run(OrganisationTransactions organisationTransactions,
-                                    OrganisationTransactions ignoredTransactions) {
+                                    OrganisationTransactions ignoredTransactions,
+                                    Set<Violation> allViolationUntilNow) {
         val allViolations = new HashSet<Violation>();
 
         for (val pipelineTask : pipelineTasks) {
             //log.info("Running pipelineTask: {}", pipelineTask.getClass().getSimpleName());
 
-            val transformationResult = pipelineTask.run(organisationTransactions, ignoredTransactions);
+            val transformationResult = pipelineTask.run(organisationTransactions, ignoredTransactions, allViolations);
 
             // TODO refactor this - we do not want to over-write passed in params (anti-pattern)
             organisationTransactions = transformationResult.organisationTransactions();

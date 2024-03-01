@@ -15,6 +15,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,11 +24,12 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ERPIncomingDataProcessor {
 
-    private BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
     private final NotificationViolationHandler notificationViolationHandler;
     private final TransactionConverter transactionConverter;
     private final TransactionRepository transactionRepository;
     private final TransactionRepositoryGateway transactionRepositoryGateway;
+
+    private BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
 
     @PostConstruct
     public void init() {
@@ -38,7 +40,8 @@ public class ERPIncomingDataProcessor {
     public void processIncomingERPEvent(OrganisationTransactions organisationTransactions) {
         val finalTransformationResult = businessRulesPipelineProcessor.run(
                 organisationTransactions,
-                OrganisationTransactions.empty(organisationTransactions.organisationId())
+                OrganisationTransactions.empty(organisationTransactions.organisationId()),
+                new HashSet<>()
         );
 
         syncToDb(finalTransformationResult);
