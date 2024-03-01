@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-@Primary
 @Slf4j
 @RequiredArgsConstructor
 public class ImmediateDispatchingStrategy implements DispatchingStrategy {
@@ -17,7 +16,7 @@ public class ImmediateDispatchingStrategy implements DispatchingStrategy {
     @Override
     public Set<TransactionEntity> apply(String organisationId,
                                         Set<TransactionEntity> transactions) {
-        return transactions;
+        return DispatchingStrategy.super.apply(organisationId, transactions);
     }
 
 }
