@@ -44,10 +44,6 @@ public class NetSuiteService {
 
     private final BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
 
-    // TODO this this over properly
-    @Value("${lob.connector.id:jhu765}")
-    private String connectorId;
-
     @Value("${lob.events.netsuite.to.core.send.batch.size:25}")
     private int sendBatchSize = 25;
 
@@ -83,9 +79,9 @@ public class NetSuiteService {
 
         val coreTransactionsE = transactionConverter.convert(transactionDataSearchResult);
         if (coreTransactionsE.isEmpty()) {
-            val issue = coreTransactionsE.getLeft();
+            val issues = coreTransactionsE.getLeft();
 
-            log.warn("Error converting NetSuite search, issue:{}", issue);
+            log.warn("Error converting NetSuite search, issues:{}", issues);
 
             return;
         }
@@ -101,7 +97,8 @@ public class NetSuiteService {
             val transformationResult = businessRulesPipelineProcessor.run(
                     new OrganisationTransactions(organisationId, coreTransactions),
                     OrganisationTransactions.empty(organisationId),
-                    new HashSet<>());
+                    new HashSet<>()
+            );
 
             val txs = transformationResult.organisationTransactions().transactions();
             log.info("after business process tx count: {}", txs.size());
@@ -218,6 +215,7 @@ public class NetSuiteService {
             val transactionDataSearchResult = objectMapper.readValue(jsonString, TransactionDataSearchResult.class);
 
             // TODO how to handle pagination and more results to fetch?
+
             if (transactionDataSearchResult.more()) {
                 log.warn("More data available in the search result, pagination not implemented yet!");
 

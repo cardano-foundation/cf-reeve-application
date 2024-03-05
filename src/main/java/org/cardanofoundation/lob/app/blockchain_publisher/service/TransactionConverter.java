@@ -54,8 +54,7 @@ public class TransactionConverter {
                 .id(org.getId())
                 .shortName(org.getShortName())
                 .currency(Currency.builder()
-                        .id(org.getCurrency().getId().orElseThrow()) // currency ref if is mandatory in the organisation
-                        //.internalNumber(org.getCurrency().getInternalNumber())
+                        .id(org.getCurrency().toId()) // currency ref if is mandatory in the organisation
                         .build())
                 .build();
     }
@@ -65,12 +64,10 @@ public class TransactionConverter {
         document.setInternalDocumentNumber(doc.getInternalNumber());
 
         document.setCurrency(Currency.builder()
-                .id(doc.getCurrency().getId().orElseThrow()) // at this moment we must have currency id
-                //.internalNumber(doc.getCurrency().getInternalNumber())
+                .id(doc.getCurrency().toId()) // at this moment we must have currency id
                 .build());
 
         document.setVat(doc.getVat().map(vat -> Vat.builder()
-                //.internalNumber(vat.getInternalNumber())
                 .rate(vat.getRate().orElseThrow())
                 .build()).orElse(null));
 

@@ -20,12 +20,25 @@ CREATE TABLE netsuite_ingestion (
    CONSTRAINT pk_netsuite_ingestion PRIMARY KEY (id)
 );
 
+CREATE TABLE netsuite_code_mapping (
+   organisation_id VARCHAR(64) NOT NULL,
+   internal_id BIGINT NOT NULL,
+   code_type VARCHAR(255) NOT NULL,
+   code VARCHAR(255) NOT NULL,
+
+   created_by VARCHAR(255),
+   updated_by VARCHAR(255),
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
+
+   CONSTRAINT pk_netsuite_code_mappings PRIMARY KEY (organisation_id, internal_id)
+);
+
 CREATE TABLE accounting_core_transaction (
    transaction_id CHAR(64) NOT NULL,
    organisation_id VARCHAR(255) NOT NULL,
    organisation_short_name VARCHAR(50) NOT NULL,
    organisation_currency_id VARCHAR(255) NOT NULL,
-   organisation_currency_internal_number VARCHAR(255) NOT NULL,
 
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
@@ -34,7 +47,6 @@ CREATE TABLE accounting_core_transaction (
 
    document_internal_number VARCHAR(255),
    document_currency_id VARCHAR(255),
-   document_currency_internal_number VARCHAR(255),
 
    document_vat_internal_number VARCHAR(255),
    document_vat_rate DECIMAL,
@@ -140,25 +152,20 @@ CREATE TABLE blockchain_publisher_transaction (
 
    organisation_short_name VARCHAR(50) NOT NULL,
    organisation_currency_id VARCHAR(255) NOT NULL,
-   --organisation_currency_internal_number VARCHAR(255) NOT NULL,
 
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
 
    fx_rate DECIMAL NOT NULL,
 
-   --cost_center_internal_number VARCHAR(255),
    cost_center_code VARCHAR(25),
 
-   --project_internal_number VARCHAR(255),
    project_code VARCHAR(25),
 
    document_internal_document_number VARCHAR(255),
    document_currency_id VARCHAR(255) NOT NULL,
-   -- document_currency_internal_number VARCHAR(255) NOT NULL,
    document_counterparty_internal_number VARCHAR(255),
 
-   -- document_vat_internal_number VARCHAR(255),
    document_vat_rate DECIMAL,
 
    l1_assurance_level VARCHAR(255),
@@ -246,3 +253,18 @@ CREATE TABLE IF NOT EXISTS event_publication(
 
 --CREATE INDEX IF NOT EXISTS event_publication_listener_id_serialized_event_idx ON event_publication (listener_id, serialized_event);
 CREATE INDEX IF NOT EXISTS event_publication_completion_date_idx ON event_publication (completion_date);
+
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, 'CURRENCY', 'ISO_4217:CHF', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 2, 'CURRENCY', 'ISO_4217:USD', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 3, 'CURRENCY', 'ISO_4217:CAD', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 4, 'CURRENCY', 'ISO_4217:EUR', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 5, 'CURRENCY', 'ISO_4217:GBP', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 6, 'CURRENCY', 'ISO_24165:ADA:HWGL1C2CK', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 7, 'CURRENCY', 'ISO_24165:BTC:4H95J0R2X', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 8, 'CURRENCY', 'ISO_4217:CRC', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 9, 'CURRENCY', 'ISO_24165:BCH:J9K583ZGG', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 10, 'CURRENCY', 'ISO_24165:BSV:2L8HS2MNP', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 11, 'CURRENCY', 'ISO_4217:LKK', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 12, 'CURRENCY', 'ISO_4217:AED', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 13, 'CURRENCY', 'ISO_4217:GEL', 'system', CURRENT_TIMESTAMP);
+INSERT INTO netsuite_code_mapping (organisation_id, internal_id, code_type, code, created_by, created_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 14, 'CURRENCY', 'ISO_4217:KRW', 'system', CURRENT_TIMESTAMP);

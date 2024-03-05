@@ -93,8 +93,7 @@ public class TransactionConverter {
                 .id(transaction.getOrganisation().getId())
                 .shortName(transaction.getOrganisation().getShortName())
                 .currency(Currency.builder()
-                        .id(transaction.getOrganisation().getCurrency().getId().orElseThrow()) // currency ref if is mandatory in the organisation
-                        .internalNumber(transaction.getOrganisation().getCurrency().getInternalNumber())
+                        .id(transaction.getOrganisation().getCurrency().toId()) // currency ref if is mandatory in the organisation
                         .build())
                 .build();
     }
@@ -104,8 +103,7 @@ public class TransactionConverter {
                         .internalNumber(doc.getInternalNumber())
 
                         .currency(Currency.builder()
-                                .id(doc.getCurrency().getId().orElse(null))
-                                .internalNumber(doc.getCurrency().getInternalNumber())
+                                .id(doc.getCurrency().toId())
                                 .build())
 
                         .vat(doc.getVat().map(vat -> Vat.builder()
@@ -150,10 +148,7 @@ public class TransactionConverter {
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
                         .id(transactionEntity.getOrganisation().getId())
                         .shortName(transactionEntity.getOrganisation().getShortName())
-                        .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
-                                .id(transactionEntity.getOrganisation().getCurrency().getId())
-                                .internalNumber(transactionEntity.getOrganisation().getCurrency().getInternalNumber())
-                                .build())
+                        .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.fromId(transactionEntity.getOrganisation().getCurrency().getId()))
                         .build())
                 .document(convert(transactionEntity.getDocument()))
                 .entryDate(transactionEntity.getEntryDate())
@@ -173,24 +168,21 @@ public class TransactionConverter {
                         .code(project.getCode())
                         .build()))
 
-                .ledgerDispatchStatus(transactionEntity.getLedgerDispatchStatus())
                 .transactionApproved(transactionEntity.getTransactionApproved())
+                .ledgerDispatchStatus(transactionEntity.getLedgerDispatchStatus())
                 .ledgerDispatchApproved(transactionEntity.getLedgerDispatchApproved())
                 .transactionItems(items)
                 .build();
     }
 
-    private static Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document> convert(@Nullable Document doc) {
+    private Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document> convert(@Nullable Document doc) {
         if (doc == null) {
             return Optional.empty();
         }
 
         return Optional.of(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document.builder()
                 .internalNumber(doc.getInternalNumber())
-                .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
-                        .id(doc.getCurrency().getId())
-                        .internalNumber(doc.getCurrency().getInternalNumber())
-                        .build())
+                .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.fromId(doc.getCurrency().getId()))
                 .vat(doc.getVat().map(vat -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Vat.builder()
                         .internalNumber(vat.getInternalNumber())
                         .rate(vat.getRate())

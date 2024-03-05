@@ -9,7 +9,6 @@ import java.util.function.Function;
 
 @Service
 @Slf4j
-
 // TODO update this with full reference list of all types
 public class TransactionTypeMapper implements Function<Type, TransactionType> {
 

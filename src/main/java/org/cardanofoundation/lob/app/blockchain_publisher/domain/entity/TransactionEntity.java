@@ -40,7 +40,6 @@ public class TransactionEntity extends AuditEntity {
             @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),
             @AttributeOverride(name = "shortName", column = @Column(name = "organisation_short_name")),
             @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id")),
-            @AttributeOverride(name = "currency.externalNumber", column = @Column(name = "organisation_currency_internal_number"))
     })
     private Organisation organisation;
 
@@ -71,11 +70,9 @@ public class TransactionEntity extends AuditEntity {
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "internalDocumentNumber", column = @Column(name = "document_internal_document_number")),
-            //@AttributeOverride(code = "vat.internalNumber", column = @Column(code = "document_vat_internal_number")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
             @AttributeOverride(name = "counterparty.internalNumber", column = @Column(name = "document_counterparty_internal_number")),
             @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
-            //@AttributeOverride(code = "currency.internalNumber", column = @Column(code = "document_currency_internal_number")),
     })
     private Document document;
 

@@ -16,9 +16,9 @@ import static org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSour
 @RequiredArgsConstructor
 public class StaticOrganisationRepository implements OrganisationRepository {
 
-    private final OrganisationCurrencyRepository organisationCurrencyRepository;
+    private final CurrencyRepository currencyRepository;
 
-    private List<Organisation> organisations = new ArrayList<>();
+    private final List<Organisation> organisations = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -29,7 +29,7 @@ public class StaticOrganisationRepository implements OrganisationRepository {
                 NETSUITE,
                 "1",
                 "CHE-184.477.354",
-                organisationCurrencyRepository.findByCurrencyId("ISO_4217:CHF").orElseThrow()
+                currencyRepository.findByCurrencyId("ISO_4217:CHF").orElseThrow()
         ));
 
         log.info("StaticOrganisationRepository init completed.");

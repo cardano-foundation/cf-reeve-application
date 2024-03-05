@@ -15,6 +15,4 @@ public class Currency {
 
     private String id;
 
-    // private String internalNumber;
-
 }

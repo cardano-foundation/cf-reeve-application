@@ -78,7 +78,7 @@ public record SearchResultTransactionItem(
 
         @JsonProperty("Currency")
         @Positive
-        Integer currency,
+        Long currency,
 
         @NotNull
         @JsonProperty("Exchange Rate")

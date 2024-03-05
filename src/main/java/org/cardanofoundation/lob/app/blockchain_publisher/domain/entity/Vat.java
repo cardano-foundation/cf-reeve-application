@@ -13,9 +13,6 @@ import java.math.BigDecimal;
 @Setter
 public class Vat {
 
-//    @Nullable
-//    private String internalNumber;
-
     private BigDecimal rate;
 
 }

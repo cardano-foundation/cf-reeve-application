@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
@@ -27,7 +26,6 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @Entity(name = "accounting_reporting_core.TransactionEntity")
 @Table(name = "accounting_core_transaction")
 @NoArgsConstructor
-@ToString
 //@Audited
 //@EntityListeners({AuditingEntityListener.class})
 public class TransactionEntity extends AuditEntity {
@@ -43,8 +41,7 @@ public class TransactionEntity extends AuditEntity {
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),
             @AttributeOverride(name = "shortName", column = @Column(name = "organisation_short_name")),
-            @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id")),
-            @AttributeOverride(name = "currency.internalNumber", column = @Column(name = "organisation_currency_internal_number"))
+            @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id"))
     })
     private Organisation organisation;
 
@@ -64,7 +61,6 @@ public class TransactionEntity extends AuditEntity {
             @AttributeOverride(name = "internalNumber", column = @Column(name = "document_internal_number")),
 
             @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
-            @AttributeOverride(name = "currency.internalNumber", column = @Column(name = "document_currency_internal_number")),
 
             @AttributeOverride(name = "vat.internalNumber", column = @Column(name = "document_vat_internal_number")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
