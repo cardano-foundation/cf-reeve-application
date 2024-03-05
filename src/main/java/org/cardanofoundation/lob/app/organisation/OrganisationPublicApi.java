@@ -30,12 +30,16 @@ public class OrganisationPublicApi {
         return organisationService.findById(id);
     }
 
-    public Optional<Organisation> findByErpInternalNumber(ERPDataSource erpDataSource, String erpInternalNumber) {
-        return organisationService.findByERPSystemId(erpDataSource, erpInternalNumber);
+    public Optional<Currency> findByCurrencyId(String currencyId) {
+        return currencyService.findByCurrencyId(currencyId);
     }
 
-    public Optional<OrganisationCurrency> findOrganisationCurrencyByInternalId(String internalCurrencyId) {
-        return currencyService.findByOrganisationCurrencyInternalId(internalCurrencyId);
+    public List<Currency> finsAllCurrencies() {
+        return currencyService.listAll();
+    }
+
+    public Optional<Organisation> findByErpInternalNumber(ERPDataSource erpDataSource, String erpInternalNumber) {
+        return organisationService.findByERPSystemId(erpDataSource, erpInternalNumber);
     }
 
     public Optional<OrganisationVat> findOrganisationVatByInternalId(String organisationId, String internalNumber) {

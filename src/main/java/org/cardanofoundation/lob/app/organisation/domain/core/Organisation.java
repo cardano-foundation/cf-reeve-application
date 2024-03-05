@@ -9,7 +9,7 @@ public record Organisation(
         ERPDataSource erpDataSource,
         String erpSystemCompanyId, // foreign system id, e.g. in case of NetSuite this is 1 for CF
         String vatID, // e.g. CHE-184.477.354
-        OrganisationCurrency currency
+        Currency currency
 ) {
 
     public static String testOrgId() {

@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.NOT_VALIDATED;
+import static org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.CodeMappingType.CURRENCY;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
 import static org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource.NETSUITE;
@@ -30,12 +30,14 @@ public class TransactionConverter {
 
     private final OrganisationPublicApi organisationPublicApi;
 
+    private final CodesMappingService codesMappingService;
+
     private final Validator validator;
 
     private final TransactionTypeMapper transactionTypeMapper;
 
     // split results across multiple organisations
-    public Either<Problem, Map<String, Set<Transaction>>> convert(List<SearchResultTransactionItem> searchResultTransactionItems) {
+    public Either<List<Problem>, Map<String, Set<Transaction>>> convert(List<SearchResultTransactionItem> searchResultTransactionItems) {
         log.info("transactionDataSearchResult count:{}", searchResultTransactionItems.size());
 
         val searchResultsByOrganisation = new ArrayList<OrganisationSearchResults>();
@@ -49,7 +51,7 @@ public class TransactionConverter {
                         .withDetail(STR."Organisation mapping not found for netsuite id: \{searchResultItem.subsidiary()}")
                         .build();
 
-                return Either.left(issue);
+                return Either.left(List.of(issue));
             }
 
             val validationIssues = validator.validate(searchResultItem);
@@ -63,7 +65,7 @@ public class TransactionConverter {
                         .withDetail(STR."Invalid netsuite transaction line item, line: \{searchResultItem}")
                         .build();
 
-                return Either.left(issue);
+                return Either.left(List.of(issue));
             }
 
             val organisation = organisationM.orElseThrow();
@@ -110,42 +112,70 @@ public class TransactionConverter {
         return Either.right(transactionsByOrganisations);
     }
 
-    private Either<Problem, Optional<Transaction>> createTransactionFromSearchResultItems(Organisation organisation,
-                                                                                          List<SearchResultTransactionItem> results) {
+    private Either<List<Problem>, Optional<Transaction>> createTransactionFromSearchResultItems(Organisation organisation,
+                                                                                                List<SearchResultTransactionItem> results) {
         if (results.isEmpty()) {
             return Either.right(Optional.empty());
         }
+
+        val problems = new ArrayList<Problem>();
 
         val first = results.getFirst();
 
         val txId = Transaction.id(organisation.id(), first.transactionNumber());
 
-        val txItems = results.stream().map(result -> {
-                    val txLineId = TransactionItem.id(txId, result.lineID().toString());
+        val txItems = new LinkedHashSet<TransactionItem>();
+        for (val result : results) {
+            val validationIssues = validator.validate(result);
+            val isValid = validationIssues.isEmpty();
 
-                    val accountCodeCreditM = normaliseString(result.accountMain())
-                            .flatMap(internalNumber -> organisationPublicApi.getChartOfAccounts(NETSUITE, internalNumber))
-                            .map(CharterOfAccounts::code);
+            if (!isValid) {
+                log.error("Invalid netsuite transaction line item: {}", result);
 
-                    val amountLcy = substractNullFriendly(result.amountDebit(), result.amountCredit());
-                    val amountFcy = substractNullFriendly(result.amountDebitForeignCurrency(), result.amountCreditForeignCurrency());
+                val issue = Problem.builder()
+                        .withTitle("NETSUITE_ADAPTER::INVALID_TRANSACTION_LINE")
+                        .withDetail(STR."Invalid netsuite transaction line item, line: \{result}")
+                        .build();
 
-                    return TransactionItem.builder()
-                            .id(txLineId)
-                            .accountNameDebit(normaliseString(result.name()))
-                            .accountCodeDebit(normaliseString(result.number()))
-                            .accountCodeCredit(accountCodeCreditM)
+                problems.add(issue);
 
-                            .amountLcy(amountLcy)
-                            .amountFcy(amountFcy)
+                continue;
+            }
 
-                            .build();
-                })
-                .collect(Collectors.toSet());
+            val txLineId = TransactionItem.id(txId, result.lineID().toString());
 
-        val baseCurrency = organisation.currency();
-        val organisationCurrency = new Currency(Optional.of(baseCurrency.currencyId()),
-                baseCurrency.internalNumber());
+            val accountCharterE = accountCredit(result.accountMain());
+
+            if (accountCharterE.isLeft()) {
+                problems.add(accountCharterE.getLeft());
+                continue;
+            }
+
+            val amountLcy = substractNullFriendly(result.amountDebit(), result.amountCredit());
+            val amountFcy = substractNullFriendly(result.amountDebitForeignCurrency(), result.amountCreditForeignCurrency());
+
+            val txLine = TransactionItem.builder()
+                    .id(txLineId)
+                    .accountNameDebit(normaliseString(result.name()))
+                    .accountCodeDebit(normaliseString(result.number()))
+                    .accountCodeCredit(accountCharterE.get().map(CharterOfAccounts::code))
+
+                    .amountLcy(amountLcy)
+                    .amountFcy(amountFcy)
+
+                    .build();
+
+            txItems.add(txLine);
+        }
+
+        val documentE = convertDocument(organisation, results, first);
+        if (documentE.isLeft()) {
+            problems.addAll(documentE.getLeft());
+        }
+
+        if (!problems.isEmpty()) {
+            return Either.left(problems);
+        }
 
         return Either.right(Optional.of(Transaction.builder()
                 .id(Transaction.id(organisation.id(), first.transactionNumber()))
@@ -155,7 +185,7 @@ public class TransactionConverter {
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
                         .id(organisation.id())
                         .shortName(organisation.shortName())
-                        .currency(organisationCurrency).build()
+                        .currency(Currency.fromId(organisation.currency().toId())).build()
                 )
                 .costCenter(normaliseString(first.costCenter()).map(internalNumber -> {
                     return CostCenter.builder()
@@ -170,14 +200,23 @@ public class TransactionConverter {
                 .fxRate(first.exchangeRate())
                 .validationStatus(NOT_VALIDATED)
                 .ledgerDispatchApproved(false)
-                .document(convertDocument(results, first))
+                .transactionApproved(false)
+                .document(documentE.get())
                 .transactionItems(txItems)
-                .build()));
+                .build())
+        );
     }
 
-    private static Optional<Document> convertDocument(List<SearchResultTransactionItem> results,
-                                                      SearchResultTransactionItem first) {
-        return normaliseString(first.documentNumber()).map(internalDocumentNumber -> {
+    private Either<List<Problem>, Optional<Document>> convertDocument(Organisation organisation,
+                                                                      List<SearchResultTransactionItem> results,
+                                                                      SearchResultTransactionItem first) {
+        val documentNumberM = normaliseString(first.documentNumber());
+
+        if (documentNumberM.isPresent()) {
+            val problems = new ArrayList<Problem>();
+
+            val internalDocumentNumber = documentNumberM.orElseThrow();
+
             val vatM = results.stream()
                     .filter(r -> normaliseString(r.taxItem()).isPresent()).findFirst()
                     .map(SearchResultTransactionItem::taxItem)
@@ -185,13 +224,34 @@ public class TransactionConverter {
                             .internalNumber(vatInternalNumber)
                             .build());
 
-            return Document.builder()
+            val currencyIdM = codesMappingService.getCodeMapping(organisation.id(), first.currency(), CURRENCY);
+
+            if (currencyIdM.isEmpty()) {
+                log.info("Currency mapping not found for netsuite internal number: {}", first.currency());
+
+                val issue = Problem.builder()
+                        .withTitle("NETSUITE_ADAPTER::CURRENCY_MAPPING_NOT_FOUND")
+                        .withDetail(STR."Currency mapping not found for netsuite id: \{first.currency()}")
+                        .with("organisationId", organisation.id())
+                        .with("currencyId", first.currency())
+                        .build();
+
+                problems.add(issue);
+
+                return Either.left(problems);
+            }
+
+            val currencyId = currencyIdM.orElseThrow();
+
+            return Either.right(Optional.of(Document.builder()
                     .internalNumber(internalDocumentNumber)
-                    .currency(Currency.from(String.valueOf(first.currency())))
+                    .currency(Currency.fromId(currencyId))
                     .vat(vatM)
                     .counterparty(convertCounterparty(first))
-                    .build();
-        });
+                    .build()));
+        }
+
+        return Either.right(Optional.empty());
     }
 
     private static Optional<Counterparty> convertCounterparty(SearchResultTransactionItem first) {
@@ -200,6 +260,26 @@ public class TransactionConverter {
 
     private record OrganisationSearchResults(Organisation organisation,
                                              SearchResultTransactionItem searchResultTransactionItem) {
+    }
+
+    private Either<Problem, Optional<CharterOfAccounts>> accountCredit(String accountMain) {
+        val accountCodeCreditM = normaliseString(accountMain);
+
+        if (accountCodeCreditM.isPresent()) {
+            val charterAccountM = organisationPublicApi.getChartOfAccounts(NETSUITE, accountCodeCreditM.orElseThrow());
+
+            if (charterAccountM.isPresent()) {
+                return Either.right(charterAccountM);
+            }
+
+            return Either.left(Problem.builder()
+                    .withTitle("NETSUITE_ADAPTER::CHARTER_ACCOUNT_MAPPING_NOT_FOUND")
+                    .withDetail(STR."Account mapping not found for netsuite id: \{accountMain}")
+                    .build());
+
+        }
+
+        return Either.right(Optional.empty());
     }
 
 }

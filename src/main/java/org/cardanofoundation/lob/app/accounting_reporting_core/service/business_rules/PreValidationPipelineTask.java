@@ -145,7 +145,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                     Violation.Type.FATAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
-                    FCY_BALANCE_MUST_ZERO,
+                    FCY_BALANCE_MUST_BE_ZERO,
                     Map.of()
             );
 

@@ -25,7 +25,6 @@ public class ConversionsPipelineTask implements PipelineTask {
                 .transactions().stream()
                 .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
                 .map(this::vatConversion)
-                .map(this::currencyCodeConversion)
                 .map(this::costCenterConversion)
                 .map(this::projectConversion)
                 .map(this::accountEventCodesConversion)
@@ -97,56 +96,6 @@ public class ConversionsPipelineTask implements PipelineTask {
         return violationTransaction;
     }
 
-    public Transaction.WithPossibleViolations currencyCodeConversion(Transaction.WithPossibleViolations violationTransaction) {
-        val tx = violationTransaction.transaction();
-
-        val documentM = tx.getDocument();
-
-        if (documentM.isEmpty()) {
-            return violationTransaction;
-        }
-
-        val document = documentM.orElseThrow();
-
-        if (document.getCurrency().getId().isEmpty()) {
-            val internalNumber = document.getCurrency().getInternalNumber();
-            val organisationCurrencyM = organisationPublicApi.findOrganisationCurrencyByInternalId(internalNumber);
-
-            if (organisationCurrencyM.isEmpty()) {
-                log.warn("CURRENCY_RATE_NOT_FOUND: currencyInternalId: {}", internalNumber);
-
-                val v = Violation.create(
-                        Violation.Priority.NORMAL,
-                        Violation.Type.FATAL,
-                        tx.getOrganisation().getId(),
-                        tx.getId(),
-                        Violation.Code.CURRENCY_RATE_NOT_FOUND,
-                        Map.of("currencyInternalNumber", internalNumber)
-                );
-
-                return Transaction.WithPossibleViolations.create(tx
-                        .toBuilder()
-                        .validationStatus(FAILED)
-                        .build(), v);
-            }
-
-            val organisationCurrency = organisationCurrencyM.orElseThrow();
-
-            val currency = org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
-                    .id(Optional.of(organisationCurrency.currencyId()))
-                    .internalNumber(organisationCurrency.internalNumber())
-                    .build();
-
-            return Transaction.WithPossibleViolations.create(tx.toBuilder()
-                    .document(Optional.of(document.toBuilder()
-                            .currency(currency)
-                            .build()))
-                    .build());
-        }
-
-        return violationTransaction;
-    }
-
     public Transaction.WithPossibleViolations costCenterConversion(Transaction.WithPossibleViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
@@ -171,7 +120,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                     organisationId,
                     tx.getId(),
                     COST_CENTER_NOT_FOUND,
-                    Map.of("internalNumber", internalNumber)
+                    Map.of("code", internalNumber)
             );
 
             return Transaction.WithPossibleViolations.create(tx
@@ -208,7 +157,7 @@ public class ConversionsPipelineTask implements PipelineTask {
         val projectMappingM = organisationPublicApi.findProject(organisationId, internalNumber);
 
         if (projectMappingM.isEmpty()) {
-            log.warn("PROJECT_CODE MAPPING NOT FOUND: internalNumber: {}", internalNumber);
+            log.warn("PROJECT_CODE MAPPING NOT FOUND: code: {}", internalNumber);
 
             val v = Violation.create(
                     Violation.Priority.NORMAL,
@@ -216,7 +165,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                     organisationId,
                     tx.getId(),
                     Violation.Code.PROJECT_CODE_NOT_FOUND,
-                    Map.of("internalNumber", internalNumber)
+                    Map.of("code", internalNumber)
             );
 
             return Transaction.WithPossibleViolations.create(tx

@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Locale.ENGLISH;
-import static org.cardanofoundation.lob.app.organisation.domain.core.Currency.CurrencyIsoStandard.ISO_24165;
-import static org.cardanofoundation.lob.app.organisation.domain.core.Currency.CurrencyIsoStandard.ISO_4217;
+import static org.cardanofoundation.lob.app.organisation.domain.core.Currency.IsoStandard.ISO_24165;
+import static org.cardanofoundation.lob.app.organisation.domain.core.Currency.IsoStandard.ISO_4217;
 
 @Service
 @Slf4j
@@ -23,10 +23,7 @@ public class StaticCurrencyRepository implements CurrencyRepository {
     @PostConstruct
     public void init() {
         java.util.Currency.getAvailableCurrencies().forEach(currency -> {
-            val currencyId = Currency.id(ISO_4217, currency.getCurrencyCode(), Optional.empty());
-
             val c = new Currency(
-                    currencyId,
                     ISO_4217,
                     currency.getCurrencyCode(),
                     Optional.empty(),
@@ -36,37 +33,37 @@ public class StaticCurrencyRepository implements CurrencyRepository {
             currencies.add(c);
         });
 
-        currencies.add(new Currency(
-                Currency.id(ISO_24165, "ADA", Optional.of("HWGL1C2CK")),
-                ISO_24165,
-                "ADA",
-                Optional.of("HWGL1C2CK"),
-                "Cardano"
-        ));
+        currencies.add(
+                new Currency(
+                        ISO_24165,
+                        "ADA",
+                        Optional.of("HWGL1C2CK"),
+                        "Cardano")
+        );
 
-        currencies.add(new Currency(
-                Currency.id(ISO_24165, "BTC", Optional.of("4H95J0R2X")),
-                ISO_24165,
-                "BTC",
-                Optional.of("4H95J0R2X"),
-                "Bitcoin"
-        ));
+        currencies.add(
+                new Currency(
+                        ISO_24165,
+                        "BTC",
+                        Optional.of("4H95J0R2X"),
+                        "Bitcoin")
+        );
 
-        currencies.add(new Currency(
-                Currency.id(ISO_24165, "BSV", Optional.of("2L8HS2MNP")),
-                ISO_24165,
-                "BSV",
-                Optional.of("2L8HS2MNP"),
-                "Bitcoin Satoshi Vision"
-        ));
+        currencies.add(
+                new Currency(
+                        ISO_24165,
+                        "BSV",
+                        Optional.of("2L8HS2MNP"),
+                        "Bitcoin Satoshi Vision")
+        );
 
-        currencies.add(new Currency(
-                Currency.id(ISO_24165, "BCH", Optional.of("J9K583ZGG")),
-                ISO_24165,
-                "BCH",
-                Optional.of("J9K583ZGG"),
-                "Bitcoin Cash"
-        ));
+        currencies.add(
+                new Currency(
+                        ISO_24165,
+                        "BCH",
+                        Optional.of("J9K583ZGG"),
+                        "Bitcoin Cash")
+        );
 
         log.info("StaticCurrencyRepository init completed.");
     }
@@ -79,7 +76,7 @@ public class StaticCurrencyRepository implements CurrencyRepository {
     @Override
     public Optional<Currency> findByCurrencyId(String currencyId) {
         return currencies.stream()
-                .filter(currency -> currency.id().equals(currencyId))
+                .filter(currency -> currency.toId().equals(currencyId))
                 .findFirst();
     }
 
