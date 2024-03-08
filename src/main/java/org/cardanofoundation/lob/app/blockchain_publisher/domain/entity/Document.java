@@ -3,10 +3,12 @@ package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+@Accessors(fluent = true)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +18,7 @@ import java.util.Optional;
 @Embeddable
 public class Document {
 
-    private String internalDocumentNumber;
+    private String num;
 
     @Embedded
     private Currency currency;

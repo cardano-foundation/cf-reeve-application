@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,9 +18,10 @@ import java.util.Optional;
 @Getter
 public class Document {
 
-    private String internalNumber;
+    private String num;
 
     @Embedded
+    @NotNull
     private Currency currency;
 
     @Embedded

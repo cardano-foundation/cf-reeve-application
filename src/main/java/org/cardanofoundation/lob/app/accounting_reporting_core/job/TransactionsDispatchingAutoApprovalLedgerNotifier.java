@@ -23,7 +23,7 @@ public class TransactionsDispatchingAutoApprovalLedgerNotifier {
         log.info("Executing TransactionsDispatchingAutoApprovalLedgerNotifier job...");
 
         for (val organisation : organisationPublicApi.listAll()) {
-            accountingCoreService.readBatchAndApproveTransactionsWithDispatch(organisation.id());
+            accountingCoreService.readBatchAndApproveTransactionsWithDispatch(organisation.getId());
         }
 
         log.info("Finished executing TransactionsDispatchingAutoApprovalLedgerNotifier job.");

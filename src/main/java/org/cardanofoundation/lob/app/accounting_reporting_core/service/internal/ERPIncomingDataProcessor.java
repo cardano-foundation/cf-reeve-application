@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -8,15 +7,11 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organ
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.DefaultBusinessRulesPipelineProcessor;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PostProcessorPipelineTask;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -27,14 +22,7 @@ public class ERPIncomingDataProcessor {
     private final NotificationViolationHandler notificationViolationHandler;
     private final TransactionConverter transactionConverter;
     private final TransactionRepository transactionRepository;
-    private final TransactionRepositoryGateway transactionRepositoryGateway;
-
-    private BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
-
-    @PostConstruct
-    public void init() {
-         businessRulesPipelineProcessor = new DefaultBusinessRulesPipelineProcessor(List.of(new PostProcessorPipelineTask(transactionRepositoryGateway)));
-    }
+    private final BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
 
     @Transactional
     public void processIncomingERPEvent(OrganisationTransactions organisationTransactions) {

@@ -6,15 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
+import java.util.Optional;
+
+@Builder(toBuilder = true)
 @Getter
 @AllArgsConstructor
 public class Organisation {
 
     @Size(min = 1, max =  255) @NotBlank  private String id;
 
-    @Size(min = 1, max =  50) @NotBlank  private String shortName;
+    @Builder.Default
+    private Optional<@Size(min = 1, max =  50) String> shortName = Optional.empty();
 
-    private Currency currency;
+    @Builder.Default
+    private Optional<Currency> currency = Optional.empty();
 
 }

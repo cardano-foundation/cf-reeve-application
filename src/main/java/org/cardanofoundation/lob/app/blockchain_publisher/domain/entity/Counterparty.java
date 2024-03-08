@@ -1,7 +1,10 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Enumerated;
 import lombok.*;
+
+import static jakarta.persistence.EnumType.STRING;
 
 @Embeddable
 @AllArgsConstructor
@@ -11,6 +14,9 @@ import lombok.*;
 @Setter
 public class Counterparty {
 
-    private String internalNumber;
+    private String customerCode;
+
+    @Enumerated(STRING)
+    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Counterparty.Type type;
 
 }

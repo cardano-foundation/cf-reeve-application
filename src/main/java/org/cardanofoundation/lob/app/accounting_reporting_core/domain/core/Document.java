@@ -15,7 +15,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class Document {
 
-    @Size(min = 1, max =  255) @NotBlank private String internalNumber;
+    @Size(min = 1, max =  255) @NotBlank private String number;
 
     @NotNull
     private Currency currency;

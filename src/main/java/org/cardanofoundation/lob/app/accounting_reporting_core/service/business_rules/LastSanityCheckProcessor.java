@@ -4,10 +4,7 @@ import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -29,7 +26,7 @@ public class LastSanityCheckProcessor implements PipelineTask {
                                     Set<Violation> allViolationUntilNow) {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
-                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
+                .map(tx -> TransactionWithViolations.create(tx, allViolationUntilNow))
                 .map(this::sanityCheckFields)
                 .collect(Collectors.toSet());
 
@@ -49,7 +46,7 @@ public class LastSanityCheckProcessor implements PipelineTask {
         );
     }
 
-    private Transaction.WithPossibleViolations sanityCheckFields(Transaction.WithPossibleViolations withPossibleViolations) {
+    private TransactionWithViolations sanityCheckFields(TransactionWithViolations withPossibleViolations) {
         val transaction = withPossibleViolations.transaction();
         val violations = new HashSet<Violation>();
 
@@ -73,7 +70,7 @@ public class LastSanityCheckProcessor implements PipelineTask {
         }
 
         if (!violations.isEmpty()) {
-            return Transaction.WithPossibleViolations
+            return TransactionWithViolations
                     .create(transaction.toBuilder().validationStatus(FAILED).build(), violations);
         }
 

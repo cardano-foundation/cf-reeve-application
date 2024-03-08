@@ -25,7 +25,7 @@ public class MetadataSerialiser {
         val organisationMap = MetadataBuilder.createMap();
         organisationMap.put("id", organisationId);
 
-        globalMetadataMap.put("transactions", txList);
+        globalMetadataMap.put("txs", txList);
 
         return globalMetadataMap;
     }
@@ -44,7 +44,7 @@ public class MetadataSerialiser {
         val id = transaction.getId();
 
         metadataMap.put("id", id);
-        metadataMap.put("internal_number", transaction.getInternalNumber());
+        metadataMap.put("num", transaction.getInternalNumber());
 
         metadataMap.put("type", transaction.getTransactionType().name());
 
@@ -53,7 +53,7 @@ public class MetadataSerialiser {
 
         metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
-        metadataMap.put("organisation", serialise(transaction.getOrganisation()));
+        metadataMap.put("org", serialise(transaction.getOrganisation()));
 
         val documentsList = MetadataBuilder.createList();
         documentsList.add(serialise(transaction.getDocument()));
@@ -77,15 +77,15 @@ public class MetadataSerialiser {
 
     private static MetadataMap serialise(CostCenter costCenter) {
         val metadataMap = MetadataBuilder.createMap();
-        metadataMap.put("code", costCenter.getCode());
+        metadataMap.put("code", costCenter.getCustomerCode());
+        metadataMap.put("name", costCenter.getName());
 
         return metadataMap;
     }
 
     private static MetadataMap serialise(Project project) {
         val metadataMap = MetadataBuilder.createMap();
-//        metadataMap.put("internal_number", project.getInternalNumber());
-        metadataMap.put("code", project.getCode());
+        metadataMap.put("code", project.getCustomerCode());
 
         return metadataMap;
     }
@@ -93,26 +93,27 @@ public class MetadataSerialiser {
     private static MetadataMap serialise(Document document) {
         val metadataMap = MetadataBuilder.createMap();
 
-        metadataMap.put("number", document.getInternalDocumentNumber());
+        metadataMap.put("number", document.num());
+        metadataMap.put("currency", serialise(document.currency()));
 
         document.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
+        document.getCounterparty().ifPresent(counterparty -> metadataMap.put("counterparty", serialiseCounterparty(counterparty)));
 
-        val counterpartyMap = MetadataBuilder.createMap();
-        document.getCounterparty().ifPresent(counterparty -> counterpartyMap.put("internal_number", counterparty.getInternalNumber()));
-
-        if (!counterpartyMap.keys().isEmpty()) {
-            metadataMap.put("counterparty", counterpartyMap);
-        }
-
-        metadataMap.put("currency", serialise(document.getCurrency()));
 
         return metadataMap;
+    }
+
+    private static MetadataMap serialiseCounterparty(Counterparty counterparty) {
+        val counterpartyMap = MetadataBuilder.createMap();
+        counterpartyMap.put("code", counterparty.getCustomerCode());
+        counterpartyMap.put("type", counterparty.getType().name());
+
+        return counterpartyMap;
     }
 
     private static MetadataMap serialise(Currency currency) {
         val metadataMap = MetadataBuilder.createMap();
         metadataMap.put("id", currency.getId());
-        //metadataMap.put("internal_number", currency.getInternalNumber());
 
         return metadataMap;
     }
@@ -120,7 +121,6 @@ public class MetadataSerialiser {
     private static MetadataMap serialise(Vat vat) {
         val vatMetadataMap = MetadataBuilder.createMap();
         vatMetadataMap.put("rate", vat.getRate().toEngineeringString());
-        //vatMetadataMap.put("internal_number", vat.getInternalNumber());
 
         return vatMetadataMap;
     }
@@ -140,6 +140,7 @@ public class MetadataSerialiser {
 
         metadataMap.put("id", org.getId());
         metadataMap.put("short_name", org.getShortName());
+        // send VAT_ID to the blockchain
         metadataMap.put("currency", serialise(org.getCurrency()));
 
         return metadataMap;

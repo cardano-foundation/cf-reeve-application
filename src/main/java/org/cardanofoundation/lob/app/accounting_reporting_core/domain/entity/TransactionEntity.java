@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
@@ -21,6 +22,7 @@ import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
 
+@Accessors(fluent = true)
 @Getter
 @Setter
 @Entity(name = "accounting_reporting_core.TransactionEntity")
@@ -37,14 +39,6 @@ public class TransactionEntity extends AuditEntity {
     @Column(name = "transaction_internal_number", nullable = false)
     private String transactionInternalNumber;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),
-            @AttributeOverride(name = "shortName", column = @Column(name = "organisation_short_name")),
-            @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id"))
-    })
-    private Organisation organisation;
-
     @Column(name = "transaction_type", nullable = false)
     @Enumerated(STRING)
     private TransactionType transactionType;
@@ -58,14 +52,25 @@ public class TransactionEntity extends AuditEntity {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "internalNumber", column = @Column(name = "document_internal_number")),
+            @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),
+            @AttributeOverride(name = "shortName", column = @Column(name = "organisation_short_name")),
+            @AttributeOverride(name = "currency.id", column = @Column(name = "organisation_currency_id")),
+            @AttributeOverride(name = "currency.customerCode", column = @Column(name = "organisation_currency_customer_code"))
+    })
+    private Organisation organisation;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "num", column = @Column(name = "document_num")),
 
             @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
+            @AttributeOverride(name = "currency.customerCode", column = @Column(name = "document_currency_customer_code")),
 
-            @AttributeOverride(name = "vat.internalNumber", column = @Column(name = "document_vat_internal_number")),
+            @AttributeOverride(name = "vat.customerCode", column = @Column(name = "document_vat_customer_code")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
 
-            @AttributeOverride(name = "counterparty.internalNumber", column = @Column(name = "document_counterparty_internal_number")),
+            @AttributeOverride(name = "counterparty.customerCode", column = @Column(name = "document_counterparty_customer_code")),
+            @AttributeOverride(name = "counterparty.type", column = @Column(name = "document_counterparty_type")),
             @AttributeOverride(name = "counterparty.name", column = @Column(name = "document_counterparty_name")),
     })
     @Nullable
@@ -73,17 +78,16 @@ public class TransactionEntity extends AuditEntity {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "internalNumber", column = @Column(name = "cost_center_internal_number")),
-            @AttributeOverride(name = "externalNumber", column = @Column(name = "cost_center_external_number")),
-            @AttributeOverride(name = "code", column = @Column(name = "cost_center_code"))
+            @AttributeOverride(name = "customerCode", column = @Column(name = "cost_center_customer_code")),
+            @AttributeOverride(name = "externalCustomerCode", column = @Column(name = "cost_center_external_customer_code")),
+            @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
     })
     @Nullable
     private CostCenter costCenter;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "internalNumber", column = @Column(name = "project_internal_number")),
-            @AttributeOverride(name = "code", column = @Column(name = "project_code"))
+        @AttributeOverride(name = "customerCode", column = @Column(name = "project_customer_code"))
     })
     @Nullable
     private Project project;

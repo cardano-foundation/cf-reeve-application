@@ -32,11 +32,7 @@ public class TransactionRepositoryGateway {
 
         val transactions = transactionRepository.findAllById(transactionIds)
                 .stream()
-                .map(tx -> {
-                    tx.setTransactionApproved(true);
-
-                    return tx;
-                })
+                .map(tx -> tx.transactionApproved(true))
                 .collect(Collectors.toSet());
 
         transactionRepository.saveAll(transactions);
@@ -48,31 +44,11 @@ public class TransactionRepositoryGateway {
 
         val transactions = transactionRepository.findAllById(transactionIds)
                 .stream()
-                .map(tx -> {
-                    tx.setLedgerDispatchApproved(true);
-
-                    return tx;
-                })
+                .map(tx -> tx.ledgerDispatchApproved(true))
                 .collect(Collectors.toSet());
 
         transactionRepository.saveAll(transactions);
     }
-
-//    @Transactional
-//    public Set<Transaction> readBlockchainDispatchPendingTransactions(String organisationId, int limit) {
-//        // TODO what about order by entry date or transaction internal number, etc?
-//
-//        return transactionRepository
-//                .findBlockchainPublisherPendingTransactions(
-//                        organisationId,
-//                        List.of(NOT_DISPATCHED),
-//                        List.of(VALIDATED),
-//                        true)
-//                .stream()
-//                .limit(limit)
-//                .map(transactionConverter::convert)
-//                .collect(Collectors.toSet());
-//    }
 
     @Transactional
     public Set<String> readApprovalPendingBlockchainTransactionIds(String organisationId,
@@ -80,8 +56,6 @@ public class TransactionRepositoryGateway {
                                                                    boolean transactionApprovalNeeded,
                                                                    boolean ledgerApprovalNeeded
                                                                    ) {
-        // TODO what about order by entry date or transaction internal number, etc?
-
         return transactionRepository
                 .findTransactionIdsByStatuses(
                         organisationId,
@@ -97,8 +71,6 @@ public class TransactionRepositoryGateway {
     @Transactional
     public Set<Transaction> findDispatchedTransactions(String organisationId,
                                                        Set<Transaction> transactions) {
-        // TODO what about order by entry date or transaction internal number, etc?
-
         val transactionIds = transactionIds(transactions);
 
         val seenTransactionStatuses = LedgerDispatchStatus.allDispatchedStatuses();
@@ -122,21 +94,6 @@ public class TransactionRepositoryGateway {
     public Set<Transaction> findByAllId(Set<String> transactionIds) {
         return transactionRepository.findAllById(transactionIds).stream().map(transactionConverter::convert).collect(Collectors.toSet());
     }
-
-//    @Transactional
-//    public Set<String> findAllFailedTransactionIds(String organisationId,
-//                                                   Set<String> transactionIds) {
-//        // TODO what about order by entry date or transaction internal number, etc?
-//
-//        return transactionRepository.findByValidationStatus(
-//                        organisationId,
-//                        transactionIds,
-//                        Set.of(FAILED))
-//                .stream()
-//                .map(transactionConverter::convert)
-//                .map(Transaction::getId)
-//                .collect(Collectors.toSet());
-//    }
 
     private static Set<String> transactionIds(Set<Transaction> passedTransactions) {
         return passedTransactions

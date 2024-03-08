@@ -17,7 +17,7 @@ import java.util.Optional;
 @Builder
 public class Vat {
 
-    private String internalNumber;
+    private String customerCode;
 
     @Nullable
     private BigDecimal rate;

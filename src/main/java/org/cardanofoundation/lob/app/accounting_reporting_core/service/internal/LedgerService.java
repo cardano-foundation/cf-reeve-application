@@ -41,9 +41,7 @@ public class LedgerService {
                 continue;
             }
 
-            val transaction = transactionM.orElseThrow();
-            transaction.setLedgerDispatchStatus(txStatusUpdate.getStatus());
-            transactionRepository.save(transaction);
+            transactionRepository.save(transactionM.orElseThrow().ledgerDispatchStatus(txStatusUpdate.getStatus()));
         }
 
         log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdates.size());

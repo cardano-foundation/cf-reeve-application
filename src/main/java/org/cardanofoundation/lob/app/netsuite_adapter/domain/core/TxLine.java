@@ -11,10 +11,9 @@ import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-
 // https://docs.google.com/spreadsheets/d/1iGo1t2bLuWSONOYo6kG9uXSzt7laCrM8gluKkx8tmn0/edit#gid=501685631
-public record SearchResultTransactionItem(
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record TxLine(
 
         @JsonProperty("Line ID")
         @PositiveOrZero
@@ -22,14 +21,10 @@ public record SearchResultTransactionItem(
 
         @JsonProperty("Subsidiary (no hierarchy)")
         @PositiveOrZero
-        Integer subsidiary,
+        Long subsidiary,
 
         @JsonProperty("Type")
-        Type type,
-
-//        @JsonProperty("Date Created")
-//        @JsonDeserialize(using = NetSuiteDateTimeDeserialiser.class)
-//        LocalDateTime dateCreated,
+        String type,
 
         @JsonProperty("Date")
         @JsonDeserialize(using = LocalDateDeserializer.class)

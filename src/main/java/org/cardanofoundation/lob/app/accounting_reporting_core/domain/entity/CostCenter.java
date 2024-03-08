@@ -18,20 +18,20 @@ import java.util.Optional;
 public class CostCenter {
 
     @NotBlank
-    private String internalNumber;
+    private String customerCode;
 
     @Nullable
-    private String externalNumber;
+    private String externalCustomerCode;
 
     @Nullable
-    private String code;
+    private String name;
 
-    public Optional<String> getExternalNumber() {
-        return Optional.ofNullable(externalNumber);
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
     }
 
-    public Optional<String> getCode() {
-        return Optional.ofNullable(code);
+    public Optional<String> getExternalCustomerCode() {
+        return Optional.ofNullable(externalCustomerCode);
     }
 
 }

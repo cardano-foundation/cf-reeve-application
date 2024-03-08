@@ -14,6 +14,6 @@ import lombok.*;
 public class Project {
 
     @NotBlank
-    private String code;
+    private String customerCode;
 
 }

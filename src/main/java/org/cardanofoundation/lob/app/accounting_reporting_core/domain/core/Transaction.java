@@ -68,21 +68,4 @@ public class Transaction {
         return digestAsHex(STR."\{organisationId}::\{internalTransactionNumber}");
     }
 
-    public record WithPossibleViolations(Transaction transaction,
-                                         Set<Violation> violations) {
-
-        public static WithPossibleViolations create(Transaction transaction) {
-            return new WithPossibleViolations(transaction, Set.of());
-        }
-
-        public static WithPossibleViolations create(Transaction transaction, Violation violation) {
-            return new WithPossibleViolations(transaction, Set.of(violation));
-        }
-
-        public static WithPossibleViolations create(Transaction transaction, Set<Violation> violation) {
-            return new WithPossibleViolations(transaction, violation);
-        }
-
-    }
-
 }

@@ -12,12 +12,12 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 public class CostCenter {
 
-    private @Size(min = 1, max =  255) String internalNumber;
+    private @Size(min = 1, max =  255) String customerCode;
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> externalNumber = Optional.empty();
+    private Optional<@Size(min = 1, max =  25) String> externalCustomerCode = Optional.empty();
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  25) String> code = Optional.empty();
+    private Optional<@Size(min = 1, max =  25) String> name = Optional.empty();
 
 }

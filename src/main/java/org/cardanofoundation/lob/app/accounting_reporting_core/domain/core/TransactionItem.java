@@ -27,7 +27,7 @@ public class TransactionItem {
     private Optional<@Size(min = 1, max =  255) String> accountCodeDebit = Optional.empty();
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> accountCodeRefDebit = Optional.empty();
+    private Optional<@Size(min = 1, max =  255) String> accountCodeEventRefDebit = Optional.empty();
 
     @Builder.Default
     private Optional<@Size(min = 1, max =  255) String> accountNameDebit = Optional.empty();
@@ -36,7 +36,7 @@ public class TransactionItem {
     private Optional<@Size(min = 1, max =  255) String> accountCodeCredit = Optional.empty();
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> accountCodeRefCredit = Optional.empty();
+    private Optional<@Size(min = 1, max =  255) String> accountCodeEventRefCredit = Optional.empty();
 
     @Builder.Default
     private Optional<@Size(min = 1, max =  255) String> accountEventCode = Optional.empty();

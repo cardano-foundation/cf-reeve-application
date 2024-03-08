@@ -51,7 +51,7 @@ public class NetSuiteAPI {
         val response = callForTransactionLinesData();
 
         if (response.isSuccessful()) {
-            log.info("Netsuite response success...code:{}, message:{}", response.getCode(), response.getMessage());
+            log.info("Netsuite response success...customerCode:{}, message:{}", response.getCode(), response.getMessage());
             val body = response.getBody();
 
             try {
@@ -69,7 +69,7 @@ public class NetSuiteAPI {
                     return Either.left(Problem.builder()
                             .withStatus(Status.valueOf(response.getCode()))
                             .withTitle("NetSuite API error")
-                            .withDetail(String.format("Error code: %d, message: %s", error, text))
+                            .withDetail(String.format("Error customerCode: %d, message: %s", error, text))
                             .build());
                 }
 
