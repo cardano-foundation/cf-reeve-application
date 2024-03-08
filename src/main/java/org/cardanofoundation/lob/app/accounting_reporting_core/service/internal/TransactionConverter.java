@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CoreCurrency;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.*;
@@ -18,51 +19,43 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TransactionConverter {
 
+    private final CoreCurrencyService coreCurrencyService;
+
     public TransactionEntity convert(Transaction transaction) {
-        val transactionEntity = new TransactionEntity();
-        transactionEntity.setId(transaction.getId());
-
-        transactionEntity.setTransactionInternalNumber(transaction.getInternalTransactionNumber());
-        transactionEntity.setTransactionType(transaction.getTransactionType());
-        transactionEntity.setEntryDate(transaction.getEntryDate());
-
-        transactionEntity.setOrganisation(convertOrganisation(transaction));
-        transactionEntity.setDocument(convert(transaction.getDocument()));
-        transactionEntity.setFxRate(transaction.getFxRate());
-
-        transactionEntity.setCostCenter(convertCostCenter(transaction.getCostCenter()));
-        transactionEntity.setProject(convertProject(transaction.getProject()));
-
-        transactionEntity.setValidationStatus(transaction.getValidationStatus());
-        transactionEntity.setLedgerDispatchStatus(transaction.getLedgerDispatchStatus());
-        transactionEntity.setTransactionApproved(transaction.isTransactionApproved());
-        transactionEntity.setLedgerDispatchApproved(transaction.isLedgerDispatchApproved());
+        val transactionEntity = new TransactionEntity()
+                .id(transaction.getId())
+                .transactionInternalNumber(transaction.getInternalTransactionNumber())
+                .transactionType(transaction.getTransactionType())
+                .entryDate(transaction.getEntryDate())
+                .organisation(convertOrganisation(transaction))
+                .document(convert(transaction.getDocument()))
+                .fxRate(transaction.getFxRate())
+                .costCenter(convertCostCenter(transaction.getCostCenter()))
+                .project(convertProject(transaction.getProject()))
+                .validationStatus(transaction.getValidationStatus())
+                .ledgerDispatchStatus(transaction.getLedgerDispatchStatus())
+                .transactionApproved(transaction.isTransactionApproved())
+                .ledgerDispatchApproved(transaction.isLedgerDispatchApproved());
 
         val txItems = transaction.getTransactionItems()
                 .stream()
                 .map(txItemEntity -> {
-                    val txItem = new TransactionItemEntity();
-                    txItem.setId(txItemEntity.getId());
-                    txItem.setTransaction(transactionEntity);
-                    txItem.setAmountLcy(txItemEntity.getAmountLcy());
-                    txItem.setAmountFcy(txItemEntity.getAmountFcy());
-
-                    txItem.setAccountCodeDebit(txItemEntity.getAccountCodeDebit().orElse(null));
-                    txItem.setAccountCodeRefDebit(txItemEntity.getAccountCodeRefDebit().orElse(null));
-
-                    txItem.setAccountCodeCredit(txItemEntity.getAccountCodeCredit().orElse(null));
-                    txItem.setAccountCodeRefCredit(txItemEntity.getAccountCodeRefCredit().orElse(null));
-
-                    txItem.setAccountNameDebit(txItemEntity.getAccountNameDebit().orElse(null));
-                    txItem.setAccountEventCode(txItemEntity.getAccountEventCode().orElse(null));
-
-                    return txItem;
+                    return new TransactionItemEntity()
+                            .id(txItemEntity.getId())
+                            .transaction(transactionEntity)
+                            .amountLcy(txItemEntity.getAmountLcy())
+                            .amountFcy(txItemEntity.getAmountFcy())
+                            .accountCodeDebit(txItemEntity.getAccountCodeDebit().orElse(null))
+                            .accountCodeRefDebit(txItemEntity.getAccountCodeEventRefDebit().orElse(null))
+                            .accountCodeCredit(txItemEntity.getAccountCodeCredit().orElse(null))
+                            .accountCodeRefCredit(txItemEntity.getAccountCodeEventRefCredit().orElse(null))
+                            .accountNameDebit(txItemEntity.getAccountNameDebit().orElse(null))
+                            .accountEventCode(txItemEntity.getAccountEventCode().orElse(null));
                 })
                 .collect(Collectors.toSet());
 
-        transactionEntity.setItems(txItems);
+        transactionEntity.items(txItems);
 
-        // TODO
         transactionEntity.setCreatedAt(LocalDateTime.now());
         transactionEntity.setUpdatedAt(LocalDateTime.now());
         transactionEntity.setCreatedBy("system");
@@ -73,17 +66,16 @@ public class TransactionConverter {
 
     private Project convertProject(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project> project) {
         return project.map(p -> Project.builder()
-                        .internalNumber(p.getInternalNumber())
-                        .code(p.getCode().orElse(null))
+                        .customerCode(p.getCustomerCode())
                         .build())
                 .orElse(null);
     }
 
     private CostCenter convertCostCenter(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter> costCenter) {
         return costCenter.map(cc -> CostCenter.builder()
-                        .internalNumber(cc.getInternalNumber())
-                        .externalNumber(cc.getExternalNumber().orElse(null))
-                        .code(cc.getCode().orElse(null))
+                        .customerCode(cc.getCustomerCode())
+                        .externalCustomerCode(cc.getExternalCustomerCode().orElse(null))
+                        .name(cc.getName().orElse(null))
                         .build())
                 .orElse(null);
     }
@@ -91,29 +83,31 @@ public class TransactionConverter {
     private static Organisation convertOrganisation(Transaction transaction) {
         return Organisation.builder()
                 .id(transaction.getOrganisation().getId())
-                .shortName(transaction.getOrganisation().getShortName())
-                .currency(Currency.builder()
-                        .id(transaction.getOrganisation().getCurrency().toId()) // currency ref if is mandatory in the organisation
-                        .build())
+                .shortName(transaction.getOrganisation().getShortName().orElse(null))
+                .currency(transaction.getOrganisation().getCurrency().map(c -> Currency.builder()
+                        .id(c.getCoreCurrency().map(CoreCurrency::toExternalId).orElse(null))
+                        .customerCode(c.getCustomerCode())
+                        .build()).orElse(null))
                 .build();
     }
 
     private org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Document convert(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document> docM) {
         return docM.map(doc -> Document.builder()
-                        .internalNumber(doc.getInternalNumber())
+                        .num(doc.getNumber())
 
                         .currency(Currency.builder()
-                                .id(doc.getCurrency().toId())
+                                .customerCode(doc.getCurrency().getCustomerCode())
+                                .id(doc.getCurrency().getCoreCurrency().map(CoreCurrency::toExternalId).orElse(null))
                                 .build())
-
                         .vat(doc.getVat().map(vat -> Vat.builder()
-                                .internalNumber(vat.getInternalNumber())
+                                .customerCode(vat.getCustomerCode())
                                 .rate(vat.getRate().orElse(null))
                                 .build()).orElse(null))
 
                         .counterparty(doc.getCounterparty().map(counterparty -> Counterparty.builder()
-                                .internalNumber(counterparty.getInternalNumber())
-                                .name(counterparty.getName().orElseThrow())
+                                .customerCode(counterparty.getCustomerCode())
+                                .type(counterparty.getType())
+                                .name(counterparty.getName().orElse(null))
                                 .build()).orElse(null)))
 
                 .map(Document.DocumentBuilder::build)
@@ -123,54 +117,58 @@ public class TransactionConverter {
     public Transaction convert(TransactionEntity transactionEntity) {
         // can you write a converter from transactionEntity to transaction
 
-        val items = transactionEntity.getItems()
+        val items = transactionEntity.items()
                 .stream()
                 .map(txItemEntity -> TransactionItem.builder()
-                        .id(txItemEntity.getId())
+                        .id(txItemEntity.id())
 
                         .accountCodeDebit(txItemEntity.getAccountCodeDebit())
-                        .accountCodeRefDebit(txItemEntity.getAccountCodeRefDebit())
+                        .accountCodeEventRefDebit(txItemEntity.getAccountCodeRefDebit())
 
                         .accountCodeCredit(txItemEntity.getAccountCodeCredit())
-                        .accountCodeRefCredit(txItemEntity.getAccountCodeRefCredit())
+                        .accountCodeEventRefCredit(txItemEntity.getAccountCodeRefCredit())
 
                         .accountNameDebit(txItemEntity.getAccountNameDebit())
 
                         .accountEventCode(txItemEntity.getAccountEventCode())
 
-                        .amountFcy(txItemEntity.getAmountFcy())
-                        .amountLcy(txItemEntity.getAmountLcy())
+                        .amountFcy(txItemEntity.amountFcy())
+                        .amountLcy(txItemEntity.amountLcy())
                         .build())
                 .collect(Collectors.toSet());
 
         return Transaction.builder()
-                .id(transactionEntity.getId())
+                .id(transactionEntity.id())
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
-                        .id(transactionEntity.getOrganisation().getId())
-                        .shortName(transactionEntity.getOrganisation().getShortName())
-                        .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.fromId(transactionEntity.getOrganisation().getCurrency().getId()))
+                        .id(transactionEntity.organisation().getId())
+                        .shortName(transactionEntity.organisation().getShortName())
+                        .currency(transactionEntity.organisation().getCurrency().map(c -> {
+                            return org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
+                                    .customerCode(c.getCustomerCode())
+                                    .coreCurrency(coreCurrencyService.findByCurrencyId(c.getId().orElseThrow()))
+                                    .build();
+                        }))
                         .build())
-                .document(convert(transactionEntity.getDocument()))
-                .entryDate(transactionEntity.getEntryDate())
-                .validationStatus(transactionEntity.getValidationStatus())
-                .transactionType(transactionEntity.getTransactionType())
-                .internalTransactionNumber(transactionEntity.getTransactionInternalNumber())
-                .fxRate(transactionEntity.getFxRate())
+                .document(convert(transactionEntity.document()))
+                .entryDate(transactionEntity.entryDate())
+                .validationStatus(transactionEntity.validationStatus())
+                .transactionType(transactionEntity.transactionType())
+                .internalTransactionNumber(transactionEntity.transactionInternalNumber())
+                .fxRate(transactionEntity.fxRate())
 
                 .costCenter(transactionEntity.getCostCenter().map(costCenter -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter.builder()
-                        .internalNumber(costCenter.getInternalNumber())
-                        .externalNumber(costCenter.getExternalNumber())
-                        .code(costCenter.getCode())
+                        .customerCode(costCenter.getCustomerCode())
+                        .externalCustomerCode(costCenter.getExternalCustomerCode())
+                        .name(costCenter.getName())
                         .build()))
 
                 .project(transactionEntity.getProject().map(project -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project.builder()
-                        .internalNumber(project.getInternalNumber())
-                        .code(project.getCode())
+                        .customerCode(project.getCustomerCode())
                         .build()))
 
-                .transactionApproved(transactionEntity.getTransactionApproved())
-                .ledgerDispatchStatus(transactionEntity.getLedgerDispatchStatus())
-                .ledgerDispatchApproved(transactionEntity.getLedgerDispatchApproved())
+                .transactionApproved(transactionEntity.transactionApproved())
+                .ledgerDispatchStatus(transactionEntity.ledgerDispatchStatus())
+                .ledgerDispatchApproved(transactionEntity.ledgerDispatchApproved())
                 .transactionItems(items)
                 .build();
     }
@@ -181,16 +179,22 @@ public class TransactionConverter {
         }
 
         return Optional.of(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document.builder()
-                .internalNumber(doc.getInternalNumber())
-                .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.fromId(doc.getCurrency().getId()))
+                .number(doc.getNum())
+                .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
+                        .customerCode(doc.getNum())
+                        .coreCurrency(doc.getCurrency().getId().flatMap(coreCurrencyService::findByCurrencyId))
+                        .build()
+                )
                 .vat(doc.getVat().map(vat -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Vat.builder()
-                        .internalNumber(vat.getInternalNumber())
+                        .customerCode(vat.getCustomerCode())
                         .rate(vat.getRate())
                         .build()))
+
                 .counterparty(doc.getCounterparty().map(counterparty -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Counterparty.builder()
-                        .internalNumber(counterparty.getInternalNumber())
-                        .name(Optional.of(counterparty.getName()))
+                        .customerCode(counterparty.getCustomerCode())
+                        .name(counterparty.getName())
                         .build()))
+
                 .build());
     }
 

@@ -7,28 +7,26 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
-import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
-import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
-import org.cardanofoundation.lob.app.organisation.domain.core.CharterOfAccounts;
-import org.cardanofoundation.lob.app.organisation.domain.core.Organisation;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionsWithViolations;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TxLine;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Violation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
 
 import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Counterparty.Type.VENDOR;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.NOT_VALIDATED;
-import static org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.CodeMappingType.CURRENCY;
+import static org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Violation.Code.*;
+import static org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.CodeMappingType.*;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.normaliseString;
-import static org.cardanofoundation.lob.app.organisation.domain.core.ERPDataSource.NETSUITE;
 
 @Service("netsuite_adapter.TransactionLineConverter")
 @RequiredArgsConstructor
 @Slf4j
 public class TransactionConverter {
-
-    private final OrganisationPublicApi organisationPublicApi;
 
     private final CodesMappingService codesMappingService;
 
@@ -36,72 +34,58 @@ public class TransactionConverter {
 
     private final TransactionTypeMapper transactionTypeMapper;
 
+    @Value("${lob.events.netsuite.to.core.netsuite.instance.id:fEU237r9rqAPEGEFY1yr}")
+    private String netsuiteInstanceId;
+
     // split results across multiple organisations
-    public Either<List<Problem>, Map<String, Set<Transaction>>> convert(List<SearchResultTransactionItem> searchResultTransactionItems) {
-        log.info("transactionDataSearchResult count:{}", searchResultTransactionItems.size());
+    public TransactionsWithViolations convert(List<TxLine> txLines) {
+        val searchResultsByOrganisation = new ArrayList<OrganisationTxLine>();
 
-        val searchResultsByOrganisation = new ArrayList<OrganisationSearchResults>();
-        for (val searchResultItem : searchResultTransactionItems) {
-            val organisationM = organisationPublicApi.findByErpInternalNumber(NETSUITE, String.valueOf(searchResultItem.subsidiary()));
-            if (organisationM.isEmpty()) {
-                log.error("Organisation mapping not found for netsuite internal number: {}", searchResultItem.subsidiary());
+        val violations = new LinkedHashSet<Violation>();
 
-                val issue = Problem.builder()
-                        .withTitle("NETSUITE_ADAPTER::ORGANISATION_MAPPING_NOT_FOUND")
-                        .withDetail(STR."Organisation mapping not found for netsuite id: \{searchResultItem.subsidiary()}")
-                        .build();
+        for (val txLine : txLines) {
+            val organisationE = organisationId(txLine);
 
-                return Either.left(List.of(issue));
+            if (organisationE.isEmpty()) {
+                violations.add(organisationE.getLeft());
+                continue;
             }
 
-            val validationIssues = validator.validate(searchResultItem);
-            val isValid = validationIssues.isEmpty();
+            val organisationId = organisationE.get();
 
-            if (!isValid) {
-                log.error("Invalid netsuite transaction line item: {}", searchResultItem);
-
-                val issue = Problem.builder()
-                        .withTitle("NETSUITE_ADAPTER::INVALID_TRANSACTION_LINE")
-                        .withDetail(STR."Invalid netsuite transaction line item, line: \{searchResultItem}")
-                        .build();
-
-                return Either.left(List.of(issue));
-            }
-
-            val organisation = organisationM.orElseThrow();
-
-            searchResultsByOrganisation.add(new OrganisationSearchResults(organisation, searchResultItem));
+            searchResultsByOrganisation.add(new OrganisationTxLine(organisationId, txLine));
         }
 
         val searchResultsByOrganisationMap = searchResultsByOrganisation.stream()
-                .collect(groupingBy(OrganisationSearchResults::organisation));
+                .collect(groupingBy(OrganisationTxLine::organisationId));
 
         val transactionsByOrganisations = new HashMap<String, Set<Transaction>>();
-        for (val entry : searchResultsByOrganisationMap.entrySet()) {
-            val organisation = entry.getKey();
-            val organisationSearchResults = entry.getValue()
+        for (val organisationListEntry : searchResultsByOrganisationMap.entrySet()) {
+            val organisationId = organisationListEntry.getKey();
+            val organisationSearchResults = organisationListEntry.getValue()
                     .stream()
-                    .map(OrganisationSearchResults::searchResultTransactionItem)
+                    .map(OrganisationTxLine::txLine)
                     .toList();
 
             val searchResultItemsPerTransactionNumber = organisationSearchResults
                     .stream()
-                    .collect(groupingBy(SearchResultTransactionItem::transactionNumber));
+                    .collect(groupingBy(TxLine::transactionNumber));
 
             for (val transactionNumberEntry : searchResultItemsPerTransactionNumber.entrySet()) {
                 val searchResultItems = transactionNumberEntry.getValue();
 
-                val transactionE = createTransactionFromSearchResultItems(organisation, searchResultItems);
+                val transactionE = createTransactionFromSearchResultItems(organisationId, searchResultItems);
 
                 if (transactionE.isEmpty()) {
-                    return Either.left(transactionE.getLeft());
+                    violations.add(transactionE.getLeft());
+                    continue;
                 }
 
                 val transactionM = transactionE.get();
 
                 transactionM.ifPresent(transaction -> {
                     transactionsByOrganisations
-                            .computeIfAbsent(organisation.id(), id -> new HashSet<>())
+                            .computeIfAbsent(organisationId, id -> new HashSet<>())
                             .add(transaction);
                 });
             }
@@ -109,20 +93,18 @@ public class TransactionConverter {
             log.info("transactionsByOrganisations count: {}", transactionsByOrganisations.size());
         }
 
-        return Either.right(transactionsByOrganisations);
+        return new TransactionsWithViolations(transactionsByOrganisations, violations);
     }
 
-    private Either<List<Problem>, Optional<Transaction>> createTransactionFromSearchResultItems(Organisation organisation,
-                                                                                                List<SearchResultTransactionItem> results) {
+    private Either<Violation, Optional<Transaction>> createTransactionFromSearchResultItems(String organisationId,
+                                                                                            List<TxLine> results) {
         if (results.isEmpty()) {
             return Either.right(Optional.empty());
         }
 
-        val problems = new ArrayList<Problem>();
+        val txLine = results.getFirst();
 
-        val first = results.getFirst();
-
-        val txId = Transaction.id(organisation.id(), first.transactionNumber());
+        val txId = Transaction.id(organisationId, txLine.transactionNumber());
 
         val txItems = new LinkedHashSet<TransactionItem>();
         for (val result : results) {
@@ -130,156 +112,233 @@ public class TransactionConverter {
             val isValid = validationIssues.isEmpty();
 
             if (!isValid) {
-                log.error("Invalid netsuite transaction line item: {}", result);
+                log.warn("Invalid netsuite org id: {}, tx number: {}, issues: {}", organisationId, result.transactionNumber(), validationIssues);
 
-                val issue = Problem.builder()
-                        .withTitle("NETSUITE_ADAPTER::INVALID_TRANSACTION_LINE")
-                        .withDetail(STR."Invalid netsuite transaction line item, line: \{result}")
-                        .build();
-
-                problems.add(issue);
-
-                continue;
+                return Either.left(Violation.create(result, INVALID_TRANSACTION_LINE));
             }
 
-            val txLineId = TransactionItem.id(txId, result.lineID().toString());
-
-            val accountCharterE = accountCredit(result.accountMain());
-
-            if (accountCharterE.isLeft()) {
-                problems.add(accountCharterE.getLeft());
-                continue;
+            val accountCreditCodeE = accountCreditCode(organisationId, txLine, result.accountMain());
+            if (accountCreditCodeE.isLeft()) {
+                return Either.left(accountCreditCodeE.getLeft());
             }
 
             val amountLcy = substractNullFriendly(result.amountDebit(), result.amountCredit());
             val amountFcy = substractNullFriendly(result.amountDebitForeignCurrency(), result.amountCreditForeignCurrency());
 
-            val txLine = TransactionItem.builder()
-                    .id(txLineId)
+            val txItem = TransactionItem.builder()
+                    .id(TransactionItem.id(txId, result.lineID().toString()))
                     .accountNameDebit(normaliseString(result.name()))
                     .accountCodeDebit(normaliseString(result.number()))
-                    .accountCodeCredit(accountCharterE.get().map(CharterOfAccounts::code))
+                    .accountCodeCredit(accountCreditCodeE.get())
 
                     .amountLcy(amountLcy)
                     .amountFcy(amountFcy)
 
                     .build();
 
-            txItems.add(txLine);
+            txItems.add(txItem);
         }
 
-        val documentE = convertDocument(organisation, results, first);
+        val documentE = convertDocument(organisationId, results, txLine);
         if (documentE.isLeft()) {
-            problems.addAll(documentE.getLeft());
+            return Either.left(documentE.getLeft());
         }
 
-        if (!problems.isEmpty()) {
-            return Either.left(problems);
+        val transTypeE = transactionType(txLine);
+        if (transTypeE.isEmpty()) {
+            return Either.left(transTypeE.getLeft());
+        }
+
+        val costCenterM = costCenterCode(organisationId, txLine);
+        if (costCenterM.isLeft()) {
+            return Either.left(costCenterM.getLeft());
+        }
+
+        val projectCodeM = projectCode(organisationId, txLine);
+        if (projectCodeM.isEmpty()) {
+            return Either.left(projectCodeM.getLeft());
         }
 
         return Either.right(Optional.of(Transaction.builder()
-                .id(Transaction.id(organisation.id(), first.transactionNumber()))
-                .internalTransactionNumber(first.transactionNumber())
-                .entryDate(first.date())
-                .transactionType(transactionTypeMapper.apply(first.type()))
+                .id(Transaction.id(organisationId, txLine.transactionNumber()))
+                .internalTransactionNumber(txLine.transactionNumber())
+                .entryDate(txLine.date())
+                .transactionType(transTypeE.get())
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
-                        .id(organisation.id())
-                        .shortName(organisation.shortName())
-                        .currency(Currency.fromId(organisation.currency().toId())).build()
+                        .id(organisationId)
+                        .build()
                 )
-                .costCenter(normaliseString(first.costCenter()).map(internalNumber -> {
-                    return CostCenter.builder()
-                            .internalNumber(internalNumber)
-                            .build();
-                }))
-                .project(normaliseString(first.project()).map(internalNumber -> {
-                    return Project.builder()
-                            .internalNumber(internalNumber)
-                            .build();
-                }))
-                .fxRate(first.exchangeRate())
+                .costCenter(costCenterM.get().map(cc -> CostCenter.builder()
+                        .customerCode(cc)
+                        .build()
+                ))
+                .project(projectCodeM.get().map(pc -> Project.builder()
+                        .customerCode(pc)
+                        .build()
+                ))
+                .fxRate(txLine.exchangeRate())
                 .validationStatus(NOT_VALIDATED)
-                .ledgerDispatchApproved(false)
-                .transactionApproved(false)
                 .document(documentE.get())
                 .transactionItems(txItems)
                 .build())
         );
     }
 
-    private Either<List<Problem>, Optional<Document>> convertDocument(Organisation organisation,
-                                                                      List<SearchResultTransactionItem> results,
-                                                                      SearchResultTransactionItem first) {
-        val documentNumberM = normaliseString(first.documentNumber());
+    private Either<Violation, TransactionType> transactionType(TxLine txLine) {
+        val transactionTypeM = transactionTypeMapper.apply(txLine.type());
+
+        if (transactionTypeM.isEmpty()) {
+            return Either.left(Violation.create(txLine, TRANSACTION_TYPE_MAPPING_NOT_FOUND));
+        }
+
+        return Either.right(transactionTypeM.orElseThrow());
+    }
+
+    private Either<Violation, Optional<Document>> convertDocument(String organisationId,
+                                                                  List<TxLine> txLines,
+                                                                  TxLine txLine) {
+        val documentNumberM = normaliseString(txLine.documentNumber());
 
         if (documentNumberM.isPresent()) {
-            val problems = new ArrayList<Problem>();
+            val documentNumber = documentNumberM.orElseThrow();
 
-            val internalDocumentNumber = documentNumberM.orElseThrow();
-
-            val vatM = results.stream()
-                    .filter(r -> normaliseString(r.taxItem()).isPresent()).findFirst()
-                    .map(SearchResultTransactionItem::taxItem)
-                    .map(vatInternalNumber -> Vat.builder()
-                            .internalNumber(vatInternalNumber)
-                            .build());
-
-            val currencyIdM = codesMappingService.getCodeMapping(organisation.id(), first.currency(), CURRENCY);
-
-            if (currencyIdM.isEmpty()) {
-                log.info("Currency mapping not found for netsuite internal number: {}", first.currency());
-
-                val issue = Problem.builder()
-                        .withTitle("NETSUITE_ADAPTER::CURRENCY_MAPPING_NOT_FOUND")
-                        .withDetail(STR."Currency mapping not found for netsuite id: \{first.currency()}")
-                        .with("organisationId", organisation.id())
-                        .with("currencyId", first.currency())
-                        .build();
-
-                problems.add(issue);
-
-                return Either.left(problems);
+            val currencyCodeE = currencyCode(organisationId, txLine);
+            if (currencyCodeE.isLeft()) {
+                return Either.left(currencyCodeE.getLeft());
             }
 
-            val currencyId = currencyIdM.orElseThrow();
+            val vatE = vatCode(organisationId, txLines, txLine);
+            if (vatE.isLeft()) {
+                return Either.left(vatE.getLeft());
+            }
 
             return Either.right(Optional.of(Document.builder()
-                    .internalNumber(internalDocumentNumber)
-                    .currency(Currency.fromId(currencyId))
-                    .vat(vatM)
-                    .counterparty(convertCounterparty(first))
+                    .number(documentNumber)
+                    .currency(Currency.builder()
+                            .customerCode(currencyCodeE.get())
+                            .build())
+                    .vat(vatE.get().map(cc -> Vat.builder()
+                            .customerCode(cc)
+                            .build()))
+                    .counterparty(convertCounterparty(txLine))
                     .build()));
         }
 
         return Either.right(Optional.empty());
     }
 
-    private static Optional<Counterparty> convertCounterparty(SearchResultTransactionItem first) {
-        return normaliseString(first.id()).map(internalNumber -> new Counterparty(internalNumber, Optional.of(first.companyName())));
+    private static Optional<Counterparty> convertCounterparty(TxLine txLine) {
+        return normaliseString(txLine.id()).map(customerCode -> Counterparty.builder()
+                .customerCode(customerCode)
+                .type(VENDOR) // TODO CF hardcoded for now
+                .name(normaliseString(txLine.companyName()))
+                .build());
     }
 
-    private record OrganisationSearchResults(Organisation organisation,
-                                             SearchResultTransactionItem searchResultTransactionItem) {
-    }
-
-    private Either<Problem, Optional<CharterOfAccounts>> accountCredit(String accountMain) {
-        val accountCodeCreditM = normaliseString(accountMain);
+    private Either<Violation, Optional<String>> accountCreditCode(String organisationId,
+                                                                  TxLine txLine,
+                                                                  String accountMain) {
+        val accountCodeCreditM = normaliseString(accountMain)
+                .map(Long::parseLong);
 
         if (accountCodeCreditM.isPresent()) {
-            val charterAccountM = organisationPublicApi.getChartOfAccounts(NETSUITE, accountCodeCreditM.orElseThrow());
+            val internalId = accountCodeCreditM.orElseThrow();
 
-            if (charterAccountM.isPresent()) {
-                return Either.right(charterAccountM);
+            val accountCreditCodeM = codesMappingService.getCodeMapping(organisationId, internalId, CHART_OF_ACCOUNT);
+
+            if (accountCreditCodeM.isPresent()) {
+                return Either.right(accountCreditCodeM);
             }
 
-            return Either.left(Problem.builder()
-                    .withTitle("NETSUITE_ADAPTER::CHARTER_ACCOUNT_MAPPING_NOT_FOUND")
-                    .withDetail(STR."Account mapping not found for netsuite id: \{accountMain}")
-                    .build());
-
+            return Either.left(Violation.create(txLine, CHART_OF_ACCOUNT_NOT_FOUND));
         }
 
         return Either.right(Optional.empty());
+    }
+
+    private Either<Violation, Optional<String>> costCenterCode(String organisationId,
+                                                             TxLine txLine) {
+        val costCenterM = normaliseString(txLine.costCenter())
+                .map(Long::parseLong);
+
+        if (costCenterM.isPresent()) {
+            val internalId = costCenterM.orElseThrow();
+            val costCenterE = codesMappingService.getCodeMapping(organisationId, internalId, COST_CENTER);
+
+            if (costCenterE.isPresent()) {
+                return Either.right(costCenterE);
+            }
+
+            return Either.left(Violation.create(txLine, Violation.Code.COST_CENTER_NOT_FOUND));
+        }
+
+        return Either.right(Optional.empty());
+    }
+
+    private Either<Violation, String> organisationId(TxLine txLine) {
+        val organisationIdM = codesMappingService.getCodeMapping(netsuiteInstanceId, txLine.subsidiary(), ORGANISATION);
+
+        if (organisationIdM.isEmpty()) {
+            return Either.left(Violation.create(txLine, ORGANISATION_MAPPING_NOT_FOUND));
+        }
+
+        return Either.right(organisationIdM.orElseThrow());
+    }
+
+    private Either<Violation, String> currencyCode(String organisationId,
+                                                   TxLine txLine) {
+        val currencyCodeM = codesMappingService.getCodeMapping(organisationId, txLine.currency(), CURRENCY);
+
+        if (currencyCodeM.isEmpty()) {
+            return Either.left(Violation.create(txLine, CURRENCY_MAPPING_NOT_FOUND));
+        }
+
+        return Either.right(currencyCodeM.orElseThrow());
+    }
+
+    private Either<Violation, Optional<String>> vatCode(String organisationId,
+                                                        List<TxLine> txLines,
+                                                        TxLine txLine) {
+        val taxItemM = txLines.stream().filter(e -> normaliseString(e.taxItem()).isPresent()).findFirst()
+                .map(TxLine::taxItem)
+                .map(Long::parseLong);
+
+        if (taxItemM.isPresent()) {
+            val internalId = taxItemM.orElseThrow();
+
+            val vatCodeM = codesMappingService.getCodeMapping(organisationId, internalId, VAT);
+
+            if (vatCodeM.isEmpty()) {
+                return Either.left(Violation.create(txLine, VAT_MAPPING_NOT_FOUND));
+            }
+
+            return Either.right(vatCodeM);
+        }
+
+        return Either.right(Optional.empty());
+    }
+
+    private Either<Violation, Optional<String>> projectCode(String organisationId,
+                                                            TxLine txLine) {
+        val projectInternalIdM = normaliseString(txLine.project()).map(Long::parseLong);
+
+        if (projectInternalIdM.isPresent()) {
+            val internalId = projectInternalIdM.orElseThrow();
+
+            val projectCodeM = codesMappingService.getCodeMapping(organisationId, internalId, PROJECT);
+
+            if (projectCodeM.isEmpty()) {
+                return Either.left(Violation.create(txLine, PROJECT_MAPPING_NOT_FOUND));
+            }
+
+            return Either.right(projectCodeM);
+        }
+
+        return Either.right(Optional.empty());
+    }
+
+    private record OrganisationTxLine(String organisationId,
+                                      TxLine txLine) {
     }
 
 }

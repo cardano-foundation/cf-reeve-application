@@ -56,23 +56,24 @@ public class TransactionEntity extends AuditEntity {
     @Embedded
     @Nullable
     @AttributeOverrides({
-            @AttributeOverride(name = "code", column = @Column(name = "cost_center_code"))
+            @AttributeOverride(name = "customerCode", column = @Column(name = "cost_center_customer_code")),
+            @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
     })
     private CostCenter costCenter;
 
     @Nullable
     @AttributeOverrides({
-            @AttributeOverride(name = "internalNumber", column = @Column(name = "project_internal_number")),
-            @AttributeOverride(name = "code", column = @Column(name = "project_code"))
+            @AttributeOverride(name = "customerCode", column = @Column(name = "project_customer_code"))
     })
     private Project project;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "internalDocumentNumber", column = @Column(name = "document_internal_document_number")),
+            @AttributeOverride(name = "num", column = @Column(name = "document_num")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
-            @AttributeOverride(name = "counterparty.internalNumber", column = @Column(name = "document_counterparty_internal_number")),
             @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
+            @AttributeOverride(name = "counterparty.customerCode", column = @Column(name = "document_counterparty_customer_code")),
+            @AttributeOverride(name = "counterparty.type", column = @Column(name = "document_counterparty_type")),
     })
     private Document document;
 

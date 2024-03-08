@@ -7,9 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nullable;
-import java.util.Optional;
-
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,13 +15,6 @@ import java.util.Optional;
 public class Project {
 
     @NotBlank
-    private String internalNumber;
-
-    @Nullable
-    private String code;
-
-    public Optional<String> getCode() {
-        return Optional.ofNullable(code);
-    }
+    private String customerCode;
 
 }

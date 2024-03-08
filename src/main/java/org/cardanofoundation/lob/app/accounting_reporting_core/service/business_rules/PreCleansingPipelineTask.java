@@ -3,10 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 import io.vavr.Predicates;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -21,7 +18,7 @@ public class PreCleansingPipelineTask implements PipelineTask {
                                     Set<Violation> allViolationUntilNow) {
         val passedTransactions = passedOrganisationTransactions.transactions()
                 .stream()
-                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
+                .map(tx -> TransactionWithViolations.create(tx, allViolationUntilNow))
                 .map(this::discardZeroBalanceTransactionItems)
                 .collect(Collectors.toSet());
 
@@ -40,7 +37,7 @@ public class PreCleansingPipelineTask implements PipelineTask {
         );
     }
 
-    private Transaction.WithPossibleViolations discardZeroBalanceTransactionItems(Transaction.WithPossibleViolations violationTransaction) {
+    private TransactionWithViolations discardZeroBalanceTransactionItems(TransactionWithViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
         val newItems = tx.getTransactionItems()
@@ -48,7 +45,7 @@ public class PreCleansingPipelineTask implements PipelineTask {
                 .filter(Predicates.not(txItem -> txItem.getAmountLcy().signum() == 0 && txItem.getAmountFcy().signum() == 0))
                 .collect(Collectors.toSet());
 
-        return Transaction.WithPossibleViolations.create(
+        return TransactionWithViolations.create(
                 tx.toBuilder()
                         .transactionItems(newItems)
                         .build()

@@ -24,7 +24,7 @@ public class PostValidationPipelineTask implements PipelineTask {
                                     Set<Violation> allViolationUntilNow) {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
-                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
+                .map(tx -> TransactionWithViolations.create(tx, allViolationUntilNow))
                 .map(this::accountCodeDebitCheck)
                 .map(this::accountCodeCreditCheck)
                 .map(this::documentMustBePresentCheck)
@@ -47,7 +47,7 @@ public class PostValidationPipelineTask implements PipelineTask {
         );
     }
 
-    private Transaction.WithPossibleViolations checkTransactionItemsEmpty(Transaction.WithPossibleViolations withPossibleViolations) {
+    private TransactionWithViolations checkTransactionItemsEmpty(TransactionWithViolations withPossibleViolations) {
         val tx = withPossibleViolations.transaction();
 
         val violations = new HashSet<Violation>();
@@ -66,14 +66,14 @@ public class PostValidationPipelineTask implements PipelineTask {
         }
 
         if (!violations.isEmpty()) {
-            return Transaction.WithPossibleViolations
+            return TransactionWithViolations
                     .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
         }
 
         return withPossibleViolations;
     }
 
-    private Transaction.WithPossibleViolations accountCodeDebitCheck(Transaction.WithPossibleViolations withPossibleViolations) {
+    private TransactionWithViolations accountCodeDebitCheck(TransactionWithViolations withPossibleViolations) {
         val tx = withPossibleViolations.transaction();
 
         val violations = new HashSet<Violation>();
@@ -99,14 +99,14 @@ public class PostValidationPipelineTask implements PipelineTask {
         }
 
         if (!violations.isEmpty()) {
-            return Transaction.WithPossibleViolations
+            return TransactionWithViolations
                     .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
         }
 
         return withPossibleViolations;
     }
 
-    private Transaction.WithPossibleViolations accountCodeCreditCheck(Transaction.WithPossibleViolations withPossibleViolations) {
+    private TransactionWithViolations accountCodeCreditCheck(TransactionWithViolations withPossibleViolations) {
         val tx = withPossibleViolations.transaction();
 
         if (tx.getTransactionType() == Journal) {
@@ -131,14 +131,14 @@ public class PostValidationPipelineTask implements PipelineTask {
         }
 
         if (!violations.isEmpty()) {
-            return Transaction.WithPossibleViolations
+            return TransactionWithViolations
                     .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
         }
 
         return withPossibleViolations;
     }
 
-    private Transaction.WithPossibleViolations documentMustBePresentCheck(Transaction.WithPossibleViolations withPossibleViolations) {
+    private TransactionWithViolations documentMustBePresentCheck(TransactionWithViolations withPossibleViolations) {
         val tx = withPossibleViolations.transaction();
 
         val violations = new HashSet<Violation>();
@@ -157,7 +157,7 @@ public class PostValidationPipelineTask implements PipelineTask {
         }
 
         if (!violations.isEmpty()) {
-            return Transaction.WithPossibleViolations
+            return TransactionWithViolations
                     .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
         }
 

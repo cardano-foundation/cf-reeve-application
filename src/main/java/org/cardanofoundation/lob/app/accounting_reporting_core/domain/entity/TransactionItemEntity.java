@@ -5,12 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+@Accessors(fluent = true)
 @Getter
 @Setter
 @Entity(name = "accounting_reporting_core.TransactionItemEntity")

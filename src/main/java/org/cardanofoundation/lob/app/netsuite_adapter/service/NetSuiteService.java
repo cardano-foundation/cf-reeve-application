@@ -10,10 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
-import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.SearchResultTransactionItem;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionDataSearchResult;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TxLine;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestion;
 import org.cardanofoundation.lob.app.netsuite_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MD5Hashing;
@@ -24,8 +23,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreCompress.decompress;
 
 @Service
 @Slf4j
@@ -41,8 +45,6 @@ public class NetSuiteService {
     private final ObjectMapper objectMapper;
 
     private final TransactionConverter transactionConverter;
-
-    private final BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
 
     @Value("${lob.events.netsuite.to.core.send.batch.size:25}")
     private int sendBatchSize = 25;
@@ -62,12 +64,13 @@ public class NetSuiteService {
         val netsuiteTransactionLinesJsonE = retrieveAndStoreNetSuiteIngestion();
 
         if (netsuiteTransactionLinesJsonE.isEmpty()) {
-            log.warn("Error retrieving data from NetSuite API: {}", netsuiteTransactionLinesJsonE.getLeft().getDetail());
+            log.error("Error retrieving data from NetSuite API: {}", netsuiteTransactionLinesJsonE.getLeft().getDetail());
             return;
         }
 
         val netsuiteIngestion = netsuiteTransactionLinesJsonE.get();
-        val netsuiteTransactionLinesJson = netsuiteIngestion.getIngestionBody();
+        val netsuiteTransactionLinesJson = decompress(netsuiteIngestion.getIngestionBody());
+
         val transactionDataSearchResultE = parseNetSuiteSearchResults(netsuiteTransactionLinesJson);
 
         if (transactionDataSearchResultE.isEmpty()) {
@@ -77,33 +80,37 @@ public class NetSuiteService {
 
         val transactionDataSearchResult = transactionDataSearchResultE.get();
 
-        val coreTransactionsE = transactionConverter.convert(transactionDataSearchResult);
-        if (coreTransactionsE.isEmpty()) {
-            val issues = coreTransactionsE.getLeft();
+        val transactionsWithViolations = transactionConverter.convert(transactionDataSearchResult);
 
-            log.warn("Error converting NetSuite search, issues:{}", issues);
+        if (!transactionsWithViolations.violations().isEmpty()) {
+            val netsuiteViolations = transactionsWithViolations.violations();
 
-            return;
+            netsuiteViolations.forEach(n -> log.info("netsuite violation: {}", n));
+
+            val notifications = netsuiteViolations.stream()
+                    .map(violation -> Problem.builder()
+                            .withTitle("NETSUITE_ADAPTER::TRANSACTION_CONVERSION_ERROR")
+                            .withDetail(STR."Error converting NetSuite response, violation: \{violation}")
+                            .with("violation", violation)
+                            .build())
+                    .collect(Collectors.toSet());
+
+
+            notifications.forEach(applicationEventPublisher::publishEvent);
+
+            log.warn("Error converting NetSuite search, netsuiteViolations:{}", netsuiteViolations);
         }
-        val coreTransactionsToOrganisationMap = coreTransactionsE.get();
+
+        val coreTransactionsToOrganisationMap = transactionsWithViolations.transactionPerOrganisationId();
 
         log.info("CoreTransactionLines count: {}", coreTransactionsToOrganisationMap.size());
 
         val lotId = netsuiteIngestion.getId();
 
-        coreTransactionsToOrganisationMap.forEach((organisationId, coreTransactions) -> {
-            log.info("before business process rules tx count: {}", coreTransactions.size());
+        coreTransactionsToOrganisationMap.forEach((organisationId, transactions) -> {
+            log.info("before business process rules tx count: {}", transactions.size());
 
-            val transformationResult = businessRulesPipelineProcessor.run(
-                    new OrganisationTransactions(organisationId, coreTransactions),
-                    OrganisationTransactions.empty(organisationId),
-                    new HashSet<>()
-            );
-
-            val txs = transformationResult.organisationTransactions().transactions();
-            log.info("after business process tx count: {}", txs.size());
-
-            val transactionsWithExtractionParametersApplied = applyExtractionParameters(filteringParameters, txs);
+            val transactionsWithExtractionParametersApplied = applyExtractionParameters(filteringParameters, transactions);
 
             log.info("after filtering tx count: {}", transactionsWithExtractionParametersApplied.size());
 
@@ -112,7 +119,7 @@ public class NetSuiteService {
                 return;
             }
 
-            log.info("Publishing ERPIngestionEvent event, organisationId: {}, tx count: {}", organisationId, coreTransactions.size());
+            log.info("Publishing ERPIngestionEvent event, organisationId: {}, tx count: {}", organisationId, transactions.size());
 
             Iterables.partition(transactionsWithExtractionParametersApplied, sendBatchSize).forEach(txPartition -> {
                 applicationEventPublisher.publishEvent(new ERPIngestionEvent(
@@ -128,41 +135,41 @@ public class NetSuiteService {
     }
 
     private static Set<Transaction> applyExtractionParameters(FilteringParameters filteringParameters,
-                                                              Set<Transaction> coreTransactions) {
-        return coreTransactions.stream()
-                .filter(line -> {
+                                                              Set<Transaction> txs) {
+        return txs.stream()
+                .filter(tx -> {
                     val fromM = filteringParameters.getFrom();
 
                     return fromM.isEmpty()
-                            || fromM.map(date -> line.getEntryDate().isEqual(date)).orElse(true)
-                            || fromM.map(date -> line.getEntryDate().isAfter(date)).orElse(true);
+                            || fromM.map(date -> tx.getEntryDate().isEqual(date)).orElse(true)
+                            || fromM.map(date -> tx.getEntryDate().isAfter(date)).orElse(true);
                 })
-                .filter(line -> {
+                .filter(tx -> {
                     val toM = filteringParameters.getTo();
 
                     return toM.isEmpty()
-                            || toM.map(date -> line.getEntryDate().isEqual(date)).orElse(true)
-                            || toM.map(date -> line.getEntryDate().isBefore(date)).orElse(true);
+                            || toM.map(date -> tx.getEntryDate().isEqual(date)).orElse(true)
+                            || toM.map(date -> tx.getEntryDate().isBefore(date)).orElse(true);
                 })
-                .filter(line -> {
+                .filter(tx -> {
                     val txTypes = filteringParameters.getTransactionTypes();
 
-                    return txTypes.isEmpty() || txTypes.contains(line.getTransactionType());
+                    return txTypes.isEmpty() || txTypes.contains(tx.getTransactionType());
                 })
-                .filter(line -> {
+                .filter(tx -> {
                     val organisationIds = filteringParameters.getOrganisationIds();
 
-                    return organisationIds.isEmpty() || organisationIds.contains(line.getOrganisation().getId());
+                    return organisationIds.isEmpty() || organisationIds.contains(tx.getOrganisation().getId());
                 })
-                .filter(line -> {
+                .filter(tx -> {
                     val projectCodes = filteringParameters.getProjectCodes();
 
-                    return projectCodes.isEmpty() || line.getProject().flatMap(Project::getCode).map(projectCodes::contains).orElse(true);
+                    return projectCodes.isEmpty() || tx.getProject().map(Project::getCustomerCode).map(projectCodes::contains).orElse(true);
                 })
-                .filter(line -> {
-                    val costCenterNames = filteringParameters.getCostCenterCodes();
+                .filter(tx -> {
+                    val costCenterCodes = filteringParameters.getCostCenterCodes();
 
-                    return costCenterNames.isEmpty() || line.getCostCenter().flatMap(CostCenter::getCode).map(costCenterNames::contains).orElse(true);
+                    return costCenterCodes.isEmpty() || tx.getCostCenter().map(CostCenter::getCustomerCode).map(costCenterCodes::contains).orElse(true);
                 })
                 .collect(Collectors.toSet());
     }
@@ -203,14 +210,14 @@ public class NetSuiteService {
 
         log.info("Before compression: {}, compressed: {}", netsuiteTransactionLinesJson.length(), compressedBody.length());
 
-        //netSuiteIngestion.setIngestionBody(compressedBody);
-        netSuiteIngestion.setIngestionBody(netsuiteTransactionLinesJson);
+        netSuiteIngestion.setIngestionBody(compressedBody);
+        //netSuiteIngestion.setIngestionBody(netsuiteTransactionLinesJson);
         netSuiteIngestion.setIngestionBodyChecksum(ingestionBodyChecksum);
 
         return Either.right(ingestionRepository.saveAndFlush(netSuiteIngestion));
     }
 
-    private Either<Problem, List<SearchResultTransactionItem>> parseNetSuiteSearchResults(String jsonString) {
+    private Either<Problem, List<TxLine>> parseNetSuiteSearchResults(String jsonString) {
         try {
             val transactionDataSearchResult = objectMapper.readValue(jsonString, TransactionDataSearchResult.class);
 

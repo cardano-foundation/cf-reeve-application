@@ -58,7 +58,7 @@ public class BlockchainTransactionsDispatcher {
         val dispatchStatuses = toDispatchStatuses();
 
         for (val organisation : organisationPublicApi.listAll()) {
-            val organisationId = organisation.id();
+            val organisationId = organisation.getId();
 
             val transactionsBatch = transactionEntityRepository.findTransactionsByStatus(organisationId, dispatchStatuses, Limit.of(pullTransactionsBatchSize));
 

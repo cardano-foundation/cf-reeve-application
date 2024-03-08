@@ -24,7 +24,7 @@ public class AccountingCoreResource {
 //@RequestMapping("/api/netsuite")
 //@Slf4j
 //@RequiredArgsConstructor
-//@Tag(code = "NetSuite", description = "The NetSuite API")
+//@Tag(customerCode = "NetSuite", description = "The NetSuite API")
 //public class NetSuiteResource {
 //
 //    private final NetSuiteService netSuiteService;

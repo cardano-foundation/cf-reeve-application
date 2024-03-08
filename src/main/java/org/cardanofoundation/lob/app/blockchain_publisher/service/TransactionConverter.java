@@ -29,8 +29,15 @@ public class TransactionConverter {
                 .organisation(convertOrganisation(tx.getOrganisation()))
                 .fxRate(tx.getFxRate())
                 .entryDate(tx.getEntryDate())
-                .costCenter(tx.getCostCenter().map(cc -> new CostCenter(cc.getCode().orElseThrow())).orElse(null))
-                .project(tx.getProject().map(pc -> new Project(pc.getCode().orElseThrow())).orElse(null))
+                .costCenter(tx.getCostCenter().map(cc -> {
+                    val ccBuilder = CostCenter.builder();
+
+                    cc.getExternalCustomerCode().ifPresent(ccBuilder::customerCode);
+                    cc.getName().ifPresent(ccBuilder::name);
+
+                    return ccBuilder.build();
+                }).orElse(null))
+                .project(tx.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null))
                 .l1SubmissionData(L1SubmissionData.builder()
                         .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
                         .build())
@@ -52,30 +59,25 @@ public class TransactionConverter {
     private static Organisation convertOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation org) {
         return Organisation.builder()
                 .id(org.getId())
-                .shortName(org.getShortName())
-                .currency(Currency.builder()
-                        .id(org.getCurrency().toId()) // currency ref if is mandatory in the organisation
-                        .build())
+                .shortName(org.getShortName().orElseThrow())
+                .currency(new Currency(org.getCurrency().orElseThrow().getCoreCurrency().orElseThrow().toExternalId()))
                 .build();
     }
 
     private static Document convertDocument(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document doc) {
-        val document = new Document();
-        document.setInternalDocumentNumber(doc.getInternalNumber());
-
-        document.setCurrency(Currency.builder()
-                .id(doc.getCurrency().toId()) // at this moment we must have currency id
-                .build());
-
-        document.setVat(doc.getVat().map(vat -> Vat.builder()
-                .rate(vat.getRate().orElseThrow())
-                .build()).orElse(null));
-
-        document.setCounterparty(doc.getCounterparty().map(cp -> Counterparty.builder()
-                .internalNumber(cp.getInternalNumber())
-                .build()).orElse(null));
-
-        return document;
+        return new Document()
+                .num(doc.getNumber())
+                .currency(Currency.builder()
+                        .id(doc.getCurrency().getCoreCurrency().orElseThrow().toExternalId())
+                        .build()
+                )
+                .vat(doc.getVat().map(vat -> Vat.builder()
+                        .rate(vat.getRate().orElseThrow())
+                        .build()).orElse(null))
+                .counterparty(doc.getCounterparty().map(cp -> Counterparty.builder()
+                        .customerCode(cp.getCustomerCode())
+                        .type(cp.getType())
+                        .build()).orElse(null));
     }
 
     @OneToOne

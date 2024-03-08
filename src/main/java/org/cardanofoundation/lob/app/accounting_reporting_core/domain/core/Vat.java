@@ -14,7 +14,7 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 public class Vat {
 
-    @Size(min = 1, max =  255) @NotBlank private String internalNumber;
+    @Size(min = 1, max =  255) @NotBlank private String customerCode;
 
     @Builder.Default
     private Optional<BigDecimal> rate = Optional.empty(); // needed for blockchain data conversion

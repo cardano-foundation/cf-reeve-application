@@ -2,8 +2,7 @@ package org.cardanofoundation.lob.app.organisation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardanofoundation.lob.app.organisation.domain.core.*;
-import org.cardanofoundation.lob.app.organisation.repository.OrganisationVatRepository;
+import org.cardanofoundation.lob.app.organisation.domain.entity.*;
 import org.cardanofoundation.lob.app.organisation.service.*;
 import org.springframework.stereotype.Service;
 
@@ -16,50 +15,39 @@ import java.util.Optional;
 public class OrganisationPublicApi {
 
     private final OrganisationService organisationService;
-    private final CurrencyService currencyService;
-    private final OrganisationVatRepository organisationVatRepository;
-    private final CostCenterMappingService costCenterMappingService;
-    private final ProjectCodeMappingService projectCodeMappingService;
+    private final OrganisationCurrencyService organisationCurrencyService;
+    private final OrganisationVatService organisationVatService;
+    private final CostCenterService costCenterService;
+    private final ProjectCodeService projectCodeService;
     private final ChartOfAccountsService chartOfAccountsService;
 
     public List<Organisation> listAll() {
-        return organisationService.listAll();
+        return organisationService.findAll();
     }
 
     public Optional<Organisation> findByOrganisationId(String id) {
         return organisationService.findById(id);
     }
 
-    public Optional<Currency> findByCurrencyId(String currencyId) {
-        return currencyService.findByCurrencyId(currencyId);
+    public Optional<OrganisationCurrency> findCurrencyByCustomerCurrencyCode(String organisationId,
+                                                                             String customerCurrencyCode) {
+        return organisationCurrencyService.findByOrganisationIdAndCode(organisationId, customerCurrencyCode);
     }
 
-    public List<Currency> finsAllCurrencies() {
-        return currencyService.listAll();
+    public Optional<OrganisationVat> findOrganisationByVatAndCode(String organisationId, String customerCode) {
+        return organisationVatService.findByOrganisationAndCode(organisationId, customerCode);
     }
 
-    public Optional<Organisation> findByErpInternalNumber(ERPDataSource erpDataSource, String erpInternalNumber) {
-        return organisationService.findByERPSystemId(erpDataSource, erpInternalNumber);
+    public Optional<OrganisationCostCenter> findCostCenter(String organisationId, String customerCode) {
+        return costCenterService.getCostCenter(organisationId, customerCode);
     }
 
-    public Optional<OrganisationVat> findOrganisationVatByInternalId(String organisationId, String internalNumber) {
-        return organisationVatRepository.findByOrganisationAndInternalNumber(organisationId, internalNumber);
+    public Optional<OrganisationProject> findProject(String organisationId, String customerCode) {
+        return projectCodeService.getProject(organisationId, customerCode);
     }
 
-    public Optional<CostCenterMapping> findCostCenter(String organisationId, String internalNumber) {
-        return costCenterMappingService.getCostCenter(organisationId, internalNumber);
-    }
-
-    public Optional<ProjectMapping> findProject(String organisationId, String internalNumber) {
-        return projectCodeMappingService.getProject(organisationId, internalNumber);
-    }
-
-    public Optional<CharterOfAccounts> getChartOfAccounts(String accountCode) {
-        return chartOfAccountsService.getChartAccount(accountCode);
-    }
-
-    public Optional<CharterOfAccounts> getChartOfAccounts(ERPDataSource erpDataSource, String internalNumber) {
-        return chartOfAccountsService.getChartAccount(erpDataSource, internalNumber);
+    public Optional<OrganisationChartOfAccount> getChartOfAccounts(String organisationId, String customerCode) {
+        return chartOfAccountsService.getChartAccount(organisationId, customerCode);
     }
 
 }

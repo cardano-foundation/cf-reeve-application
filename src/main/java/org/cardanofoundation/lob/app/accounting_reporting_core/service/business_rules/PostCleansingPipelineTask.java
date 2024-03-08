@@ -2,10 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +16,7 @@ public class PostCleansingPipelineTask implements PipelineTask {
                                     Set<Violation> allViolationUntilNow) {
 
         val passedTransactions = passedOrganisationTransactions.transactions().stream()
-                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
+                .map(tx -> TransactionWithViolations.create(tx, allViolationUntilNow))
                 .map(this::debitAccountCheck)
                 .toList();
 
@@ -38,7 +35,7 @@ public class PostCleansingPipelineTask implements PipelineTask {
         );
     }
 
-    private Transaction.WithPossibleViolations debitAccountCheck(Transaction.WithPossibleViolations transactionLineWithViolation) {
+    private TransactionWithViolations debitAccountCheck(TransactionWithViolations transactionLineWithViolation) {
         val tx = transactionLineWithViolation.transaction();
 
         // we accept only transaction items that are NOT sending to the same account, if they are we discard them
@@ -47,7 +44,7 @@ public class PostCleansingPipelineTask implements PipelineTask {
                 .filter(txItem -> !txItem.getAccountCodeDebit().equals(txItem.getAccountCodeCredit()))
                 .collect(Collectors.toSet());
 
-        return Transaction.WithPossibleViolations.create(tx
+        return TransactionWithViolations.create(tx
                 .toBuilder()
                 .transactionItems(newItems)
                 .build()

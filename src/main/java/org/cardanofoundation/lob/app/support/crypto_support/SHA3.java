@@ -4,6 +4,7 @@ import com.bloxbean.cardano.client.util.HexUtil;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

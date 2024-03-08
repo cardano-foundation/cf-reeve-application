@@ -24,7 +24,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                                     Set<Violation> allViolationUntilNow) {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
-                .map(tx -> Transaction.WithPossibleViolations.create(tx, allViolationUntilNow))
+                .map(tx -> TransactionWithViolations.create(tx, allViolationUntilNow))
                 .map(this::amountsFcyCheck)
                 .map(this::amountsLcyCheck)
                 .map(this::balanceZerosOutLcyCheck)
@@ -46,7 +46,7 @@ public class PreValidationPipelineTask implements PipelineTask {
         );
     }
 
-    public Transaction.WithPossibleViolations amountsFcyCheck(Transaction.WithPossibleViolations violationTransaction) {
+    public TransactionWithViolations amountsFcyCheck(TransactionWithViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
         val violations = new HashSet<Violation>();
@@ -76,10 +76,10 @@ public class PreValidationPipelineTask implements PipelineTask {
             return violationTransaction;
         }
 
-        return Transaction.WithPossibleViolations.create(tx.toBuilder().validationStatus(FAILED).build(), violations);
+        return TransactionWithViolations.create(tx.toBuilder().validationStatus(FAILED).build(), violations);
     }
 
-    public Transaction.WithPossibleViolations amountsLcyCheck(Transaction.WithPossibleViolations violationTransaction) {
+    public TransactionWithViolations amountsLcyCheck(TransactionWithViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
         val violations = new HashSet<Violation>();
@@ -104,10 +104,10 @@ public class PreValidationPipelineTask implements PipelineTask {
             return violationTransaction;
         }
 
-        return Transaction.WithPossibleViolations.create(tx.toBuilder().validationStatus(FAILED).build(), violations);
+        return TransactionWithViolations.create(tx.toBuilder().validationStatus(FAILED).build(), violations);
     }
 
-    public Transaction.WithPossibleViolations balanceZerosOutLcyCheck(Transaction.WithPossibleViolations violationTransaction) {
+    public TransactionWithViolations balanceZerosOutLcyCheck(TransactionWithViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
         val txItems = tx.getTransactionItems();
@@ -123,7 +123,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                     Map.of()
             );
 
-            return Transaction.WithPossibleViolations.create(tx
+            return TransactionWithViolations.create(tx
                             .toBuilder()
                             .validationStatus(FAILED)
                             .build(),
@@ -134,7 +134,7 @@ public class PreValidationPipelineTask implements PipelineTask {
         return violationTransaction;
     }
 
-    public Transaction.WithPossibleViolations balanceZerosOutFcyCheck(Transaction.WithPossibleViolations violationTransaction) {
+    public TransactionWithViolations balanceZerosOutFcyCheck(TransactionWithViolations violationTransaction) {
         val tx = violationTransaction.transaction();
         val txItems = tx.getTransactionItems();
 
@@ -149,7 +149,7 @@ public class PreValidationPipelineTask implements PipelineTask {
                     Map.of()
             );
 
-            return Transaction.WithPossibleViolations.create(tx
+            return TransactionWithViolations.create(tx
                             .toBuilder()
                             .validationStatus(FAILED)
                             .build(),

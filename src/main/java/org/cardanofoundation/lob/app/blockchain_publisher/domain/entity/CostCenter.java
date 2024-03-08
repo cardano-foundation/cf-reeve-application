@@ -14,6 +14,9 @@ import lombok.*;
 public class CostCenter {
 
     @NotBlank
-    private String code;
+    private String customerCode;
+
+    @NotBlank
+    private String name;
 
 }
