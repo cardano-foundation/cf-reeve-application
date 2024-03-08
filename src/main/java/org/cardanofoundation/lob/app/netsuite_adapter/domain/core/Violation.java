@@ -2,9 +2,13 @@ package org.cardanofoundation.lob.app.netsuite_adapter.domain.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
+
+import java.util.Map;
 
 @AllArgsConstructor
 @Getter
+@ToString
 public class Violation {
 
     private long subsidiary;
@@ -14,6 +18,8 @@ public class Violation {
     private int lineId;
 
     private Code code;
+
+    private Map<String, Object> bag = Map.of();
 
     public enum Code {
         VAT_MAPPING_NOT_FOUND,
@@ -26,8 +32,12 @@ public class Violation {
         PROJECT_MAPPING_NOT_FOUND
     }
 
+    public static Violation create(TxLine txLine, Code code, Map<String, Object> bag) {
+        return new Violation(txLine.subsidiary(), txLine.transactionNumber(), txLine.lineID(), code, bag);
+    }
+
     public static Violation create(TxLine txLine, Code code) {
-        return new Violation(txLine.subsidiary(), txLine.transactionNumber(), txLine.lineID(), code);
+        return new Violation(txLine.subsidiary(), txLine.transactionNumber(), txLine.lineID(), code, Map.of());
     }
 
 }

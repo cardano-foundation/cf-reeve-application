@@ -85,7 +85,7 @@ public class NetSuiteService {
         if (!transactionsWithViolations.violations().isEmpty()) {
             val netsuiteViolations = transactionsWithViolations.violations();
 
-            netsuiteViolations.forEach(n -> log.info("netsuite violation: {}", n));
+            netsuiteViolations.forEach(n -> log.warn("NETSUITE VIOLATION: {}", n));
 
             val notifications = netsuiteViolations.stream()
                     .map(violation -> Problem.builder()
@@ -95,10 +95,7 @@ public class NetSuiteService {
                             .build())
                     .collect(Collectors.toSet());
 
-
             notifications.forEach(applicationEventPublisher::publishEvent);
-
-            log.warn("Error converting NetSuite search, netsuiteViolations:{}", netsuiteViolations);
         }
 
         val coreTransactionsToOrganisationMap = transactionsWithViolations.transactionPerOrganisationId();
