@@ -112,9 +112,13 @@ public class TransactionConverter {
             val isValid = validationIssues.isEmpty();
 
             if (!isValid) {
-                log.warn("Invalid netsuite org id: {}, tx number: {}, issues: {}", organisationId, result.transactionNumber(), validationIssues);
+                log.warn("Invalid netsuite tx line, org id: {}, tx number: {}, issues: {}", organisationId, result.transactionNumber(), validationIssues);
 
-                return Either.left(Violation.create(result, INVALID_TRANSACTION_LINE));
+                return Either.left(Violation.create(result, INVALID_TRANSACTION_LINE, Map.of(
+                        "organisationId", organisationId,
+                        "transactionNumber", result.transactionNumber(),
+                        "validationIssues", validationIssues
+                )));
             }
 
             val accountCreditCodeE = accountCreditCode(organisationId, txLine, result.accountMain());
@@ -144,7 +148,7 @@ public class TransactionConverter {
             return Either.left(documentE.getLeft());
         }
 
-        val transTypeE = transactionType(txLine);
+        val transTypeE = transactionType(organisationId, txLine);
         if (transTypeE.isEmpty()) {
             return Either.left(transTypeE.getLeft());
         }
@@ -184,11 +188,15 @@ public class TransactionConverter {
         );
     }
 
-    private Either<Violation, TransactionType> transactionType(TxLine txLine) {
+    private Either<Violation, TransactionType> transactionType(String organisationId,
+                                                               TxLine txLine) {
         val transactionTypeM = transactionTypeMapper.apply(txLine.type());
 
         if (transactionTypeM.isEmpty()) {
-            return Either.left(Violation.create(txLine, TRANSACTION_TYPE_MAPPING_NOT_FOUND));
+            return Either.left(Violation.create(txLine, TRANSACTION_TYPE_MAPPING_NOT_FOUND, Map.of(
+                    "organisationId", organisationId,
+                    "type", txLine.type()
+            )));
         }
 
         return Either.right(transactionTypeM.orElseThrow());
@@ -250,14 +258,17 @@ public class TransactionConverter {
                 return Either.right(accountCreditCodeM);
             }
 
-            return Either.left(Violation.create(txLine, CHART_OF_ACCOUNT_NOT_FOUND));
+            return Either.left(Violation.create(txLine, CHART_OF_ACCOUNT_NOT_FOUND, Map.of(
+                    "organisationId", organisationId,
+                    "internalId", internalId
+            )));
         }
 
         return Either.right(Optional.empty());
     }
 
     private Either<Violation, Optional<String>> costCenterCode(String organisationId,
-                                                             TxLine txLine) {
+                                                               TxLine txLine) {
         val costCenterM = normaliseString(txLine.costCenter())
                 .map(Long::parseLong);
 
@@ -269,7 +280,10 @@ public class TransactionConverter {
                 return Either.right(costCenterE);
             }
 
-            return Either.left(Violation.create(txLine, Violation.Code.COST_CENTER_NOT_FOUND));
+            return Either.left(Violation.create(txLine, COST_CENTER_NOT_FOUND, Map.of(
+                    "organisationId", organisationId,
+                    "internalId", internalId
+            )));
         }
 
         return Either.right(Optional.empty());
@@ -279,7 +293,10 @@ public class TransactionConverter {
         val organisationIdM = codesMappingService.getCodeMapping(netsuiteInstanceId, txLine.subsidiary(), ORGANISATION);
 
         if (organisationIdM.isEmpty()) {
-            return Either.left(Violation.create(txLine, ORGANISATION_MAPPING_NOT_FOUND));
+            return Either.left(Violation.create(txLine, ORGANISATION_MAPPING_NOT_FOUND, Map.of(
+                    "netsuiteInstanceId", netsuiteInstanceId,
+                    "internalId", txLine.subsidiary()
+            )));
         }
 
         return Either.right(organisationIdM.orElseThrow());
@@ -290,7 +307,9 @@ public class TransactionConverter {
         val currencyCodeM = codesMappingService.getCodeMapping(organisationId, txLine.currency(), CURRENCY);
 
         if (currencyCodeM.isEmpty()) {
-            return Either.left(Violation.create(txLine, CURRENCY_MAPPING_NOT_FOUND));
+            return Either.left(Violation.create(txLine, CURRENCY_MAPPING_NOT_FOUND, Map.of(
+                    "organisationId", organisationId,
+                    "internalId", txLine.currency())));
         }
 
         return Either.right(currencyCodeM.orElseThrow());
@@ -309,7 +328,10 @@ public class TransactionConverter {
             val vatCodeM = codesMappingService.getCodeMapping(organisationId, internalId, VAT);
 
             if (vatCodeM.isEmpty()) {
-                return Either.left(Violation.create(txLine, VAT_MAPPING_NOT_FOUND));
+                return Either.left(Violation.create(txLine, VAT_MAPPING_NOT_FOUND, Map.of(
+                        "organisationId", organisationId,
+                        "internalId", internalId
+                )));
             }
 
             return Either.right(vatCodeM);
@@ -328,7 +350,9 @@ public class TransactionConverter {
             val projectCodeM = codesMappingService.getCodeMapping(organisationId, internalId, PROJECT);
 
             if (projectCodeM.isEmpty()) {
-                return Either.left(Violation.create(txLine, PROJECT_MAPPING_NOT_FOUND));
+                return Either.left(Violation.create(txLine, PROJECT_MAPPING_NOT_FOUND, Map.of(
+                        "organisationId", organisationId,
+                        "internalId", internalId)));
             }
 
             return Either.right(projectCodeM);
