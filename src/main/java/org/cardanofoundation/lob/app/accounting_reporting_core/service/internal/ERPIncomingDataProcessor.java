@@ -5,21 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.Set;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ERPIncomingDataProcessor {
 
-    private final NotificationViolationHandler notificationViolationHandler;
+    private final NotificationsSenderService notificationsSenderService;
     private final TransactionConverter transactionConverter;
     private final TransactionRepository transactionRepository;
     private final BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
@@ -33,7 +31,7 @@ public class ERPIncomingDataProcessor {
         );
 
         syncToDb(finalTransformationResult);
-        sendNotifications(finalTransformationResult.violations());
+        notificationsSenderService.sendNotifications(finalTransformationResult.violations());
     }
 
     @Transactional
@@ -46,10 +44,6 @@ public class ERPIncomingDataProcessor {
                 .toList();
 
         transactionRepository.saveAll(passTxEntities);
-    }
-
-    private void sendNotifications(Set<Violation> violations) {
-        notificationViolationHandler.sendViolationNotifications(violations);
     }
 
 }

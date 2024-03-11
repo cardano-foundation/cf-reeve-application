@@ -54,18 +54,20 @@ public class ConversionsPipelineTask implements PipelineTask {
     private TransactionWithViolations organisationConversion(TransactionWithViolations transactionWithViolations) {
         val tx = transactionWithViolations.transaction();
 
-        val organisationM = organisationPublicApi.findByOrganisationId(tx.getOrganisation().getId());
+        val organisationId = tx.getOrganisation().getId();
+        val organisationM = organisationPublicApi.findByOrganisationId(organisationId);
 
         if (organisationM.isEmpty()) {
-            log.warn("ORGANISATION_NOT_FOUND: organisationId: {}", tx.getOrganisation().getId());
-
             val v = Violation.create(
                     NORMAL,
                     FATAL,
-                    tx.getOrganisation().getId(),
+                    organisationId,
                     tx.getId(),
                     ORGANISATION_NOT_FOUND,
-                    Map.of("organisationId", tx.getOrganisation().getId())
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of(
+                            "transactionNumber", tx.getInternalTransactionNumber()
+                    )
             );
 
             return TransactionWithViolations.create(tx
@@ -79,15 +81,17 @@ public class ConversionsPipelineTask implements PipelineTask {
         val orgVanillaCurrencyM = coreCurrencyRepository.findByCurrencyId(organisation.getCurrencyId());
 
         if (orgVanillaCurrencyM.isEmpty()) {
-            log.warn("CURRENCY_MAPPING_NOT_FOUND: currencyId: {}", organisation.getCurrencyId());
-
             val v = Violation.create(
                     NORMAL,
                     FATAL,
-                    tx.getOrganisation().getId(),
+                    organisationId,
                     tx.getId(),
                     CORE_CURRENCY_NOT_FOUND,
-                    Map.of("currencyId", organisation.getCurrencyId())
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of(
+                            "currencyId", organisation.getCurrencyId(),
+                            "transactionNumber", tx.getInternalTransactionNumber()
+                    )
             );
 
             return TransactionWithViolations.create(tx
@@ -131,15 +135,17 @@ public class ConversionsPipelineTask implements PipelineTask {
             val vatM = organisationPublicApi.findOrganisationByVatAndCode(organisationId, vat.getCustomerCode());
 
             if (vatM.isEmpty()) {
-                log.warn("VAT_RATE_NOT_FOUND: vatInternalNumber: {}", vat.getCustomerCode());
-
                 val v = Violation.create(
                         NORMAL,
                         FATAL,
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         Violation.Code.VAT_RATE_NOT_FOUND,
-                        Map.of("vatInternalNumber", vat.getCustomerCode())
+                        ConversionsPipelineTask.class.getName(),
+                        Map.of(
+                                "vatInternalNumber", vat.getCustomerCode(),
+                                "transactionNumber", tx.getInternalTransactionNumber()
+                        )
                 );
 
                 violations.add(v);
@@ -158,15 +164,17 @@ public class ConversionsPipelineTask implements PipelineTask {
         val organisationCurrencyM = organisationPublicApi.findCurrencyByCustomerCurrencyCode(organisationId, customerCurrencyCode);
 
         if (organisationCurrencyM.isEmpty()) {
-            log.warn("CURRENCY_MAPPING_NOT_FOUND: currencyId: {}", customerCurrencyCode);
-
             val v = Violation.create(
                     NORMAL,
                     FATAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     CURRENCY_NOT_FOUND,
-                    Map.of("customerCode", customerCurrencyCode)
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of(
+                            "customerCode", customerCurrencyCode,
+                            "transactionNumber", tx.getInternalTransactionNumber()
+                    )
             );
 
             violations.add(v);
@@ -176,15 +184,17 @@ public class ConversionsPipelineTask implements PipelineTask {
             val currencyM = coreCurrencyRepository.findByCurrencyId(currencyId);
 
             if (currencyM.isEmpty()) {
-                log.warn("CURRENCY_MAPPING_NOT_FOUND: currencyId: {}", orgCurrency.getCurrencyId());
-
                 val v = Violation.create(
                         NORMAL,
                         FATAL,
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         CURRENCY_NOT_FOUND,
-                        Map.of("currencyId", currencyId)
+                        ConversionsPipelineTask.class.getName(),
+                        Map.of(
+                                "currencyId", currencyId,
+                                "transactionNumber", tx.getInternalTransactionNumber()
+                        )
                 );
 
                 violations.add(v);
@@ -227,15 +237,17 @@ public class ConversionsPipelineTask implements PipelineTask {
         val costCenterMappingM = organisationPublicApi.findCostCenter(organisationId, customerCode);
 
         if (costCenterMappingM.isEmpty()) {
-            log.warn("COST_CENTER_MAPPING_NOT_FOUND: costCenter customer code: {}", customerCode);
-
             val v = Violation.create(
                     NORMAL,
                     FATAL,
                     organisationId,
                     tx.getId(),
                     COST_CENTER_NOT_FOUND,
-                    Map.of("customerCode", customerCode)
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of(
+                            "customerCode", customerCode,
+                            "transactionNumber", tx.getInternalTransactionNumber()
+                    )
             );
 
             return TransactionWithViolations.create(tx
@@ -273,15 +285,17 @@ public class ConversionsPipelineTask implements PipelineTask {
         val projectMappingM = organisationPublicApi.findProject(organisationId, customerCode);
 
         if (projectMappingM.isEmpty()) {
-            log.warn("PROJECT_CODE MAPPING NOT FOUND: customerCode: {}", customerCode);
-
             val v = Violation.create(
                     NORMAL,
                     FATAL,
                     organisationId,
                     tx.getId(),
                     PROJECT_CODE_NOT_FOUND,
-                    Map.of("customerCode", customerCode)
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of(
+                            "customerCode", customerCode,
+                            "transactionNumber", tx.getInternalTransactionNumber()
+                    )
             );
 
             return TransactionWithViolations.create(tx
@@ -316,15 +330,18 @@ public class ConversionsPipelineTask implements PipelineTask {
 
                         val accountChartMappingM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeDebit);
                         if (accountChartMappingM.isEmpty()) {
-                            log.warn("ACCOUNT_REF_CODE_MAPPING_NOT_FOUND: debit accountCode: {}", item.getAccountCodeDebit().orElseThrow());
-
                             val v = Violation.create(
                                     NORMAL,
                                     FATAL,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
                                     CHART_OF_ACCOUNT_NOT_FOUND,
-                                    Map.of("accountCode", accountCodeDebit, "type", "DEBIT")
+                                    ConversionsPipelineTask.class.getName(),
+                                    Map.of(
+                                            "accountCode", accountCodeDebit,
+                                            "type", "DEBIT",
+                                            "transactionNumber", tx.getInternalTransactionNumber()
+                                    )
                             );
 
                             violations.add(v);
@@ -338,15 +355,18 @@ public class ConversionsPipelineTask implements PipelineTask {
 
                         val eventRefCodeM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeCredit);
                         if (eventRefCodeM.isEmpty()) {
-                            log.warn("ACCOUNT_REF_CODE_MAPPING_NOT_FOUND: credit accountCode: {}", item.getAccountCodeCredit().orElseThrow());
-
                             val v = Violation.create(
                                     NORMAL,
                                     FATAL,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
                                     CHART_OF_ACCOUNT_NOT_FOUND,
-                                    Map.of("accountCode", accountCodeCredit, "type", "CREDIT")
+                                    ConversionsPipelineTask.class.getName(),
+                                    Map.of(
+                                            "accountCode", accountCodeCredit,
+                                            "type", "CREDIT",
+                                            "transactionNumber", tx.getInternalTransactionNumber()
+                                    )
                             );
 
                             violations.add(v);

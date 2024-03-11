@@ -47,23 +47,27 @@ public class LastSanityCheckProcessor implements PipelineTask {
     }
 
     private TransactionWithViolations sanityCheckFields(TransactionWithViolations withPossibleViolations) {
-        val transaction = withPossibleViolations.transaction();
+        val tx = withPossibleViolations.transaction();
         val violations = new HashSet<Violation>();
 
-        val errors = validator.validate(transaction);
+        val errors = validator.validate(tx);
 
         val notFailedYet = withPossibleViolations.violations()
                 .stream()
-                .noneMatch(v -> v.transactionId().equals(transaction.getId()));
+                .noneMatch(v -> v.transactionId().equals(tx.getId()));
 
         if (!errors.isEmpty() && notFailedYet) {
             val v = Violation.create(
                     Violation.Priority.NORMAL,
                     Violation.Type.FATAL,
-                    transaction.getOrganisation().getId(),
-                    transaction.getId(),
+                    tx.getOrganisation().getId(),
+                    tx.getId(),
                     TX_SANITY_CHECK_FAIL,
-                    Map.of("errors", errors)
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of(
+                            "transactionNumber", tx.getInternalTransactionNumber(),
+                            "errors", errors
+                    )
             );
 
             violations.add(v);
@@ -71,7 +75,7 @@ public class LastSanityCheckProcessor implements PipelineTask {
 
         if (!violations.isEmpty()) {
             return TransactionWithViolations
-                    .create(transaction.toBuilder().validationStatus(FAILED).build(), violations);
+                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
         }
 
         return withPossibleViolations;

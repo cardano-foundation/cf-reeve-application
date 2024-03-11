@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestion;
 import org.cardanofoundation.lob.app.netsuite_adapter.service.NetSuiteService;
-import org.cardanofoundation.lob.app.netsuite_adapter.util.MoreCompress;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -85,7 +84,7 @@ public class NetSuiteResource {
         val ingestionPresentation = new IngestionPresentation(
                 netSuiteIngestion.getIngestionBodyChecksum(),
                 netSuiteIngestion.getIngestionBody(),
-                MoreCompress.decompress(netSuiteIngestion.getIngestionBody())
+                netSuiteIngestion.getIngestionBody()
         );
 
         return ResponseEntity.ok().body(ingestionPresentation);
