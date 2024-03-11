@@ -59,7 +59,8 @@ public class PostValidationPipelineTask implements PipelineTask {
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     TRANSACTION_ITEMS_EMPTY,
-                    Map.of()
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of("transactionNumber", tx.getInternalTransactionNumber())
             );
 
             violations.add(v);
@@ -91,7 +92,8 @@ public class PostValidationPipelineTask implements PipelineTask {
                         tx.getId(),
                         txItem.getId(),
                         ACCOUNT_CODE_DEBIT_IS_EMPTY,
-                        Map.of()
+                        ConversionsPipelineTask.class.getName(),
+                        Map.of("transactionNumber", tx.getInternalTransactionNumber())
                 );
 
                 violations.add(v);
@@ -123,7 +125,8 @@ public class PostValidationPipelineTask implements PipelineTask {
                         tx.getId(),
                         txItem.getId(),
                         ACCOUNT_CODE_CREDIT_IS_EMPTY,
-                        Map.of()
+                        ConversionsPipelineTask.class.getName(),
+                        Map.of("transactionNumber", tx.getInternalTransactionNumber())
                 );
 
                 violations.add(v);
@@ -150,7 +153,8 @@ public class PostValidationPipelineTask implements PipelineTask {
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     DOCUMENT_MUST_BE_PRESENT,
-                    Map.of()
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of("transactionNumber", tx.getInternalTransactionNumber())
             );
 
             violations.add(v);

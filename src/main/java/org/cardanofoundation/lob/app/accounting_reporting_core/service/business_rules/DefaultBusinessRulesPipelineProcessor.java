@@ -29,19 +29,9 @@ public class DefaultBusinessRulesPipelineProcessor implements BusinessRulesPipel
         val allViolations = new HashSet<Violation>();
 
         for (val pipelineTask : pipelineTasks) {
-            //log.info("Running pipelineTask: {}", pipelineTask.getClass().getSimpleName());
-
             val transformationResult = pipelineTask.run(organisationTransactions, ignoredTransactions, allViolations);
-
             // TODO refactor this - we do not want to over-write passed in params (anti-pattern)
             organisationTransactions = transformationResult.organisationTransactions();
-            //log.info("post-violationsCount: {}", transformationResult.violations().size());
-
-            transformationResult.violations().forEach(violation -> {
-                if (violation.type() == Violation.Type.FATAL) {
-                    log.warn("Violation: {}", violation);
-                }
-            });
 
             allViolations.addAll(transformationResult.violations());
         }

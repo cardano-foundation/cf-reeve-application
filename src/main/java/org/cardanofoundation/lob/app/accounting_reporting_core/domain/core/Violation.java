@@ -8,7 +8,8 @@ public record Violation(Priority priority,
                         String organisationId,
                         String transactionId,
                         Optional<String> txItemId,
-                        Violation.Code violationCode,
+                        Violation.Code code,
+                        String processorModule,
                         Map<String, Object> bag) {
 
     public static Violation create(Priority priority,
@@ -16,8 +17,9 @@ public record Violation(Priority priority,
                                    String organisationId,
                                    String transactionId,
                                    Violation.Code violationCode,
+                                   String processorModule,
                                    Map<String, Object> bag) {
-        return new Violation(priority, type, organisationId, transactionId, Optional.empty(), violationCode, bag);
+        return new Violation(priority, type, organisationId, transactionId, Optional.empty(), violationCode, processorModule, bag);
     }
 
     public static Violation create(Priority priority,
@@ -26,8 +28,9 @@ public record Violation(Priority priority,
                                    String transactionId,
                                    String txItemId,
                                    Violation.Code violationCode,
+                                   String processorModule,
                                    Map<String, Object> bag) {
-        return new Violation(priority, type, organisationId, transactionId, Optional.of(txItemId), violationCode, bag);
+        return new Violation(priority, type, organisationId, transactionId, Optional.of(txItemId), violationCode, processorModule, bag);
     }
 
     public enum Priority {
@@ -60,7 +63,8 @@ public record Violation(Priority priority,
         CURRENCY_NOT_FOUND,
         COST_CENTER_NOT_FOUND,
         PROJECT_CODE_NOT_FOUND,
-        CHART_OF_ACCOUNT_NOT_FOUND, ORGANISATION_NOT_FOUND,
+        CHART_OF_ACCOUNT_NOT_FOUND,
+        ORGANISATION_NOT_FOUND,
     }
 
 }

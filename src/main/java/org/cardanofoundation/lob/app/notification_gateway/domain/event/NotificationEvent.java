@@ -1,10 +1,8 @@
 package org.cardanofoundation.lob.app.notification_gateway.domain.event;
 
 import org.cardanofoundation.lob.app.notification_gateway.domain.core.NotificationSeverity;
-import org.springframework.modulith.events.Externalized;
 import org.zalando.problem.Problem;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,20 +21,18 @@ public record NotificationEvent(UUID id,
                                 NotificationSeverity severity,
                                 String code,
                                 String message,
-                                Optional<Problem> problem,
-                                Map<String, Object> bag
-                                ) {
+                                Optional<Problem> problem
+) {
 
-  public static NotificationEvent create(NotificationSeverity severity,
-                                         Problem problem) {
-    return new NotificationEvent(
-            UUID.randomUUID(),
-            severity,
-            Objects.requireNonNull(problem.getTitle()),
-            Objects.requireNonNull(problem.getDetail()),
-            Optional.of(problem),
-            Map.of()
-    );
-  }
+    public static NotificationEvent create(NotificationSeverity severity,
+                                           Problem problem) {
+        return new NotificationEvent(
+                UUID.randomUUID(),
+                severity,
+                Objects.requireNonNull(problem.getTitle()),
+                Objects.requireNonNull(problem.getDetail()),
+                Optional.of(problem)
+        );
+    }
 
 }

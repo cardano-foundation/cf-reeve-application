@@ -38,13 +38,15 @@ public class NetSuiteService {
 
     private final IngestionRepository ingestionRepository;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
-
     private final NetSuiteAPI netSuiteAPI;
+
+    private final org.cardanofoundation.lob.app.netsuite_adapter.service.NotificationsSenderService notificationsSenderService;
 
     private final ObjectMapper objectMapper;
 
     private final TransactionConverter transactionConverter;
+
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Value("${lob.events.netsuite.to.core.send.batch.size:25}")
     private int sendBatchSize = 25;
@@ -69,9 +71,9 @@ public class NetSuiteService {
         }
 
         val netsuiteIngestion = netsuiteTransactionLinesJsonE.get();
-        val netsuiteTransactionLinesJson = decompress(netsuiteIngestion.getIngestionBody());
+        //val netsuiteTransactionLinesJson = decompress(netsuiteIngestion.getIngestionBody());
 
-        val transactionDataSearchResultE = parseNetSuiteSearchResults(netsuiteTransactionLinesJson);
+        val transactionDataSearchResultE = parseNetSuiteSearchResults(netsuiteIngestion.getIngestionBody());
 
         if (transactionDataSearchResultE.isEmpty()) {
             log.warn("Error parsing NetSuite search result: {}", transactionDataSearchResultE.getLeft().getDetail());
@@ -81,22 +83,7 @@ public class NetSuiteService {
         val transactionDataSearchResult = transactionDataSearchResultE.get();
 
         val transactionsWithViolations = transactionConverter.convert(transactionDataSearchResult);
-
-        if (!transactionsWithViolations.violations().isEmpty()) {
-            val netsuiteViolations = transactionsWithViolations.violations();
-
-            netsuiteViolations.forEach(n -> log.warn("NETSUITE VIOLATION: {}", n));
-
-            val notifications = netsuiteViolations.stream()
-                    .map(violation -> Problem.builder()
-                            .withTitle("NETSUITE_ADAPTER::TRANSACTION_CONVERSION_ERROR")
-                            .withDetail(STR."Error converting NetSuite response, violation: \{violation}")
-                            .with("violation", violation)
-                            .build())
-                    .collect(Collectors.toSet());
-
-            notifications.forEach(applicationEventPublisher::publishEvent);
-        }
+        notificationsSenderService.sendNotifications(transactionsWithViolations.violations());
 
         val coreTransactionsToOrganisationMap = transactionsWithViolations.transactionPerOrganisationId();
 
@@ -207,7 +194,7 @@ public class NetSuiteService {
 
         log.info("Before compression: {}, compressed: {}", netsuiteTransactionLinesJson.length(), compressedBody.length());
 
-        netSuiteIngestion.setIngestionBody(compressedBody);
+        netSuiteIngestion.setIngestionBody(netsuiteTransactionLinesJson);
         //netSuiteIngestion.setIngestionBody(netsuiteTransactionLinesJson);
         netSuiteIngestion.setIngestionBodyChecksum(ingestionBodyChecksum);
 

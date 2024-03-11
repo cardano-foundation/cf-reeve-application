@@ -1,10 +1,7 @@
 package org.cardanofoundation.lob.app.netsuite_adapter.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
 
 import java.io.Serializable;
@@ -31,6 +28,7 @@ public class CodeMappingEntity extends AuditEntity {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class Id implements Serializable {
 
         private String mappingId;

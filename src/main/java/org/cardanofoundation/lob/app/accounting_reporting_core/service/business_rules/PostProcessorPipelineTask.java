@@ -45,7 +45,8 @@ public class PostProcessorPipelineTask implements PipelineTask {
                     organisationId,
                     dispatchedTransaction.getId(),
                     TX_ALREADY_DISPATCHED,
-                    Map.of()
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of("transactionNumber", dispatchedTransaction.getInternalTransactionNumber())
             );
 
             newViolations.add(v);
@@ -54,11 +55,6 @@ public class PostProcessorPipelineTask implements PipelineTask {
         val notDispatchedTransactionIds = Sets.difference(allTransactionIds, dispatchedTransactionIds);
 
         val toDispatch = Sets.difference(notDispatchedTransactionIds, dispatchedTransactionIds);
-
-//        log.info("Dispatched transactionsCount: {}", dispatchedTransactionIds.size());
-//        log.info("Not dispatched transactionsCount: {}", notDispatchedTransactionIds.size());
-//        log.info("notDispatchedAndFailedTransactionIds transactionsCount: {}", notDispatchedAndFailedTransactionIds.size());
-//        log.info("toDispatch transactionsCount: {}", toDispatch.size());
 
         val toDispatchTransactions = transactions.stream()
                 .filter(tx -> toDispatch.contains(tx.getId()))

@@ -61,7 +61,9 @@ public class PreValidationPipelineTask implements PipelineTask {
                             tx.getId(),
                             txItem.getId(),
                             AMOUNT_FCY_IS_ZERO,
+                            ConversionsPipelineTask.class.getName(),
                             Map.of(
+                                    "transactionNumber", tx.getInternalTransactionNumber(),
                                     "amountFcy", txItem.getAmountFcy(),
                                     "amountLcy", txItem.getAmountLcy()
                             )
@@ -93,7 +95,12 @@ public class PreValidationPipelineTask implements PipelineTask {
                         tx.getId(),
                         txItem.getId(),
                         AMOUNT_LCY_IS_ZERO,
-                        Map.of("amountFcy", txItem.getAmountFcy(), "amountLcy", txItem.getAmountLcy())
+                        ConversionsPipelineTask.class.getName(),
+                        Map.of(
+                                "transactionNumber", tx.getInternalTransactionNumber(),
+                                "amountFcy", txItem.getAmountFcy(),
+                                "amountLcy", txItem.getAmountLcy()
+                        )
                 );
 
                 violations.add(v);
@@ -120,7 +127,8 @@ public class PreValidationPipelineTask implements PipelineTask {
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     LCY_BALANCE_MUST_BE_ZERO,
-                    Map.of()
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of("transactionNumber", tx.getInternalTransactionNumber())
             );
 
             return TransactionWithViolations.create(tx
@@ -138,7 +146,10 @@ public class PreValidationPipelineTask implements PipelineTask {
         val tx = violationTransaction.transaction();
         val txItems = tx.getTransactionItems();
 
-        val fcySum = txItems.stream().map(TransactionItem::getAmountFcy).reduce(ZERO, BigDecimal::add);
+        val fcySum = txItems.stream()
+                .map(TransactionItem::getAmountFcy)
+                .reduce(ZERO, BigDecimal::add);
+
         if (fcySum.signum() != 0) {
             val v = Violation.create(
                     Violation.Priority.HIGH,
@@ -146,7 +157,8 @@ public class PreValidationPipelineTask implements PipelineTask {
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     FCY_BALANCE_MUST_BE_ZERO,
-                    Map.of()
+                    ConversionsPipelineTask.class.getName(),
+                    Map.of("transactionNumber", tx.getInternalTransactionNumber())
             );
 
             return TransactionWithViolations.create(tx

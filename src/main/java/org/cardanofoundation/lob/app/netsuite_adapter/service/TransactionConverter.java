@@ -97,17 +97,19 @@ public class TransactionConverter {
     }
 
     private Either<Violation, Optional<Transaction>> createTransactionFromSearchResultItems(String organisationId,
-                                                                                            List<TxLine> results) {
-        if (results.isEmpty()) {
+                                                                                            List<TxLine> txLines) {
+        if (txLines.isEmpty()) {
             return Either.right(Optional.empty());
         }
 
-        val txLine = results.getFirst();
+        val txNumber = txLines.stream().findFirst().map(TxLine::transactionNumber).orElseThrow();
+
+        val txLine = txLines.getFirst();
 
         val txId = Transaction.id(organisationId, txLine.transactionNumber());
 
         val txItems = new LinkedHashSet<TransactionItem>();
-        for (val result : results) {
+        for (val result : txLines) {
             val validationIssues = validator.validate(result);
             val isValid = validationIssues.isEmpty();
 
@@ -143,7 +145,7 @@ public class TransactionConverter {
             txItems.add(txItem);
         }
 
-        val documentE = convertDocument(organisationId, results, txLine);
+        val documentE = convertDocument(organisationId, txLines, txLine);
         if (documentE.isLeft()) {
             return Either.left(documentE.getLeft());
         }
