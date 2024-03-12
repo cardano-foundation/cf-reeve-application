@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.service;
 
-import co.nstant.in.cbor.CborException;
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.backend.api.BackendService;

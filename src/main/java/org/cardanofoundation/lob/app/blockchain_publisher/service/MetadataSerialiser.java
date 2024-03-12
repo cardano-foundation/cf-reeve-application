@@ -16,21 +16,28 @@ public class MetadataSerialiser {
                                               Set<TransactionEntity> transactions,
                                               long creationSlot) {
         val globalMetadataMap = MetadataBuilder.createMap();
-        globalMetadataMap.put("metadata", createMetadata(creationSlot));
+        globalMetadataMap.put("metadata", createMetadataSection(creationSlot));
+
+        val organisationCollapsable = isOrganisationCollapsable(organisationId, transactions);
+
+        if (organisationCollapsable) {
+            globalMetadataMap.put("org", serialise(transactions.stream().findFirst().orElseThrow().getOrganisation()));
+        }
 
         val txList = MetadataBuilder.createList();
-
-        transactions.forEach(tx -> txList.add(serialise(tx)));
-
-        val organisationMap = MetadataBuilder.createMap();
-        organisationMap.put("id", organisationId);
+        transactions.forEach(tx -> txList.add(serialise(tx, organisationCollapsable)));
 
         globalMetadataMap.put("txs", txList);
 
         return globalMetadataMap;
     }
 
-    private static MetadataMap createMetadata(long creationSlot) {
+    private static boolean isOrganisationCollapsable(String organisationId, Set<TransactionEntity> transactions) {
+        return transactions.stream()
+                .allMatch(tx -> tx.getOrganisation().getId().equals(organisationId));
+    }
+
+    private static MetadataMap createMetadataSection(long creationSlot) {
         val metadataMap = MetadataBuilder.createMap();
 
         metadataMap.put("creation_slot", BigInteger.valueOf(creationSlot));
@@ -38,7 +45,7 @@ public class MetadataSerialiser {
         return metadataMap;
     }
 
-    private static MetadataMap serialise(TransactionEntity transaction) {
+    private static MetadataMap serialise(TransactionEntity transaction, boolean isCollapsableOrganisation) {
         val metadataMap = MetadataBuilder.createMap();
 
         val id = transaction.getId();
@@ -53,7 +60,6 @@ public class MetadataSerialiser {
 
         metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
-        metadataMap.put("org", serialise(transaction.getOrganisation()));
 
         val documentsList = MetadataBuilder.createList();
         documentsList.add(serialise(transaction.getDocument()));
@@ -70,6 +76,11 @@ public class MetadataSerialiser {
 
         if (transactionItemsMetadataList.size() > 0) {
             metadataMap.put("items", transactionItemsMetadataList);
+        }
+
+        // if organisation is not collapsable, we send the organisation as part of every transaction inside of this physical transaction
+        if (!isCollapsableOrganisation) {
+            metadataMap.put("org", serialise(transaction.getOrganisation()));
         }
 
         return metadataMap;
