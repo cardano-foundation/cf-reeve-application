@@ -4,6 +4,7 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -70,6 +71,34 @@ public class DebitAccountCheckTaskItemTest {
 
         assertThat(newTx.transaction().getItems()).hasSize(1);
         assertThat(newTx.transaction().getItems().stream().findFirst().orElseThrow().getId()).isEqualTo(TransactionItem.id(txId, "1"));
+    }
+
+    @Test
+    // willtests that we will not collapse failed transactions
+    public void testRunWithCollapsingWithFailedTransactions() {
+        val txId = Transaction.id("1", "1");
+
+        val txs = TransactionWithViolations.create(Transaction.builder()
+                .id(txId)
+                .validationStatus(ValidationStatus.FAILED)
+                .items(Set.of(TransactionItem.builder()
+                                .id(TransactionItem.id(txId, "0"))
+                                .accountCodeCredit(Optional.of("1"))
+                                .accountCodeDebit(Optional.of("1"))
+                                .build(),
+
+                        TransactionItem.builder()
+                                .id(TransactionItem.id(txId, "1"))
+                                .accountCodeCredit(Optional.of("1"))
+                                .accountCodeDebit(Optional.of("2"))
+                                .build()
+
+                ))
+                .build());
+
+        val newTx = taskItem.run(txs);
+
+        assertThat(newTx.transaction().getItems()).hasSize(2);
     }
 
 }

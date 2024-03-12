@@ -6,6 +6,8 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 
 import java.util.stream.Collectors;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
+
 public class DiscardZeroBalanceTxItemsTaskItem implements PipelineTaskItem {
 
     @Override

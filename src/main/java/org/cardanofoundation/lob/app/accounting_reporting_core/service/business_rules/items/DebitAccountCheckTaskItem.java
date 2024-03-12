@@ -6,12 +6,18 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 
 import java.util.stream.Collectors;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
+
 @Slf4j
 public class DebitAccountCheckTaskItem implements PipelineTaskItem {
 
     @Override
     public TransactionWithViolations run(TransactionWithViolations transactionWithViolations) {
         val tx = transactionWithViolations.transaction();
+
+        if (tx.getValidationStatus() == FAILED) {
+            return transactionWithViolations;
+        }
 
         // we accept only transaction items that are NOT sending to the same account, if they are we discard them
         val newItems = tx.getItems()
