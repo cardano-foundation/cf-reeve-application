@@ -77,7 +77,7 @@ dependencies {
     implementation("javax.xml.bind", "jaxb-api", "2.3.0")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2") // needed for OAuth 1.0 for NetSuite Module
 
-    implementation("com.networknt:json-schema-validator:1.0.42")
+    implementation("com.networknt:json-schema-validator:1.2.0")
 
     implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.1")
     implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.1")
@@ -94,6 +94,8 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
     testImplementation("io.rest-assured:rest-assured:5.4.0")
     testImplementation("org.wiremock:wiremock-standalone:3.3.1")
+
+    testImplementation("org.assertj:assertj-core:3.25.2")
 }
 
 dependencyManagement {

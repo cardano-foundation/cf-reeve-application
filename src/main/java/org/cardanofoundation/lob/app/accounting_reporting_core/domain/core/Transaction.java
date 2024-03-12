@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -61,7 +61,7 @@ public class Transaction {
 
     @Builder.Default
     @NotEmpty
-    private Set<TransactionItem> transactionItems = new HashSet<>();
+    private Set<TransactionItem> items = new LinkedHashSet<>();
 
     public static String id(String organisationId,
                             String internalTransactionNumber) {

@@ -3,8 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 import java.util.Map;
 import java.util.Optional;
 
-public record Violation(Priority priority,
-                        Type type,
+public record Violation(Type type,
                         String organisationId,
                         String transactionId,
                         Optional<String> txItemId,
@@ -12,39 +11,28 @@ public record Violation(Priority priority,
                         String processorModule,
                         Map<String, Object> bag) {
 
-    public static Violation create(Priority priority,
-                                   Type type,
+    public static Violation create(Type type,
                                    String organisationId,
                                    String transactionId,
                                    Violation.Code violationCode,
                                    String processorModule,
                                    Map<String, Object> bag) {
-        return new Violation(priority, type, organisationId, transactionId, Optional.empty(), violationCode, processorModule, bag);
+        return new Violation(type, organisationId, transactionId, Optional.empty(), violationCode, processorModule, bag);
     }
 
-    public static Violation create(Priority priority,
-                                   Type type,
+    public static Violation create(Type type,
                                    String organisationId,
                                    String transactionId,
                                    String txItemId,
                                    Violation.Code violationCode,
                                    String processorModule,
                                    Map<String, Object> bag) {
-        return new Violation(priority, type, organisationId, transactionId, Optional.of(txItemId), violationCode, processorModule, bag);
-    }
-
-    public enum Priority {
-        HIGH,
-        NORMAL,
+        return new Violation(type, organisationId, transactionId, Optional.of(txItemId), violationCode, processorModule, bag);
     }
 
     public enum Type {
-
         WARN,
-
-        ERROR,
-
-        FATAL, // will fail the whole transaction line
+        ERROR
     }
 
     public enum Code {

@@ -4,15 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeDebitCheckTaskItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DocumentMustBePresentTaskItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.NoTransactionItemsTaskItem;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.Journal;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -25,10 +24,10 @@ public class PostValidationPipelineTask implements PipelineTask {
         val transactionsWithPossibleViolation = passedTransactions.transactions()
                 .stream()
                 .map(tx -> TransactionWithViolations.create(tx, allViolationUntilNow))
-                .map(this::accountCodeDebitCheck)
-                .map(this::accountCodeCreditCheck)
-                .map(this::documentMustBePresentCheck)
-                .map(this::checkTransactionItemsEmpty)
+                .map(tx -> new AccountCodeDebitCheckTaskItem(this).run(tx))
+                .map(tx -> new AccountCodeCreditCheckTaskItem(this).run(tx))
+                .map(tx -> new DocumentMustBePresentTaskItem(this).run(tx))
+                .map(tx -> new NoTransactionItemsTaskItem(this).run(tx))
                 .collect(Collectors.toSet());
 
         val newViolations = new HashSet<Violation>();
@@ -45,127 +44,6 @@ public class PostValidationPipelineTask implements PipelineTask {
                 ignoredTransactions,
                 newViolations
         );
-    }
-
-    private TransactionWithViolations checkTransactionItemsEmpty(TransactionWithViolations withPossibleViolations) {
-        val tx = withPossibleViolations.transaction();
-
-        val violations = new HashSet<Violation>();
-
-        if (tx.getTransactionItems().isEmpty()) {
-            val v = Violation.create(
-                    Violation.Priority.HIGH,
-                    Violation.Type.FATAL,
-                    tx.getOrganisation().getId(),
-                    tx.getId(),
-                    TRANSACTION_ITEMS_EMPTY,
-                    ConversionsPipelineTask.class.getName(),
-                    Map.of("transactionNumber", tx.getInternalTransactionNumber())
-            );
-
-            violations.add(v);
-        }
-
-        if (!violations.isEmpty()) {
-            return TransactionWithViolations
-                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
-        }
-
-        return withPossibleViolations;
-    }
-
-    private TransactionWithViolations accountCodeDebitCheck(TransactionWithViolations withPossibleViolations) {
-        val tx = withPossibleViolations.transaction();
-
-        val violations = new HashSet<Violation>();
-
-        if (tx.getTransactionType() == TransactionType.FxRevaluation) {
-            return withPossibleViolations;
-        }
-
-        for (val txItem : tx.getTransactionItems()) {
-            if (txItem.getAccountCodeDebit().isEmpty())  {
-                val v = Violation.create(
-                        Violation.Priority.NORMAL,
-                        Violation.Type.FATAL,
-                        tx.getOrganisation().getId(),
-                        tx.getId(),
-                        txItem.getId(),
-                        ACCOUNT_CODE_DEBIT_IS_EMPTY,
-                        ConversionsPipelineTask.class.getName(),
-                        Map.of("transactionNumber", tx.getInternalTransactionNumber())
-                );
-
-                violations.add(v);
-            }
-        }
-
-        if (!violations.isEmpty()) {
-            return TransactionWithViolations
-                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
-        }
-
-        return withPossibleViolations;
-    }
-
-    private TransactionWithViolations accountCodeCreditCheck(TransactionWithViolations withPossibleViolations) {
-        val tx = withPossibleViolations.transaction();
-
-        if (tx.getTransactionType() == Journal) {
-            return withPossibleViolations;
-        }
-
-        val violations = new HashSet<Violation>();
-        for (val txItem : tx.getTransactionItems()) {
-            if (txItem.getAccountCodeCredit().isEmpty())  {
-                val v = Violation.create(
-                        Violation.Priority.NORMAL,
-                        Violation.Type.FATAL,
-                        tx.getOrganisation().getId(),
-                        tx.getId(),
-                        txItem.getId(),
-                        ACCOUNT_CODE_CREDIT_IS_EMPTY,
-                        ConversionsPipelineTask.class.getName(),
-                        Map.of("transactionNumber", tx.getInternalTransactionNumber())
-                );
-
-                violations.add(v);
-            }
-        }
-
-        if (!violations.isEmpty()) {
-            return TransactionWithViolations
-                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
-        }
-
-        return withPossibleViolations;
-    }
-
-    private TransactionWithViolations documentMustBePresentCheck(TransactionWithViolations withPossibleViolations) {
-        val tx = withPossibleViolations.transaction();
-
-        val violations = new HashSet<Violation>();
-
-        if (tx.getDocument().isEmpty()) {
-            val v = Violation.create(
-                    Violation.Priority.HIGH,
-                    Violation.Type.FATAL,
-                    tx.getOrganisation().getId(),
-                    tx.getId(),
-                    DOCUMENT_MUST_BE_PRESENT,
-                    ConversionsPipelineTask.class.getName(),
-                    Map.of("transactionNumber", tx.getInternalTransactionNumber())
-            );
-
-            violations.add(v);
-        }
-
-        if (!violations.isEmpty()) {
-            return TransactionWithViolations
-                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
-        }
-
-        return withPossibleViolations;
     }
 
 }

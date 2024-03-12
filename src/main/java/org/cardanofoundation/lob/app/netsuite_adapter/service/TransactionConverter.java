@@ -185,7 +185,7 @@ public class TransactionConverter {
                 .fxRate(txLine.exchangeRate())
                 .validationStatus(NOT_VALIDATED)
                 .document(documentE.get())
-                .transactionItems(txItems)
+                .items(txItems)
                 .build())
         );
     }

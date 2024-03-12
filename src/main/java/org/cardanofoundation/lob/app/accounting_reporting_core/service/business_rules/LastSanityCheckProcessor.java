@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TX_SANITY_CHECK_FAIL;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -58,8 +59,7 @@ public class LastSanityCheckProcessor implements PipelineTask {
 
         if (!errors.isEmpty() && notFailedYet) {
             val v = Violation.create(
-                    Violation.Priority.NORMAL,
-                    Violation.Type.FATAL,
+                    ERROR,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     TX_SANITY_CHECK_FAIL,

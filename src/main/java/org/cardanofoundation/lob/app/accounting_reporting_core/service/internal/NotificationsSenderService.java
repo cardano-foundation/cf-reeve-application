@@ -22,12 +22,11 @@ public class NotificationsSenderService {
 
     public void sendNotifications(Set<Violation> violations) {
         for (val violation : violations) {
-            if (violation.type() == Violation.Type.ERROR || violation.type() == Violation.Type.FATAL) {
+            if (violation.type() == Violation.Type.ERROR) {
                 val problemBuilder = Problem.builder()
                         .withTitle(STR."ACCOUNTING_CORE:\{violation.code()}")
                         .withDetail(STR."Accounting Business Rule Error, code: \{violation.code()}")
                         .with("processorModule", violation.processorModule())
-                        .with("severity", violation.priority())
                         .with("module", "ACCOUNTING_CORE")
                         .with("organisationId", violation.organisationId())
                         .with("transactionId", violation.transactionId()
