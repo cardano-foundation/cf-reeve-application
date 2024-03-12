@@ -4,6 +4,7 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,7 @@ class TxItemsCollapsingTaskItemTest {
                                 .amountLcy(BigDecimal.ONE)
                                 .amountFcy(BigDecimal.TEN)
                                 .build(),
+
                         TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "1"))
                                 .accountCodeCredit(Optional.of("12"))
@@ -196,6 +198,41 @@ class TxItemsCollapsingTaskItemTest {
 
         assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId3)).findFirst().orElseThrow().transaction().getItems()).extracting("amountLcy").containsExactlyInAnyOrder(BigDecimal.valueOf(2), BigDecimal.valueOf(2));
         assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId3)).findFirst().orElseThrow().transaction().getItems()).extracting("amountFcy").containsExactlyInAnyOrder(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
+    }
+
+    @Test
+    void mustNotCollapseTxItemsForFailedTransactions() {
+        val txId = Transaction.id("1", "1");
+
+        val txs = TransactionWithViolations.create(Transaction.builder()
+                .id(txId)
+                .validationStatus(ValidationStatus.FAILED)
+                .items(Set.of(TransactionItem.builder()
+                                .id(TransactionItem.id(txId, "0"))
+                                .accountCodeCredit(Optional.of("1"))
+                                .accountCodeDebit(Optional.of("2"))
+                                .accountCodeEventRefCredit(Optional.of("r1"))
+                                .accountCodeEventRefDebit(Optional.of("r2"))
+                                .accountEventCode(Optional.of("e12"))
+                                .amountLcy(BigDecimal.ONE)
+                                .amountFcy(BigDecimal.TEN)
+                                .build(),
+                        TransactionItem.builder()
+                                .id(TransactionItem.id(txId, "1"))
+                                .accountCodeCredit(Optional.of("1"))
+                                .accountCodeDebit(Optional.of("2"))
+                                .accountCodeEventRefCredit(Optional.of("r1"))
+                                .accountCodeEventRefDebit(Optional.of("r2"))
+                                .accountEventCode(Optional.of("e12"))
+                                .amountLcy(BigDecimal.ONE)
+                                .amountFcy(BigDecimal.TEN)
+                                .build()
+                ))
+                .build());
+
+        val newTx = txItemsCollapsingTaskItem.run(txs);
+
+        assertThat(newTx.transaction().getItems()).hasSize(2);
     }
 
 }
