@@ -1,9 +1,9 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules;
 
-import io.vavr.Predicates;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DiscardZeroBalanceTxItemsTaskItem;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -19,7 +19,7 @@ public class PreCleansingPipelineTask implements PipelineTask {
         val passedTransactions = passedOrganisationTransactions.transactions()
                 .stream()
                 .map(tx -> TransactionWithViolations.create(tx, allViolationUntilNow))
-                .map(this::discardZeroBalanceTransactionItems)
+                .map(tx -> new DiscardZeroBalanceTxItemsTaskItem().run(tx))
                 .collect(Collectors.toSet());
 
         val newViolations = new HashSet<Violation>();
@@ -34,21 +34,6 @@ public class PreCleansingPipelineTask implements PipelineTask {
                 new OrganisationTransactions(passedOrganisationTransactions.organisationId(), finalTransactions),
                 ignoredOrganisationTransactions,
                 newViolations
-        );
-    }
-
-    private TransactionWithViolations discardZeroBalanceTransactionItems(TransactionWithViolations violationTransaction) {
-        val tx = violationTransaction.transaction();
-
-        val newItems = tx.getItems()
-                .stream()
-                .filter(Predicates.not(txItem -> txItem.getAmountLcy().signum() == 0 && txItem.getAmountFcy().signum() == 0))
-                .collect(Collectors.toSet());
-
-        return TransactionWithViolations.create(
-                tx.toBuilder()
-                        .items(newItems)
-                        .build()
         );
     }
 

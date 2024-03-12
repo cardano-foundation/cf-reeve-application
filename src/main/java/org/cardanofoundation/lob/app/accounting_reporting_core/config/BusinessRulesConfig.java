@@ -3,8 +3,8 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.config;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CoreCurrencyRepository;
+import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.*;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +31,7 @@ public class BusinessRulesConfig {
         pipelineTasks.add(new ConversionsPipelineTask(organisationPublicApi, currencyRepository));
 
         pipelineTasks.add(new PostCleansingPipelineTask());
-        pipelineTasks.add(new PostValidationPipelineTask());
-        pipelineTasks.add(new LastSanityCheckProcessor(validator));
+        pipelineTasks.add(new PostValidationPipelineTask(validator));
         pipelineTasks.add(new PostProcessorPipelineTask(transactionRepositoryGateway));
 
         return new DefaultBusinessRulesPipelineProcessor(pipelineTasks);
