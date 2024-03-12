@@ -14,13 +14,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
 @Slf4j
-public class TxItemsAggregatorTaskItem implements PipelineTaskItem {
+public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
 
     @Override
     public TransactionWithViolations run(TransactionWithViolations transactionWithViolations) {
         val tx = transactionWithViolations.transaction();
+
+        if (tx.getValidationStatus() == FAILED) {
+            return transactionWithViolations;
+        }
 
         Map<TransactionItemKey, List<TransactionItem>> itemsPerKeyMap = tx.getItems()
                 .stream()

@@ -6,8 +6,4 @@ public interface PipelineTaskItem {
 
     TransactionWithViolations run(TransactionWithViolations transactionWithViolations);
 
-    default TransactionWithViolations noop(TransactionWithViolations transactionWithViolations) {
-        return transactionWithViolations;
-    }
-
 }

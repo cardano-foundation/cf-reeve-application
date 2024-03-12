@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TxItemsAggregatorTaskItemTest {
+class TxItemsCollapsingTaskItemTest {
 
-    private TxItemsAggregatorTaskItem txItemsAggregatorTaskItem;
+    private TxItemsCollapsingTaskItem txItemsCollapsingTaskItem;
 
     @BeforeEach
     public void setup() {
-        this.txItemsAggregatorTaskItem = new TxItemsAggregatorTaskItem();
+        this.txItemsCollapsingTaskItem = new TxItemsCollapsingTaskItem();
     }
 
     @Test
@@ -53,7 +53,7 @@ class TxItemsAggregatorTaskItemTest {
                 ))
                 .build());
 
-        val newTx = txItemsAggregatorTaskItem.run(txs);
+        val newTx = txItemsCollapsingTaskItem.run(txs);
 
         assertThat(newTx.transaction().getItems()).hasSize(2);
         assertThat(newTx.transaction().getItems()).extracting("accountCodeCredit").containsExactlyInAnyOrder(Optional.of("1"), Optional.of("12"));
@@ -92,7 +92,7 @@ class TxItemsAggregatorTaskItemTest {
                 ))
                 .build());
 
-        val newTx = txItemsAggregatorTaskItem.run(txs);
+        val newTx = txItemsCollapsingTaskItem.run(txs);
 
         assertThat(newTx.transaction().getItems()).hasSize(1);
         assertThat(newTx.transaction().getItems()).extracting("amountLcy").containsExactly(BigDecimal.valueOf(2));
@@ -185,7 +185,7 @@ class TxItemsAggregatorTaskItemTest {
                         .build(), Set.of())
         );
 
-        val newTxs = txs.stream().map(txItemsAggregatorTaskItem::run).collect(Collectors.toCollection( LinkedHashSet::new ));
+        val newTxs = txs.stream().map(txItemsCollapsingTaskItem::run).collect(Collectors.toCollection( LinkedHashSet::new ));
 
         assertThat(newTxs).hasSize(3);
         assertThat(newTxs).extracting("transaction.id").containsExactlyInAnyOrder(txId1, txId2, txId3);
