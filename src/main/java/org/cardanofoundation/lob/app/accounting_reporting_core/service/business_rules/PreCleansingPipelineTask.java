@@ -40,14 +40,14 @@ public class PreCleansingPipelineTask implements PipelineTask {
     private TransactionWithViolations discardZeroBalanceTransactionItems(TransactionWithViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
-        val newItems = tx.getTransactionItems()
+        val newItems = tx.getItems()
                 .stream()
                 .filter(Predicates.not(txItem -> txItem.getAmountLcy().signum() == 0 && txItem.getAmountFcy().signum() == 0))
                 .collect(Collectors.toSet());
 
         return TransactionWithViolations.create(
                 tx.toBuilder()
-                        .transactionItems(newItems)
+                        .items(newItems)
                         .build()
         );
     }

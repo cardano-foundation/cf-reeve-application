@@ -50,7 +50,7 @@ public class TransactionConverter {
     }
 
     private Set<TransactionItemEntity> convertTxItems(Transaction tx, TransactionEntity transactionEntity) {
-        return tx.getTransactionItems()
+        return tx.getItems()
                 .stream()
                 .map(tl -> convert(transactionEntity, tl))
                 .collect(toSet());

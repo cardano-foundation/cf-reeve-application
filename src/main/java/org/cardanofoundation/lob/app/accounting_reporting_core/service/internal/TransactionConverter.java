@@ -37,7 +37,7 @@ public class TransactionConverter {
                 .transactionApproved(transaction.isTransactionApproved())
                 .ledgerDispatchApproved(transaction.isLedgerDispatchApproved());
 
-        val txItems = transaction.getTransactionItems()
+        val txItems = transaction.getItems()
                 .stream()
                 .map(txItemEntity -> {
                     return new TransactionItemEntity()
@@ -169,7 +169,7 @@ public class TransactionConverter {
                 .transactionApproved(transactionEntity.transactionApproved())
                 .ledgerDispatchStatus(transactionEntity.ledgerDispatchStatus())
                 .ledgerDispatchApproved(transactionEntity.ledgerDispatchApproved())
-                .transactionItems(items)
+                .items(items)
                 .build();
     }
 

@@ -14,6 +14,7 @@ import static java.math.BigDecimal.ZERO;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.*;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @Slf4j
 public class PreValidationPipelineTask implements PipelineTask {
@@ -52,11 +53,10 @@ public class PreValidationPipelineTask implements PipelineTask {
         val violations = new HashSet<Violation>();
 
         if (tx.getTransactionType() != FxRevaluation) {
-            for (val txItem : tx.getTransactionItems()) {
+            for (val txItem : tx.getItems()) {
                 if (txItem.getAmountLcy().signum() != 0 && txItem.getAmountFcy().signum() == 0) {
                     val v = Violation.create(
-                            Violation.Priority.HIGH,
-                            Violation.Type.FATAL,
+                            ERROR,
                             tx.getOrganisation().getId(),
                             tx.getId(),
                             txItem.getId(),
@@ -86,11 +86,10 @@ public class PreValidationPipelineTask implements PipelineTask {
 
         val violations = new HashSet<Violation>();
 
-        for (val txItem : tx.getTransactionItems()) {
+        for (val txItem : tx.getItems()) {
             if (txItem.getAmountLcy().signum() == 0 && txItem.getAmountFcy().signum() != 0) {
                 val v = Violation.create(
-                        Violation.Priority.HIGH,
-                        Violation.Type.FATAL,
+                        ERROR,
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),
@@ -117,13 +116,12 @@ public class PreValidationPipelineTask implements PipelineTask {
     public TransactionWithViolations balanceZerosOutLcyCheck(TransactionWithViolations violationTransaction) {
         val tx = violationTransaction.transaction();
 
-        val txItems = tx.getTransactionItems();
+        val txItems = tx.getItems();
         val lcySum = txItems.stream().map(TransactionItem::getAmountLcy).reduce(ZERO, BigDecimal::add);
 
         if (lcySum.signum() != 0) {
             val v = Violation.create(
-                    Violation.Priority.HIGH,
-                    Violation.Type.FATAL,
+                    ERROR,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     LCY_BALANCE_MUST_BE_ZERO,
@@ -144,7 +142,7 @@ public class PreValidationPipelineTask implements PipelineTask {
 
     public TransactionWithViolations balanceZerosOutFcyCheck(TransactionWithViolations violationTransaction) {
         val tx = violationTransaction.transaction();
-        val txItems = tx.getTransactionItems();
+        val txItems = tx.getItems();
 
         val fcySum = txItems.stream()
                 .map(TransactionItem::getAmountFcy)
@@ -152,8 +150,7 @@ public class PreValidationPipelineTask implements PipelineTask {
 
         if (fcySum.signum() != 0) {
             val v = Violation.create(
-                    Violation.Priority.HIGH,
-                    Violation.Type.FATAL,
+                    ERROR,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     FCY_BALANCE_MUST_BE_ZERO,

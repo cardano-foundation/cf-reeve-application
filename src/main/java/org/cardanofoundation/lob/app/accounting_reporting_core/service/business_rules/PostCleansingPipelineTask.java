@@ -3,10 +3,11 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsAggregatorTaskItem;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class PostCleansingPipelineTask implements PipelineTask {
@@ -17,7 +18,8 @@ public class PostCleansingPipelineTask implements PipelineTask {
 
         val passedTransactions = passedOrganisationTransactions.transactions().stream()
                 .map(tx -> TransactionWithViolations.create(tx, allViolationUntilNow))
-                .map(this::debitAccountCheck)
+                .map(txWithViolations -> new DebitAccountCheckTaskItem().run(txWithViolations))
+                .map(txWithViolations -> new TxItemsAggregatorTaskItem().run(txWithViolations))
                 .toList();
 
         val newViolations = new HashSet<Violation>();
@@ -32,22 +34,6 @@ public class PostCleansingPipelineTask implements PipelineTask {
                 new OrganisationTransactions(passedOrganisationTransactions.organisationId(), finalTransactions),
                 ignoredOrganisationTransactions,
                 newViolations
-        );
-    }
-
-    private TransactionWithViolations debitAccountCheck(TransactionWithViolations transactionLineWithViolation) {
-        val tx = transactionLineWithViolation.transaction();
-
-        // we accept only transaction items that are NOT sending to the same account, if they are we discard them
-        val newItems = tx.getTransactionItems()
-                .stream()
-                .filter(txItem -> !txItem.getAccountCodeDebit().equals(txItem.getAccountCodeCredit()))
-                .collect(Collectors.toSet());
-
-        return TransactionWithViolations.create(tx
-                .toBuilder()
-                .transactionItems(newItems)
-                .build()
         );
     }
 

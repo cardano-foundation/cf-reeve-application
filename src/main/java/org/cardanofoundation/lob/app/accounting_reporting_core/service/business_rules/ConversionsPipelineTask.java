@@ -13,8 +13,7 @@ import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.*;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Priority.NORMAL;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.FATAL;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -59,8 +58,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
         if (organisationM.isEmpty()) {
             val v = Violation.create(
-                    NORMAL,
-                    FATAL,
+                    ERROR,
                     organisationId,
                     tx.getId(),
                     ORGANISATION_NOT_FOUND,
@@ -82,8 +80,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
         if (orgVanillaCurrencyM.isEmpty()) {
             val v = Violation.create(
-                    NORMAL,
-                    FATAL,
+                    ERROR,
                     organisationId,
                     tx.getId(),
                     CORE_CURRENCY_NOT_FOUND,
@@ -136,8 +133,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
             if (vatM.isEmpty()) {
                 val v = Violation.create(
-                        NORMAL,
-                        FATAL,
+                        ERROR,
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         Violation.Code.VAT_RATE_NOT_FOUND,
@@ -165,8 +161,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
         if (organisationCurrencyM.isEmpty()) {
             val v = Violation.create(
-                    NORMAL,
-                    FATAL,
+                    ERROR,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     CURRENCY_NOT_FOUND,
@@ -185,8 +180,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
             if (currencyM.isEmpty()) {
                 val v = Violation.create(
-                        NORMAL,
-                        FATAL,
+                        ERROR,
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         CURRENCY_NOT_FOUND,
@@ -238,8 +232,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
         if (costCenterMappingM.isEmpty()) {
             val v = Violation.create(
-                    NORMAL,
-                    FATAL,
+                    ERROR,
                     organisationId,
                     tx.getId(),
                     COST_CENTER_NOT_FOUND,
@@ -286,8 +279,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
         if (projectMappingM.isEmpty()) {
             val v = Violation.create(
-                    NORMAL,
-                    FATAL,
+                    ERROR,
                     organisationId,
                     tx.getId(),
                     PROJECT_CODE_NOT_FOUND,
@@ -321,7 +313,7 @@ public class ConversionsPipelineTask implements PipelineTask {
 
         val organisationId = tx.getOrganisation().getId();
 
-        val items = tx.getTransactionItems().stream()
+        val items = tx.getItems().stream()
                 .map(item -> {
                     val itemBuilder = item.toBuilder();
 
@@ -331,8 +323,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                         val accountChartMappingM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeDebit);
                         if (accountChartMappingM.isEmpty()) {
                             val v = Violation.create(
-                                    NORMAL,
-                                    FATAL,
+                                    ERROR,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
                                     CHART_OF_ACCOUNT_NOT_FOUND,
@@ -356,8 +347,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                         val eventRefCodeM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeCredit);
                         if (eventRefCodeM.isEmpty()) {
                             val v = Violation.create(
-                                    NORMAL,
-                                    FATAL,
+                                    ERROR,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
                                     CHART_OF_ACCOUNT_NOT_FOUND,
@@ -391,7 +381,7 @@ public class ConversionsPipelineTask implements PipelineTask {
                 .collect(Collectors.toSet());
 
         return TransactionWithViolations
-                .create(tx.toBuilder().transactionItems(items).build(),
+                .create(tx.toBuilder().items(items).build(),
                         violations
                 );
     }
