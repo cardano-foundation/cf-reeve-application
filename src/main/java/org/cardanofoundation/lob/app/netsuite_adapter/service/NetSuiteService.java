@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
-import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteAPI;
+import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteClient;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionDataSearchResult;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TxLine;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestion;
@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreCompress.decompress;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class NetSuiteService {
 
     private final IngestionRepository ingestionRepository;
 
-    private final NetSuiteAPI netSuiteAPI;
+    private final NetSuiteClient netSuiteClient;
 
     private final org.cardanofoundation.lob.app.netsuite_adapter.service.NotificationsSenderService notificationsSenderService;
 
@@ -57,7 +55,7 @@ public class NetSuiteService {
     }
 
     public Either<Problem, Optional<String>> retrieveLatestNetsuiteTransactionLines() {
-        return netSuiteAPI.retrieveLatestNetsuiteTransactionLines();
+        return netSuiteClient.retrieveLatestNetsuiteTransactionLines();
     }
 
     @Transactional
@@ -168,7 +166,7 @@ public class NetSuiteService {
 
             val issue = Problem.builder()
                     .withTitle("NETSUITE_ADAPTER::NETSUITE_API_ERROR")
-                    .withDetail(STR."Error retrieving data from NetSuite API, url: \{netSuiteAPI.netsuiteUrl()}")
+                    .withDetail(STR."Error retrieving data from NetSuite API, url: \{netSuiteClient.netsuiteUrl()}")
                     .build();
 
             return Either.left(issue);
@@ -180,7 +178,7 @@ public class NetSuiteService {
 
             val issue = Problem.builder()
                     .withTitle("NETSUITE_ADAPTER::NETSUITE_API_ERROR")
-                    .withDetail(STR."No data to read from NetSuite API, url: \{netSuiteAPI.netsuiteUrl()}")
+                    .withDetail(STR."No data to read from NetSuite API, url: \{netSuiteClient.netsuiteUrl()}")
                     .build();
 
             return Either.left(issue);
