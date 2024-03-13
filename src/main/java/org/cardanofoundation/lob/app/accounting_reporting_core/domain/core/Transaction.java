@@ -43,9 +43,6 @@ public class Transaction {
     @PositiveOrZero
     private BigDecimal fxRate;
 
-    @Builder.Default
-    private Optional<CostCenter> costCenter = Optional.empty();
-
     @NotNull
     @Builder.Default
     private ValidationStatus validationStatus = ValidationStatus.NOT_VALIDATED;

@@ -50,7 +50,7 @@ public class ProjectConversionTaskItem implements PipelineTaskItem {
                                 PROJECT_CODE_NOT_FOUND,
                                 pipelineTask.getClass().getSimpleName(),
                                 Map.of(
-                                "transactionNumber", tx.getInternalTransactionNumber()
+                                        "transactionNumber", tx.getInternalTransactionNumber()
                                 )
                         );
 

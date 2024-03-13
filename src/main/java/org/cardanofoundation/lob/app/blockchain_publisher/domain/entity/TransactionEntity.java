@@ -54,14 +54,6 @@ public class TransactionEntity extends AuditEntity {
     private BigDecimal fxRate;
 
     @Embedded
-    @Nullable
-    @AttributeOverrides({
-            @AttributeOverride(name = "customerCode", column = @Column(name = "cost_center_customer_code")),
-            @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
-    })
-    private CostCenter costCenter;
-
-    @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "num", column = @Column(name = "document_num")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
@@ -104,10 +96,6 @@ public class TransactionEntity extends AuditEntity {
         }
 
         return false;
-    }
-
-    public Optional<CostCenter> getCostCenter() {
-        return Optional.ofNullable(costCenter);
     }
 
     public Optional<L1SubmissionData> getL1SubmissionData() {
