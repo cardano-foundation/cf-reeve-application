@@ -17,6 +17,9 @@ public class FilteringParameters {
             .build();
 
     @Builder.Default
+    private Optional<String> organisationId = Optional.empty();
+
+    @Builder.Default
     private List<TransactionType> transactionTypes = List.of();
 
     @Builder.Default
@@ -26,12 +29,12 @@ public class FilteringParameters {
     private Optional<LocalDate> to = Optional.empty();
 
     @Builder.Default
-    private List<String> organisationIds = List.of();
-
-    @Builder.Default
     private List<String> projectCodes = List.of();
 
     @Builder.Default
     private List<String> costCenterCodes = List.of();
+
+    @Builder.Default
+    private Optional<String> transactionNumber = Optional.empty();
 
 }

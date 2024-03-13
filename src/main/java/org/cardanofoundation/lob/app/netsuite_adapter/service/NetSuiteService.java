@@ -120,6 +120,11 @@ public class NetSuiteService {
                                                               Set<Transaction> txs) {
         return txs.stream()
                 .filter(tx -> {
+                    val organisationId = filteringParameters.getOrganisationId();
+
+                    return organisationId.map(orgId -> orgId.equals(tx.getOrganisation().getId())).orElse(true);
+                })
+                .filter(tx -> {
                     val fromM = filteringParameters.getFrom();
 
                     return fromM.isEmpty()
@@ -139,11 +144,6 @@ public class NetSuiteService {
                     return txTypes.isEmpty() || txTypes.contains(tx.getTransactionType());
                 })
                 .filter(tx -> {
-                    val organisationIds = filteringParameters.getOrganisationIds();
-
-                    return organisationIds.isEmpty() || organisationIds.contains(tx.getOrganisation().getId());
-                })
-                .filter(tx -> {
                     val projectCodes = filteringParameters.getProjectCodes();
 
                     return projectCodes.isEmpty() || tx.getProject().map(Project::getCustomerCode).map(projectCodes::contains).orElse(true);
@@ -152,6 +152,11 @@ public class NetSuiteService {
                     val costCenterCodes = filteringParameters.getCostCenterCodes();
 
                     return costCenterCodes.isEmpty() || tx.getCostCenter().map(CostCenter::getCustomerCode).map(costCenterCodes::contains).orElse(true);
+                })
+                .filter(tx -> {
+                    val transactionNumber = filteringParameters.getTransactionNumber();
+
+                    return transactionNumber.isEmpty() || transactionNumber.orElseThrow().equals(tx.getInternalTransactionNumber());
                 })
                 .collect(Collectors.toSet());
     }
