@@ -22,7 +22,7 @@ import static org.scribe.model.Verb.GET;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class NetSuiteAPI {
+public class NetSuiteClient {
 
     private final OAuthService oAuthService;
 
