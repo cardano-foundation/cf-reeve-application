@@ -47,6 +47,7 @@ public class ProjectConversionTaskItem implements PipelineTaskItem {
                                 ERROR,
                                 tx.getOrganisation().getId(),
                                 tx.getId(),
+                                txItem.getId(),
                                 PROJECT_CODE_NOT_FOUND,
                                 pipelineTask.getClass().getSimpleName(),
                                 Map.of(

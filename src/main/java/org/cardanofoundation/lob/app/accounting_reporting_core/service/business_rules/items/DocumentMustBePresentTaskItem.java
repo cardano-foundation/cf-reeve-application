@@ -30,6 +30,7 @@ public class DocumentMustBePresentTaskItem implements PipelineTaskItem {
                         ERROR,
                         tx.getOrganisation().getId(),
                         tx.getId(),
+                        txItem.getId(),
                         DOCUMENT_MUST_BE_PRESENT,
                         pipelineTask.getClass().getSimpleName(),
                         Map.of(

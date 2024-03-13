@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CURRENCY_NOT_FOUND;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.VAT_RATE_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
@@ -55,7 +56,8 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
                                     ERROR,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
-                                    Violation.Code.VAT_RATE_NOT_FOUND,
+                                    txItem.getId(),
+                                    VAT_RATE_NOT_FOUND,
                                     pipelineTask.getClass().getSimpleName(),
                                     Map.of(
                                             "customerCode", vat.getCustomerCode(),
@@ -83,6 +85,7 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
                                 ERROR,
                                 tx.getOrganisation().getId(),
                                 tx.getId(),
+                                txItem.getId(),
                                 CURRENCY_NOT_FOUND,
                                 pipelineTask.getClass().getSimpleName(),
                                 Map.of(
@@ -102,6 +105,7 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
                                     ERROR,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
+                                    txItem.getId(),
                                     CURRENCY_NOT_FOUND,
                                     pipelineTask.getClass().getSimpleName(),
                                     Map.of(
