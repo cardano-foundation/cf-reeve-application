@@ -50,6 +50,16 @@ public class TransactionItemEntity extends AuditEntity {
     })
     private CostCenter costCenter;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "num", column = @Column(name = "document_num")),
+            @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
+            @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
+            @AttributeOverride(name = "counterparty.customerCode", column = @Column(name = "document_counterparty_customer_code")),
+            @AttributeOverride(name = "counterparty.type", column = @Column(name = "document_counterparty_type")),
+    })
+    private Document document;
+
     public Optional<String> getEventCode() {
         return Optional.ofNullable(eventCode);
     }

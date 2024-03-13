@@ -17,8 +17,8 @@ public class ProjectCodeService {
 
     private final ProjectMappingRepository projectMappingRepository;
 
-    public Optional<OrganisationProject> getProject(String organisationId, String internalNumber){
-        return projectMappingRepository.findById(new OrganisationProject.Id(organisationId, internalNumber));
+    public Optional<OrganisationProject> getProject(String organisationId, String customerCode) {
+        return projectMappingRepository.findById(new OrganisationProject.Id(organisationId, customerCode));
     }
 
 }

@@ -26,15 +26,15 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
         return transactions.stream()
                 .map(trx -> {
                     val txItems = trx.getItems().stream()
-                            .map(item -> item.toBuilder()
+                            .map(txItem -> txItem.toBuilder()
                                     .accountNameDebit(Optional.empty())
                                     .accountCodeDebit(Optional.empty())
                                     .accountCodeCredit(Optional.empty())
+                                    .document(convert(txItem.getDocument()))
                                     .build())
                             .collect(Collectors.toSet());
 
                     return trx.toBuilder()
-                            .document(convert(trx.getDocument()))
                             .items(txItems)
                             .build();
                 })

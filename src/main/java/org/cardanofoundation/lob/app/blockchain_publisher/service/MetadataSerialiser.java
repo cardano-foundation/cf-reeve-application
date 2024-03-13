@@ -51,19 +51,12 @@ public class MetadataSerialiser {
         val id = transaction.getId();
 
         metadataMap.put("id", id);
-        metadataMap.put("num", transaction.getInternalNumber());
+        metadataMap.put("number", transaction.getInternalNumber());
 
         metadataMap.put("type", transaction.getTransactionType().name());
 
         metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
-
-        val documentsList = MetadataBuilder.createList();
-        documentsList.add(serialise(transaction.getDocument()));
-
-        if (documentsList.size() > 0) {
-            metadataMap.put("documents", documentsList);
-        }
 
         val transactionItemsMetadataList = MetadataBuilder.createList();
 
@@ -138,9 +131,12 @@ public class MetadataSerialiser {
 
         metadataMap.put("id", transactionItemEntity.getId());
         metadataMap.put("amount", transactionItemEntity.getAmountFcy().toEngineeringString());
+
         transactionItemEntity.getEventCode().ifPresent(eventCode -> metadataMap.put("event_code", eventCode));
         transactionItemEntity.getProject().ifPresent(project -> metadataMap.put("project", serialise(project)));
         transactionItemEntity.getCostCenter().ifPresent(costCenter -> metadataMap.put("cost_center", serialise(costCenter)));
+
+        metadataMap.put("document", serialise(transactionItemEntity.getDocument()));
 
         return metadataMap;
     }
