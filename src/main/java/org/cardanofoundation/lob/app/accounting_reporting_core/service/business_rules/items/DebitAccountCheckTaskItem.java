@@ -20,14 +20,14 @@ public class DebitAccountCheckTaskItem implements PipelineTaskItem {
         }
 
         // we accept only transaction items that are NOT sending to the same account, if they are we discard them
-        val newItems = tx.getItems()
+        val txItems = tx.getItems()
                 .stream()
                 .filter(txItem -> !txItem.getAccountCodeDebit().equals(txItem.getAccountCodeCredit()))
                 .collect(Collectors.toSet());
 
         return TransactionWithViolations.create(tx
                 .toBuilder()
-                .items(newItems)
+                .items(txItems)
                 .build()
         );
     }
