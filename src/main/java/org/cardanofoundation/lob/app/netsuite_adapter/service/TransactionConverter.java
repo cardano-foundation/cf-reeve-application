@@ -141,7 +141,7 @@ public class TransactionConverter {
                 return Either.left(costCenterM.getLeft());
             }
 
-            val documentE = convertDocument(organisationId, txLines, txLine);
+            val documentE = convertDocument(organisationId, txLine);
             if (documentE.isLeft()) {
                 return Either.left(documentE.getLeft());
             }
@@ -207,7 +207,6 @@ public class TransactionConverter {
     }
 
     private Either<Violation, Optional<Document>> convertDocument(String organisationId,
-                                                                  List<TxLine> txLines,
                                                                   TxLine txLine) {
         val documentNumberM = normaliseString(txLine.documentNumber());
 
@@ -219,7 +218,7 @@ public class TransactionConverter {
                 return Either.left(currencyCodeE.getLeft());
             }
 
-            val vatE = vatCode(organisationId, txLines, txLine);
+            val vatE = vatCode(organisationId, txLine);
             if (vatE.isLeft()) {
                 return Either.left(vatE.getLeft());
             }
@@ -320,10 +319,8 @@ public class TransactionConverter {
     }
 
     private Either<Violation, Optional<String>> vatCode(String organisationId,
-                                                        List<TxLine> txLines,
                                                         TxLine txLine) {
-        val taxItemM = txLines.stream().filter(e -> normaliseString(e.taxItem()).isPresent()).findFirst()
-                .map(TxLine::taxItem)
+        val taxItemM = normaliseString(txLine.taxItem())
                 .map(Long::parseLong);
 
         if (taxItemM.isPresent()) {

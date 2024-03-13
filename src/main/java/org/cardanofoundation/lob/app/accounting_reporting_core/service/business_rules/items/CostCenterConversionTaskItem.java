@@ -45,6 +45,7 @@ public class CostCenterConversionTaskItem implements PipelineTaskItem {
                                 ERROR,
                                 organisationId,
                                 tx.getId(),
+                                txItem.getId(),
                                 COST_CENTER_NOT_FOUND,
                                 pipelineTask.getClass().getSimpleName(),
                                 Map.of(

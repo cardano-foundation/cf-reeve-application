@@ -34,7 +34,6 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
                 .collect(groupingBy(txItem -> TransactionItemKey.builder()
                         .costCenterCode(txItem.getCostCenter().flatMap(CostCenter::getExternalCustomerCode))
                         .documentNumber(txItem.getDocument().map(Document::getNumber))
-                        
                         .accountEventCode(txItem.getAccountEventCode())
                         .build())
                 );
@@ -60,21 +59,6 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
     @Builder
     @Getter
     public static class TransactionItemKey {
-
-//        @Builder.Default
-//        private Optional<String> accountCodeDebit = Optional.empty();
-//
-//        @Builder.Default
-//        private Optional<String> accountCodeEventRefDebit = Optional.empty();
-//
-//        @Builder.Default
-//        private Optional<String> accountNameDebit = Optional.empty();
-//
-//        @Builder.Default
-//        private Optional<String> accountCodeCredit = Optional.empty();
-//
-//        @Builder.Default
-//        private Optional<String> accountCodeEventRefCredit = Optional.empty();
 
         @Builder.Default
         private Optional<String> costCenterCode = Optional.empty();
