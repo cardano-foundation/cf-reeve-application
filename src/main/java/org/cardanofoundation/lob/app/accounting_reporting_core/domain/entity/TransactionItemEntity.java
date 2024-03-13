@@ -61,6 +61,13 @@ public class TransactionItemEntity extends AuditEntity {
     @JoinColumn(name = "transaction_id")
     private TransactionEntity transaction;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "customerCode", column = @Column(name = "project_customer_code"))
+    })
+    @Nullable
+    private Project project;
+
     public Optional<String> getAccountCodeDebit() {
         return Optional.ofNullable(accountCodeDebit);
     }
@@ -83,6 +90,10 @@ public class TransactionItemEntity extends AuditEntity {
 
     public Optional<String> getAccountEventCode() {
         return Optional.ofNullable(accountEventCode);
+    }
+
+    public Optional<Project> getProject() {
+        return Optional.ofNullable(project);
     }
 
 }

@@ -85,13 +85,6 @@ public class TransactionEntity extends AuditEntity {
     @Nullable
     private CostCenter costCenter;
 
-    @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "customerCode", column = @Column(name = "project_customer_code"))
-    })
-    @Nullable
-    private Project project;
-
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
 
@@ -110,10 +103,6 @@ public class TransactionEntity extends AuditEntity {
 
     public Optional<CostCenter> getCostCenter() {
         return Optional.ofNullable(costCenter);
-    }
-
-    public Optional<Project> getProject() {
-        return Optional.ofNullable(project);
     }
 
 }

@@ -37,7 +37,6 @@ public class TransactionConverter {
 
                     return ccBuilder.build();
                 }).orElse(null))
-                .project(tx.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null))
                 .l1SubmissionData(L1SubmissionData.builder()
                         .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
                         .build())
@@ -82,12 +81,13 @@ public class TransactionConverter {
 
     @OneToOne
     public TransactionItemEntity convert(TransactionEntity parent,
-                                         TransactionItem txLine) {
+                                         TransactionItem txItem) {
         return TransactionItemEntity.builder()
-                .id(txLine.getId())
+                .id(txItem.getId())
                 .transaction(parent)
-                .eventCode(txLine.getAccountEventCode().orElse(null))
-                .amountFcy(txLine.getAmountFcy())
+                .eventCode(txItem.getAccountEventCode().orElse(null))
+                .amountFcy(txItem.getAmountFcy())
+                .project(txItem.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null))
                 .build();
     }
 

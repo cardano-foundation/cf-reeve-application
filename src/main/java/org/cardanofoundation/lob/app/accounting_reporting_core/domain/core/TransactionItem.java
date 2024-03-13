@@ -41,6 +41,9 @@ public class TransactionItem {
     @Builder.Default
     private Optional<@Size(min = 1, max =  255) String> accountEventCode = Optional.empty();
 
+    @Builder.Default
+    private Optional<Project> project = Optional.empty();
+
     public static String id(String transactionId,
                             String lineNo) {
         return digestAsHex(STR."\{transactionId}::\{lineNo}");

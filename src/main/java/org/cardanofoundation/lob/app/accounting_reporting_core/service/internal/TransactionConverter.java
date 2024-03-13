@@ -31,7 +31,6 @@ public class TransactionConverter {
                 .document(convert(transaction.getDocument()))
                 .fxRate(transaction.getFxRate())
                 .costCenter(convertCostCenter(transaction.getCostCenter()))
-                .project(convertProject(transaction.getProject()))
                 .validationStatus(transaction.getValidationStatus())
                 .ledgerDispatchStatus(transaction.getLedgerDispatchStatus())
                 .transactionApproved(transaction.isTransactionApproved())
@@ -45,6 +44,7 @@ public class TransactionConverter {
                             .transaction(transactionEntity)
                             .amountLcy(txItemEntity.getAmountLcy())
                             .amountFcy(txItemEntity.getAmountFcy())
+                            .project(convertProject(txItemEntity.getProject()))
                             .accountCodeDebit(txItemEntity.getAccountCodeDebit().orElse(null))
                             .accountCodeRefDebit(txItemEntity.getAccountCodeEventRefDebit().orElse(null))
                             .accountCodeCredit(txItemEntity.getAccountCodeCredit().orElse(null))
@@ -132,6 +132,10 @@ public class TransactionConverter {
 
                         .accountEventCode(txItemEntity.getAccountEventCode())
 
+                        .project(txItemEntity.getProject().map(project -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project.builder()
+                                .customerCode(project.getCustomerCode())
+                                .build()))
+
                         .amountFcy(txItemEntity.amountFcy())
                         .amountLcy(txItemEntity.amountLcy())
                         .build())
@@ -160,10 +164,6 @@ public class TransactionConverter {
                         .customerCode(costCenter.getCustomerCode())
                         .externalCustomerCode(costCenter.getExternalCustomerCode())
                         .name(costCenter.getName())
-                        .build()))
-
-                .project(transactionEntity.getProject().map(project -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project.builder()
-                        .customerCode(project.getCustomerCode())
                         .build()))
 
                 .transactionApproved(transactionEntity.transactionApproved())

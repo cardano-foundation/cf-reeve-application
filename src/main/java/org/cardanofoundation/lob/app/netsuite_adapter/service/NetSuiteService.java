@@ -8,7 +8,10 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteClient;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionDataSearchResult;
@@ -146,7 +149,8 @@ public class NetSuiteService {
                 .filter(tx -> {
                     val projectCodes = filteringParameters.getProjectCodes();
 
-                    return projectCodes.isEmpty() || tx.getProject().map(Project::getCustomerCode).map(projectCodes::contains).orElse(true);
+                    return projectCodes.isEmpty();
+                    //return projectCodes.isEmpty() || tx.getItems().stream().allMatch(item -> projectCodes.contains(item.)).orElse(true);
                 })
                 .filter(tx -> {
                     val costCenterCodes = filteringParameters.getCostCenterCodes();

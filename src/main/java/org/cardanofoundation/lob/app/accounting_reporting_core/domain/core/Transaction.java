@@ -46,9 +46,6 @@ public class Transaction {
     @Builder.Default
     private Optional<CostCenter> costCenter = Optional.empty();
 
-    @Builder.Default
-    private Optional<Project> project = Optional.empty();
-
     @NotNull
     @Builder.Default
     private ValidationStatus validationStatus = ValidationStatus.NOT_VALIDATED;
