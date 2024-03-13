@@ -44,6 +44,9 @@ public class TransactionItem {
     @Builder.Default
     private Optional<Project> project = Optional.empty();
 
+    @Builder.Default
+    private Optional<CostCenter> costCenter = Optional.empty();
+
     public static String id(String transactionId,
                             String lineNo) {
         return digestAsHex(STR."\{transactionId}::\{lineNo}");

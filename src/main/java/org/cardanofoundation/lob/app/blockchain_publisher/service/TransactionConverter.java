@@ -29,14 +29,6 @@ public class TransactionConverter {
                 .organisation(convertOrganisation(tx.getOrganisation()))
                 .fxRate(tx.getFxRate())
                 .entryDate(tx.getEntryDate())
-                .costCenter(tx.getCostCenter().map(cc -> {
-                    val ccBuilder = CostCenter.builder();
-
-                    cc.getExternalCustomerCode().ifPresent(ccBuilder::customerCode);
-                    cc.getName().ifPresent(ccBuilder::name);
-
-                    return ccBuilder.build();
-                }).orElse(null))
                 .l1SubmissionData(L1SubmissionData.builder()
                         .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
                         .build())
@@ -88,6 +80,14 @@ public class TransactionConverter {
                 .eventCode(txItem.getAccountEventCode().orElse(null))
                 .amountFcy(txItem.getAmountFcy())
                 .project(txItem.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null))
+                .costCenter(txItem.getCostCenter().map(cc -> {
+                    val ccBuilder = CostCenter.builder();
+
+                    cc.getExternalCustomerCode().ifPresent(ccBuilder::customerCode);
+                    cc.getName().ifPresent(ccBuilder::name);
+
+                    return ccBuilder.build();
+                }).orElse(null))
                 .build();
     }
 

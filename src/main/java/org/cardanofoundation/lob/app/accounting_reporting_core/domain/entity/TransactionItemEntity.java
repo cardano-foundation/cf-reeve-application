@@ -68,6 +68,15 @@ public class TransactionItemEntity extends AuditEntity {
     @Nullable
     private Project project;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "customerCode", column = @Column(name = "cost_center_customer_code")),
+            @AttributeOverride(name = "externalCustomerCode", column = @Column(name = "cost_center_external_customer_code")),
+            @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
+    })
+    @Nullable
+    private CostCenter costCenter;
+
     public Optional<String> getAccountCodeDebit() {
         return Optional.ofNullable(accountCodeDebit);
     }
@@ -94,6 +103,10 @@ public class TransactionItemEntity extends AuditEntity {
 
     public Optional<Project> getProject() {
         return Optional.ofNullable(project);
+    }
+
+    public Optional<CostCenter> getCostCenter() {
+        return Optional.ofNullable(costCenter);
     }
 
 }

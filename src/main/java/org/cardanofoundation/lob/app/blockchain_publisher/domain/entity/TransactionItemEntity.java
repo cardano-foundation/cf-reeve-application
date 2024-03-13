@@ -42,12 +42,24 @@ public class TransactionItemEntity extends AuditEntity {
     })
     private Project project;
 
+    @Embedded
+    @Nullable
+    @AttributeOverrides({
+            @AttributeOverride(name = "customerCode", column = @Column(name = "cost_center_customer_code")),
+            @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
+    })
+    private CostCenter costCenter;
+
     public Optional<String> getEventCode() {
         return Optional.ofNullable(eventCode);
     }
 
     public Optional<Project> getProject() {
         return Optional.ofNullable(project);
+    }
+
+    public Optional<CostCenter> getCostCenter() {
+        return Optional.ofNullable(costCenter);
     }
 
 }

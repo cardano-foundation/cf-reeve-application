@@ -30,7 +30,6 @@ public class TransactionConverter {
                 .organisation(convertOrganisation(transaction))
                 .document(convert(transaction.getDocument()))
                 .fxRate(transaction.getFxRate())
-                .costCenter(convertCostCenter(transaction.getCostCenter()))
                 .validationStatus(transaction.getValidationStatus())
                 .ledgerDispatchStatus(transaction.getLedgerDispatchStatus())
                 .transactionApproved(transaction.isTransactionApproved())
@@ -43,6 +42,7 @@ public class TransactionConverter {
                             .id(txItemEntity.getId())
                             .transaction(transactionEntity)
                             .amountLcy(txItemEntity.getAmountLcy())
+                            .costCenter(convertCostCenter(txItemEntity.getCostCenter()))
                             .amountFcy(txItemEntity.getAmountFcy())
                             .project(convertProject(txItemEntity.getProject()))
                             .accountCodeDebit(txItemEntity.getAccountCodeDebit().orElse(null))
@@ -136,6 +136,12 @@ public class TransactionConverter {
                                 .customerCode(project.getCustomerCode())
                                 .build()))
 
+                        .costCenter(txItemEntity.getCostCenter().map(costCenter -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter.builder()
+                                .customerCode(costCenter.getCustomerCode())
+                                .externalCustomerCode(costCenter.getExternalCustomerCode())
+                                .name(costCenter.getName())
+                                .build()))
+
                         .amountFcy(txItemEntity.amountFcy())
                         .amountLcy(txItemEntity.amountLcy())
                         .build())
@@ -159,12 +165,6 @@ public class TransactionConverter {
                 .transactionType(transactionEntity.transactionType())
                 .internalTransactionNumber(transactionEntity.transactionInternalNumber())
                 .fxRate(transactionEntity.fxRate())
-
-                .costCenter(transactionEntity.getCostCenter().map(costCenter -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter.builder()
-                        .customerCode(costCenter.getCustomerCode())
-                        .externalCustomerCode(costCenter.getExternalCustomerCode())
-                        .name(costCenter.getName())
-                        .build()))
 
                 .transactionApproved(transactionEntity.transactionApproved())
                 .ledgerDispatchStatus(transactionEntity.ledgerDispatchStatus())

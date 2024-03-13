@@ -76,15 +76,6 @@ public class TransactionEntity extends AuditEntity {
     @Nullable
     private Document document;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "customerCode", column = @Column(name = "cost_center_customer_code")),
-            @AttributeOverride(name = "externalCustomerCode", column = @Column(name = "cost_center_external_customer_code")),
-            @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
-    })
-    @Nullable
-    private CostCenter costCenter;
-
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;
 
@@ -100,9 +91,5 @@ public class TransactionEntity extends AuditEntity {
 
     @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     private Set<TransactionItemEntity> items = new LinkedHashSet<>();
-
-    public Optional<CostCenter> getCostCenter() {
-        return Optional.ofNullable(costCenter);
-    }
 
 }

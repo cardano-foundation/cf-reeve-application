@@ -139,10 +139,6 @@ CREATE TABLE accounting_core_transaction (
    document_counterparty_type VARCHAR(255),
    document_counterparty_name VARCHAR(255),
 
-   cost_center_customer_code VARCHAR(255),
-   cost_center_external_customer_code VARCHAR(255),
-   cost_center_name VARCHAR(25),
-
    validation_status VARCHAR(255) NOT NULL,
 
    transaction_approved BOOLEAN NOT NULL,
@@ -177,6 +173,10 @@ CREATE TABLE accounting_core_transaction_item (
    amount_lcy DECIMAL NOT NULL,
 
    project_customer_code VARCHAR(255),
+
+   cost_center_customer_code VARCHAR(255),
+   cost_center_external_customer_code VARCHAR(255),
+   cost_center_name VARCHAR(25),
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
@@ -242,10 +242,6 @@ CREATE TABLE blockchain_publisher_transaction (
 
    fx_rate DECIMAL NOT NULL,
 
-   cost_center_code VARCHAR(25),
-   cost_center_customer_code VARCHAR(255),
-   cost_center_name VARCHAR(25),
-
    document_num VARCHAR(255),
    document_currency_id VARCHAR(255) NOT NULL,
    document_counterparty_customer_code VARCHAR(255),
@@ -279,6 +275,10 @@ CREATE TABLE blockchain_publisher_transaction_item (
    event_code VARCHAR(255),
 
    project_customer_code VARCHAR(255),
+
+   cost_center_code VARCHAR(25),
+   cost_center_customer_code VARCHAR(255),
+   cost_center_name VARCHAR(25),
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),

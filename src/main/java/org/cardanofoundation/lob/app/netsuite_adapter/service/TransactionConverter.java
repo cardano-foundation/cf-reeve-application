@@ -136,6 +136,11 @@ public class TransactionConverter {
             val amountLcy = substractNullFriendly(result.amountDebit(), result.amountCredit());
             val amountFcy = substractNullFriendly(result.amountDebitForeignCurrency(), result.amountCreditForeignCurrency());
 
+            val costCenterM = costCenterCode(organisationId, txLine);
+            if (costCenterM.isLeft()) {
+                return Either.left(costCenterM.getLeft());
+            }
+
             val txItem = TransactionItem.builder()
                     .id(TransactionItem.id(txId, result.lineID().toString()))
                     .accountNameDebit(normaliseString(result.name()))
@@ -144,6 +149,11 @@ public class TransactionConverter {
 
                     .project(projectCodeM.get().map(pc -> Project.builder()
                             .customerCode(pc)
+                            .build()
+                    ))
+
+                    .costCenter(costCenterM.get().map(cc -> CostCenter.builder()
+                            .customerCode(cc)
                             .build()
                     ))
                     .amountLcy(amountLcy)
@@ -164,11 +174,6 @@ public class TransactionConverter {
             return Either.left(transTypeE.getLeft());
         }
 
-        val costCenterM = costCenterCode(organisationId, txLine);
-        if (costCenterM.isLeft()) {
-            return Either.left(costCenterM.getLeft());
-        }
-
         return Either.right(Optional.of(Transaction.builder()
                 .id(Transaction.id(organisationId, txLine.transactionNumber()))
                 .internalTransactionNumber(txLine.transactionNumber())
@@ -178,10 +183,6 @@ public class TransactionConverter {
                         .id(organisationId)
                         .build()
                 )
-                .costCenter(costCenterM.get().map(cc -> CostCenter.builder()
-                        .customerCode(cc)
-                        .build()
-                ))
                 .fxRate(txLine.exchangeRate())
                 .validationStatus(NOT_VALIDATED)
                 .document(documentE.get())
