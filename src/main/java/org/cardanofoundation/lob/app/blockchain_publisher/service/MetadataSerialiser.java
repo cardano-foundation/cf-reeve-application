@@ -56,7 +56,6 @@ public class MetadataSerialiser {
         metadataMap.put("type", transaction.getTransactionType().name());
 
         transaction.getCostCenter().ifPresent(costCenter -> metadataMap.put("cost_center", serialise(costCenter)));
-        transaction.getProject().ifPresent(project -> metadataMap.put("project", serialise(project)));
 
         metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
@@ -142,6 +141,7 @@ public class MetadataSerialiser {
         metadataMap.put("id", transactionItemEntity.getId());
         metadataMap.put("amount", transactionItemEntity.getAmountFcy().toEngineeringString());
         transactionItemEntity.getEventCode().ifPresent(eventCode -> metadataMap.put("event_code", eventCode));
+        transactionItemEntity.getProject().ifPresent(project -> metadataMap.put("project", serialise(project)));
 
         return metadataMap;
     }

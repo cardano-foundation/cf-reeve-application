@@ -36,8 +36,18 @@ public class TransactionItemEntity extends AuditEntity {
     @Column(name = "event_code")
     private String eventCode;
 
+    @Nullable
+    @AttributeOverrides({
+            @AttributeOverride(name = "customerCode", column = @Column(name = "project_customer_code"))
+    })
+    private Project project;
+
     public Optional<String> getEventCode() {
         return Optional.ofNullable(eventCode);
+    }
+
+    public Optional<Project> getProject() {
+        return Optional.ofNullable(project);
     }
 
 }

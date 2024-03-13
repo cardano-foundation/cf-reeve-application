@@ -128,6 +128,11 @@ public class TransactionConverter {
                 return Either.left(accountCreditCodeE.getLeft());
             }
 
+            val projectCodeM = projectCode(organisationId, txLine);
+            if (projectCodeM.isEmpty()) {
+                return Either.left(projectCodeM.getLeft());
+            }
+
             val amountLcy = substractNullFriendly(result.amountDebit(), result.amountCredit());
             val amountFcy = substractNullFriendly(result.amountDebitForeignCurrency(), result.amountCreditForeignCurrency());
 
@@ -137,6 +142,10 @@ public class TransactionConverter {
                     .accountCodeDebit(normaliseString(result.number()))
                     .accountCodeCredit(accountCreditCodeE.get())
 
+                    .project(projectCodeM.get().map(pc -> Project.builder()
+                            .customerCode(pc)
+                            .build()
+                    ))
                     .amountLcy(amountLcy)
                     .amountFcy(amountFcy)
 
@@ -160,11 +169,6 @@ public class TransactionConverter {
             return Either.left(costCenterM.getLeft());
         }
 
-        val projectCodeM = projectCode(organisationId, txLine);
-        if (projectCodeM.isEmpty()) {
-            return Either.left(projectCodeM.getLeft());
-        }
-
         return Either.right(Optional.of(Transaction.builder()
                 .id(Transaction.id(organisationId, txLine.transactionNumber()))
                 .internalTransactionNumber(txLine.transactionNumber())
@@ -176,10 +180,6 @@ public class TransactionConverter {
                 )
                 .costCenter(costCenterM.get().map(cc -> CostCenter.builder()
                         .customerCode(cc)
-                        .build()
-                ))
-                .project(projectCodeM.get().map(pc -> Project.builder()
-                        .customerCode(pc)
                         .build()
                 ))
                 .fxRate(txLine.exchangeRate())
