@@ -6,7 +6,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsHex;
@@ -31,9 +30,6 @@ public class Transaction {
 
     @NotNull
     private Organisation organisation;
-
-    @Builder.Default
-    private Optional<Document> document = Optional.empty(); // initially we allow empty but later as part of business rules we check if document is present
 
     @NotNull
     @Builder.Default

@@ -7,13 +7,13 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Vat;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CoreCurrencyRepository;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ConversionsPipelineTask;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CURRENCY_NOT_FOUND;
@@ -33,87 +33,99 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
 
         val violations = new LinkedHashSet<Violation>();
 
-        val documentM = tx.getDocument();
+        val txItems = tx.getItems().stream().map(txItem -> {
+                    val documentM = txItem.getDocument();
 
-        if (documentM.isEmpty()) {
-            return violationTransaction;
-        }
+                    if (documentM.isEmpty()) {
+                        return txItem;
+                    }
 
-        val document = documentM.orElseThrow();
+                    val document = documentM.orElseThrow();
 
-        var enrichedVatM = Optional.<Vat>empty();
-        var enrichedCoreCurrencyM = Optional.<CoreCurrency>empty();
+                    var enrichedVatM = Optional.<Vat>empty();
+                    var enrichedCoreCurrencyM = Optional.<CoreCurrency>empty();
 
-        if (document.getVat().isPresent() && document.getVat().get().getRate().isEmpty()) {
-            val vat = document.getVat().orElseThrow();
+                    if (document.getVat().isPresent() && document.getVat().get().getRate().isEmpty()) {
+                        val vat = document.getVat().orElseThrow();
 
-            val vatM = organisationPublicApi.findOrganisationByVatAndCode(organisationId, vat.getCustomerCode());
+                        val vatM = organisationPublicApi.findOrganisationByVatAndCode(organisationId, vat.getCustomerCode());
 
-            if (vatM.isEmpty()) {
-                val v = Violation.create(
-                        ERROR,
-                        tx.getOrganisation().getId(),
-                        tx.getId(),
-                        Violation.Code.VAT_RATE_NOT_FOUND,
-                        ConversionsPipelineTask.class.getSimpleName(),
-                        Map.of(
-                                "vatInternalNumber", vat.getCustomerCode(),
-                                "transactionNumber", tx.getInternalTransactionNumber()
-                        )
-                );
+                        if (vatM.isEmpty()) {
+                            val v = Violation.create(
+                                    ERROR,
+                                    tx.getOrganisation().getId(),
+                                    tx.getId(),
+                                    Violation.Code.VAT_RATE_NOT_FOUND,
+                                    pipelineTask.getClass().getSimpleName(),
+                                    Map.of(
+                                            "customerCode", vat.getCustomerCode(),
+                                            "transactionNumber", tx.getInternalTransactionNumber()
+                                    )
+                            );
 
-                violations.add(v);
-            } else {
-                val organisationVat = vatM.orElseThrow();
+                            violations.add(v);
+                        } else {
+                            val organisationVat = vatM.orElseThrow();
 
-                enrichedVatM = Optional.of(Vat.builder()
-                        .customerCode(vat.getCustomerCode())
-                        .rate(Optional.of(organisationVat.getRate()))
-                        .build());
-            }
-        }
+                            enrichedVatM = Optional.of(Vat.builder()
+                                    .customerCode(vat.getCustomerCode())
+                                    .rate(Optional.of(organisationVat.getRate()))
+                                    .build());
+                        }
+                    }
 
-        val customerCurrencyCode = document.getCurrency().getCustomerCode();
+                    val customerCurrencyCode = document.getCurrency().getCustomerCode();
 
-        val organisationCurrencyM = organisationPublicApi.findCurrencyByCustomerCurrencyCode(organisationId, customerCurrencyCode);
+                    val organisationCurrencyM = organisationPublicApi.findCurrencyByCustomerCurrencyCode(organisationId, customerCurrencyCode);
 
-        if (organisationCurrencyM.isEmpty()) {
-            val v = Violation.create(
-                    ERROR,
-                    tx.getOrganisation().getId(),
-                    tx.getId(),
-                    CURRENCY_NOT_FOUND,
-                    ConversionsPipelineTask.class.getSimpleName(),
-                    Map.of(
-                            "customerCode", customerCurrencyCode,
-                            "transactionNumber", tx.getInternalTransactionNumber()
-                    )
-            );
+                    if (organisationCurrencyM.isEmpty()) {
+                        val v = Violation.create(
+                                ERROR,
+                                tx.getOrganisation().getId(),
+                                tx.getId(),
+                                CURRENCY_NOT_FOUND,
+                                pipelineTask.getClass().getSimpleName(),
+                                Map.of(
+                                        "customerCode", customerCurrencyCode,
+                                        "transactionNumber", tx.getInternalTransactionNumber()
+                                )
+                        );
 
-            violations.add(v);
-        } else {
-            val orgCurrency = organisationCurrencyM.orElseThrow();
-            val currencyId = orgCurrency.getCurrencyId();
-            val currencyM = coreCurrencyRepository.findByCurrencyId(currencyId);
+                        violations.add(v);
+                    } else {
+                        val orgCurrency = organisationCurrencyM.orElseThrow();
+                        val currencyId = orgCurrency.getCurrencyId();
+                        val currencyM = coreCurrencyRepository.findByCurrencyId(currencyId);
 
-            if (currencyM.isEmpty()) {
-                val v = Violation.create(
-                        ERROR,
-                        tx.getOrganisation().getId(),
-                        tx.getId(),
-                        CURRENCY_NOT_FOUND,
-                        ConversionsPipelineTask.class.getName(),
-                        Map.of(
-                                "currencyId", currencyId,
-                                "transactionNumber", tx.getInternalTransactionNumber()
-                        )
-                );
+                        if (currencyM.isEmpty()) {
+                            val v = Violation.create(
+                                    ERROR,
+                                    tx.getOrganisation().getId(),
+                                    tx.getId(),
+                                    CURRENCY_NOT_FOUND,
+                                    pipelineTask.getClass().getSimpleName(),
+                                    Map.of(
+                                            "currencyId", currencyId,
+                                            "transactionNumber", tx.getInternalTransactionNumber()
+                                    )
+                            );
 
-                violations.add(v);
-            } else {
-                enrichedCoreCurrencyM = Optional.of(currencyM.orElseThrow());
-            }
-        }
+                            violations.add(v);
+                        } else {
+                            enrichedCoreCurrencyM = Optional.of(currencyM.orElseThrow());
+                        }
+                    }
+
+                    return txItem.toBuilder()
+                            .document(Optional.of(document.toBuilder()
+                                    .currency(document.getCurrency().toBuilder()
+                                            .coreCurrency(enrichedCoreCurrencyM)
+                                            .build())
+                                    .vat(enrichedVatM)
+                                    .build()))
+                            .build();
+                })
+                .collect(Collectors.toSet());
 
         if (!violations.isEmpty()) {
             return TransactionWithViolations.create(tx
@@ -125,12 +137,7 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
         }
 
         return TransactionWithViolations.create(tx.toBuilder()
-                .document(Optional.of(document.toBuilder()
-                        .currency(document.getCurrency().toBuilder()
-                                .coreCurrency(enrichedCoreCurrencyM)
-                                .build())
-                        .vat(enrichedVatM)
-                        .build()))
+                .items(txItems)
                 .build());
     }
 

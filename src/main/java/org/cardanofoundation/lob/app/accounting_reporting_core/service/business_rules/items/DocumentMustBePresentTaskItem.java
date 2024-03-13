@@ -24,19 +24,21 @@ public class DocumentMustBePresentTaskItem implements PipelineTaskItem {
 
         val violations = new HashSet<Violation>();
 
-        if (tx.getDocument().isEmpty()) {
-            val v = Violation.create(
-                    ERROR,
-                    tx.getOrganisation().getId(),
-                    tx.getId(),
-                    DOCUMENT_MUST_BE_PRESENT,
-                    pipelineTask.getClass().getSimpleName(),
-                    Map.of(
-                            "transactionNumber", tx.getInternalTransactionNumber()
-                    )
-            );
+        for (val txItem : tx.getItems()) {
+            if (txItem.getDocument().isEmpty()) {
+                val v = Violation.create(
+                        ERROR,
+                        tx.getOrganisation().getId(),
+                        tx.getId(),
+                        DOCUMENT_MUST_BE_PRESENT,
+                        pipelineTask.getClass().getSimpleName(),
+                        Map.of(
+                                "transactionNumber", tx.getInternalTransactionNumber()
+                        )
+                );
 
-            violations.add(v);
+                violations.add(v);
+            }
         }
 
         if (!violations.isEmpty()) {

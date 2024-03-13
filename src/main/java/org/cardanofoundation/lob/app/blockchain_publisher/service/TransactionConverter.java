@@ -32,7 +32,6 @@ public class TransactionConverter {
                 .l1SubmissionData(L1SubmissionData.builder()
                         .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
                         .build())
-                .document(convertDocument(tx.getDocument().orElseThrow()))
                 .build();
 
         transactionEntity.setItems(convertTxItems(tx, transactionEntity));
@@ -80,6 +79,7 @@ public class TransactionConverter {
                 .eventCode(txItem.getAccountEventCode().orElse(null))
                 .amountFcy(txItem.getAmountFcy())
                 .project(txItem.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null))
+                .document(convertDocument(txItem.getDocument().orElseThrow()))
                 .costCenter(txItem.getCostCenter().map(cc -> {
                     val ccBuilder = CostCenter.builder();
 

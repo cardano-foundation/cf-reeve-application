@@ -77,6 +77,23 @@ public class TransactionItemEntity extends AuditEntity {
     @Nullable
     private CostCenter costCenter;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "num", column = @Column(name = "document_num")),
+
+            @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
+            @AttributeOverride(name = "currency.customerCode", column = @Column(name = "document_currency_customer_code")),
+
+            @AttributeOverride(name = "vat.customerCode", column = @Column(name = "document_vat_customer_code")),
+            @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
+
+            @AttributeOverride(name = "counterparty.customerCode", column = @Column(name = "document_counterparty_customer_code")),
+            @AttributeOverride(name = "counterparty.type", column = @Column(name = "document_counterparty_type")),
+            @AttributeOverride(name = "counterparty.name", column = @Column(name = "document_counterparty_name")),
+    })
+    @Nullable
+    private Document document;
+
     public Optional<String> getAccountCodeDebit() {
         return Optional.ofNullable(accountCodeDebit);
     }
@@ -107,6 +124,10 @@ public class TransactionItemEntity extends AuditEntity {
 
     public Optional<CostCenter> getCostCenter() {
         return Optional.ofNullable(costCenter);
+    }
+
+    public Optional<Document> getDocument() {
+        return Optional.ofNullable(document);
     }
 
 }

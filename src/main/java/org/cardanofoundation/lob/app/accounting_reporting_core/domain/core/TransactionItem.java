@@ -47,6 +47,9 @@ public class TransactionItem {
     @Builder.Default
     private Optional<CostCenter> costCenter = Optional.empty();
 
+    @Builder.Default
+    private Optional<Document> document = Optional.empty(); // initially we allow empty but later as part of business rules we check if document is present
+
     public static String id(String transactionId,
                             String lineNo) {
         return digestAsHex(STR."\{transactionId}::\{lineNo}");

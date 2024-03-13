@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
 
@@ -30,10 +32,9 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
         Map<TransactionItemKey, List<TransactionItem>> itemsPerKeyMap = tx.getItems()
                 .stream()
                 .collect(groupingBy(txItem -> TransactionItemKey.builder()
-//                        .accountCodeCredit(txItem.getAccountCodeCredit())
-//                        .accountCodeDebit(txItem.getAccountCodeDebit())
-//                        .accountCodeEventRefCredit(txItem.getAccountCodeEventRefCredit())
-//                        .accountCodeEventRefDebit(txItem.getAccountCodeEventRefDebit())
+                        .costCenterCode(txItem.getCostCenter().flatMap(CostCenter::getExternalCustomerCode))
+                        .documentNumber(txItem.getDocument().map(Document::getNumber))
+                        
                         .accountEventCode(txItem.getAccountEventCode())
                         .build())
                 );
@@ -60,20 +61,26 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
     @Getter
     public static class TransactionItemKey {
 
-        @Builder.Default
-        private Optional<String> accountCodeDebit = Optional.empty();
+//        @Builder.Default
+//        private Optional<String> accountCodeDebit = Optional.empty();
+//
+//        @Builder.Default
+//        private Optional<String> accountCodeEventRefDebit = Optional.empty();
+//
+//        @Builder.Default
+//        private Optional<String> accountNameDebit = Optional.empty();
+//
+//        @Builder.Default
+//        private Optional<String> accountCodeCredit = Optional.empty();
+//
+//        @Builder.Default
+//        private Optional<String> accountCodeEventRefCredit = Optional.empty();
 
         @Builder.Default
-        private Optional<String> accountCodeEventRefDebit = Optional.empty();
+        private Optional<String> costCenterCode = Optional.empty();
 
         @Builder.Default
-        private Optional<String> accountNameDebit = Optional.empty();
-
-        @Builder.Default
-        private Optional<String> accountCodeCredit = Optional.empty();
-
-        @Builder.Default
-        private Optional<String> accountCodeEventRefCredit = Optional.empty();
+        private Optional<String> documentNumber = Optional.empty();
 
         @Builder.Default
         private Optional<String> accountEventCode = Optional.empty();

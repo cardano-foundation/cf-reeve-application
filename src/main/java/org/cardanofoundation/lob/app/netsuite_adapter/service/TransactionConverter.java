@@ -141,6 +141,11 @@ public class TransactionConverter {
                 return Either.left(costCenterM.getLeft());
             }
 
+            val documentE = convertDocument(organisationId, txLines, txLine);
+            if (documentE.isLeft()) {
+                return Either.left(documentE.getLeft());
+            }
+
             val txItem = TransactionItem.builder()
                     .id(TransactionItem.id(txId, result.lineID().toString()))
                     .accountNameDebit(normaliseString(result.name()))
@@ -156,17 +161,14 @@ public class TransactionConverter {
                             .customerCode(cc)
                             .build()
                     ))
+                    .document(documentE.get())
+
                     .amountLcy(amountLcy)
                     .amountFcy(amountFcy)
 
                     .build();
 
             txItems.add(txItem);
-        }
-
-        val documentE = convertDocument(organisationId, txLines, txLine);
-        if (documentE.isLeft()) {
-            return Either.left(documentE.getLeft());
         }
 
         val transTypeE = transactionType(organisationId, txLine);
@@ -185,7 +187,6 @@ public class TransactionConverter {
                 )
                 .fxRate(txLine.exchangeRate())
                 .validationStatus(NOT_VALIDATED)
-                .document(documentE.get())
                 .items(txItems)
                 .build())
         );

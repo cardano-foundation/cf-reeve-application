@@ -28,7 +28,6 @@ public class TransactionConverter {
                 .transactionType(transaction.getTransactionType())
                 .entryDate(transaction.getEntryDate())
                 .organisation(convertOrganisation(transaction))
-                .document(convert(transaction.getDocument()))
                 .fxRate(transaction.getFxRate())
                 .validationStatus(transaction.getValidationStatus())
                 .ledgerDispatchStatus(transaction.getLedgerDispatchStatus())
@@ -41,6 +40,7 @@ public class TransactionConverter {
                     return new TransactionItemEntity()
                             .id(txItemEntity.getId())
                             .transaction(transactionEntity)
+                            .document(convert(txItemEntity.getDocument()))
                             .amountLcy(txItemEntity.getAmountLcy())
                             .costCenter(convertCostCenter(txItemEntity.getCostCenter()))
                             .amountFcy(txItemEntity.getAmountFcy())
@@ -142,6 +142,8 @@ public class TransactionConverter {
                                 .name(costCenter.getName())
                                 .build()))
 
+                        .document(convert(txItemEntity.document()))
+
                         .amountFcy(txItemEntity.amountFcy())
                         .amountLcy(txItemEntity.amountLcy())
                         .build())
@@ -159,7 +161,6 @@ public class TransactionConverter {
                                     .build();
                         }))
                         .build())
-                .document(convert(transactionEntity.document()))
                 .entryDate(transactionEntity.entryDate())
                 .validationStatus(transactionEntity.validationStatus())
                 .transactionType(transactionEntity.transactionType())
