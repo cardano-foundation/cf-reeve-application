@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Optional;
@@ -10,6 +11,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Getter
 @Builder
+@EqualsAndHashCode
 public class CoreCurrency {
 
     private IsoStandard currencyISOStandard;

@@ -13,6 +13,7 @@ import java.util.Optional;
 @ToString
 @Builder(toBuilder = true)
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Document {
 
     @Size(min = 1, max =  255) @NotBlank private String number;
