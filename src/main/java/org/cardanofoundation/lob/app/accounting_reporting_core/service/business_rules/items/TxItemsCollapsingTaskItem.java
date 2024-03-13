@@ -5,10 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
 import java.util.List;
 import java.util.Map;
@@ -32,8 +29,9 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
         Map<TransactionItemKey, List<TransactionItem>> itemsPerKeyMap = tx.getItems()
                 .stream()
                 .collect(groupingBy(txItem -> TransactionItemKey.builder()
-                        .costCenterCode(txItem.getCostCenter().flatMap(CostCenter::getExternalCustomerCode))
-                        .documentNumber(txItem.getDocument().map(Document::getNumber))
+                        .costCenter(txItem.getCostCenter())
+                        .document(txItem.getDocument())
+                        .project(txItem.getProject())
                         .accountEventCode(txItem.getAccountEventCode())
                         .build())
                 );
@@ -61,10 +59,13 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
     public static class TransactionItemKey {
 
         @Builder.Default
-        private Optional<String> costCenterCode = Optional.empty();
+        private Optional<CostCenter> costCenter = Optional.empty();
 
         @Builder.Default
-        private Optional<String> documentNumber = Optional.empty();
+        private Optional<Document> document = Optional.empty();
+
+        @Builder.Default
+        private Optional<Project> project = Optional.empty();
 
         @Builder.Default
         private Optional<String> accountEventCode = Optional.empty();

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Optional;
@@ -13,6 +14,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @AllArgsConstructor
 @Getter
 @Builder(toBuilder = true)
+@EqualsAndHashCode
 public class Counterparty {
 
     private @Size(min = 1, max =  255) @NotBlank String customerCode;
