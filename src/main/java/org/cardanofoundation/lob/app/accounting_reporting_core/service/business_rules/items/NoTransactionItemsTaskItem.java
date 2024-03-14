@@ -27,6 +27,7 @@ public class NoTransactionItemsTaskItem implements PipelineTaskItem {
         if (tx.getItems().isEmpty()) {
             val v = Violation.create(
                     ERROR,
+                    Violation.Source.ERP,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     TRANSACTION_ITEMS_EMPTY,

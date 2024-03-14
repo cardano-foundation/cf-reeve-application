@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.BatchChunk;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
@@ -23,19 +24,21 @@ public class ERPIncomingDataProcessor {
     private final BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
 
     @Transactional
-    public void processIncomingERPEvent(OrganisationTransactions organisationTransactions) {
+    public void processIncomingERPEvent(BatchChunk batchChunk) {
+        val organisationId = batchChunk.getOrganisationId();
+
         val finalTransformationResult = businessRulesPipelineProcessor.run(
-                organisationTransactions,
-                OrganisationTransactions.empty(organisationTransactions.organisationId()),
+                new OrganisationTransactions(organisationId, batchChunk.getTransactions()),
+                OrganisationTransactions.empty(organisationId),
                 new HashSet<>()
         );
 
-        syncToDb(finalTransformationResult);
+        syncToDb(finalTransformationResult, batchChunk);
         notificationsSenderService.sendNotifications(finalTransformationResult.violations());
     }
 
     @Transactional
-    private void syncToDb(TransformationResult transformationResult) {
+    private void syncToDb(TransformationResult transformationResult, BatchChunk batchChunk) {
         val organisationTransactions = transformationResult.organisationTransactions();
         val transactions = organisationTransactions.transactions();
 

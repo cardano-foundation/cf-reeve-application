@@ -32,6 +32,7 @@ public class AmountFcyBalanceZerosOutCheckTaskItem implements PipelineTaskItem {
         if (fcySum.signum() != 0) {
             val v = Violation.create(
                     ERROR,
+                    Violation.Source.ERP,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     FCY_BALANCE_MUST_BE_ZERO,

@@ -2,14 +2,12 @@ package org.cardanofoundation.lob.app.netsuite_adapter.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.BatchChunk;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteClient;
@@ -19,12 +17,15 @@ import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteInge
 import org.cardanofoundation.lob.app.netsuite_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MD5Hashing;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MoreCompress;
+import org.cardanofoundation.lob.app.support.utils_support.MorePartition;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -40,13 +41,15 @@ public class NetSuiteService {
 
     private final NetSuiteClient netSuiteClient;
 
-    private final org.cardanofoundation.lob.app.netsuite_adapter.service.NotificationsSenderService notificationsSenderService;
+    private final NotificationsSenderService notificationsSenderService;
 
     private final ObjectMapper objectMapper;
 
     private final TransactionConverter transactionConverter;
 
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    private final Clock clock;
 
     @Value("${lob.events.netsuite.to.core.send.batch.size:25}")
     private int sendBatchSize = 25;
@@ -89,7 +92,7 @@ public class NetSuiteService {
 
         log.info("CoreTransactionLines count: {}", coreTransactionsToOrganisationMap.size());
 
-        val lotId = netsuiteIngestion.getId();
+        val netsuiteIngestionId = netsuiteIngestion.getId();
 
         coreTransactionsToOrganisationMap.forEach((organisationId, transactions) -> {
             log.info("before business process rules tx count: {}", transactions.size());
@@ -105,14 +108,25 @@ public class NetSuiteService {
 
             log.info("Publishing ERPIngestionEvent event, organisationId: {}, tx count: {}", organisationId, transactions.size());
 
-            Iterables.partition(transactionsWithExtractionParametersApplied, sendBatchSize).forEach(txPartition -> {
-                applicationEventPublisher.publishEvent(new ERPIngestionEvent(
-                        lotId,
-                        initiator,
-                        filteringParameters,
-                        new OrganisationTransactions(organisationId, Sets.newHashSet(txPartition))));
-            });
+            MorePartition.partition(transactionsWithExtractionParametersApplied, sendBatchSize).forEach(txPartition -> {
+                val b = BatchChunk.builder()
+                        .organisationId(organisationId)
+                        .batchId(netsuiteIngestionId.toString())
+                        .filteringParameters(filteringParameters)
+                        .issuedBy(initiator)
+                        .transactions(txPartition.asSet());
 
+                if (txPartition.isFirst()) {
+                    b.startTime(LocalDateTime.now(clock));
+                    b.status(BatchChunk.Status.STARTED);
+                }
+                if (txPartition.isLast()) {
+                    b.finishTime(Optional.of(LocalDateTime.now(clock)));
+                    b.status(BatchChunk.Status.FINISHED);
+                }
+
+                applicationEventPublisher.publishEvent(new ERPIngestionEvent(b.build()));
+            });
         });
 
         log.info("NetSuite ingestion completed.");

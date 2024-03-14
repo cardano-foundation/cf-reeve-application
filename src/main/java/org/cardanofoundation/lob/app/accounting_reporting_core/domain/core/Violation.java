@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public record Violation(Type type,
+                        Source source,
                         String organisationId,
                         String transactionId,
                         Optional<String> txItemId,
@@ -12,27 +13,35 @@ public record Violation(Type type,
                         Map<String, Object> bag) {
 
     public static Violation create(Type type,
+                                   Source source,
                                    String organisationId,
                                    String transactionId,
                                    Violation.Code violationCode,
                                    String processorModule,
                                    Map<String, Object> bag) {
-        return new Violation(type, organisationId, transactionId, Optional.empty(), violationCode, processorModule, bag);
+        return new Violation(type, source, organisationId, transactionId, Optional.empty(), violationCode, processorModule, bag);
     }
 
     public static Violation create(Type type,
+                                   Source source,
                                    String organisationId,
                                    String transactionId,
                                    String txItemId,
                                    Violation.Code violationCode,
                                    String processorModule,
                                    Map<String, Object> bag) {
-        return new Violation(type, organisationId, transactionId, Optional.of(txItemId), violationCode, processorModule, bag);
+        return new Violation(type, source, organisationId, transactionId, Optional.of(txItemId), violationCode, processorModule, bag);
     }
 
     public enum Type {
         WARN,
         ERROR
+    }
+
+    public enum Source {
+        ERP,
+        LOB,
+        INTERNAL
     }
 
     public enum Code {

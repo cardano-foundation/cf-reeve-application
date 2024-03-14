@@ -42,6 +42,7 @@ public class PostProcessorPipelineTask implements PipelineTask {
         for (val dispatchedTransaction : dispatchedTransactions) {
             val v = Violation.create(
                     WARN,
+                    Violation.Source.ERP,
                     organisationId,
                     dispatchedTransaction.getId(),
                     TX_ALREADY_DISPATCHED,

@@ -43,6 +43,7 @@ public class CostCenterConversionTaskItem implements PipelineTaskItem {
                     if (costCenterMappingM.isEmpty()) {
                         val v = Violation.create(
                                 ERROR,
+                                Violation.Source.LOB,
                                 organisationId,
                                 tx.getId(),
                                 txItem.getId(),

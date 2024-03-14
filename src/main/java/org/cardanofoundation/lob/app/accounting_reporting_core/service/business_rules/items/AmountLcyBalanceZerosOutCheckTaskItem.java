@@ -31,6 +31,7 @@ public class AmountLcyBalanceZerosOutCheckTaskItem implements PipelineTaskItem {
         if (lcySum.signum() != 0) {
             val v = Violation.create(
                     ERROR,
+                    Violation.Source.ERP,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     LCY_BALANCE_MUST_BE_ZERO,

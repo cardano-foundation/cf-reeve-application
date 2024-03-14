@@ -32,6 +32,7 @@ public class AccountCodeCreditCheckTaskItem implements PipelineTaskItem {
             if (txItem.getAccountCodeCredit().isEmpty())  {
                 val v = Violation.create(
                         ERROR,
+                        Violation.Source.LOB,
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),
