@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,21 +24,23 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
             return transactionWithViolations;
         }
 
-        Map<TransactionItemKey, List<TransactionItem>> itemsPerKeyMap = tx.getItems()
+        val itemsPerKeyMap = tx.getItems()
                 .stream()
                 .collect(groupingBy(txItem -> TransactionItemKey.builder()
-                        .costCenter(txItem.getCostCenter())
-                        .document(txItem.getDocument())
-                        .project(txItem.getProject())
+                        .costCenterCustomerCode(txItem.getCostCenter().flatMap(CostCenter::getExternalCustomerCode))
+                        .documentVatCustomerCode(txItem.getDocument().flatMap(d -> d.getVat().map(Vat::getCustomerCode)))
+                        .documentNum(txItem.getDocument().map(Document::getNumber))
+                        .documentCurrencyId(txItem.getDocument().flatMap(d -> d.getCurrency().getCoreCurrency().map(CoreCurrency::toExternalId)))
+                        .documentCounterpartyCustomerCode(txItem.getDocument().flatMap(d -> d.getCounterparty().map(Counterparty::getCustomerCode)))
                         .accountEventCode(txItem.getAccountEventCode())
                         .build())
                 );
 
-        val reducedItems = itemsPerKeyMap.values().stream()
+        val txItems = itemsPerKeyMap.values().stream()
                 .map(items -> items.stream()
-                        .reduce((a, b) -> a.toBuilder()
-                                .amountFcy(a.getAmountFcy().add(b.getAmountFcy()))
-                                .amountLcy(a.getAmountLcy().add(b.getAmountLcy()))
+                        .reduce((txItem1, txItem2) -> txItem1.toBuilder()
+                                .amountFcy(txItem1.getAmountFcy().add(txItem2.getAmountFcy()))
+                                .amountLcy(txItem1.getAmountLcy().add(txItem2.getAmountLcy()))
                                 .build())
                 )
                 .filter(Optional::isPresent)
@@ -49,7 +49,7 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
 
         return TransactionWithViolations.create(tx
                 .toBuilder()
-                .items(reducedItems)
+                .items(txItems)
                 .build());
     }
 
@@ -59,13 +59,19 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
     public static class TransactionItemKey {
 
         @Builder.Default
-        private Optional<CostCenter> costCenter = Optional.empty();
+        private Optional<String> costCenterCustomerCode = Optional.empty();
 
         @Builder.Default
-        private Optional<Document> document = Optional.empty();
+        private Optional<String> documentNum = Optional.empty();
 
         @Builder.Default
-        private Optional<Project> project = Optional.empty();
+        private Optional<String> documentVatCustomerCode = Optional.empty();
+
+        @Builder.Default
+        private Optional<String> documentCounterpartyCustomerCode = Optional.empty();
+
+        @Builder.Default
+        private Optional<String> documentCurrencyId = Optional.empty();
 
         @Builder.Default
         private Optional<String> accountEventCode = Optional.empty();

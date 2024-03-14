@@ -1,10 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,10 +30,6 @@ class TxItemsCollapsingTaskItemTest {
                 .id(txId)
                 .items(Set.of(TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "0"))
-                                .accountCodeCredit(Optional.of("1"))
-                                .accountCodeDebit(Optional.of("2"))
-                                .accountCodeEventRefCredit(Optional.of("r1"))
-                                .accountCodeEventRefDebit(Optional.of("r2"))
                                 .accountEventCode(Optional.of("e12"))
                                 .amountLcy(BigDecimal.ONE)
                                 .amountFcy(BigDecimal.TEN)
@@ -44,10 +37,6 @@ class TxItemsCollapsingTaskItemTest {
 
                         TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "1"))
-                                .accountCodeCredit(Optional.of("12"))
-                                .accountCodeDebit(Optional.of("22"))
-                                .accountCodeEventRefCredit(Optional.of("r12"))
-                                .accountCodeEventRefDebit(Optional.of("r22"))
                                 .accountEventCode(Optional.of("e1212"))
                                 .amountLcy(BigDecimal.ONE)
                                 .amountFcy(BigDecimal.TEN)
@@ -58,10 +47,6 @@ class TxItemsCollapsingTaskItemTest {
         val newTx = txItemsCollapsingTaskItem.run(txs);
 
         assertThat(newTx.transaction().getItems()).hasSize(2);
-        assertThat(newTx.transaction().getItems()).extracting("accountCodeCredit").containsExactlyInAnyOrder(Optional.of("1"), Optional.of("12"));
-        assertThat(newTx.transaction().getItems()).extracting("accountCodeDebit").containsExactlyInAnyOrder(Optional.of("2"), Optional.of("22"));
-        assertThat(newTx.transaction().getItems()).extracting("accountCodeEventRefCredit").containsExactlyInAnyOrder(Optional.of("r1"), Optional.of("r12"));
-        assertThat(newTx.transaction().getItems()).extracting("accountCodeEventRefDebit").containsExactlyInAnyOrder(Optional.of("r2"), Optional.of("r22"));
         assertThat(newTx.transaction().getItems()).extracting("accountEventCode").containsExactlyInAnyOrder(Optional.of("e12"), Optional.of("e1212"));
     }
 
@@ -73,20 +58,12 @@ class TxItemsCollapsingTaskItemTest {
                 .id(txId)
                 .items(Set.of(TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "0"))
-                                .accountCodeCredit(Optional.of("1"))
-                                .accountCodeDebit(Optional.of("2"))
-                                .accountCodeEventRefCredit(Optional.of("r1"))
-                                .accountCodeEventRefDebit(Optional.of("r2"))
                                 .accountEventCode(Optional.of("e12"))
                                 .amountLcy(BigDecimal.ONE)
                                 .amountFcy(BigDecimal.TEN)
                                 .build(),
                         TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "1"))
-                                .accountCodeCredit(Optional.of("1"))
-                                .accountCodeDebit(Optional.of("2"))
-                                .accountCodeEventRefCredit(Optional.of("r1"))
-                                .accountCodeEventRefDebit(Optional.of("r2"))
                                 .accountEventCode(Optional.of("e12"))
                                 .amountLcy(BigDecimal.ONE)
                                 .amountFcy(BigDecimal.TEN)
@@ -99,10 +76,6 @@ class TxItemsCollapsingTaskItemTest {
         assertThat(newTx.transaction().getItems()).hasSize(1);
         assertThat(newTx.transaction().getItems()).extracting("amountLcy").containsExactly(BigDecimal.valueOf(2));
         assertThat(newTx.transaction().getItems()).extracting("amountFcy").containsExactly(BigDecimal.valueOf(20));
-        assertThat(newTx.transaction().getItems()).extracting("accountCodeCredit").containsExactly(Optional.of("1"));
-        assertThat(newTx.transaction().getItems()).extracting("accountCodeDebit").containsExactly(Optional.of("2"));
-        assertThat(newTx.transaction().getItems()).extracting("accountCodeEventRefCredit").containsExactly(Optional.of("r1"));
-        assertThat(newTx.transaction().getItems()).extracting("accountCodeEventRefDebit").containsExactly(Optional.of("r2"));
         assertThat(newTx.transaction().getItems()).extracting("accountEventCode").containsExactly(Optional.of("e12"));
     }
 
@@ -155,30 +128,52 @@ class TxItemsCollapsingTaskItemTest {
                         .id(txId3)
                         .items(Set.of(TransactionItem.builder()
                                         .id(TransactionItem.id(txId3, "0"))
-                                        .accountCodeCredit(Optional.of("5"))
-                                        .accountCodeDebit(Optional.of("6"))
-                                        .accountCodeEventRefCredit(Optional.of("r5"))
-                                        .accountCodeEventRefDebit(Optional.of("r6"))
+                                        .costCenter(Optional.of(CostCenter.builder().customerCode("a")
+                                                .externalCustomerCode(Optional.of("c2"))
+                                                .name(Optional.of("n1"))
+                                                .build()))
+                                        .accountEventCode(Optional.of("e56"))
+                                                .document(Optional.of(Document.builder()
+                                                        .number("1")
+                                                        .vat(Optional.of(Vat.builder().customerCode("c1").build()))
+                                                        .counterparty(Optional.of(Counterparty.builder().customerCode("c").build()))
+                                                        .currency(Currency.builder()
+                                                                .customerCode("CHF")
+                                                                .coreCurrency(Optional.of(CoreCurrency.builder()
+                                                                        .currencyISOStandard(CoreCurrency.IsoStandard.ISO_4217)
+                                                                        .currencyISOCode("CHF")
+                                                                        .name("Swiss Frank")
+                                                                        .build()))
+                                                                .build())
+                                                        .build()))
+                                        .amountLcy(BigDecimal.ONE)
+                                        .amountFcy(BigDecimal.TEN)
+                                        .build(),
+                                TransactionItem.builder()
+                                        .id(TransactionItem.id(txId3, "1"))
+                                        .costCenter(Optional.of(CostCenter.builder().customerCode("b")
+                                                .externalCustomerCode(Optional.of("c2"))
+                                                .name(Optional.of("n1"))
+                                                .build()))
+                                        .document(Optional.of(Document.builder()
+                                                .number("1")
+                                                .vat(Optional.of(Vat.builder().customerCode("c1").build()))
+                                                .counterparty(Optional.of(Counterparty.builder().customerCode("c").build()))
+                                                .currency(Currency.builder()
+                                                        .customerCode("CHF")
+                                                        .coreCurrency(Optional.of(CoreCurrency.builder()
+                                                                .currencyISOStandard(CoreCurrency.IsoStandard.ISO_4217)
+                                                                .currencyISOCode("CHF")
+                                                                .name("Swiss Frank")
+                                                                .build()))
+                                                        .build())
+                                                .build()))
                                         .accountEventCode(Optional.of("e56"))
                                         .amountLcy(BigDecimal.ONE)
                                         .amountFcy(BigDecimal.TEN)
                                         .build(),
                                 TransactionItem.builder()
                                         .id(TransactionItem.id(txId3, "1"))
-                                        .accountCodeCredit(Optional.of("5"))
-                                        .accountCodeDebit(Optional.of("6"))
-                                        .accountCodeEventRefCredit(Optional.of("r5"))
-                                        .accountCodeEventRefDebit(Optional.of("r6"))
-                                        .accountEventCode(Optional.of("e56"))
-                                        .amountLcy(BigDecimal.ONE)
-                                        .amountFcy(BigDecimal.TEN)
-                                        .build(),
-                                TransactionItem.builder()
-                                        .id(TransactionItem.id(txId3, "1"))
-                                        .accountCodeCredit(Optional.of("10"))
-                                        .accountCodeDebit(Optional.of("11"))
-                                        .accountCodeEventRefCredit(Optional.of("r51"))
-                                        .accountCodeEventRefDebit(Optional.of("r61"))
                                         .accountEventCode(Optional.of("e56111"))
                                         .amountLcy(BigDecimal.TWO)
                                         .amountFcy(BigDecimal.TEN)
@@ -209,20 +204,12 @@ class TxItemsCollapsingTaskItemTest {
                 .validationStatus(ValidationStatus.FAILED)
                 .items(Set.of(TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "0"))
-                                .accountCodeCredit(Optional.of("1"))
-                                .accountCodeDebit(Optional.of("2"))
-                                .accountCodeEventRefCredit(Optional.of("r1"))
-                                .accountCodeEventRefDebit(Optional.of("r2"))
                                 .accountEventCode(Optional.of("e12"))
                                 .amountLcy(BigDecimal.ONE)
                                 .amountFcy(BigDecimal.TEN)
                                 .build(),
                         TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "1"))
-                                .accountCodeCredit(Optional.of("1"))
-                                .accountCodeDebit(Optional.of("2"))
-                                .accountCodeEventRefCredit(Optional.of("r1"))
-                                .accountCodeEventRefDebit(Optional.of("r2"))
                                 .accountEventCode(Optional.of("e12"))
                                 .amountLcy(BigDecimal.ONE)
                                 .amountFcy(BigDecimal.TEN)
