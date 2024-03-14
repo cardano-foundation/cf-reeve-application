@@ -45,6 +45,7 @@ public class ProjectConversionTaskItem implements PipelineTaskItem {
                     if (projectMappingM.isEmpty()) {
                         val v = Violation.create(
                                 ERROR,
+                                Violation.Source.LOB,
                                 tx.getOrganisation().getId(),
                                 tx.getId(),
                                 txItem.getId(),

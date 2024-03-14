@@ -54,6 +54,7 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
                         if (vatM.isEmpty()) {
                             val v = Violation.create(
                                     ERROR,
+                                    Violation.Source.LOB,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
                                     txItem.getId(),
@@ -83,6 +84,7 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
                     if (organisationCurrencyM.isEmpty()) {
                         val v = Violation.create(
                                 ERROR,
+                                Violation.Source.LOB,
                                 tx.getOrganisation().getId(),
                                 tx.getId(),
                                 txItem.getId(),
@@ -103,6 +105,7 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
                         if (currencyM.isEmpty()) {
                             val v = Violation.create(
                                     ERROR,
+                                    Violation.Source.LOB,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
                                     txItem.getId(),

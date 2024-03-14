@@ -28,6 +28,7 @@ public class DocumentMustBePresentTaskItem implements PipelineTaskItem {
             if (txItem.getDocument().isEmpty()) {
                 val v = Violation.create(
                         ERROR,
+                        Violation.Source.LOB,
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),

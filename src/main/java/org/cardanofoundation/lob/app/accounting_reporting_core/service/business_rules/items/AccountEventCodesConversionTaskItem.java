@@ -40,6 +40,7 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
                         if (accountChartMappingM.isEmpty()) {
                             val v = Violation.create(
                                     ERROR,
+                                    Violation.Source.LOB,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
                                     CHART_OF_ACCOUNT_NOT_FOUND,
@@ -64,6 +65,7 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
                         if (eventRefCodeM.isEmpty()) {
                             val v = Violation.create(
                                     ERROR,
+                                    Violation.Source.LOB,
                                     tx.getOrganisation().getId(),
                                     tx.getId(),
                                     CHART_OF_ACCOUNT_NOT_FOUND,

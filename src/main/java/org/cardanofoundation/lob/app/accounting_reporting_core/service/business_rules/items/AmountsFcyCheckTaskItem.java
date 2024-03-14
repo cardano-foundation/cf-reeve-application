@@ -31,6 +31,7 @@ public class AmountsFcyCheckTaskItem implements PipelineTaskItem {
                 if (txItem.getAmountLcy().signum() != 0 && txItem.getAmountFcy().signum() == 0) {
                     val v = Violation.create(
                             ERROR,
+                            Violation.Source.ERP,
                             tx.getOrganisation().getId(),
                             tx.getId(),
                             txItem.getId(),

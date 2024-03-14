@@ -34,6 +34,7 @@ public class SanityCheckFieldsTaskItem implements PipelineTaskItem {
         if (!errors.isEmpty() && notFailedYet) {
             val v = Violation.create(
                     ERROR,
+                    Violation.Source.INTERNAL,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     TX_SANITY_CHECK_FAIL,

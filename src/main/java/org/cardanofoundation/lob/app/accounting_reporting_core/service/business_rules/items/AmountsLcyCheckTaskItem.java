@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.AMOUNT_LCY_IS_ZERO;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class AmountsLcyCheckTaskItem implements PipelineTaskItem {
             if (txItem.getAmountLcy().signum() == 0 && txItem.getAmountFcy().signum() != 0) {
                 val v = Violation.create(
                         ERROR,
+                        ERP,
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),

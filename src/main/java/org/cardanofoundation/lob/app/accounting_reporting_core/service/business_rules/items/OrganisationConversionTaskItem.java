@@ -34,6 +34,7 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
         if (organisationM.isEmpty()) {
             val v = Violation.create(
                     ERROR,
+                    Violation.Source.LOB,
                     organisationId,
                     tx.getId(),
                     ORGANISATION_NOT_FOUND,
@@ -56,6 +57,7 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
         if (orgVanillaCurrencyM.isEmpty()) {
             val v = Violation.create(
                     ERROR,
+                    Violation.Source.INTERNAL,
                     organisationId,
                     tx.getId(),
                     CORE_CURRENCY_NOT_FOUND,

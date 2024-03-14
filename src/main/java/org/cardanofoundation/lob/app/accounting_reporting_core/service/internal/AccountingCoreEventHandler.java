@@ -11,7 +11,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsD
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -27,7 +26,9 @@ public class AccountingCoreEventHandler {
     public void handleERPIngestionEvent(ERPIngestionEvent event) {
         //log.info("Received handleERPIngestionEvent event...., event:{}", event);
 
-        erpIncomingDataProcessor.processIncomingERPEvent(event.getOrganisationTransactions());
+        val batchChunk = event.getBatchChunk();
+
+        erpIncomingDataProcessor.processIncomingERPEvent(batchChunk);
 
         //log.info("Finished processing...");
     }

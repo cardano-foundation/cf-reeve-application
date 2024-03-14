@@ -33,6 +33,7 @@ public class AccountCodeDebitCheckTaskItem implements PipelineTaskItem {
             if (txItem.getAccountCodeDebit().isEmpty())  {
                 val v = Violation.create(
                         ERROR,
+                        Violation.Source.LOB,
                         tx.getOrganisation().getId(),
                         tx.getId(),
                         txItem.getId(),
