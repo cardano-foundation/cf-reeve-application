@@ -56,7 +56,8 @@ class TxItemsCollapsingTaskItemTest {
 
         val txs = TransactionWithViolations.create(Transaction.builder()
                 .id(txId)
-                .items(Set.of(TransactionItem.builder()
+                .items(Set.of(
+                        TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "0"))
                                 .accountEventCode(Optional.of("e12"))
                                 .amountLcy(BigDecimal.ONE)
@@ -126,26 +127,27 @@ class TxItemsCollapsingTaskItemTest {
                         .build(), Set.of()),
                 TransactionWithViolations.create(Transaction.builder()
                         .id(txId3)
-                        .items(Set.of(TransactionItem.builder()
+                        .items(Set.of(
+                                TransactionItem.builder()
                                         .id(TransactionItem.id(txId3, "0"))
                                         .costCenter(Optional.of(CostCenter.builder().customerCode("a")
                                                 .externalCustomerCode(Optional.of("c2"))
                                                 .name(Optional.of("n1"))
                                                 .build()))
                                         .accountEventCode(Optional.of("e56"))
-                                                .document(Optional.of(Document.builder()
-                                                        .number("1")
-                                                        .vat(Optional.of(Vat.builder().customerCode("c1").build()))
-                                                        .counterparty(Optional.of(Counterparty.builder().customerCode("c").build()))
-                                                        .currency(Currency.builder()
-                                                                .customerCode("CHF")
-                                                                .coreCurrency(Optional.of(CoreCurrency.builder()
-                                                                        .currencyISOStandard(CoreCurrency.IsoStandard.ISO_4217)
-                                                                        .currencyISOCode("CHF")
-                                                                        .name("Swiss Frank")
-                                                                        .build()))
-                                                                .build())
-                                                        .build()))
+                                        .document(Optional.of(Document.builder()
+                                                .number("1")
+                                                .vat(Optional.of(Vat.builder().customerCode("c1").build()))
+                                                .counterparty(Optional.of(Counterparty.builder().customerCode("c").build()))
+                                                .currency(Currency.builder()
+                                                        .customerCode("CHF")
+                                                        .coreCurrency(Optional.of(CoreCurrency.builder()
+                                                                .currencyISOStandard(CoreCurrency.IsoStandard.ISO_4217)
+                                                                .currencyISOCode("CHF")
+                                                                .name("Swiss Frank")
+                                                                .build()))
+                                                        .build())
+                                                .build()))
                                         .amountLcy(BigDecimal.ONE)
                                         .amountFcy(BigDecimal.TEN)
                                         .build(),
@@ -189,6 +191,7 @@ class TxItemsCollapsingTaskItemTest {
 
         assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId1)).findFirst().orElseThrow().transaction().getItems()).hasSize(1);
         assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId2)).findFirst().orElseThrow().transaction().getItems()).hasSize(1);
+
         assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId3)).findFirst().orElseThrow().transaction().getItems()).hasSize(2);
 
         assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId3)).findFirst().orElseThrow().transaction().getItems()).extracting("amountLcy").containsExactlyInAnyOrder(BigDecimal.valueOf(2), BigDecimal.valueOf(2));
