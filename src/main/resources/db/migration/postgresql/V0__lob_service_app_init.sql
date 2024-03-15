@@ -269,7 +269,6 @@ CREATE TABLE blockchain_publisher_transaction_item (
 
    project_customer_code VARCHAR(255),
 
-   cost_center_code VARCHAR(25),
    cost_center_customer_code VARCHAR(255),
    cost_center_name VARCHAR(25),
 
