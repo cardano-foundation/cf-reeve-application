@@ -28,6 +28,7 @@ public class AccountCodeCreditCheckTaskItem implements PipelineTaskItem {
         }
 
         val violations = new HashSet<Violation>();
+
         for (val txItem : tx.getItems()) {
             if (txItem.getAccountCodeCredit().isEmpty())  {
                 val v = Violation.create(
