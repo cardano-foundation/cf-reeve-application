@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DebitAccountCheckTaskItemTest {
 
-    private DebitAccountCheckTaskItem taskItem;
+    private PipelineTaskItem taskItem;
 
     @BeforeEach
     public void setup() {

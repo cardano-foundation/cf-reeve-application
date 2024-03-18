@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TxItemsCollapsingTaskItemTest {
 
-    private TxItemsCollapsingTaskItem txItemsCollapsingTaskItem;
+    private PipelineTaskItem txItemsCollapsingTaskItem;
 
     @BeforeEach
     public void setup() {
