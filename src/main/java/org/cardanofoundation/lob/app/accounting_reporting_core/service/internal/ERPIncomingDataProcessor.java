@@ -31,9 +31,7 @@ public class ERPIncomingDataProcessor {
 
     @Transactional
     public void continueIngestion(String organisationId,
-                                  int chunkNo,
                                   String batchId,
-                                  int totalTransactionsCount,
                                   Set<Transaction> transactions) {
 
         val finalTransformationResult = businessRulesPipelineProcessor.run(
@@ -44,7 +42,7 @@ public class ERPIncomingDataProcessor {
 
         val passedTransactions = finalTransformationResult.passedTransactions().transactions();
 
-        dbUpdateTransactionBatch(batchId, chunkNo, totalTransactionsCount, passedTransactions, transactions);
+        dbUpdateTransactionBatch(batchId, passedTransactions, transactions);
 
         // TODO store violations in the database
         notificationsSenderService.sendNotifications(finalTransformationResult.violations());
@@ -65,11 +63,9 @@ public class ERPIncomingDataProcessor {
     }
 
     private void dbUpdateTransactionBatch(String batchId,
-                                          int chunkNo,
-                                          int totalTransactionsCount,
                                           Set<Transaction> toDispatchTransactions,
                                           Set<Transaction> allTransactions) {
-        log.info("Updating transaction batch, batchId: {}, chunkNo:{}, totalTransactionsCount: {}", batchId, chunkNo, totalTransactionsCount);
+        log.info("Updating transaction batch, batchId: {}", batchId);
 
         transactionRepository.saveAll(transactionConverter.convertToDb(toDispatchTransactions));
 
