@@ -15,8 +15,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Slf4j
 public class MoreCompress {
 
-    @Nullable
-    public static String compress(@Nullable String data) {
+    @Nullable public static String compress(@Nullable String data) {
         if (data == null || data.isEmpty()) {
             return null;
         }

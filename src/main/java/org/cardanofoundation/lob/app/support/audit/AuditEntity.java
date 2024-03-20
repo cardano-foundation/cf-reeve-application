@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.support.audit;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 import static jakarta.persistence.TemporalType.TIMESTAMP;
 
+@Accessors(fluent = true)
 @Setter
 @Getter
 @MappedSuperclass

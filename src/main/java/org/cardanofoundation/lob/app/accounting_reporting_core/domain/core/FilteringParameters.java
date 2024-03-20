@@ -1,5 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,22 +15,27 @@ import java.util.Optional;
 @ToString
 public class FilteringParameters {
 
-    public static final FilteringParameters EMPTY = FilteringParameters.builder()
-            .build();
-
-    @Builder.Default
-    private Optional<String> organisationId = Optional.empty();
+    @NotBlank
+    private String organisationId;
 
     @Builder.Default
     private List<TransactionType> transactionTypes = List.of();
 
-    @Builder.Default
-    private Optional<LocalDate> from = Optional.empty();
+    @NonNull
+    private LocalDate from;
 
-    @Builder.Default
-    private Optional<LocalDate> to = Optional.empty();
+    @NotNull
+    private LocalDate to;
 
     @Builder.Default
     private Optional<String> transactionNumber = Optional.empty();
+
+    public static FilteringParameters acceptAll(String organisationId, LocalDate from, LocalDate to) {
+        return FilteringParameters.builder()
+                .organisationId(organisationId)
+                .from(from)
+                .to(to)
+                .build();
+    }
 
 }

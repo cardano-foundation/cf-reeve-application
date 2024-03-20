@@ -43,7 +43,7 @@ public class DelayedDispatchingStrategy implements DispatchingStrategy {
 
         val prioritisedTransactions = txs.stream()
                 .filter(tx -> {
-                    val mustPublishDate = tx.getCreatedAt().plus(maxTxDelay);
+                    val mustPublishDate = tx.createdAt().plus(maxTxDelay);
 
                     return now.isAfter(mustPublishDate);
                 })
@@ -56,10 +56,10 @@ public class DelayedDispatchingStrategy implements DispatchingStrategy {
             return new LinkedHashSet<>(Stream.concat(prioritisedTransactions.stream(), txs.stream()).toList());
         }
 
-        log.info("Extracted {} organisationTransactions for organisationId:{}", txs.size(), organisationId);
+        log.info("Extracted {} passedTransactions for organisationId:{}", txs.size(), organisationId);
 
         if (txs.size() < minTxCount) {
-            log.warn("Not enough organisationTransactions to dispatch for organisationId:{}", organisationId);
+            log.warn("Not enough passedTransactions to dispatch for organisationId:{}", organisationId);
             return Set.of();
         }
 

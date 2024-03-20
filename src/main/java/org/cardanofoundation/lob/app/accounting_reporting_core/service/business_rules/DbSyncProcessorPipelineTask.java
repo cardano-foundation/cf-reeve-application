@@ -16,11 +16,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TX_ALREADY_DISPATCHED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.WARN;
 
 @RequiredArgsConstructor
 @Slf4j
-public class PostProcessorPipelineTask implements PipelineTask {
+public class DbSyncProcessorPipelineTask implements PipelineTask {
 
     private final TransactionRepositoryGateway transactionRepositoryGateway;
 
@@ -42,11 +43,11 @@ public class PostProcessorPipelineTask implements PipelineTask {
         for (val dispatchedTransaction : dispatchedTransactions) {
             val v = Violation.create(
                     WARN,
-                    Violation.Source.ERP,
+                    ERP,
                     organisationId,
                     dispatchedTransaction.getId(),
                     TX_ALREADY_DISPATCHED,
-                    PostProcessorPipelineTask.class.getName(),
+                    DbSyncProcessorPipelineTask.class.getName(),
                     Map.of(
                             "transactionNumber", dispatchedTransaction.getInternalTransactionNumber()
                     )
@@ -54,6 +55,7 @@ public class PostProcessorPipelineTask implements PipelineTask {
 
             newViolations.add(v);
         }
+
         val dispatchedTransactionIds = dispatchedTransactions.stream().map(Transaction::getId).collect(Collectors.toSet());
         val notDispatchedTransactionIds = Sets.difference(allTransactionIds, dispatchedTransactionIds);
 

@@ -32,7 +32,7 @@ public class BusinessRulesConfig {
 
         pipelineTasks.add(new PostCleansingPipelineTask());
         pipelineTasks.add(new PostValidationPipelineTask(validator));
-        pipelineTasks.add(new PostProcessorPipelineTask(transactionRepositoryGateway));
+        pipelineTasks.add(new DbSyncProcessorPipelineTask(transactionRepositoryGateway));
 
         return new DefaultBusinessRulesPipelineProcessor(pipelineTasks);
     }

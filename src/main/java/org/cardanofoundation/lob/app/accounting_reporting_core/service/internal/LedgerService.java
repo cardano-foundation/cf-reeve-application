@@ -37,7 +37,7 @@ public class LedgerService {
             val transactionM = transactionRepository.findById(txId);
 
             if (transactionM.isEmpty()) {
-                log.warn("Transaction not found for id: {}", txId);
+                //log.warn("Transaction not found for id: {}", txId);
                 continue;
             }
 
@@ -58,7 +58,7 @@ public class LedgerService {
                 .collect(Collectors.toSet());
 
         if (dispatchPendingTransactions.isEmpty()) {
-            log.warn("Transaction not found for id: {}", transactionIds);
+            //log.warn("Transaction not found for id: {}", transactionIds);
             return;
         }
 

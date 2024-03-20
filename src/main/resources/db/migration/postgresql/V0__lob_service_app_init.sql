@@ -10,12 +10,14 @@ CREATE TABLE revinfo (
 --CREATE SEQUENCE  IF NOT EXISTS netsuite_ingestion_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE netsuite_ingestion (
-   id UUID NOT NULL,
+   id CHAR(64) NOT NULL,
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
    ingestion_body TEXT NOT NULL,
+   ingestion_body_debug TEXT,
+   instance_id VARCHAR(255) NOT NULL,
    ingestion_body_checksum VARCHAR(255) NOT NULL,
    CONSTRAINT pk_netsuite_ingestion PRIMARY KEY (id)
 );
@@ -117,7 +119,6 @@ CREATE TABLE organisation_chart_of_account (
 
 CREATE TABLE accounting_core_transaction (
    transaction_id CHAR(64) NOT NULL,
-
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
    transaction_internal_number VARCHAR(255) NOT NULL,
@@ -141,6 +142,34 @@ CREATE TABLE accounting_core_transaction (
 
    PRIMARY KEY (transaction_id)
 );
+
+CREATE TABLE accounting_core_transaction_batch (
+   transaction_batch_id CHAR(64) NOT NULL,
+   status VARCHAR(255) NOT NULL,
+
+   created_by VARCHAR(255),
+   updated_by VARCHAR(255),
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
+
+   PRIMARY KEY (transaction_batch_id)
+);
+
+CREATE TABLE accounting_core_transaction_batch_assoc (
+   transaction_batch_id CHAR(64) NOT NULL,
+   transaction_id CHAR(64) NOT NULL,
+
+   created_by VARCHAR(255),
+   updated_by VARCHAR(255),
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
+
+   FOREIGN KEY (transaction_batch_id) REFERENCES accounting_core_transaction_batch (transaction_batch_id),
+   FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
+
+   PRIMARY KEY (transaction_batch_id, transaction_id)
+);
+
 
 CREATE TABLE accounting_core_transaction_item (
    transaction_item_id CHAR(64) NOT NULL,
@@ -231,7 +260,7 @@ CREATE TABLE accounting_core_transaction_item (
 
 CREATE TABLE blockchain_publisher_transaction (
    transaction_id CHAR(64) NOT NULL,
-   organisation_id VARCHAR(255) NOT NULL,
+   organisation_id VARCHAR(255) NOT NULL, -- consider moving this to accounting_core_batch
    internal_number VARCHAR(255) NOT NULL,
 
    organisation_short_name VARCHAR(50) NOT NULL,

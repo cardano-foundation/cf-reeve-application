@@ -21,6 +21,13 @@ public class TransactionConverter {
 
     private final BlockchainPublishStatusMapper blockchainPublishStatusMapper;
 
+    public Set<TransactionEntity> convertToDb(Set<Transaction> transactions) {
+        return transactions
+                .stream()
+                .map(this::convert)
+                .collect(toSet());
+    }
+
     public TransactionEntity convert(Transaction tx) {
         val transactionEntity = TransactionEntity.builder()
                 .id(tx.getId())

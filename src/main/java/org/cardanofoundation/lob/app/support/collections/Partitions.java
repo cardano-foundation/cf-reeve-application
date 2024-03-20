@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class MorePartition {
+public class Partitions {
 
     public static<T> Iterable<Partition<T>> partition(Iterable<T> it, int size) {
         return toPartitionList(Iterables.partition(it, size));
@@ -33,13 +33,14 @@ public class MorePartition {
     public static class Partition<T> {
 
         private final Iterable<T> elements;
+
         private final int partitionIndex;
+
         private final int totalPartitions;
 
         public Set<T> asSet() {
             return Sets.newHashSet(elements);
         }
-
 
         public boolean isFirst() {
             return partitionIndex == 1;

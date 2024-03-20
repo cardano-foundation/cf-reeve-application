@@ -1,8 +1,10 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
-public enum BatchStatus {
+public enum TransactionBatchStatus {
 
-    STARTED, // job processing started
+    CREATED, // job created
+
+    PROCESSING, // job processing in progress
 
     FINISHED, // all transactions processed and saved
 

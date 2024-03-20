@@ -17,7 +17,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Counterparty.Type.VENDOR;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.NOT_VALIDATED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 import static org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Violation.Code.*;
 import static org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.CodeMappingType.*;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
@@ -186,7 +186,7 @@ public class TransactionConverter {
                         .build()
                 )
                 .fxRate(txLine.exchangeRate())
-                .validationStatus(NOT_VALIDATED)
+                .validationStatus(VALIDATED)
                 .items(txItems)
                 .build())
         );

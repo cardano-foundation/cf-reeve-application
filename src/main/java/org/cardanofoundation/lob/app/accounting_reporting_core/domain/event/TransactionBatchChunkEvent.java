@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus;
 import org.jmolecules.event.annotation.DomainEvent;
 
 import java.time.LocalDateTime;
@@ -15,7 +14,7 @@ import java.util.Set;
 @Builder
 @Getter
 @DomainEvent
-public class BatchChunkEvent {
+public class TransactionBatchChunkEvent {
 
     private String chunkId;
 
@@ -24,10 +23,12 @@ public class BatchChunkEvent {
     private String organisationId;
 
     @Builder.Default
-    private int seq = -1;
+    private int chunkNo = -1;
 
     @Builder.Default
     private int totalChunksCount = -1;
+
+    private int totalTransactionsCount;
 
     @Builder.Default
     private Set<Transaction> transactions = Set.of();
@@ -38,10 +39,10 @@ public class BatchChunkEvent {
     private Optional<LocalDateTime> finishTime = Optional.empty();
 
     @Builder.Default
-    private TransactionBatchStatus status = TransactionBatchStatus.STARTED;
+    private Status status = Status.STARTED;
 
-    public static class Status {
-
+    public enum Status {
+        STARTED, PROCESSING, FINISHED
     }
 
 }
