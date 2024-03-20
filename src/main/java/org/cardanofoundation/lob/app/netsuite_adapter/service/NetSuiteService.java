@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -209,19 +208,14 @@ public class NetSuiteService {
             Partitions.partition(transactionsWithExtractionParametersApplied, sendBatchSize).forEach(txPartition -> {
                 val eventBuilder = TransactionBatchChunkEvent.builder()
                         .batchId(netsuiteIngestion.getId())
-                        .chunkId(digestAsHex(UUID.randomUUID().toString()))
-                        .chunkNo(txPartition.getPartitionIndex())
-                        .totalChunksCount(txPartition.getTotalPartitions())
-                        .totalTransactionsCount(transactions.size())
                         .organisationId(organisationId)
                         .transactions(txPartition.asSet());
 
                 if (txPartition.isFirst()) {
-                    eventBuilder.startTime(LocalDateTime.now(clock));
                     eventBuilder.status(STARTED);
                 } else if (txPartition.isLast()) {
-                    eventBuilder.finishTime(Optional.of(LocalDateTime.now(clock)));
                     eventBuilder.status(FINISHED);
+                    eventBuilder.totalTransactionsCount(Optional.of(transactions.size()));
                 } else {
                     eventBuilder.status(PROCESSING);
                 }

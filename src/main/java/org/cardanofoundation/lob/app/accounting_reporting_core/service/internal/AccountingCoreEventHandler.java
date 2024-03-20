@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.*;
 import org.cardanofoundation.lob.app.support.collections.Partitions;
-import org.cardanofoundation.lob.app.support.orm.StrictApplicationModuleListener;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +28,11 @@ public class AccountingCoreEventHandler {
 
     @ApplicationModuleListener
     public void handleERPTransactionChunk(TransactionBatchChunkEvent transactionBatchChunkEvent) {
-        log.info("Received handleERPTransactionChunk event...., event, batch_id: {}, chunk_id:{}, chunkTxs:{}, chunksCount:{}", transactionBatchChunkEvent.getBatchId(), transactionBatchChunkEvent.getChunkId(), transactionBatchChunkEvent.getTransactions().size(), transactionBatchChunkEvent.getTotalChunksCount());
+        log.info("Received handleERPTransactionChunk event...., event, batch_id: {}, chunk_size:{}", transactionBatchChunkEvent.getBatchId(), transactionBatchChunkEvent.getTransactions().size());
 
         erpIncomingDataProcessor.continueIngestion(
                 transactionBatchChunkEvent.getOrganisationId(),
-                transactionBatchChunkEvent.getChunkNo(),
                 transactionBatchChunkEvent.getBatchId(),
-                transactionBatchChunkEvent.getTotalTransactionsCount(),
                 transactionBatchChunkEvent.getTransactions()
         );
 
