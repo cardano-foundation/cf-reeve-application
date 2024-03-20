@@ -1,6 +1,10 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +16,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static jakarta.persistence.EnumType.STRING;
+
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,41 +25,25 @@ import java.util.Optional;
 @Getter
 public class FilteringParameters {
 
-    @Column(name = "organisation_id")
-    @Nullable
+    @Column(name = "organisation_id", nullable = false)
+    @NotNull
     private String organisationId;
 
     @Builder.Default
-//    @ElementCollection(targetClass = TransactionType.class)
-//    @Enumerated(EnumType.STRING)
-//    @CollectionTable(name = "filtering_parameters_transaction_type")
-//    @Column(name = "transaction_type")
-//    @Getter
-    private List<String> transactionTypes = List.of();
+    @Enumerated(STRING)
+    @Column(name = "filtering_parameters_transaction_types")
+    @Convert(converter = CSVTransactionTypeConverter.class)
+    private List<TransactionType> transactionTypes = List.of();
 
-    @Nullable
-    @Column(name = "from_date")
+    @Column(name = "from_date", nullable = false)
     private LocalDate from;
 
-    @Nullable
-    @Column(name = "to_date")
+    @Column(name = "to_date", nullable = false)
     private LocalDate to;
 
-    @Nullable
     @Column(name = "transaction_number")
+    @Nullable
     private String transactionNumber;
-
-    public Optional<String> getOrganisationId() {
-        return Optional.ofNullable(organisationId);
-    }
-
-    public Optional<LocalDate> getFrom() {
-        return Optional.ofNullable(from);
-    }
-
-    public Optional<LocalDate> getTo() {
-        return Optional.ofNullable(to);
-    }
 
     public Optional<String> getTransactionNumber() {
         return Optional.ofNullable(transactionNumber);
