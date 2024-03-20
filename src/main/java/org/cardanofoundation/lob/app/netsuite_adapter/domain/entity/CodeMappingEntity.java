@@ -2,9 +2,11 @@ package org.cardanofoundation.lob.app.netsuite_adapter.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
+import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
 import java.io.Serializable;
+
+import static jakarta.persistence.EnumType.STRING;
 
 @Getter
 @Setter
@@ -35,7 +37,7 @@ public class CodeMappingEntity extends AuditEntity {
 
         private Long internalId;
 
-        @Enumerated(EnumType.STRING)
+        @Enumerated(STRING)
         private CodeMappingType type;
 
     }

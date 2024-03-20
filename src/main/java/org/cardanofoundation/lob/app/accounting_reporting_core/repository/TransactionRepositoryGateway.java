@@ -63,9 +63,7 @@ public class TransactionRepositoryGateway {
                         List.of(VALIDATED),
                         transactionApprovalNeeded,
                         ledgerApprovalNeeded,
-                        Limit.of(limit))
-                .stream()
-                .collect(Collectors.toSet());
+                        Limit.of(limit));
     }
 
     @Transactional
@@ -75,14 +73,13 @@ public class TransactionRepositoryGateway {
 
         val seenTransactionStatuses = LedgerDispatchStatus.allDispatchedStatuses();
 
-        return transactionRepository.findTransactionsByLedgerDispatchStatus(
-                        organisationId,
-                        transactionIds,
-                        seenTransactionStatuses
-                )
-                .stream()
-                .map(transactionConverter::convert)
-                .collect(Collectors.toSet());
+        val dbTransactions = transactionRepository.findTransactionsByLedgerDispatchStatus(
+                organisationId,
+                transactionIds,
+                seenTransactionStatuses
+        );
+
+        return transactionConverter.convertFromDb(dbTransactions);
     }
 
     @Transactional
@@ -92,7 +89,9 @@ public class TransactionRepositoryGateway {
 
     @Transactional
     public Set<Transaction> findByAllId(Set<String> transactionIds) {
-        return transactionRepository.findAllById(transactionIds).stream().map(transactionConverter::convert).collect(Collectors.toSet());
+        val dbTransactions = transactionRepository.findAllById(transactionIds);
+
+        return transactionConverter.convertFromDb(dbTransactions);
     }
 
     private static Set<String> transactionIds(Set<Transaction> passedTransactions) {

@@ -8,7 +8,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsHex;
+import static org.cardanofoundation.lob.app.support.crypto.SHA3.digestAsHex;
 
 @Builder(toBuilder = true)
 @Getter

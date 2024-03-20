@@ -36,12 +36,13 @@ public class NotificationsSenderService {
                     .with("subsidiary", violation.getSubsidiary())
                     .with("transactionNumber", violation.getTransactionNumber())
                     .with("lineId", violation.getLineId()
-                    );
+            );
 
             violation.getBag().forEach((k, v) -> problemBuilder.with(STR."p_\{k}", v));
 
             applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, problemBuilder.build()));
         }
     }
+
 }
 

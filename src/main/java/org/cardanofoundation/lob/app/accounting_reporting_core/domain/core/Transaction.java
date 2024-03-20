@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsHex;
+import static org.cardanofoundation.lob.app.support.crypto.SHA3.digestAsHex;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -41,7 +41,7 @@ public class Transaction {
 
     @NotNull
     @Builder.Default
-    private ValidationStatus validationStatus = ValidationStatus.NOT_VALIDATED;
+    private ValidationStatus validationStatus = ValidationStatus.VALIDATED;
 
     @Builder.Default
     private boolean transactionApproved = false;

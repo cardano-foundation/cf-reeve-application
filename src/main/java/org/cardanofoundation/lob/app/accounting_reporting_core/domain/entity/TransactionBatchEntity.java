@@ -1,18 +1,20 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
+import com.google.common.base.Objects;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.BatchStatus;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus;
+import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
-import javax.annotation.Nullable;
-import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Accessors(fluent = true)
 @Getter
@@ -20,39 +22,61 @@ import java.util.Set;
 @Entity(name = "accounting_reporting_core.TransactionBatchEntity")
 @Table(name = "accounting_core_transaction_batch")
 @NoArgsConstructor
-public class TransactionBatchEntity {
+public class TransactionBatchEntity extends AuditEntity {
 
     @Id
     @Column(name = "transaction_batch_id", nullable = false)
     private String id;
 
-    @Column(name = "organisation_id", nullable = false)
-    private String organisationId;
+//    @Embedded
+//    @Nullable
+//    @AttributeOverrides({
+//            @AttributeOverride(name = "organisationId", column = @Column(name = "filtering_parameters_organisation_id")),
+//            @AttributeOverride(name = "from", column = @Column(name = "filtering_parameters_from_date")),
+//            @AttributeOverride(name = "to", column = @Column(name = "filtering_parameters_to_date")),
+//            @AttributeOverride(name = "transactionNumber", column = @Column(name = "filtering_parameters_transaction_number")),
+//    })
+//    private FilteringParameters filteringParameters;
+//
+//    @NotBlank
+//    @Column(name = "issued_by", nullable = false)
+//    private String issuedBy;
+//
+//    @Column(name = "start_time", nullable = false)
+//    private LocalDateTime startTime;
+//
+//    @Column(name = "finish_time")
+//    private LocalDateTime finishTime;
 
-    @Embedded
-    @Nullable
-    @AttributeOverrides({
-            @AttributeOverride(name = "organisationId", column = @Column(name = "filtering_parameters_organisation_id")),
-            @AttributeOverride(name = "from", column = @Column(name = "filtering_parameters_from_date")),
-            @AttributeOverride(name = "to", column = @Column(name = "filtering_parameters_to_date")),
-            @AttributeOverride(name = "transactionNumber", column = @Column(name = "filtering_parameters_transaction_number")),
-    })
-    private FilteringParameters filteringParameters;
-
-    @NotBlank
-    @Column(name = "issued_by", nullable = false)
-    private String issuedBy;
-
-    @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
-
-    @Column(name = "finish_time")
-    private LocalDateTime finishTime;
-
-    @OneToMany(mappedBy = "transactionBatch", orphanRemoval = true)
+    @ManyToMany(fetch = LAZY)
+    @JoinTable(
+            name = "accounting_core_transaction_batch_assoc",
+            joinColumns = @JoinColumn(name = "transaction_batch_id"),
+            inverseJoinColumns = @JoinColumn(name = "transaction_id"))
     private Set<TransactionEntity> transactions = new LinkedHashSet<>();
 
     @NotNull
-    private BatchStatus status;
+    @Enumerated(STRING)
+    @Column(name = "status", nullable = false)
+    private TransactionBatchStatus status = TransactionBatchStatus.CREATED;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TransactionBatchEntity that = (TransactionBatchEntity) o;
+
+        return Objects.equal(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return STR."TransactionBatchEntity{id='\{id}\{'\''}, status=\{status}, createdBy='\{createdBy}\{'\''}, updatedBy='\{updatedBy}\{'\''}, createdAt=\{createdAt}, updatedAt=\{updatedAt}\{'}'}";
+    }
 
 }

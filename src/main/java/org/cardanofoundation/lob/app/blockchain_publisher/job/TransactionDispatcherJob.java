@@ -15,11 +15,11 @@ public class TransactionDispatcherJob {
 
     @Scheduled(fixedDelayString = "PT10S", initialDelayString = "PT1M")
     public void execute() {
-        log.info("Pooling for blockchain organisationTransactions to be send to the blockchain...");
+        log.info("Pooling for blockchain passedTransactions to be send to the blockchain...");
 
         blockchainTransactionsDispatcher.dispatchTransactions();
 
-        log.info("Pooling for blockchain organisationTransactions to be send to the blockchain...done");
+        log.info("Pooling for blockchain passedTransactions to be send to the blockchain...done");
     }
 
 }

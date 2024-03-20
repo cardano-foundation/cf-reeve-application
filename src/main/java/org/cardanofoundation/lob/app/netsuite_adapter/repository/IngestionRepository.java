@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface IngestionRepository extends JpaRepository<NetSuiteIngestion, UUID> {
+public interface IngestionRepository extends JpaRepository<NetSuiteIngestion, String> {
 
 }

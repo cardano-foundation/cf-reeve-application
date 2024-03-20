@@ -5,7 +5,8 @@
                 { "accounting_reporting_core::domain_core",
                         "accounting_reporting_core::domain_event",
                         "organisation", "organisation::domain_core", "organisation::domain_entity",
-                        "support::audit_support",
+                        "support::audit",
+                        "support::collections",
                 }
 )
 package org.cardanofoundation.lob.app.blockchain_publisher;

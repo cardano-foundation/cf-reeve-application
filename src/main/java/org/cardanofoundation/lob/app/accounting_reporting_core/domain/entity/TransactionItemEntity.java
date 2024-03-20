@@ -1,12 +1,13 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
+import com.google.common.base.Objects;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
+import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -128,6 +129,20 @@ public class TransactionItemEntity extends AuditEntity {
 
     public Optional<Document> getDocument() {
         return Optional.ofNullable(document);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TransactionItemEntity that = (TransactionItemEntity) o;
+
+        return Objects.equal(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
 }

@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
+import com.google.common.base.Objects;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,13 +9,11 @@ import lombok.experimental.Accessors;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
-import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
+import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static jakarta.persistence.CascadeType.ALL;
@@ -74,5 +73,19 @@ public class TransactionEntity extends AuditEntity {
 
     @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     private Set<TransactionItemEntity> items = new LinkedHashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TransactionEntity that = (TransactionEntity) o;
+
+        return Objects.equal(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 
 }

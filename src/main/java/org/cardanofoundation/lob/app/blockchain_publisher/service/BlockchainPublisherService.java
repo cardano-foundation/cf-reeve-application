@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.service;
 
-import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -9,6 +8,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.Ledg
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.L1SubmissionData;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepositoryGateway;
+import org.cardanofoundation.lob.app.support.collections.Partitions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -35,12 +35,7 @@ public class BlockchainPublisherService {
                                                  OrganisationTransactions organisationTransactions) {
         log.info("dispatchTransactionsToBlockchains..., orgId:{}", organisationId);
 
-        val transactions = organisationTransactions.transactions();
-
-        val txEntities = transactions
-                .stream()
-                .map(transactionConverter::convert)
-                .collect(Collectors.toSet());
+        val txEntities = transactionConverter.convertToDb(organisationTransactions.transactions());
 
         val allNewAndOldTransactionsStored = transactionEntityRepositoryGateway.storeOnlyNewTransactions(txEntities);
 
@@ -48,9 +43,11 @@ public class BlockchainPublisherService {
     }
 
     @Transactional
-    private void notifyTransactionStored(OrganisationTransactions organisationTransactions, Set<TransactionEntity> allNewAndOldTransactionsStored) {
-        Iterables.partition(allNewAndOldTransactionsStored, dispatchBatchSize).forEach(txEntities -> {
-            val txStatusUpdates = txEntities.stream()
+    private void notifyTransactionStored(OrganisationTransactions organisationTransactions,
+                                         Set<TransactionEntity> allNewAndOldTransactionsStored) {
+        Partitions.partition(allNewAndOldTransactionsStored, dispatchBatchSize).forEach(partition -> {
+
+            val txStatusUpdates = partition.asSet().stream()
                     .map(txEntity -> {
                         val assuranceLevelM = txEntity.getL1SubmissionData()
                                 .flatMap(L1SubmissionData::getAssuranceLevel);

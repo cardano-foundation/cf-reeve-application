@@ -1,13 +1,14 @@
 package org.cardanofoundation.lob.app.netsuite_adapter.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
-
-import java.util.UUID;
+import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
 @Entity
 @Table(name = "netsuite_ingestion")
@@ -15,17 +16,20 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Audited
-//@EntityListeners({AuditingEntityListener.class})
 public class NetSuiteIngestion extends AuditEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
-    private UUID id;
+    private String id;
+
+    @Column(name = "instance_id", nullable = false)
+    private String instanceId;
 
     @Column(name = "ingestion_body", nullable = false, length = 999_999, columnDefinition = "TEXT")
     private String ingestionBody;
+
+    @Column(name = "ingestion_body_debug", nullable = false, length = 999_999, columnDefinition = "TEXT")
+    private String ingestionBodyDebug;
 
     @Column(name = "ingestion_body_checksum", nullable = false)
     private String ingestionBodyChecksum;

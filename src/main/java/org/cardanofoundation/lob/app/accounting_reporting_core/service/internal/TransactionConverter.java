@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service("accounting_reporting_core.TransactionConverter")
@@ -20,6 +22,24 @@ import java.util.stream.Collectors;
 public class TransactionConverter {
 
     private final CoreCurrencyService coreCurrencyService;
+
+    public Set<TransactionEntity> convertToDb(Set<Transaction> transactions) {
+        return transactions.stream()
+                .map(this::convert)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Transaction> convertFromDb(List<TransactionEntity> transactionEntities) {
+        return transactionEntities.stream()
+                .map(this::convert)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Transaction> convertFromDb(Set<TransactionEntity> transactionEntities) {
+        return transactionEntities.stream()
+                .map(this::convert)
+                .collect(Collectors.toSet());
+    }
 
     public TransactionEntity convert(Transaction transaction) {
         val transactionEntity = new TransactionEntity()
@@ -56,10 +76,10 @@ public class TransactionConverter {
 
         transactionEntity.items(txItems);
 
-        transactionEntity.setCreatedAt(LocalDateTime.now());
-        transactionEntity.setUpdatedAt(LocalDateTime.now());
-        transactionEntity.setCreatedBy("system");
-        transactionEntity.setUpdatedBy("system");
+        transactionEntity.createdAt(LocalDateTime.now());
+        transactionEntity.updatedAt(LocalDateTime.now());
+        transactionEntity.createdBy("system");
+        transactionEntity.updatedBy("system");
 
         return transactionEntity;
     }

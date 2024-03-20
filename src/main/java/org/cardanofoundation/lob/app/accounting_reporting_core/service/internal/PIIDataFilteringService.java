@@ -21,7 +21,7 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
             return transactions;
         }
 
-        log.info("Filtering PII from organisationTransactions, size:{}", transactions.size());
+        log.info("Filtering PII from passedTransactions, size:{}", transactions.size());
 
         return transactions.stream()
                 .map(trx -> {

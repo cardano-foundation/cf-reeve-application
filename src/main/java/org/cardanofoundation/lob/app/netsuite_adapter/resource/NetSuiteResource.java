@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 
-import java.util.UUID;
-
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.zalando.problem.Status.NOT_FOUND;
 
@@ -67,7 +65,7 @@ public class NetSuiteResource {
     )
     public ResponseEntity<?> findNetSuiteIngestion(@Valid @Parameter(description = "ingestion id", required = true)
                                                    @PathVariable("id") String id) {
-        val r = netSuiteService.findIngestionById(UUID.fromString(id));
+        val r = netSuiteService.findIngestionById(id);
 
         if (r.isEmpty()) {
             var issue = Problem.builder()

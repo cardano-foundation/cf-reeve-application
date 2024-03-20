@@ -3,7 +3,7 @@ package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
-import org.cardanofoundation.lob.app.support.audit_support.AuditEntity;
+import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;

@@ -53,7 +53,7 @@ public class BlockchainTransactionsDispatcher {
 
     @Transactional
     public void dispatchTransactions() {
-        log.info("Dispatching organisationTransactions to the cardano blockchain...");
+        log.info("Dispatching passedTransactions to the cardano blockchain...");
 
         val dispatchStatuses = toDispatchStatuses();
 
@@ -73,12 +73,12 @@ public class BlockchainTransactionsDispatcher {
     @Transactional
     public void dispatchTransactionsBatch(String organisationId,
                                           Set<TransactionEntity> transactionEntitiesBatch) {
-        log.info("Dispatching organisationTransactions for organisation: {}", organisationId);
+        log.info("Dispatching passedTransactions for organisation: {}", organisationId);
 
         val blockchainTransactionsM = createAndSendBlockchainTransactions(organisationId, transactionEntitiesBatch);
 
         if (blockchainTransactionsM.isEmpty()) {
-            log.info("No more organisationTransactions to dispatch for organisationId: {}", organisationId);
+            log.info("No more passedTransactions to dispatch for organisationId: {}", organisationId);
             return;
         }
 
@@ -93,10 +93,10 @@ public class BlockchainTransactionsDispatcher {
     @Transactional
     private Optional<BlockchainTransactions> createAndSendBlockchainTransactions(String organisationId,
                                                                                  Set<TransactionEntity> transactions) {
-        log.info("Processing organisationTransactions for organisation:{}, remaining size:{}", organisationId, transactions.size());
+        log.info("Processing passedTransactions for organisation:{}, remaining size:{}", organisationId, transactions.size());
 
         if (transactions.isEmpty()) {
-            log.info("No more organisationTransactions to dispatch for organisation:{}", organisationId);
+            log.info("No more passedTransactions to dispatch for organisation:{}", organisationId);
 
             return Optional.empty();
         }
@@ -104,7 +104,7 @@ public class BlockchainTransactionsDispatcher {
         var serialisedTxE = l1TransactionCreator.pullBlockchainTransaction(organisationId, transactions);
 
         if (serialisedTxE.isEmpty()) {
-            log.warn("Error, there is more organisationTransactions to dispatch for organisation:{}", organisationId);
+            log.warn("Error, there is more passedTransactions to dispatch for organisation:{}", organisationId);
 
             return Optional.empty();
         }
@@ -112,7 +112,7 @@ public class BlockchainTransactionsDispatcher {
         val serialisedTxM = serialisedTxE.get();
 
         if (serialisedTxM.isEmpty()) {
-            log.warn("No organisationTransactions to dispatch for organisationId:{}", organisationId);
+            log.warn("No passedTransactions to dispatch for organisationId:{}", organisationId);
 
             return Optional.empty();
         }

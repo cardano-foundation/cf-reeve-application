@@ -1,4 +1,4 @@
 @org.springframework.lang.NonNullApi
 
-@org.springframework.modulith.NamedInterface("audit_support")
+@org.springframework.modulith.NamedInterface("audit")
 package org.cardanofoundation.lob.app.support.audit;

@@ -8,6 +8,8 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class ScheduledIngestionJob {
     public void execute() {
         log.info("Executing ScheduledIngestionJob...");
 
-        val fp = FilteringParameters.EMPTY; // TODO if we ever have cron jobs we need to read these from organisation's data
+        val fp = FilteringParameters.acceptAll("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94", LocalDate.from(LocalDate.now().minusYears(10)), LocalDate.from(LocalDate.now()));
 
         accountingCoreService.scheduleIngestion(fp);
 

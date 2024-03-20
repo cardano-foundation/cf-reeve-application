@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static org.cardanofoundation.lob.app.support.crypto_support.SHA3.digestAsHex;
+import static org.cardanofoundation.lob.app.support.crypto.SHA3.digestAsHex;
 
 @AllArgsConstructor
 @NoArgsConstructor
