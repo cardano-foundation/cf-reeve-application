@@ -23,6 +23,16 @@ public class TransactionConverter {
 
     private final CoreCurrencyService coreCurrencyService;
 
+    public FilteringParameters convert(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters filteringParameters) {
+        return FilteringParameters.builder()
+                .organisationId(filteringParameters.getOrganisationId())
+                .transactionTypes(filteringParameters.getTransactionTypes())
+                .from(filteringParameters.getFrom())
+                .to(filteringParameters.getTo())
+                .transactionNumber(filteringParameters.getTransactionNumber().orElse(null))
+                .build();
+    }
+
     public Set<TransactionEntity> convertToDb(Set<Transaction> transactions) {
         return transactions.stream()
                 .map(this::convert)

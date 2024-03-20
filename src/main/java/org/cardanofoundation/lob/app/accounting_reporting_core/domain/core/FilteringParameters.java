@@ -21,7 +21,7 @@ public class FilteringParameters {
     @Builder.Default
     private List<TransactionType> transactionTypes = List.of();
 
-    @NonNull
+    @NotNull
     private LocalDate from;
 
     @NotNull
@@ -30,7 +30,9 @@ public class FilteringParameters {
     @Builder.Default
     private Optional<String> transactionNumber = Optional.empty();
 
-    public static FilteringParameters acceptAll(String organisationId, LocalDate from, LocalDate to) {
+    public static FilteringParameters acceptAll(String organisationId,
+                                                LocalDate from,
+                                                LocalDate to) {
         return FilteringParameters.builder()
                 .organisationId(organisationId)
                 .from(from)

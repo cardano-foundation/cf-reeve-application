@@ -13,14 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus.CREATED;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class TransactionBatchService {
 
     private final TransactionBatchRepository transactionBatchRepository;
+    private final TransactionConverter transactionConverter;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
@@ -32,8 +31,8 @@ public class TransactionBatchService {
 
         val transactionBatchEntity = new TransactionBatchEntity()
                 .id(batchId)
-                .status(CREATED)
                 .transactions(Set.of()) // initially empty
+                .filteringParameters(transactionConverter.convert(filteringParameters))
                 .updatedBy(initiator)
                 .createdBy(initiator);
 

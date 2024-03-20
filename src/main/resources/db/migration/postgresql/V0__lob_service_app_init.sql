@@ -145,7 +145,13 @@ CREATE TABLE accounting_core_transaction (
 
 CREATE TABLE accounting_core_transaction_batch (
    transaction_batch_id CHAR(64) NOT NULL,
-   status VARCHAR(255) NOT NULL,
+--   status VARCHAR(255) NOT NULL,
+
+   filtering_parameters_organisation_id VARCHAR(255) NOT NULL,
+   filtering_parameters_transaction_types VARCHAR(255) NOT NULL,
+   filtering_parameters_from_date DATE NOT NULL,
+   filtering_parameters_to_date DATE NOT NULL,
+   filtering_parameters_transaction_number VARCHAR(255),
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
