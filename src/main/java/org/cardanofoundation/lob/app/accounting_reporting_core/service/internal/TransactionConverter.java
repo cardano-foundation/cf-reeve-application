@@ -29,7 +29,7 @@ public class TransactionConverter {
                 .transactionTypes(filteringParameters.getTransactionTypes())
                 .from(filteringParameters.getFrom())
                 .to(filteringParameters.getTo())
-                .transactionNumber(filteringParameters.getTransactionNumber().orElse(null))
+                .transactionNumbers(filteringParameters.getTransactionNumbers())
                 .build();
     }
 
