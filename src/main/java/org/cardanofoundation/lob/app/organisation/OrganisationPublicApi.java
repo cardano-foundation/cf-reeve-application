@@ -12,7 +12,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class OrganisationPublicApi {
+public class OrganisationPublicApi implements OrganisationPublicApiIF {
 
     private final OrganisationService organisationService;
     private final OrganisationCurrencyService organisationCurrencyService;

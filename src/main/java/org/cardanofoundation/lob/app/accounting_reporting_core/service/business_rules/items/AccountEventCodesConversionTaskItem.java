@@ -5,7 +5,7 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
-import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
+import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -19,7 +19,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
 
     private final PipelineTask pipelineTask;
-    private final OrganisationPublicApi organisationPublicApi;
+    private final OrganisationPublicApiIF organisationPublicApi;
 
     @Override
     public TransactionWithViolations run(TransactionWithViolations violationTransaction) {
