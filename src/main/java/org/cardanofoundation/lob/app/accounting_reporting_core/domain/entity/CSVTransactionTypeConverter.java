@@ -3,19 +3,22 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import lombok.RequiredArgsConstructor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Converter
-@RequiredArgsConstructor
+@Converter(autoApply = true)
 public class CSVTransactionTypeConverter implements AttributeConverter<List<TransactionType>, String> {
 
     @Override
-    public String convertToDatabaseColumn(List<TransactionType> transactionTypes) {
+    @Nullable
+    public String convertToDatabaseColumn(@Nullable List<TransactionType> transactionTypes) {
+        if (transactionTypes == null || transactionTypes.isEmpty()) {
+            return null;
+        }
+
         return transactionTypes
                 .stream()
                 .map(Enum::name)
@@ -23,7 +26,12 @@ public class CSVTransactionTypeConverter implements AttributeConverter<List<Tran
     }
 
     @Override
-    public @Nullable List<TransactionType> convertToEntityAttribute(String dbData) {
+    @Nullable
+    public List<TransactionType> convertToEntityAttribute(@Nullable String dbData) {
+        if (dbData == null || dbData.isEmpty()) {
+            return null;
+        }
+
         return Arrays.stream(dbData.split(","))
                 .map(s -> Enum.valueOf(TransactionType.class, s))
                 .collect(Collectors.toList());

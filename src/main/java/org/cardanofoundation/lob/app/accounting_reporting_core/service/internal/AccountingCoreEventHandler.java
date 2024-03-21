@@ -17,6 +17,8 @@ public class AccountingCoreEventHandler {
 
     private final LedgerService ledgerService;
 
+    private final TransactionBatchService transactionBatchService;
+
     @ApplicationModuleListener
     public void handleERPIngestionStored(ERPIngestionStored event) {
         log.info("Received handleERPIngestionStored event, event: {}", event);
@@ -33,6 +35,7 @@ public class AccountingCoreEventHandler {
         erpIncomingDataProcessor.continueIngestion(
                 transactionBatchChunkEvent.getOrganisationId(),
                 transactionBatchChunkEvent.getBatchId(),
+                transactionBatchChunkEvent.getTotalTransactionsCount(),
                 transactionBatchChunkEvent.getTransactions()
         );
 
@@ -62,6 +65,17 @@ public class AccountingCoreEventHandler {
         for (val partition : Partitions.partition(event.getTransactionIds(), 25)) {
             ledgerService.tryToDispatchTransactionToBlockchainPublisher(event.getOrganisationId(), partition.asSet());
         }
+    }
+
+    @ApplicationModuleListener
+    public void handleBusinessRulesApplied(BusinessRulesAppliedEvent event) {
+        log.info("Received BusinessRulesAppliedEvent event, event: {}", event.getOrganisationId());
+
+        transactionBatchService.updateTransactionBatch(
+                event.getOrganisationId(),
+                event.getBatchId(),
+                event.getTotalTransactionsCount()
+        );
     }
 
 }

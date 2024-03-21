@@ -209,13 +209,13 @@ public class NetSuiteService {
                 val eventBuilder = TransactionBatchChunkEvent.builder()
                         .batchId(netsuiteIngestion.getId())
                         .organisationId(organisationId)
+                        .totalTransactionsCount(Optional.of(transactionsWithExtractionParametersApplied.size()))
                         .transactions(txPartition.asSet());
 
                 if (txPartition.isFirst()) {
                     eventBuilder.status(STARTED);
                 } else if (txPartition.isLast()) {
                     eventBuilder.status(FINISHED);
-                    eventBuilder.totalTransactionsCount(Optional.of(transactions.size()));
                 } else {
                     eventBuilder.status(PROCESSING);
                 }

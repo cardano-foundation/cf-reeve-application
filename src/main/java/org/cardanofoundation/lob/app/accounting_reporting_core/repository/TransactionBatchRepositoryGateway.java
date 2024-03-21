@@ -16,7 +16,6 @@ public class TransactionBatchRepositoryGateway {
 
     private final TransactionBatchRepository transactionBatchRepository;
 
-    @Transactional
     public Optional<TransactionBatchEntity> findById(String batchId) {
         return transactionBatchRepository.findById(batchId);
     }
