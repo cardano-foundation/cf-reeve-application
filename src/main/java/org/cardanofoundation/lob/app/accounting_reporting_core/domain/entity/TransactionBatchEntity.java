@@ -9,7 +9,9 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
+import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static jakarta.persistence.FetchType.EAGER;
@@ -33,6 +35,7 @@ public class TransactionBatchEntity extends AuditEntity {
             @AttributeOverride(name = "from", column = @Column(name = "filtering_parameters_from_date")),
             @AttributeOverride(name = "to", column = @Column(name = "filtering_parameters_to_date")),
             @AttributeOverride(name = "transactionNumber", column = @Column(name = "filtering_parameters_transaction_number")),
+            @AttributeOverride(name = "transactionTypes", column = @Column(name = "filtering_parameters_transaction_types"))
     })
     @NotNull
     private FilteringParameters filteringParameters;
@@ -45,10 +48,18 @@ public class TransactionBatchEntity extends AuditEntity {
     @NotNull
     private Set<TransactionEntity> transactions = new LinkedHashSet<>();
 
-//    @NotNull
-//    @Enumerated(STRING)
-//    @Column(name = "status", nullable = false)
-//    private TransactionBatchStatus status = TransactionBatchStatus.CREATED;
+    @AttributeOverrides({
+            @AttributeOverride(name = "totalTransactionsCount", column = @Column(name = "stats_total_transactions_count")),
+            @AttributeOverride(name = "processedTransactionsCount", column = @Column(name = "stats_processed_transactions_count")),
+            @AttributeOverride(name = "failedTransactionsCount", column = @Column(name = "stats_failed_transactions_count")),
+            @AttributeOverride(name = "approvedTransactionsCount", column = @Column(name = "stats_approved_transactions_count")),
+            @AttributeOverride(name = "approvedTransactionsDispatchCount", column = @Column(name = "stats_approved_transactions_dispatch_count")),
+            @AttributeOverride(name = "dispatchedTransactionsCount", column = @Column(name = "stats_dispatched_transactions_count")),
+            @AttributeOverride(name = "completedTransactionsCount", column = @Column(name = "stats_completed_transactions_count")),
+            @AttributeOverride(name = "finalizedTransactionsCount", column = @Column(name = "stats_finalized_transactions_count")),
+    })
+    @Nullable
+    private BatchStatistics batchStatistics = new BatchStatistics();
 
     @Override
     public boolean equals(Object o) {
@@ -67,6 +78,10 @@ public class TransactionBatchEntity extends AuditEntity {
     @Override
     public String toString() {
         return STR."TransactionBatchEntity{id='\{id}\{'\''}, createdBy='\{createdBy}\{'\''}, updatedBy='\{updatedBy}\{'\''}, createdAt=\{createdAt}, updatedAt=\{updatedAt}\{'}'}";
+    }
+
+    public Optional<BatchStatistics> getBatchStatistics() {
+        return Optional.ofNullable(batchStatistics);
     }
 
 }

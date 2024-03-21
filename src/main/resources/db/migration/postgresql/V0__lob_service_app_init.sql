@@ -147,8 +147,17 @@ CREATE TABLE accounting_core_transaction_batch (
    transaction_batch_id CHAR(64) NOT NULL,
 --   status VARCHAR(255) NOT NULL,
 
+   stats_total_transactions_count INT,
+   stats_processed_transactions_count INT,
+   stats_failed_transactions_count INT,
+   stats_approved_transactions_count INT,
+   stats_approved_transactions_dispatch_count INT,
+   stats_dispatched_transactions_count INT,
+   stats_completed_transactions_count INT,
+   stats_finalized_transactions_count INT,
+
    filtering_parameters_organisation_id VARCHAR(255) NOT NULL,
-   filtering_parameters_transaction_types VARCHAR(255) NOT NULL,
+   filtering_parameters_transaction_types VARCHAR(255),
    filtering_parameters_from_date DATE NOT NULL,
    filtering_parameters_to_date DATE NOT NULL,
    filtering_parameters_transaction_number VARCHAR(255),
