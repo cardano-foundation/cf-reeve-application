@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>TransactionItem.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import jakarta.validation.constraints.NotBlank;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import jakarta.validation.constraints.NotNull;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import jakarta.validation.constraints.Size;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import lombok.*;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.math.BigDecimal;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Optional;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import static org.cardanofoundation.lob.app.support.crypto.SHA3.digestAsHex;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_13'/>
+13
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_13'>25</a>
+<span>
+1. build : negated conditional &rarr; SURVIVED<br/>
+2. build : negated conditional &rarr; SURVIVED<br/>
+3. build : negated conditional &rarr; SURVIVED<br/>
+4. toString : replaced return value with &#34;&#34; for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::toString &rarr; NO_COVERAGE<br/>
+5. build : negated conditional &rarr; SURVIVED<br/>
+6. builder : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::builder &rarr; KILLED<br/>
+7. amountFcy : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::amountFcy &rarr; KILLED<br/>
+8. build : negated conditional &rarr; KILLED<br/>
+9. build : negated conditional &rarr; KILLED<br/>
+10. id : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::id &rarr; KILLED<br/>
+11. amountLcy : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::amountLcy &rarr; KILLED<br/>
+12. accountEventCode : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountEventCode &rarr; KILLED<br/>
+13. document : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::document &rarr; KILLED<br/>
+14. build : negated conditional &rarr; KILLED<br/>
+15. build : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::build &rarr; KILLED<br/>
+16. costCenter : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::costCenter &rarr; KILLED<br/>
+17. build : negated conditional &rarr; KILLED<br/>
+18. accountCodeEventRefCredit : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountCodeEventRefCredit &rarr; KILLED<br/>
+19. build : negated conditional &rarr; KILLED<br/>
+20. project : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::project &rarr; KILLED<br/>
+21. accountCodeDebit : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountCodeDebit &rarr; KILLED<br/>
+22. accountCodeEventRefDebit : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountCodeEventRefDebit &rarr; KILLED<br/>
+23. accountCodeCredit : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountCodeCredit &rarr; KILLED<br/>
+24. accountNameDebit : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountNameDebit &rarr; KILLED<br/>
+25. toBuilder : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::toBuilder &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>@Builder(toBuilder = true)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>@Getter</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>@NoArgsConstructor</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>@AllArgsConstructor</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_17'/>
+17
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_17'>1</a>
+<span>
+1. toString : replaced return value with &#34;&#34; for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::toString &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>@ToString</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public class TransactionItem {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_20'/>
+20
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_20'>1</a>
+<span>
+1. getId : replaced return value with &#34;&#34; for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getId &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    @NotBlank private String id;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_22'/>
+22
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_22'>1</a>
+<span>
+1. getAmountFcy : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAmountFcy &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    @NotNull private BigDecimal amountFcy;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_24'/>
+24
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_24'>1</a>
+<span>
+1. getAmountLcy : replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAmountLcy &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    @NotNull private BigDecimal amountLcy;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Builder.Default</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_27'/>
+27
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_27'>1</a>
+<span>
+1. getAccountCodeDebit : replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountCodeDebit &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    private Optional&#60;@Size(min = 1, max =  255) String&#62; accountCodeDebit = Optional.empty();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Builder.Default</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_30'/>
+30
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_30'>1</a>
+<span>
+1. getAccountCodeEventRefDebit : replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountCodeEventRefDebit &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    private Optional&#60;@Size(min = 1, max =  255) String&#62; accountCodeEventRefDebit = Optional.empty();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Builder.Default</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_33'/>
+33
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_33'>1</a>
+<span>
+1. getAccountNameDebit : replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountNameDebit &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    private Optional&#60;@Size(min = 1, max =  255) String&#62; accountNameDebit = Optional.empty();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Builder.Default</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_36'/>
+36
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_36'>1</a>
+<span>
+1. getAccountCodeCredit : replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountCodeCredit &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    private Optional&#60;@Size(min = 1, max =  255) String&#62; accountCodeCredit = Optional.empty();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Builder.Default</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_39'/>
+39
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_39'>1</a>
+<span>
+1. getAccountCodeEventRefCredit : replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountCodeEventRefCredit &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    private Optional&#60;@Size(min = 1, max =  255) String&#62; accountCodeEventRefCredit = Optional.empty();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_40'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_41'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Builder.Default</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_42'/>
+42
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_42'>1</a>
+<span>
+1. getAccountEventCode : replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountEventCode &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    private Optional&#60;@Size(min = 1, max =  255) String&#62; accountEventCode = Optional.empty();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_43'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Builder.Default</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_45'/>
+45
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_45'>1</a>
+<span>
+1. getProject : replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getProject &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    private Optional&#60;Project&#62; project = Optional.empty();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_46'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_47'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Builder.Default</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_48'/>
+48
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_48'>1</a>
+<span>
+1. getCostCenter : replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getCostCenter &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    private Optional&#60;CostCenter&#62; costCenter = Optional.empty();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_49'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_50'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Builder.Default</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_51'/>
+51
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_51'>1</a>
+<span>
+1. getDocument : replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getDocument &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    private Optional&#60;Document&#62; document = Optional.empty(); // initially we allow empty but later as part of business rules we check if document is present</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_52'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_53'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static String id(String transactionId,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_54'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>                            String lineNo) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_55'/>
+55
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_55'>1</a>
+<span>
+1. id : replaced return value with &#34;&#34; for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::id &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return digestAsHex(STR.&#34;\{transactionId}::\{lineNo}&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_56'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_57'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@64bf34e4_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_58'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_13'>13</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_13'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>builder<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsingWithFailedTransactions()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::builder &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>amountFcy<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:mustNotCollapseTxItemsForFailedTransactions()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::amountFcy &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>build<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldNotCollapseItems()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>build<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldNotCollapseItems()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>5.<span><b>5</b><br/><b>Location : </b>id<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsingWithFailedTransactions()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::id &rarr; KILLED</p> <p class='KILLED'><span class='pop'>6.<span><b>6</b><br/><b>Location : </b>amountLcy<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:mustNotCollapseTxItemsForFailedTransactions()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::amountLcy &rarr; KILLED</p> <p class='KILLED'><span class='pop'>7.<span><b>7</b><br/><b>Location : </b>accountEventCode<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:mustNotCollapseTxItemsForFailedTransactions()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountEventCode &rarr; KILLED</p> <p class='KILLED'><span class='pop'>8.<span><b>8</b><br/><b>Location : </b>document<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::document &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>9.<span><b>9</b><br/><b>Location : </b>build<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>10.<span><b>10</b><br/><b>Location : </b>build<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>11.<span><b>11</b><br/><b>Location : </b>build<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldNotCollapseItems()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>12.<span><b>12</b><br/><b>Location : </b>build<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsingWithFailedTransactions()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::build &rarr; KILLED</p> <p class='KILLED'><span class='pop'>13.<span><b>13</b><br/><b>Location : </b>costCenter<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::costCenter &rarr; KILLED</p> <p class='KILLED'><span class='pop'>14.<span><b>14</b><br/><b>Location : </b>build<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsing()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>15.<span><b>15</b><br/><b>Location : </b>accountCodeEventRefCredit<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountCodeEventRefCredit &rarr; KILLED</p> <p class='KILLED'><span class='pop'>16.<span><b>16</b><br/><b>Location : </b>build<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest]/[method:testCreditWorks()]</span></span> negated conditional &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>17.<span><b>17</b><br/><b>Location : </b>build<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>18.<span><b>18</b><br/><b>Location : </b>project<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::project &rarr; KILLED</p> <p class='KILLED'><span class='pop'>19.<span><b>19</b><br/><b>Location : </b>accountCodeDebit<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsingWithFailedTransactions()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountCodeDebit &rarr; KILLED</p> <p class='NO_COVERAGE'><span class='pop'>20.<span><b>20</b><br/><b>Location : </b>toString<br/><b>Killed by : </b>none</span></span> replaced return value with &#34;&#34; for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::toString &rarr; NO_COVERAGE</p> <p class='SURVIVED'><span class='pop'>21.<span><b>21</b><br/><b>Location : </b>build<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>22.<span><b>22</b><br/><b>Location : </b>accountCodeEventRefDebit<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountCodeEventRefDebit &rarr; KILLED</p> <p class='KILLED'><span class='pop'>23.<span><b>23</b><br/><b>Location : </b>accountCodeCredit<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsingWithFailedTransactions()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountCodeCredit &rarr; KILLED</p> <p class='KILLED'><span class='pop'>24.<span><b>24</b><br/><b>Location : </b>accountNameDebit<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem$TransactionItemBuilder::accountNameDebit &rarr; KILLED</p> <p class='KILLED'><span class='pop'>25.<span><b>25</b><br/><b>Location : </b>toBuilder<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::toBuilder &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_17'>17</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_17'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toString<br/><b>Killed by : </b>none</span></span> replaced return value with &#34;&#34; for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::toString &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_20'>20</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_20'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getId<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsing()]</span></span> replaced return value with &#34;&#34; for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getId &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_22'>22</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_22'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getAmountFcy<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAmountFcy &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_24'>24</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_24'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getAmountLcy<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()]</span></span> replaced return value with null for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAmountLcy &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_27'>27</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_27'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getAccountCodeDebit<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsing()]</span></span> replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountCodeDebit &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_30'>30</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_30'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getAccountCodeEventRefDebit<br/><b>Killed by : </b>none</span></span> replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountCodeEventRefDebit &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_33'>33</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_33'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getAccountNameDebit<br/><b>Killed by : </b>none</span></span> replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountNameDebit &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_36'>36</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_36'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getAccountCodeCredit<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest]/[method:testCreditWorks()]</span></span> replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountCodeCredit &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_39'>39</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_39'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getAccountCodeEventRefCredit<br/><b>Killed by : </b>none</span></span> replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountCodeEventRefCredit &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_42'>42</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_42'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getAccountEventCode<br/><b>Killed by : </b>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldNotCollapseItems()]</span></span> replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getAccountEventCode &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_45'>45</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_45'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getProject<br/><b>Killed by : </b>none</span></span> replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getProject &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_48'>48</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_48'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getCostCenter<br/><b>Killed by : </b>none</span></span> replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getCostCenter &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_51'>51</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_51'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getDocument<br/><b>Killed by : </b>none</span></span> replaced return value with Optional.empty for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::getDocument &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@64bf34e4_55'>55</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@64bf34e4_55'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>id<br/><b>Killed by : </b>none</span></span> replaced return value with &#34;&#34; for org/cardanofoundation/lob/app/accounting_reporting_core/domain/core/TransactionItem::id &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+<li class='mutator'>EMPTY_RETURNS</li>
+<li class='mutator'>FALSE_RETURNS</li>
+<li class='mutator'>INCREMENTS</li>
+<li class='mutator'>INVERT_NEGS</li>
+<li class='mutator'>MATH</li>
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+<li class='mutator'>NULL_RETURNS</li>
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+<li class='mutator'>TRUE_RETURNS</li>
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithoutCollapsing()] (0 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest]/[method:testCreditWorks()] (3 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsing()] (4 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest]/[method:testAccountCreditCheckError()] (10 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest]/[method:testAllOk()] (86 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.DebitAccountCheckTaskItemTest]/[method:testRunWithCollapsingWithFailedTransactions()] (0 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:mustNotCollapseTxItemsForFailedTransactions()] (1 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.AccountCodeCreditCheckTaskItemTest]/[method:testAccountCreditCheckSkipJournals()] (1 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldNotCollapseItems()] (1 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseItems()] (2 ms)</li><li>org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest.[engine:junit-jupiter]/[class:org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.TxItemsCollapsingTaskItemTest]/[method:shouldCollapseSomeItemsAndNotOthers()] (21 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.0
+
+</body>
+</html>
