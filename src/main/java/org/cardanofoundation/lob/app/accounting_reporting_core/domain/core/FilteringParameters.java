@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 @Builder
@@ -28,7 +27,7 @@ public class FilteringParameters {
     private LocalDate to;
 
     @Builder.Default
-    private Optional<String> transactionNumber = Optional.empty();
+    private List<String> transactionNumbers = List.of();
 
     public static FilteringParameters acceptAll(String organisationId,
                                                 LocalDate from,

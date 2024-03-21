@@ -145,6 +145,7 @@ CREATE TABLE accounting_core_transaction (
 
 CREATE TABLE accounting_core_transaction_batch (
    transaction_batch_id CHAR(64) NOT NULL,
+
 --   status VARCHAR(255) NOT NULL,
 
    stats_total_transactions_count INT,
@@ -168,6 +169,13 @@ CREATE TABLE accounting_core_transaction_batch (
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
    PRIMARY KEY (transaction_batch_id)
+);
+
+CREATE TABLE accounting_core_transaction_filtering_params_transaction_number (
+   owner_id CHAR(64) NOT NULL,
+   transaction_number VARCHAR(255) NOT NULL,
+
+   PRIMARY KEY (owner_id, transaction_number)
 );
 
 CREATE TABLE accounting_core_transaction_batch_assoc (

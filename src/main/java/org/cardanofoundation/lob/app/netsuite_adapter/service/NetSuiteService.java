@@ -247,9 +247,9 @@ public class NetSuiteService {
                     return txTypes.isEmpty() || txTypes.contains(tx.getTransactionType());
                 })
                 .filter(tx -> {
-                    val transactionNumber = filteringParameters.getTransactionNumber();
+                    val transactionNumber = filteringParameters.getTransactionNumbers();
 
-                    return transactionNumber.isEmpty() || transactionNumber.orElseThrow().equals(tx.getInternalTransactionNumber());
+                    return transactionNumber.isEmpty() || transactionNumber.contains(tx.getInternalTransactionNumber());
                 })
                 .collect(Collectors.toSet());
     }

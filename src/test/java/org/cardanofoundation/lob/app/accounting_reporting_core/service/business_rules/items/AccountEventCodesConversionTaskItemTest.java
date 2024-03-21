@@ -17,7 +17,7 @@ class AccountEventCodesConversionTaskItemTest {
         this.taskItem = new AccountEventCodesConversionTaskItem(
                 (passedOrganisationTransactions, ignoredOrganisationTransactions, allViolationUntilNow) -> null,
                 organisationPublicApiIF
-                );
+        );
     }
 
 //    @Test

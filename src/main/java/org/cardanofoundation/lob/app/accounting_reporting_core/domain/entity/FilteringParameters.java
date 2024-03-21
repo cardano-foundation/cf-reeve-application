@@ -1,6 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,10 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 
-import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Embeddable
 @AllArgsConstructor
@@ -24,7 +22,7 @@ public class FilteringParameters {
     private String organisationId;
 
     @Builder.Default
-    @Nullable
+    @NotNull
     private List<TransactionType> transactionTypes = List.of();
 
     @NotNull
@@ -33,11 +31,14 @@ public class FilteringParameters {
     @NotNull
     private LocalDate to;
 
-    @Nullable
-    private String transactionNumber;
-
-    public Optional<String> getTransactionNumber() {
-        return Optional.ofNullable(transactionNumber);
-    }
+    @Builder.Default
+    @NotNull
+    @ElementCollection
+    @CollectionTable(
+            name = "accounting_core_transaction_filtering_params_transaction_number",
+            joinColumns = @JoinColumn(name = "owner_id")
+    )
+    @Column(name = "transaction_number")
+    private List<String> transactionNumbers = List.of();
 
 }
