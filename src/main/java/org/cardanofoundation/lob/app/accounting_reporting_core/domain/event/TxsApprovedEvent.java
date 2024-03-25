@@ -18,4 +18,8 @@ public class TxsApprovedEvent {
     private String organisationId;
     private Set<String> transactionIds;
 
+    public static TxsApprovedEvent of(String organisationId, String txId) {
+        return new TxsApprovedEvent(organisationId, Set.of(txId));
+    }
+
 }

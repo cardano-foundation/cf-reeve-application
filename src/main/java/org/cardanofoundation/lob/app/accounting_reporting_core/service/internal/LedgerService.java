@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,12 +26,21 @@ public class LedgerService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final TransactionBatchService transactionBatchService;
+
     private final PIIDataFilteringService piiDataFilteringService;
 
     @Transactional
-    public void updateTransactionsWithNewLedgerDispatchStatuses(Set<LedgerUpdatedEvent.TxStatusUpdate> txStatusUpdates) {
+    public void updateTransactionsWithNewLedgerDispatchStatuses(Set<TxStatusUpdate> txStatusUpdates) {
         log.info("Updating dispatch status for statusMapCount: {}", txStatusUpdates.size());
 
+        storeLatestLedgerUpdateState(txStatusUpdates);
+        transactionBatchService.updateBatchesPerTransactions(txStatusUpdates);
+
+        log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdates.size());
+    }
+
+    private void storeLatestLedgerUpdateState(Set<TxStatusUpdate> txStatusUpdates) {
         for (val txStatusUpdate : txStatusUpdates) {
             val txId = txStatusUpdate.getTxId();
             val transactionM = transactionRepository.findById(txId);
@@ -42,10 +50,10 @@ public class LedgerService {
                 continue;
             }
 
-            transactionRepository.save(transactionM.orElseThrow().ledgerDispatchStatus(txStatusUpdate.getStatus()));
-        }
+            val transactionEntity = transactionM.orElseThrow();
 
-        log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdates.size());
+            transactionRepository.save(transactionEntity.ledgerDispatchStatus(txStatusUpdate.getStatus()));
+        }
     }
 
     @Transactional

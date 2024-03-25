@@ -71,8 +71,7 @@ public class AccountingCoreEventHandler {
     public void handleBusinessRulesApplied(BusinessRulesAppliedEvent event) {
         log.info("Received BusinessRulesAppliedEvent event, event: {}", event.getOrganisationId());
 
-        transactionBatchService.updateTransactionBatch(
-                event.getOrganisationId(),
+        transactionBatchService.updateTransactionBatchStatusAndStats(
                 event.getBatchId(),
                 event.getTotalTransactionsCount()
         );

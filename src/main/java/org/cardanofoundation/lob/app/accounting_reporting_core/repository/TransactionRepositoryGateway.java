@@ -6,7 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsApprovedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsDispatchApprovedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,7 @@ public class TransactionRepositoryGateway {
 
     private final TransactionRepository transactionRepository;
     private final TransactionConverter transactionConverter;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public Either<Problem, Boolean> approveTransaction(String transactionId) {
@@ -56,7 +60,15 @@ public class TransactionRepositoryGateway {
             );
         }
 
-        return Either.right(transactionRepository.save(tx.transactionApproved(true)).transactionApproved());
+        val savedTx = transactionRepository.save(tx.transactionApproved(true));
+
+        if (savedTx.transactionApproved()) {
+            applicationEventPublisher.publishEvent(TxsApprovedEvent.of(savedTx.organisation().getId(), savedTx.id()));
+
+            return Either.right(savedTx.transactionApproved());
+        }
+
+        return Either.right(false);
     }
 
     @Transactional
@@ -113,7 +125,15 @@ public class TransactionRepositoryGateway {
             );
         }
 
-        return Either.right(transactionRepository.save(tx.ledgerDispatchApproved(true)).ledgerDispatchApproved());
+        val savedTx = transactionRepository.save(tx.ledgerDispatchApproved(true));
+
+        if (savedTx.ledgerDispatchApproved()) {
+            applicationEventPublisher.publishEvent(TxsDispatchApprovedEvent.of(savedTx.organisation().getId(), savedTx.id()));
+
+            return Either.right(savedTx.ledgerDispatchApproved());
+        }
+
+        return Either.right(false);
     }
 
     public Set<String> readApprovalPendingBlockchainTransactionIds(String organisationId,

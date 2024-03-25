@@ -4,6 +4,7 @@ import com.bloxbean.cardano.client.api.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainTransactions;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.core.L1Submission;
@@ -167,7 +168,7 @@ public class BlockchainTransactionsDispatcher {
 
                     val status = blockchainPublishStatusMapper.convert(publishStatus, onChainAssuranceLevelM);
 
-                    return new LedgerUpdatedEvent.TxStatusUpdate(txEntity.getId(), status);
+                    return new TxStatusUpdate(txEntity.getId(), status);
                 })
                 .collect(Collectors.toSet());
 

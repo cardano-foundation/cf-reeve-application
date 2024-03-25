@@ -104,6 +104,10 @@ spring:
     republish-outstanding-events-on-restart: true
 
 lob:
+  dispatching:
+    strategy:
+      type: ${LOB_DISPATCHING_STRATEGY:DELAYED}
+
   netsuite:
     client:
       realm: 6766746_SB1

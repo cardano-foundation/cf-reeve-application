@@ -124,7 +124,7 @@ CREATE TABLE accounting_core_transaction (
    transaction_internal_number VARCHAR(255) NOT NULL,
    fx_rate DECIMAL NOT NULL,
 
-   organisation_id VARCHAR(255) NOT NULL,
+   organisation_id CHAR(64) NOT NULL,
    organisation_short_name VARCHAR(50),
    organisation_currency_customer_code VARCHAR(255),
    organisation_currency_id VARCHAR(255),
@@ -146,7 +146,9 @@ CREATE TABLE accounting_core_transaction (
 CREATE TABLE accounting_core_transaction_batch (
    transaction_batch_id CHAR(64) NOT NULL,
 
---   status VARCHAR(255) NOT NULL,
+--   organisation_id CHAR(64) NOT NULL,
+
+   status VARCHAR(255) NOT NULL,
 
    stats_total_transactions_count INT,
    stats_processed_transactions_count INT,
