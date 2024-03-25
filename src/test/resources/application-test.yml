@@ -8,6 +8,19 @@ spring:
     hibernate:
     ddl-auto: create
 
+  flyway:
+    out-of-order: false
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
+    user: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    schemas: ${DB_SCHEMA:lob_service}
+    # baselineOnMigrate this will create a baseline version if none exists (https://flywaydb.org/documentation/configuration/parameters/baselineOnMigrate)
+    baselineOnMigrate: true
+    enabled: true
+    validateMigrationNaming: true
+    locations:
+      - classpath:db/migration/{vendor}/common
+      - classpath:db/migration/{vendor}/dev
 lob:
   cardano:
     network: "DEV"
@@ -17,5 +30,6 @@ lob:
     # locally YaciDevKit runs on port 8080
     api:
       key: ""
+
 
 #spring.profiles.active=dev--yaci-dev-kit

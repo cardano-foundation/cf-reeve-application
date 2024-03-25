@@ -4,6 +4,6 @@ public enum ValidationStatus {
 
     VALIDATED,
 
-    FAILED,
+    FAILED
 
 }

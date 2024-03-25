@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import java.util.HashSet;
 import java.util.List;
 
-class TransactionTypeConverterPropertyTest {
+class TransactionViewTypeConverterPropertyTest {
 
     private final TransactionTypeConverter converter = new TransactionTypeConverter();
 
