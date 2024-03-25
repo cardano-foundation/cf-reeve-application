@@ -8,6 +8,7 @@ import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,6 +50,9 @@ public class TransactionEntity extends AuditEntity {
 
     @Column(name = "entry_date", nullable = false)
     private LocalDate entryDate;
+
+    @Column(name = "accounting_period", nullable = false)
+    private YearMonth accountingPeriod;
 
     @Column(name = "fx_rate", nullable = false)
     private BigDecimal fxRate;

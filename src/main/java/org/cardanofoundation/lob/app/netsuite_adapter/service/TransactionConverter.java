@@ -13,11 +13,11 @@ import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Violation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.YearMonth;
 import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Counterparty.Type.VENDOR;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 import static org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Violation.Code.*;
 import static org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.CodeMappingType.*;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreBigDecimal.substractNullFriendly;
@@ -102,8 +102,6 @@ public class TransactionConverter {
             return Either.right(Optional.empty());
         }
 
-        val txNumber = txLines.stream().findFirst().map(TxLine::transactionNumber).orElseThrow();
-
         val txLine = txLines.getFirst();
 
         val txId = Transaction.id(organisationId, txLine.transactionNumber());
@@ -181,12 +179,12 @@ public class TransactionConverter {
                 .internalTransactionNumber(txLine.transactionNumber())
                 .entryDate(txLine.date())
                 .transactionType(transTypeE.get())
+                .accountingPeriod(YearMonth.from(txLine.date())) // TODO fix this properly from the netsuite transaction field
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
                         .id(organisationId)
                         .build()
                 )
                 .fxRate(txLine.exchangeRate())
-                .validationStatus(VALIDATED)
                 .items(txItems)
                 .build())
         );

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -48,6 +49,9 @@ public class Transaction {
 
     @Builder.Default
     private boolean ledgerDispatchApproved = false;
+
+    @NotNull
+    private YearMonth accountingPeriod;
 
     @Builder.Default
     @NotEmpty

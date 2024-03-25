@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 import static org.cardanofoundation.lob.app.support.crypto.SHA3.digestAsHex;
 
 @AllArgsConstructor
@@ -25,14 +27,24 @@ public class Organisation {
     @Column(name = "long_name", nullable = false)
     private String longName;
 
+    @Column(name = "pre_approve_transactions")
+    private Boolean preApproveTransactions;
+
     @Column(name = "vat_number", nullable = false)
     private String vatNumber;
+
+    @Column(name = "accounting_period_months", nullable = false)
+    private int accountPeriodMonths;
 
     @Column(name = "currency_id", nullable = false)
     private String currencyId;
 
     public static String id(String vatId) {
         return digestAsHex(vatId);
+    }
+
+    public boolean isPreApproveTransactionsEnabled() {
+        return Optional.ofNullable(preApproveTransactions).orElse(false);
     }
 
 }

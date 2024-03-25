@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchChunkEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteClient;
@@ -17,6 +16,7 @@ import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteInge
 import org.cardanofoundation.lob.app.netsuite_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MD5Hashing;
 import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
+import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.cardanofoundation.lob.app.support.collections.Partitions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,12 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchChunkEvent.Status.*;
 import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreCompress.compress;
@@ -56,7 +53,9 @@ public class NetSuiteService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    private final Clock clock;
+    private final ExtractionParametersFilteringService extractionParametersFilteringService;
+
+    private final OrganisationPublicApiIF organisationPublicApi;
 
     @Value("${lob.events.netsuite.to.core.send.batch.size:25}")
     private int sendBatchSize = 25;
@@ -192,7 +191,25 @@ public class NetSuiteService {
         log.info("coreTransactionLines count: {}", coreTransactionsToOrganisationMap.size());
 
         coreTransactionsToOrganisationMap.forEach((organisationId, transactions) -> {
-            val transactionsWithExtractionParametersApplied = applyExtractionParameters(filteringParameters, transactions);
+            val organisationM = organisationPublicApi.findByOrganisationId(organisationId);
+
+            if (organisationM.isEmpty()) {
+                log.error("Organisation not found for id: {}", organisationId);
+
+                val issue = Problem.builder()
+                        .withTitle("NETSUITE_ADAPTER::ORGANISATION_NOT_FOUND")
+                        .withDetail(STR."Organisation not found for id: \{organisationId}")
+                        .build();
+
+                applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
+
+                return;
+            }
+
+            val organisation = organisationM.orElseThrow();
+
+            val transactionsWithExtractionParametersApplied = extractionParametersFilteringService
+                    .applyExtractionParameters(filteringParameters, organisation, transactions);
 
             log.info("after filtering tx count: {}", transactionsWithExtractionParametersApplied.size());
 
@@ -225,33 +242,6 @@ public class NetSuiteService {
         });
 
         log.info("NetSuite ingestion fully completed.");
-    }
-
-    private static Set<Transaction> applyExtractionParameters(FilteringParameters filteringParameters,
-                                                              Set<Transaction> txs) {
-        return txs.stream()
-                .filter(tx -> filteringParameters.getOrganisationId().equals(tx.getOrganisation().getId()))
-                .filter(tx -> {
-                    val from = filteringParameters.getFrom();
-
-                    return tx.getEntryDate().isEqual(from) ||  tx.getEntryDate().isAfter(from);
-                })
-                .filter(tx -> {
-                    val to = filteringParameters.getFrom();
-
-                    return tx.getEntryDate().isEqual(to) ||  tx.getEntryDate().isAfter(to);
-                })
-                .filter(tx -> {
-                    val txTypes = filteringParameters.getTransactionTypes();
-
-                    return txTypes.isEmpty() || txTypes.contains(tx.getTransactionType());
-                })
-                .filter(tx -> {
-                    val transactionNumber = filteringParameters.getTransactionNumbers();
-
-                    return transactionNumber.isEmpty() || transactionNumber.contains(tx.getInternalTransactionNumber());
-                })
-                .collect(Collectors.toSet());
     }
 
     private Either<Problem, List<TxLine>> parseNetSuiteSearchResults(String jsonString) {

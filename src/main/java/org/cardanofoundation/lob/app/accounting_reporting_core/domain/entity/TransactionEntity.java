@@ -13,6 +13,7 @@ import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -37,6 +38,9 @@ public class TransactionEntity extends AuditEntity {
 
     @Column(name = "transaction_internal_number", nullable = false)
     private String transactionInternalNumber;
+
+    @Column(name = "accounting_period", nullable = false)
+    private YearMonth accountingPeriod;
 
     @Column(name = "transaction_type", nullable = false)
     @Enumerated(STRING)

@@ -56,6 +56,7 @@ public class MetadataSerialiser {
         metadataMap.put("type", transaction.getTransactionType().name());
 
         metadataMap.put("date", transaction.getEntryDate().toString());
+        metadataMap.put("accounting_period", transaction.getAccountingPeriod().toString());
         metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
 
         val transactionItemsMetadataList = MetadataBuilder.createList();
