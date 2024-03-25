@@ -76,6 +76,7 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
         }
 
         return TransactionWithViolations.create(tx.toBuilder()
+                .transactionApproved(organisation.isPreApproveTransactionsEnabled())
                 .organisation(tx.getOrganisation().toBuilder()
                         .shortName(Optional.of(organisation.getShortName()))
                         .currency(Optional.of(Currency.builder()

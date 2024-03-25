@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -61,6 +62,7 @@ public class TransactionConverter {
                 .fxRate(transaction.getFxRate())
                 .validationStatus(transaction.getValidationStatus())
                 .ledgerDispatchStatus(transaction.getLedgerDispatchStatus())
+                .accountingPeriod(transaction.getAccountingPeriod())
                 .transactionApproved(transaction.isTransactionApproved())
                 .ledgerDispatchApproved(transaction.isLedgerDispatchApproved());
 
@@ -200,6 +202,7 @@ public class TransactionConverter {
                 .transactionApproved(transactionEntity.transactionApproved())
                 .ledgerDispatchStatus(transactionEntity.ledgerDispatchStatus())
                 .ledgerDispatchApproved(transactionEntity.ledgerDispatchApproved())
+                .accountingPeriod(transactionEntity.accountingPeriod())
                 .items(items)
                 .build();
     }

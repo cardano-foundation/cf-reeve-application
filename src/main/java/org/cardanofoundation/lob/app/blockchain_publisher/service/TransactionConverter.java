@@ -36,6 +36,7 @@ public class TransactionConverter {
                 .organisation(convertOrganisation(tx.getOrganisation()))
                 .fxRate(tx.getFxRate())
                 .entryDate(tx.getEntryDate())
+                .accountingPeriod(tx.getAccountingPeriod())
                 .l1SubmissionData(L1SubmissionData.builder()
                         .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
                         .build())

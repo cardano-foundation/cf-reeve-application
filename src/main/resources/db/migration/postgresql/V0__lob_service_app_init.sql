@@ -41,7 +41,9 @@ CREATE TABLE organisation (
    short_name VARCHAR(50) NOT NULL,
    long_name VARCHAR(255) NOT NULL,
    vat_number VARCHAR(255) NOT NULL,
+   accounting_period_months INT NOT NULL,
    currency_id VARCHAR(255) NOT NULL,
+   pre_approve_transactions BOOLEAN,
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
@@ -121,6 +123,7 @@ CREATE TABLE accounting_core_transaction (
    transaction_id CHAR(64) NOT NULL,
    transaction_type VARCHAR(255) NOT NULL,
    entry_date DATE NOT NULL,
+   accounting_period DATE NOT NULL,
    transaction_internal_number VARCHAR(255) NOT NULL,
    fx_rate DECIMAL NOT NULL,
 
@@ -292,6 +295,7 @@ CREATE TABLE blockchain_publisher_transaction (
    organisation_currency_id VARCHAR(255) NOT NULL,
 
    transaction_type VARCHAR(255) NOT NULL,
+   accounting_period DATE NOT NULL,
    entry_date DATE NOT NULL,
 
    fx_rate DECIMAL NOT NULL,
@@ -757,7 +761,7 @@ INSERT INTO netsuite_code_mapping (mapping_id, internal_id, code_type, customer_
 INSERT INTO netsuite_code_mapping (mapping_id, internal_id, code_type, customer_code, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1536, 'CHART_OF_ACCOUNT', '6423110100', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO netsuite_code_mapping (mapping_id, internal_id, code_type, customer_code, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 112, 'CHART_OF_ACCOUNT', '9999999999', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO organisation (organisation_id, short_name, long_name, vat_number, currency_id, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'CF', 'Cardano Foundation', 'CHE-184.477.354', 'ISO_4217:CHF', 'system',  'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO organisation (organisation_id, short_name, long_name, vat_number, currency_id, accounting_period_months, pre_approve_transactions, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'CF', 'Cardano Foundation', 'CHE-184.477.354', 'ISO_4217:CHF', 12, 'true', 'system',  'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO organisation_currency (organisation_id, customer_code, currency_id, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'CHF', 'ISO_4217:CHF', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO organisation_currency (organisation_id, customer_code, currency_id, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'USD', 'ISO_4217:USD', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
