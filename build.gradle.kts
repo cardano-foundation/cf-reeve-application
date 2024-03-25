@@ -23,7 +23,7 @@ repositories {
 }
 
 extra["springCloudVersion"] = "2023.0.0"
-extra["springModulithVersion"] = "1.1.2"
+extra["springModulithVersion"] = "1.1.3"
 extra["jMoleculesVersion"] = "2023.1.0"
 
 dependencies {

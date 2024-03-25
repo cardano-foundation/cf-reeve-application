@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
 import javax.annotation.Nullable;
@@ -59,6 +60,10 @@ public class TransactionBatchEntity extends AuditEntity {
     })
     @Nullable
     private BatchStatistics batchStatistics = new BatchStatistics();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private TransactionBatchStatus status = TransactionBatchStatus.CREATED;
 
     @Override
     public boolean equals(Object o) {

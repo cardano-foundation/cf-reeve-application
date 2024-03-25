@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
 import org.jmolecules.event.annotation.DomainEvent;
 
 import java.util.Set;
@@ -23,14 +23,5 @@ public final class LedgerUpdatedEvent {
 
     private String organisationId;
     private Set<TxStatusUpdate> statusUpdates;
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @ToString
-    public static class TxStatusUpdate {
-        private String txId;
-        private LedgerDispatchStatus status;
-    }
 
 }
