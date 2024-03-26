@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class FilteringParameters {
+public class UserExtractionParameters {
 
     @NotBlank
     private String organisationId;
@@ -29,10 +29,10 @@ public class FilteringParameters {
     @Builder.Default
     private List<String> transactionNumbers = List.of();
 
-    public static FilteringParameters acceptAll(String organisationId,
-                                                LocalDate from,
-                                                LocalDate to) {
-        return FilteringParameters.builder()
+    public static UserExtractionParameters acceptAll(String organisationId,
+                                                     LocalDate from,
+                                                     LocalDate to) {
+        return UserExtractionParameters.builder()
                 .organisationId(organisationId)
                 .from(from)
                 .to(to)

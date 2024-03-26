@@ -64,7 +64,8 @@ public class ERPIncomingDataProcessor {
                 ingestionStored.getBatchId(),
                 ingestionStored.getInstanceId(),
                 ingestionStored.getInitiator(),
-                ingestionStored.getFilteringParameters()
+                ingestionStored.getUserExtractionParameters(),
+                ingestionStored.getSystemExtractionParameters()
         );
 
         log.info("Finished processing ERPIngestionStored event, event: {}", ingestionStored);

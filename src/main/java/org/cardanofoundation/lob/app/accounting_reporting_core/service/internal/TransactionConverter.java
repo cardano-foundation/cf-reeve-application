@@ -3,15 +3,19 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CoreCurrency;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.CostCenter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Counterparty;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Currency;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Document;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Project;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Vat;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,13 +28,16 @@ public class TransactionConverter {
 
     private final CoreCurrencyService coreCurrencyService;
 
-    public FilteringParameters convert(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters filteringParameters) {
+    public FilteringParameters convert(SystemExtractionParameters systemExtractionParameters,
+                                       UserExtractionParameters userExtractionParameters) {
         return FilteringParameters.builder()
-                .organisationId(filteringParameters.getOrganisationId())
-                .transactionTypes(filteringParameters.getTransactionTypes())
-                .from(filteringParameters.getFrom())
-                .to(filteringParameters.getTo())
-                .transactionNumbers(filteringParameters.getTransactionNumbers())
+                .organisationId(userExtractionParameters.getOrganisationId())
+                .transactionTypes(userExtractionParameters.getTransactionTypes())
+                .from(userExtractionParameters.getFrom())
+                .to(userExtractionParameters.getTo())
+                .accountingPeriodFrom(systemExtractionParameters.getAccountPeriodFrom())
+                .accountingPeriodTo(systemExtractionParameters.getAccountPeriodTo())
+                .transactionNumbers(userExtractionParameters.getTransactionNumbers())
                 .build();
     }
 

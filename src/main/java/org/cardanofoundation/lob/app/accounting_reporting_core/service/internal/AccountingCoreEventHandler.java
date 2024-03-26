@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.*;
 import org.cardanofoundation.lob.app.support.collections.Partitions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,9 @@ public class AccountingCoreEventHandler {
     private final LedgerService ledgerService;
 
     private final TransactionBatchService transactionBatchService;
+
+    @Value("${lob.blockchain_publisher.send.batch.size:25}")
+    private int sendBatchSize = 25;
 
     @ApplicationModuleListener
     public void handleERPIngestionStored(ERPIngestionStored event) {
@@ -53,7 +57,7 @@ public class AccountingCoreEventHandler {
     public void handleTxApprovedEvent(TxsApprovedEvent event) {
         log.info("Received TxsApprovedEvent event.");
 
-        for (val partition : Partitions.partition(event.getTransactionIds(), 25)) {
+        for (val partition : Partitions.partition(event.getTransactionIds(), sendBatchSize)) {
             ledgerService.tryToDispatchTransactionToBlockchainPublisher(event.getOrganisationId(), partition.asSet());
         }
     }
@@ -62,7 +66,7 @@ public class AccountingCoreEventHandler {
     public void handleTxDispatchApprovedEvent(TxsDispatchApprovedEvent event) {
         log.info("Received TxsApprovedEvent event.");
 
-        for (val partition : Partitions.partition(event.getTransactionIds(), 25)) {
+        for (val partition : Partitions.partition(event.getTransactionIds(), sendBatchSize)) {
             ledgerService.tryToDispatchTransactionToBlockchainPublisher(event.getOrganisationId(), partition.asSet());
         }
     }

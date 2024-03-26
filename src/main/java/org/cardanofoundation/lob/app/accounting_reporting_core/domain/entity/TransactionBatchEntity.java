@@ -35,7 +35,9 @@ public class TransactionBatchEntity extends AuditEntity {
             @AttributeOverride(name = "organisationId", column = @Column(name = "filtering_parameters_organisation_id")),
             @AttributeOverride(name = "from", column = @Column(name = "filtering_parameters_from_date")),
             @AttributeOverride(name = "to", column = @Column(name = "filtering_parameters_to_date")),
-            @AttributeOverride(name = "transactionTypes", column = @Column(name = "filtering_parameters_transaction_types"))
+            @AttributeOverride(name = "transactionTypes", column = @Column(name = "filtering_parameters_transaction_types")),
+            @AttributeOverride(name = "accountingPeriodFrom", column = @Column(name = "filtering_parameters_accounting_period_from")),
+            @AttributeOverride(name = "accountingPeriodTo", column = @Column(name = "filtering_parameters_accounting_period_to")),
     })
     @NotNull
     private FilteringParameters filteringParameters;

@@ -167,6 +167,8 @@ CREATE TABLE accounting_core_transaction_batch (
    filtering_parameters_from_date DATE NOT NULL,
    filtering_parameters_to_date DATE NOT NULL,
    filtering_parameters_transaction_number VARCHAR(255),
+   filtering_parameters_accounting_period_from DATE NOT NULL,
+   filtering_parameters_accounting_period_to DATE NOT NULL,
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
@@ -383,20 +385,6 @@ CREATE TABLE blockchain_publisher_transaction_item (
 --   REFERENCES revinfo (rev) MATCH SIMPLE
 --   ON UPDATE NO ACTION ON DELETE NO ACTION
 --);
-
--- Spring Modulith
-CREATE TABLE IF NOT EXISTS event_publication(
-  id               UUID NOT NULL,
-  listener_id      TEXT NOT NULL,
-  event_type       TEXT NOT NULL,
-  serialized_event TEXT NOT NULL,
-  publication_date TIMESTAMP WITH TIME ZONE NOT NULL,
-  completion_date  TIMESTAMP WITH TIME ZONE,
-  PRIMARY KEY (id)
-);
-
---CREATE INDEX IF NOT EXISTS event_publication_listener_id_serialized_event_idx ON event_publication (listener_id, serialized_event);
-CREATE INDEX IF NOT EXISTS event_publication_completion_date_idx ON event_publication (completion_date);
 
 INSERT INTO netsuite_code_mapping (mapping_id, internal_id, code_type, customer_code, created_by, updated_by, created_at, updated_at) VALUES ('fEU237r9rqAPEGEFY1yr', 1, 'ORGANISATION', '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
@@ -761,7 +749,7 @@ INSERT INTO netsuite_code_mapping (mapping_id, internal_id, code_type, customer_
 INSERT INTO netsuite_code_mapping (mapping_id, internal_id, code_type, customer_code, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1536, 'CHART_OF_ACCOUNT', '6423110100', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO netsuite_code_mapping (mapping_id, internal_id, code_type, customer_code, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 112, 'CHART_OF_ACCOUNT', '9999999999', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO organisation (organisation_id, short_name, long_name, vat_number, currency_id, accounting_period_months, pre_approve_transactions, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'CF', 'Cardano Foundation', 'CHE-184.477.354', 'ISO_4217:CHF', 12, 'true', 'system',  'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO organisation (organisation_id, short_name, long_name, vat_number, currency_id, accounting_period_months, pre_approve_transactions, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'CF', 'Cardano Foundation', 'CHE-184.477.354', 'ISO_4217:CHF', 36, 'true', 'system',  'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO organisation_currency (organisation_id, customer_code, currency_id, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'CHF', 'ISO_4217:CHF', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO organisation_currency (organisation_id, customer_code, currency_id, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'USD', 'ISO_4217:USD', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -1118,3 +1106,17 @@ INSERT INTO organisation_chart_of_account (organisation_id, customer_code, ref_c
 INSERT INTO organisation_chart_of_account (organisation_id, customer_code, ref_code, event_ref_code, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 6422140100, '8304', '7D00', 'system',  'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO organisation_chart_of_account (organisation_id, customer_code, ref_code, event_ref_code, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 6423110100, '8401', '7E00', 'system',  'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO organisation_chart_of_account (organisation_id, customer_code, ref_code, event_ref_code, created_by, updated_by, created_at, updated_at) VALUES ('75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 9999999999, '9900', '9900', 'system',  'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Spring Modulith
+CREATE TABLE IF NOT EXISTS event_publication(
+  id               UUID NOT NULL,
+  listener_id      TEXT NOT NULL,
+  event_type       TEXT NOT NULL,
+  serialized_event TEXT NOT NULL,
+  publication_date TIMESTAMP WITH TIME ZONE NOT NULL,
+  completion_date  TIMESTAMP WITH TIME ZONE,
+  PRIMARY KEY (id)
+);
+
+--CREATE INDEX IF NOT EXISTS event_publication_listener_id_serialized_event_idx ON event_publication (listener_id, serialized_event);
+CREATE INDEX IF NOT EXISTS event_publication_completion_date_idx ON event_publication (completion_date);

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Embeddable
@@ -30,6 +31,12 @@ public class FilteringParameters {
 
     @NotNull
     private LocalDate to;
+
+    @NotNull
+    private YearMonth accountingPeriodFrom;
+
+    @NotNull
+    private YearMonth accountingPeriodTo;
 
     @Builder.Default
     @NotNull
