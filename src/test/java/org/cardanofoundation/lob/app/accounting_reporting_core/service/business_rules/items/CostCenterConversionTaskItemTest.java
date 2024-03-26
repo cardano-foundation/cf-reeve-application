@@ -6,6 +6,9 @@ import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.cardanofoundation.lob.app.organisation.domain.entity.OrganisationCostCenter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.Set;
@@ -13,18 +16,18 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.Journal;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class CostCenterConversionTaskItemTest {
 
     private PipelineTaskItem taskItem;
 
+    @Mock
     private OrganisationPublicApiIF organisationPublicApiIF;
 
     @BeforeEach
     public void setup() {
-        this.organisationPublicApiIF = mock(OrganisationPublicApiIF.class);
         this.taskItem = new CostCenterConversionTaskItem((passedOrganisationTransactions, ignoredOrganisationTransactions, allViolationUntilNow) -> null, organisationPublicApiIF);
     }
 
