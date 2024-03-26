@@ -3,8 +3,9 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.SystemExtractionParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.BatchStatistics;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchCreatedEvent;
@@ -15,6 +16,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,13 +41,14 @@ public class TransactionBatchService {
     public void createTransactionBatch(String batchId,
                                        String instanceId,
                                        String initiator,
-                                       FilteringParameters filteringParameters) {
-        log.info("Creating transaction batch, batchId: {}, initiator: {}, instanceId: {}, filteringParameters: {}", batchId, initiator, instanceId, filteringParameters);
+                                       UserExtractionParameters userExtractionParameters,
+                                       SystemExtractionParameters systemExtractionParameters) {
+        log.info("Creating transaction batch, batchId: {}, initiator: {}, instanceId: {}, filteringParameters: {}", batchId, initiator, instanceId, userExtractionParameters);
 
         val transactionBatchEntity = new TransactionBatchEntity()
                 .id(batchId)
                 .transactions(Set.of()) // initially empty
-                .filteringParameters(transactionConverter.convert(filteringParameters))
+                .filteringParameters(transactionConverter.convert(systemExtractionParameters, userExtractionParameters))
                 .status(CREATED)
                 .updatedBy(initiator)
                 .createdBy(initiator);
@@ -57,7 +60,8 @@ public class TransactionBatchService {
         applicationEventPublisher.publishEvent(TransactionBatchCreatedEvent.builder()
                 .batchId(batchId)
                 .instanceId(instanceId)
-                .filteringParameters(filteringParameters)
+                .userExtractionParameters(userExtractionParameters)
+                .systemExtractionParameters(systemExtractionParameters)
                 .build());
     }
 
@@ -112,6 +116,16 @@ public class TransactionBatchService {
             transactionBatchRepository.findAllById(allBatchesIdsAssociatedWithThisTransaction)
                     .forEach(txBatch -> updateTransactionBatchStatusAndStats(txBatch.id(), Optional.empty()));
         }
+    }
+
+    @Transactional
+    public List<TransactionBatchEntity> findAll() {
+        return transactionBatchRepository.findAll();
+    }
+
+    @Transactional
+    public Optional<TransactionBatchEntity> findById(String batchId) {
+        return transactionBatchRepository.findById(batchId);
     }
 
 }

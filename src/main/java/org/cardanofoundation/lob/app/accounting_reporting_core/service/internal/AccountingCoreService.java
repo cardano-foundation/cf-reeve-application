@@ -3,7 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsApprovedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsDispatchApprovedEvent;
@@ -26,7 +26,7 @@ public class AccountingCoreService {
     private int maxApprovalBatchSize = 25;
 
     @Transactional
-    public void scheduleIngestion(FilteringParameters fp) {
+    public void scheduleIngestion(UserExtractionParameters fp) {
         log.info("scheduleIngestion, parameters: {}", fp);
 
         applicationEventPublisher.publishEvent(new ScheduledIngestionEvent(fp, "system"));

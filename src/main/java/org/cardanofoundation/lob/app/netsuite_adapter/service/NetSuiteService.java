@@ -1,22 +1,18 @@
 package org.cardanofoundation.lob.app.netsuite_adapter.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FilteringParameters;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.SystemExtractionParameters;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchChunkEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteClient;
-import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionDataSearchResult;
-import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TxLine;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestion;
 import org.cardanofoundation.lob.app.netsuite_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MD5Hashing;
 import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
-import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.cardanofoundation.lob.app.support.collections.Partitions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,15 +42,15 @@ public class NetSuiteService {
 
     private final ViolationsSenderService violationsSenderService;
 
-    private final ObjectMapper objectMapper;
-
     private final TransactionConverter transactionConverter;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final SystemExtractionParametersFactory systemExtractionParametersFactory;
+
     private final ExtractionParametersFilteringService extractionParametersFilteringService;
 
-    private final OrganisationPublicApiIF organisationPublicApi;
+    private final NetSuiteParser netSuiteParser;
 
     @Value("${lob.events.netsuite.to.core.send.batch.size:25}")
     private int sendBatchSize = 25;
@@ -77,7 +72,7 @@ public class NetSuiteService {
 
     @Transactional
     public void startERPExtraction(String initiator,
-                                   FilteringParameters filteringParameters) {
+                                   UserExtractionParameters userExtractionParameters) {
         log.info("Running ingestion...");
 
         val netSuiteJsonE = retrieveLatestNetsuiteTransactionLines();
@@ -136,12 +131,21 @@ public class NetSuiteService {
 
         val storedNetsuiteIngestion = ingestionRepository.saveAndFlush(netSuiteIngestion);
 
+        val systemExtractionParametersE = systemExtractionParametersFactory.createSystemExtractionParameters(userExtractionParameters.getOrganisationId());
+        if (systemExtractionParametersE.isLeft()) {
+            log.error("Error creating system extraction parameters: {}", systemExtractionParametersE.getLeft().getDetail());
+
+            applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, systemExtractionParametersE.getLeft()));
+            return;
+        }
+
         applicationEventPublisher.publishEvent(ERPIngestionStored.builder()
                 .batchId(storedNetsuiteIngestion.getId())
-                .organisationId(filteringParameters.getOrganisationId())
+                .organisationId(userExtractionParameters.getOrganisationId())
                 .instanceId(netsuiteInstanceId)
                 .initiator(initiator)
-                .filteringParameters(filteringParameters)
+                .userExtractionParameters(userExtractionParameters)
+                .systemExtractionParameters(systemExtractionParametersE.get())
                 .build()
         );
 
@@ -151,7 +155,8 @@ public class NetSuiteService {
     @Transactional
     public void continueERPExtraction(String batchId,
                                       String instanceId,
-                                      FilteringParameters filteringParameters
+                                      UserExtractionParameters userExtractionParameters,
+                                      SystemExtractionParameters systemExtractionParameters
     ) {
         log.info("Continuing ERP extraction..., batchId: {}, instanceId: {}", batchId, instanceId);
 
@@ -170,7 +175,7 @@ public class NetSuiteService {
 
         val netsuiteIngestion = netsuiteIngestionM.orElseThrow();
 
-        val transactionDataSearchResultE = parseNetSuiteSearchResults(decompress(netsuiteIngestion.getIngestionBody()));
+        val transactionDataSearchResultE = netSuiteParser.parseSearchResults(decompress(netsuiteIngestion.getIngestionBody()));
 
         if (transactionDataSearchResultE.isEmpty()) {
             log.warn("Error parsing NetSuite search result: {}", transactionDataSearchResultE.getLeft());
@@ -190,85 +195,50 @@ public class NetSuiteService {
 
         log.info("coreTransactionLines count: {}", coreTransactionsToOrganisationMap.size());
 
-        coreTransactionsToOrganisationMap.forEach((organisationId, transactions) -> {
-            val organisationM = organisationPublicApi.findByOrganisationId(organisationId);
+        coreTransactionsToOrganisationMap
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().equals(systemExtractionParameters.getOrganisationId())
+                        && entry.getKey().equals(userExtractionParameters.getOrganisationId()))
+                .forEach(entry -> {
+                    val organisationId = entry.getKey();
+                    val transactions = entry.getValue();
 
-            if (organisationM.isEmpty()) {
-                log.error("Organisation not found for id: {}", organisationId);
+                    val transactionsWithExtractionParametersApplied = extractionParametersFilteringService
+                            .applyExtractionParameters(userExtractionParameters, systemExtractionParameters, transactions);
 
-                val issue = Problem.builder()
-                        .withTitle("NETSUITE_ADAPTER::ORGANISATION_NOT_FOUND")
-                        .withDetail(STR."Organisation not found for id: \{organisationId}")
-                        .build();
+                    log.info("after filtering tx count: {}", transactionsWithExtractionParametersApplied.size());
 
-                applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
+                    if (transactionsWithExtractionParametersApplied.isEmpty()) {
+                        log.warn("No core passedTransactions to process for organisationId: {}", organisationId);
 
-                return;
-            }
+                        // TODO send batch failed event?
+                        return;
+                    }
 
-            val organisation = organisationM.orElseThrow();
+                    log.info("Publishing ERPIngestionEvent event, organisationId: {}, tx count: {}", organisationId, transactions.size());
 
-            val transactionsWithExtractionParametersApplied = extractionParametersFilteringService
-                    .applyExtractionParameters(filteringParameters, organisation, transactions);
+                    Partitions.partition(transactionsWithExtractionParametersApplied, sendBatchSize).forEach(txPartition -> {
+                        val eventBuilder = TransactionBatchChunkEvent.builder()
+                                .batchId(netsuiteIngestion.getId())
+                                .organisationId(organisationId)
+                                .systemExtractionParameters(systemExtractionParameters)
+                                .totalTransactionsCount(Optional.of(transactionsWithExtractionParametersApplied.size()))
+                                .transactions(txPartition.asSet());
 
-            log.info("after filtering tx count: {}", transactionsWithExtractionParametersApplied.size());
+                        if (txPartition.isFirst()) {
+                            eventBuilder.status(STARTED);
+                        } else if (txPartition.isLast()) {
+                            eventBuilder.status(FINISHED);
+                        } else {
+                            eventBuilder.status(PROCESSING);
+                        }
 
-            if (transactionsWithExtractionParametersApplied.isEmpty()) {
-                log.warn("No core passedTransactions to process for organisationId: {}", organisationId);
-
-                // TODO send batch failed event?
-                return;
-            }
-
-            log.info("Publishing ERPIngestionEvent event, organisationId: {}, tx count: {}", organisationId, transactions.size());
-
-            Partitions.partition(transactionsWithExtractionParametersApplied, sendBatchSize).forEach(txPartition -> {
-                val eventBuilder = TransactionBatchChunkEvent.builder()
-                        .batchId(netsuiteIngestion.getId())
-                        .organisationId(organisationId)
-                        .totalTransactionsCount(Optional.of(transactionsWithExtractionParametersApplied.size()))
-                        .transactions(txPartition.asSet());
-
-                if (txPartition.isFirst()) {
-                    eventBuilder.status(STARTED);
-                } else if (txPartition.isLast()) {
-                    eventBuilder.status(FINISHED);
-                } else {
-                    eventBuilder.status(PROCESSING);
-                }
-
-                applicationEventPublisher.publishEvent(eventBuilder.build());
-            });
-        });
+                        applicationEventPublisher.publishEvent(eventBuilder.build());
+                    });
+                });
 
         log.info("NetSuite ingestion fully completed.");
-    }
-
-    private Either<Problem, List<TxLine>> parseNetSuiteSearchResults(String jsonString) {
-        try {
-            val transactionDataSearchResult = objectMapper.readValue(jsonString, TransactionDataSearchResult.class);
-
-            // TODO how to handle pagination and more results to fetch?
-
-            if (transactionDataSearchResult.more()) {
-                log.warn("More data available in the search result, pagination not implemented yet!");
-
-                return Either.left(Problem.builder()
-                        .withTitle("NETSUITE_ADAPTER::PAGINATION_NOT_IMPLEMENTED")
-                        .withDetail("More data available in the search result, pagination not implemented yet!")
-                        .build()
-                );
-            }
-
-            return Either.right(transactionDataSearchResult.lines());
-        } catch (JsonProcessingException e) {
-            log.error("Error parsing NetSuite search result: {}", e.getMessage(), e);
-
-            return Either.left(Problem.builder()
-                    .withTitle("NETSUITE_ADAPTER::JSON_PARSE_ERROR")
-                    .withDetail(STR."JSON rrror parsing NetSuite search error: \{e.getMessage()}")
-                    .build());
-        }
     }
 
 }
