@@ -54,7 +54,7 @@ public class TransactionRepositoryGateway {
 
         if (tx.validationStatus() == FAILED) {
             return Either.left(Problem.builder()
-                    .withTitle("TX_FAILED")
+                    .withTitle("CANNOT_APPROVE_FAILED_TX")
                     .withDetail(STR."Cannot approve a failed transaction, transactionId: \{transactionId}")
                     .with("transactionId", transactionId)
                     .build()
@@ -117,7 +117,7 @@ public class TransactionRepositoryGateway {
 
         if (tx.validationStatus() == FAILED) {
             return Either.left(Problem.builder()
-                    .withTitle("TX_FAILED")
+                    .withTitle("CANNOT_APPROVE_FAILED_TX")
                     .withDetail(STR."Cannot approve dispatch for a failed transaction, transactionId: \{transactionId}")
                     .with("transactionId", transactionId)
                     .build()
