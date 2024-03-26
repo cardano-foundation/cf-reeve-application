@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsApprovedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsDispatchApprovedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter;
@@ -72,31 +73,29 @@ public class TransactionRepositoryGateway {
     }
 
     @Transactional
-    // this method should not be used from the frontend, only internal use
-    // it does not validate if approval is allowed
-    public void approveTransactions(Set<String> transactionIds) {
+    public Set<String> approveTransactions(Set<String> transactionIds) {
         log.info("Approving transactions: {}", transactionIds);
 
         val transactions = transactionRepository.findAllById(transactionIds)
                 .stream()
+                .filter(tx -> tx.validationStatus() != FAILED)
                 .map(tx -> tx.transactionApproved(true))
                 .collect(Collectors.toSet());
 
-        transactionRepository.saveAll(transactions);
+        return transactionRepository.saveAll(transactions).stream().map(TransactionEntity::id).collect(Collectors.toSet());
     }
 
     @Transactional
-    // this method should not be used from the frontend, only internal use
-    // it does not validate if approval is allowed
-    public void approveTransactionsDispatch(Set<String> transactionIds) {
+    public Set<String> approveTransactionsDispatch(Set<String> transactionIds) {
         log.info("Approving transactions dispatch: {}", transactionIds);
 
         val transactions = transactionRepository.findAllById(transactionIds)
                 .stream()
+                .filter(tx -> tx.validationStatus() != FAILED)
                 .map(tx -> tx.ledgerDispatchApproved(true))
                 .collect(Collectors.toSet());
 
-        transactionRepository.saveAll(transactions);
+        return transactionRepository.saveAll(transactions).stream().map(TransactionEntity::id).collect(Collectors.toSet());
     }
 
     @Transactional

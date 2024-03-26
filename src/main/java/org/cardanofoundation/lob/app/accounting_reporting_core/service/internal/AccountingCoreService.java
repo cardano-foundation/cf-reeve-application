@@ -32,19 +32,19 @@ public class AccountingCoreService {
         applicationEventPublisher.publishEvent(new ScheduledIngestionEvent(fp, "system"));
     }
 
-    @Transactional
-    public void readBatchAndApproveTransactions(String organisationId) {
-        log.info("readBatchAndApproveTransactions, organisationId: {}, maxDispatchBatchSize: {}", organisationId, maxApprovalBatchSize);
-
-        val txIds = transactionRepositoryGateway.readApprovalPendingBlockchainTransactionIds(organisationId, maxApprovalBatchSize, true, false);
-
-        if (txIds.isEmpty()) {
-            log.info("No transactions to dispatch for organisation: {}", organisationId);
-            return;
-        }
-
-        approveTransactions(organisationId, txIds);
-    }
+//    @Transactional
+//    public void readBatchAndApproveTransactions(String organisationId) {
+//        log.info("readBatchAndApproveTransactions, organisationId: {}, maxDispatchBatchSize: {}", organisationId, maxApprovalBatchSize);
+//
+//        val txIds = transactionRepositoryGateway.readApprovalPendingBlockchainTransactionIds(organisationId, maxApprovalBatchSize, true, false);
+//
+//        if (txIds.isEmpty()) {
+//            log.info("No transactions to dispatch for organisation: {}", organisationId);
+//            return;
+//        }
+//
+//        approveTransactions(organisationId, txIds);
+//    }
 
     @Transactional
     public void readBatchAndApproveTransactionsWithDispatch(String organisationId) {
@@ -59,7 +59,6 @@ public class AccountingCoreService {
 
         approveTransactionsDispatch(organisationId, txIds);
     }
-
 
     @Transactional
     public void approveTransactions(String organisationId, Set<String> transactionIds) {
