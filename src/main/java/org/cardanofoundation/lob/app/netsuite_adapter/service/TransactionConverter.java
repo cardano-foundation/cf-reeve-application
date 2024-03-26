@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.FinancialPeriodSource;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionsWithViolations;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TxLine;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Violation;
@@ -36,6 +37,9 @@ public class TransactionConverter {
 
     @Value("${lob.events.netsuite.to.core.netsuite.instance.id:fEU237r9rqAPEGEFY1yr}")
     private String netsuiteInstanceId;
+
+    @Value("${lob.events.netsuite.financial.period.source:IMPLICIT}")
+    private FinancialPeriodSource financialPeriodSource;
 
     // split results across multiple organisations
     public TransactionsWithViolations convert(List<TxLine> txLines) {
@@ -179,7 +183,7 @@ public class TransactionConverter {
                 .internalTransactionNumber(txLine.transactionNumber())
                 .entryDate(txLine.date())
                 .transactionType(transTypeE.get())
-                .accountingPeriod(YearMonth.from(txLine.date())) // TODO fix this properly from the netsuite transaction field
+                .accountingPeriod(financialPeriod(txLine))
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
                         .id(organisationId)
                         .build()
@@ -188,6 +192,14 @@ public class TransactionConverter {
                 .items(txItems)
                 .build())
         );
+    }
+
+    private YearMonth financialPeriod(TxLine txLine) {
+        return switch (financialPeriodSource) {
+            case IMPLICIT:
+                yield YearMonth.from(txLine.date());
+            case EXPLICIT: throw new UnsupportedOperationException("Explicit financial period source is not supported yet");
+        };
     }
 
     private Either<Violation, TransactionType> transactionType(String organisationId,

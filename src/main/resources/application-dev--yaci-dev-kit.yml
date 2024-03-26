@@ -15,6 +15,11 @@ lob:
     api:
       key: ""
 
+  netsuite:
+    financial:
+      period:
+        source: IMPLICIT
+
   l1:
     transaction:
       metadata:
