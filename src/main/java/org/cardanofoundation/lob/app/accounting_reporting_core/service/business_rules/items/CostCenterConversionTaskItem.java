@@ -5,13 +5,14 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
-import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
+import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.COST_CENTER_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
@@ -19,7 +20,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 public class CostCenterConversionTaskItem implements PipelineTaskItem {
 
     private final PipelineTask pipelineTask;
-    private final OrganisationPublicApi organisationPublicApi;
+    private final OrganisationPublicApiIF organisationPublicApi;
 
     @Override
     public TransactionWithViolations run(TransactionWithViolations violationTransaction) {
@@ -74,7 +75,8 @@ public class CostCenterConversionTaskItem implements PipelineTaskItem {
                 .collect(Collectors.toSet());
 
         if (!violations.isEmpty()) {
-            return violationTransaction;
+            return TransactionWithViolations
+                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
         }
 
         return TransactionWithViolations.create(tx.toBuilder()
