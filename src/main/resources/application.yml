@@ -109,6 +109,10 @@ lob:
       type: ${LOB_DISPATCHING_STRATEGY:DELAYED}
 
   netsuite:
+    financial:
+      period:
+        source: EXPLICIT
+
     client:
       realm: 6766746_SB1
       oauth_nonce: NN9H7V6319V
