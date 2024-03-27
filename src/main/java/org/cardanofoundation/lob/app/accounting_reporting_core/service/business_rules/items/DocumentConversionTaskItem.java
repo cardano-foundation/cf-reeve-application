@@ -8,7 +8,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Vat;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CoreCurrencyRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
-import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
+import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -24,7 +24,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 public class DocumentConversionTaskItem implements PipelineTaskItem {
 
     private final PipelineTask pipelineTask;
-    private final OrganisationPublicApi organisationPublicApi;
+    private final OrganisationPublicApiIF organisationPublicApi;
     private final CoreCurrencyRepository coreCurrencyRepository;
 
     @Override
@@ -33,6 +33,7 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
         val organisationId = tx.getOrganisation().getId();
 
         val violations = new LinkedHashSet<Violation>();
+
 
         val txItems = tx.getItems().stream().map(txItem -> {
                     val documentM = txItem.getDocument();

@@ -2,15 +2,13 @@ package org.cardanofoundation.lob.app.organisation.domain.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Entity(name = "organisation_project")
+@Builder
 public class OrganisationProject {
 
     @EmbeddedId
