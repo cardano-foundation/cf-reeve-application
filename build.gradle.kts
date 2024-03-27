@@ -94,7 +94,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
     testImplementation("io.rest-assured:rest-assured:5.4.0")
     testImplementation("org.wiremock:wiremock-standalone:3.3.1")
-
+    testImplementation("net.jqwik:jqwik:1.7.4") // Jqwik for property-based testing
     testImplementation("org.assertj:assertj-core:3.25.2")
 }
 

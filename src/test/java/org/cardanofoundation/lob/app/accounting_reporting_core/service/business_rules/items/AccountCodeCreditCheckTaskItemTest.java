@@ -44,7 +44,6 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         val newTx = taskItem.run(txs);
 
-
         assertThat(newTx.violations()).isEmpty();
     }
 
