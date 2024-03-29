@@ -46,7 +46,7 @@ public record Violation(Type type,
 
     public enum Code {
         DOCUMENT_MUST_BE_PRESENT,
-        TX_ALREADY_DISPATCHED,
+        TX_CANNOT_BE_ALTERED,
         ACCOUNT_CODE_CREDIT_IS_EMPTY,
         ACCOUNT_CODE_DEBIT_IS_EMPTY,
         TX_SANITY_CHECK_FAIL,

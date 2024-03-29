@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules;
 
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -12,10 +11,12 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.repository.Transa
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TX_ALREADY_DISPATCHED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TX_CANNOT_BE_ALTERED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.WARN;
 
@@ -29,45 +30,56 @@ public class DbSyncProcessorPipelineTask implements PipelineTask {
     public TransformationResult run(OrganisationTransactions passedTransactions,
                                     OrganisationTransactions ignoredTransactions,
                                     Set<Violation> allViolationUntilNow) {
-        val newViolations = new HashSet<Violation>();
-
         val organisationId = passedTransactions.organisationId();
-        val transactions = passedTransactions.transactions();
+        val incomingTransactions = passedTransactions.transactions();
 
-        val allTransactionIds = transactions.stream()
+        if (incomingTransactions.isEmpty()) {
+            return new TransformationResult(passedTransactions, ignoredTransactions, allViolationUntilNow);
+        }
+
+        val txIds = incomingTransactions.stream()
                 .map(Transaction::getId)
                 .collect(Collectors.toSet());
 
-        val dispatchedTransactions = transactionRepositoryGateway.findDispatchedTransactions(organisationId, transactions);
+        val databaseTransactionsMap = transactionRepositoryGateway.findByAllId(txIds)
+                .stream()
+                .collect(Collectors.toMap(Transaction::getId, Function.identity()));
 
-        for (val dispatchedTransaction : dispatchedTransactions) {
-            val v = Violation.create(
-                    WARN,
-                    ERP,
-                    organisationId,
-                    dispatchedTransaction.getId(),
-                    TX_ALREADY_DISPATCHED,
-                    DbSyncProcessorPipelineTask.class.getName(),
-                    Map.of(
-                            "transactionNumber", dispatchedTransaction.getInternalTransactionNumber()
-                    )
-            );
+        val newViolations = new HashSet<>(allViolationUntilNow);
+        val toProcessTransactions = new HashSet<Transaction>();
+        val toIgnoreTransactions = new HashSet<Transaction>();
 
-            newViolations.add(v);
+        for (val incomingTx : incomingTransactions) {
+            val txM = Optional.ofNullable(databaseTransactionsMap.get(incomingTx.getId()));
+
+            val isDispatchMarked = txM.map(Transaction::allApprovalsPassedForTransactionDispatch).orElse(false);
+            val notStoredYet = txM.isEmpty();
+            val isChanged = notStoredYet || (txM.map(tx -> !tx.isTheSameBusinessWise(incomingTx)).orElse(false));
+
+            if (isDispatchMarked && isChanged) {
+                val violation = Violation.create(
+                        WARN,
+                        ERP,
+                        organisationId,
+                        incomingTx.getId(),
+                        TX_CANNOT_BE_ALTERED,
+                        DbSyncProcessorPipelineTask.class.getName(),
+                        Map.of("transactionNumber", incomingTx.getInternalTransactionNumber())
+                );
+
+                newViolations.add(violation);
+            }
+
+            if (isChanged) {
+                toProcessTransactions.add(incomingTx);
+            } else {
+                toIgnoreTransactions.add(incomingTx);
+            }
         }
 
-        val dispatchedTransactionIds = dispatchedTransactions.stream().map(Transaction::getId).collect(Collectors.toSet());
-        val notDispatchedTransactionIds = Sets.difference(allTransactionIds, dispatchedTransactionIds);
-
-        val toDispatch = Sets.difference(notDispatchedTransactionIds, dispatchedTransactionIds);
-
-        val toDispatchTransactions = transactions.stream()
-                .filter(tx -> toDispatch.contains(tx.getId()))
-                .collect(Collectors.toSet());
-
         return new TransformationResult(
-                new OrganisationTransactions(organisationId, toDispatchTransactions),
-                new OrganisationTransactions(organisationId, dispatchedTransactions),
+                new OrganisationTransactions(organisationId, toProcessTransactions),
+                new OrganisationTransactions(organisationId, toIgnoreTransactions),
                 newViolations
         );
     }

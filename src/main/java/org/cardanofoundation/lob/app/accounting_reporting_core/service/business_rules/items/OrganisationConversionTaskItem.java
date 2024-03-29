@@ -52,9 +52,9 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
 
         val organisation = organisationM.orElseThrow();
 
-        val orgVanillaCurrencyM = coreCurrencyRepository.findByCurrencyId(organisation.getCurrencyId());
+        val coreCurrencyM = coreCurrencyRepository.findByCurrencyId(organisation.getCurrencyId());
 
-        if (orgVanillaCurrencyM.isEmpty()) {
+        if (coreCurrencyM.isEmpty()) {
             val v = Violation.create(
                     ERROR,
                     Violation.Source.INTERNAL,
@@ -80,8 +80,8 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
                 .organisation(tx.getOrganisation().toBuilder()
                         .shortName(Optional.of(organisation.getShortName()))
                         .currency(Optional.of(Currency.builder()
-                                .coreCurrency(orgVanillaCurrencyM)
-                                .customerCode(orgVanillaCurrencyM.orElseThrow().getCurrencyISOCode())
+                                .coreCurrency(coreCurrencyM)
+                                .customerCode(coreCurrencyM.orElseThrow().getCurrencyISOCode())
                                 .build()))
                         .build())
                 .build());

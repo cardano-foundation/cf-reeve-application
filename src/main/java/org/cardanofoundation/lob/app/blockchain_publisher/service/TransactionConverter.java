@@ -32,6 +32,7 @@ public class TransactionConverter {
         val transactionEntity = TransactionEntity.builder()
                 .id(tx.getId())
                 .internalNumber(tx.getInternalTransactionNumber())
+                .batchId(tx.getBatchId())
                 .transactionType(tx.getTransactionType())
                 .organisation(convertOrganisation(tx.getOrganisation()))
                 .fxRate(tx.getFxRate())

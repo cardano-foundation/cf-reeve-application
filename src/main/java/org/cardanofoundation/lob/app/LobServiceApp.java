@@ -17,6 +17,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.modulith.Modulith;
+import org.springframework.modulith.Modulithic;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -37,6 +39,7 @@ import java.time.Clock;
 @ComponentScan(basePackages = {
         "org.cardanofoundation.lob.app"
 })
+@Modulith
 @EnableTransactionManagement
 @EnableAsync
 //@ImportRuntimeHints(LobServiceApp.Hints.class)

@@ -6,14 +6,14 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.AccountingCoreService;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 // TEMPORARY HELPER JOB TO SIMULATE THE USER APPROVING TRANSACTIONS
 
-@Component
+@Service
 @Slf4j
 @RequiredArgsConstructor
-public class TransactionsDispatchingAutoApprovalLedgerNotifier {
+public class TransactionsDispatchingAutoApprovalLedgerNotifierJob {
 
     private final OrganisationPublicApi organisationPublicApi;
     private final AccountingCoreService accountingCoreService;

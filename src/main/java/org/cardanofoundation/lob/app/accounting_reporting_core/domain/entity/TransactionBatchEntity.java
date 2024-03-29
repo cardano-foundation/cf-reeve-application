@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
+import org.springframework.data.domain.Persistable;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
@@ -23,7 +24,7 @@ import static jakarta.persistence.FetchType.EAGER;
 @Entity(name = "accounting_reporting_core.TransactionBatchEntity")
 @Table(name = "accounting_core_transaction_batch")
 @NoArgsConstructor
-public class TransactionBatchEntity extends AuditEntity {
+public class TransactionBatchEntity extends AuditEntity implements Persistable<String> {
 
     @Id
     @Column(name = "transaction_batch_id", nullable = false)
@@ -88,6 +89,16 @@ public class TransactionBatchEntity extends AuditEntity {
 
     public Optional<BatchStatistics> getBatchStatistics() {
         return Optional.ofNullable(batchStatistics);
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return createdAt == null;
     }
 
 }

@@ -11,14 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 import static com.networknt.schema.SpecVersion.VersionFlag.V7;
 
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
 public class JsonSchemaMetadataChecker implements MetadataChecker {
 

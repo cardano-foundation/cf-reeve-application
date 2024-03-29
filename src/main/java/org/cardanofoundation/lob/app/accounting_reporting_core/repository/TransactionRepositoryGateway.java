@@ -150,20 +150,20 @@ public class TransactionRepositoryGateway {
                         Limit.of(limit));
     }
 
-    public Set<Transaction> findDispatchedTransactions(String organisationId,
-                                                       Set<Transaction> transactions) {
-        val transactionIds = transactionIds(transactions);
-
-        val seenTransactionStatuses = LedgerDispatchStatus.allDispatchedStatuses();
-
-        val dbTransactions = transactionRepository.findTransactionsByLedgerDispatchStatus(
-                organisationId,
-                transactionIds,
-                seenTransactionStatuses
-        );
-
-        return transactionConverter.convertFromDb(dbTransactions);
-    }
+//    public Set<Transaction> findDispatchedTransactions(String organisationId,
+//                                                       Set<Transaction> transactions) {
+//        val transactionIds = transactionIds(transactions);
+//
+//        val seenTransactionStatuses = LedgerDispatchStatus.allDispatchedStatuses();
+//
+//        val dbTransactions = transactionRepository.findTransactionsByLedgerDispatchStatus(
+//                organisationId,
+//                transactionIds,
+//                seenTransactionStatuses
+//        );
+//
+//        return transactionConverter.convertFromDb(dbTransactions);
+//    }
 
     public Optional<Transaction> findById(String transactionId) {
         return transactionRepository.findById(transactionId).map(transactionConverter::convert);

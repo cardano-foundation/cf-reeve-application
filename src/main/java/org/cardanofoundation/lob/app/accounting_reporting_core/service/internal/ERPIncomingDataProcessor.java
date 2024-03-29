@@ -47,8 +47,9 @@ public class ERPIncomingDataProcessor {
         );
 
         val passedTransactions = finalTransformationResult.passedTransactions().transactions();
+        log.info("PASSING transactions: {}", passedTransactions.size());
 
-        dbUpdateTransactionBatch(batchId, passedTransactions, transactions);
+        dbUpdateTransactionBatch(batchId, passedTransactions);
 
         applicationEventPublisher.publishEvent(new BusinessRulesAppliedEvent(organisationId, batchId, totalTransactionsCount));
 
@@ -72,13 +73,12 @@ public class ERPIncomingDataProcessor {
     }
 
     private void dbUpdateTransactionBatch(String batchId,
-                                          Set<Transaction> toDispatchTransactions,
-                                          Set<Transaction> allTransactions) {
+                                          Set<Transaction> toDispatchTransactions) {
         log.info("Updating transaction batch, batchId: {}", batchId);
 
         transactionRepository.saveAll(transactionConverter.convertToDb(toDispatchTransactions));
 
-        val transactionBatchAssocEntities = allTransactions
+        val transactionBatchAssocEntities = toDispatchTransactions
                 .stream()
                 .map(tx -> new TransactionBatchAssocEntity(new TransactionBatchAssocEntity.Id(batchId, tx.getId())))
                 .collect(Collectors.toSet());

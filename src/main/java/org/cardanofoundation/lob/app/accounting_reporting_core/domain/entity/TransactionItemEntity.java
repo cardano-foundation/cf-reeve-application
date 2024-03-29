@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
+import org.springframework.data.domain.Persistable;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -22,11 +23,21 @@ import java.util.Optional;
 @ToString
 //@Audited
 //@EntityListeners({AuditingEntityListener.class})
-public class TransactionItemEntity extends AuditEntity {
+public class TransactionItemEntity extends AuditEntity implements Persistable<String> {
 
     @Id
     @Column(name = "transaction_item_id", nullable = false)
     private String id;
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return createdAt == null;
+    }
 
     @Nullable
     @Column(name = "account_code_debit")

@@ -20,8 +20,8 @@ public class AccountingCoreEventHandler {
 
     private final TransactionBatchService transactionBatchService;
 
-    @Value("${lob.blockchain_publisher.send.batch.size:25}")
-    private int sendBatchSize = 25;
+    @Value("${lob.blockchain_publisher.send.batch.size:100}")
+    private int sendBatchSize = 100;
 
     @ApplicationModuleListener
     public void handleERPIngestionStored(ERPIngestionStored event) {

@@ -11,7 +11,7 @@ import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.oauth.OAuthService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import static org.scribe.model.Verb.GET;
 
-@Component
+@Service
 @Slf4j
 @RequiredArgsConstructor
 public class NetSuiteClient {

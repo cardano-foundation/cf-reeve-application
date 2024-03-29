@@ -2,10 +2,8 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.Optional;
 
@@ -15,6 +13,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @Getter
 @Builder(toBuilder = true)
 @EqualsAndHashCode
+@ToString
 public class Counterparty {
 
     private @Size(min = 1, max =  255) @NotBlank String customerCode;
@@ -30,6 +29,15 @@ public class Counterparty {
         VENDOR,
         DONOR,
         CLIENT
+    }
+
+    public boolean isTheSameBusinessWise() {
+        val equalsBuilder = new EqualsBuilder();
+        equalsBuilder.append(this.customerCode, this.customerCode);
+        equalsBuilder.append(this.name, this.name);
+        equalsBuilder.append(this.type, this.type);
+
+        return equalsBuilder.isEquals();
     }
 
 }

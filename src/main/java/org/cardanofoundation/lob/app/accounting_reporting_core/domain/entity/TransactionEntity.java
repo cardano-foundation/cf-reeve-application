@@ -10,6 +10,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Ledge
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
+import org.springframework.data.domain.Persistable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,7 +31,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @NoArgsConstructor
 //@Audited
 //@EntityListeners({AuditingEntityListener.class})
-public class TransactionEntity extends AuditEntity {
+public class TransactionEntity extends AuditEntity implements Persistable<String> {
 
     @Id
     @Column(name = "transaction_id", nullable = false)
@@ -38,6 +39,9 @@ public class TransactionEntity extends AuditEntity {
 
     @Column(name = "transaction_internal_number", nullable = false)
     private String transactionInternalNumber;
+
+    @Column(name = "batch_id", nullable = false)
+    private String batchId;
 
     @Column(name = "accounting_period", nullable = false)
     private YearMonth accountingPeriod;
@@ -90,6 +94,16 @@ public class TransactionEntity extends AuditEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return createdAt == null;
     }
 
 }

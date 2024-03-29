@@ -12,7 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestion;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestionEntity;
 import org.cardanofoundation.lob.app.netsuite_adapter.service.NetSuiteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,7 +59,7 @@ public class NetSuiteResource {
             responses = {
                     @ApiResponse(responseCode = "200", description = "",
                             content = { @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NetSuiteIngestion.class)) }),
+                                    schema = @Schema(implementation = NetSuiteIngestionEntity.class)) }),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )

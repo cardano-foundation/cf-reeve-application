@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -17,7 +16,6 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @RequiredArgsConstructor
 public class SanityCheckFieldsTaskItem implements PipelineTaskItem {
 
-    private final PipelineTask pipelineTask;
     private final Validator validator;
 
     @Override
@@ -38,10 +36,9 @@ public class SanityCheckFieldsTaskItem implements PipelineTaskItem {
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     TX_SANITY_CHECK_FAIL,
-                    pipelineTask.getClass().getSimpleName(),
+                    this.getClass().getSimpleName(),
                     Map.of(
-                            "transactionNumber", tx.getInternalTransactionNumber(),
-                            "errors", errors
+                            "transactionNumber", tx.getInternalTransactionNumber()
                     )
             );
 

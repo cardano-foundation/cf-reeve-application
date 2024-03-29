@@ -62,6 +62,7 @@ public class TransactionConverter {
     public TransactionEntity convert(Transaction transaction) {
         val transactionEntity = new TransactionEntity()
                 .id(transaction.getId())
+                .batchId(transaction.getBatchId())
                 .transactionInternalNumber(transaction.getInternalTransactionNumber())
                 .transactionType(transaction.getTransactionType())
                 .entryDate(transaction.getEntryDate())
@@ -190,6 +191,7 @@ public class TransactionConverter {
 
         return Transaction.builder()
                 .id(transactionEntity.id())
+                .batchId(transactionEntity.batchId())
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
                         .id(transactionEntity.organisation().getId())
                         .shortName(transactionEntity.organisation().getShortName())
@@ -222,7 +224,7 @@ public class TransactionConverter {
         return Optional.of(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document.builder()
                 .number(doc.getNum())
                 .currency(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
-                        .customerCode(doc.getNum())
+                        .customerCode(doc.getCurrency().getCustomerCode())
                         .coreCurrency(doc.getCurrency().getId().flatMap(coreCurrencyService::findByCurrencyId))
                         .build()
                 )
