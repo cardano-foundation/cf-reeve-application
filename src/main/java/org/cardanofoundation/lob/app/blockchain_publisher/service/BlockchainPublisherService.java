@@ -28,8 +28,8 @@ public class BlockchainPublisherService {
     private final TransactionEntityRepositoryGateway transactionEntityRepositoryGateway;
     private final BlockchainPublishStatusMapper blockchainPublishStatusMapper;
 
-    @Value("${lob.blockchain_publisher.send.batch.size:25}")
-    private final int dispatchBatchSize = 25;
+    @Value("${lob.blockchain_publisher.send.batch.size:100}")
+    private final int dispatchBatchSize = 100;
 
     @Transactional
     public void storeTransactionForDispatchLater(String organisationId,

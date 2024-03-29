@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
@@ -63,7 +64,7 @@ public class LedgerService {
 
         val dispatchPendingTransactions = transactionRepositoryGateway.findByAllId(transactionIds)
                 .stream()
-                .filter(tx -> tx.isTransactionApproved() && tx.isLedgerDispatchApproved())
+                .filter(Transaction::allApprovalsPassedForTransactionDispatch)
                 .collect(Collectors.toSet());
 
         if (dispatchPendingTransactions.isEmpty()) {

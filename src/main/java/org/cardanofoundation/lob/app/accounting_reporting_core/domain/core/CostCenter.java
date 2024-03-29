@@ -1,10 +1,8 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.Optional;
 
@@ -12,14 +10,24 @@ import java.util.Optional;
 @Getter
 @Builder(toBuilder = true)
 @EqualsAndHashCode
+@ToString
 public class CostCenter {
 
     private @Size(min = 1, max =  255) String customerCode;
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  25) String> externalCustomerCode = Optional.empty();
+    private Optional<@Size(min = 1, max =  255) String> externalCustomerCode = Optional.empty();
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  25) String> name = Optional.empty();
+    private Optional<@Size(min = 1, max =  255) String> name = Optional.empty();
+
+    public boolean isTheSameBusinessWise() {
+        val equalsBuilder = new EqualsBuilder();
+        equalsBuilder.append(this.customerCode, this.customerCode);
+        equalsBuilder.append(this.externalCustomerCode, this.externalCustomerCode);
+        equalsBuilder.append(this.name, this.name);
+
+        return equalsBuilder.isEquals();
+    }
 
 }

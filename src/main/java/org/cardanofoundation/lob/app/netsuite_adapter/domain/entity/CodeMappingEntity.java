@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.netsuite_adapter.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
+import org.springframework.data.domain.Persistable;
 
 import java.io.Serializable;
 
@@ -13,7 +14,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Entity(name = "netsuite.CodeMappingEntity")
 @Table(name = "netsuite_code_mapping")
 @NoArgsConstructor
-public class CodeMappingEntity extends AuditEntity {
+public class CodeMappingEntity extends AuditEntity implements Persistable<CodeMappingEntity.Id> {
 
     @EmbeddedId
     @AttributeOverrides({
@@ -25,6 +26,11 @@ public class CodeMappingEntity extends AuditEntity {
 
     @Column(name = "customerCode")
     private String code;
+
+    @Override
+    public boolean isNew() {
+        return createdAt == null;
+    }
 
     @Embeddable
     @Getter
@@ -41,4 +47,5 @@ public class CodeMappingEntity extends AuditEntity {
         private CodeMappingType type;
 
     }
+
 }

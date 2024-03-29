@@ -2,9 +2,9 @@ package org.cardanofoundation.lob.app.blockchain_publisher.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @Slf4j
 public class TransactionsWatchDogJob {
 

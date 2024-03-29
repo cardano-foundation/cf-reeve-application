@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
+import org.springframework.data.domain.Persistable;
 
 @Accessors(fluent = true)
 @Getter
@@ -13,7 +14,7 @@ import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 @Table(name = "accounting_core_transaction_batch_assoc")
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionBatchAssocEntity extends AuditEntity {
+public class TransactionBatchAssocEntity extends AuditEntity implements Persistable<TransactionBatchAssocEntity.Id> {
 
     @EmbeddedId
     @AttributeOverrides({
@@ -34,6 +35,16 @@ public class TransactionBatchAssocEntity extends AuditEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public Id getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return createdAt == null;
     }
 
     @Embeddable

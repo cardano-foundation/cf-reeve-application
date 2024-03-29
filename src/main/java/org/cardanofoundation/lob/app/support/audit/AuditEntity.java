@@ -30,12 +30,12 @@ public abstract class AuditEntity {
     @Temporal(TIMESTAMP)
     @Column(name = "created_at")
     @CreatedDate
-    protected LocalDateTime createdAt = LocalDateTime.now();
+    protected LocalDateTime createdAt;
 
     @Temporal(TIMESTAMP)
     @Column(name = "updated_at")
     @LastModifiedDate
-    protected LocalDateTime updatedAt = LocalDateTime.now();
+    protected LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {

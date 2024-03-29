@@ -36,6 +36,9 @@ public class TransactionEntity extends AuditEntity {
     @Column(name = "internal_number", nullable = false)
     private String internalNumber;
 
+    @Column(name = "batch_id", nullable = false)
+    private String batchId;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "organisation_id")),

@@ -52,6 +52,7 @@ public class MetadataSerialiser {
 
         metadataMap.put("id", id);
         metadataMap.put("number", transaction.getInternalNumber());
+        metadataMap.put("batch_id", transaction.getBatchId());
 
         metadataMap.put("type", transaction.getTransactionType().name());
 

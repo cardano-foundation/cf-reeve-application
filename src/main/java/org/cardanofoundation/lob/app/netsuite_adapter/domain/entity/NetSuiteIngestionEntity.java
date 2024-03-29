@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "netsuite_ingestion")
@@ -16,7 +17,7 @@ import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NetSuiteIngestion extends AuditEntity {
+public class NetSuiteIngestionEntity extends AuditEntity implements Persistable<String> {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -33,5 +34,10 @@ public class NetSuiteIngestion extends AuditEntity {
 
     @Column(name = "ingestion_body_checksum", nullable = false)
     private String ingestionBodyChecksum;
+
+    @Override
+    public boolean isNew() {
+        return createdAt == null;
+    }
 
 }

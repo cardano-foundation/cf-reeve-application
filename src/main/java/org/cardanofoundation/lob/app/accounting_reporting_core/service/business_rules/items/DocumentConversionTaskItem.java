@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CoreCurrency;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Vat;
@@ -79,6 +80,9 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
                     }
 
                     val customerCurrencyCode = document.getCurrency().getCustomerCode();
+                    if (StringUtils.isBlank(customerCurrencyCode)) {
+                        return txItem;
+                    }
 
                     val organisationCurrencyM = organisationPublicApi.findCurrencyByCustomerCurrencyCode(organisationId, customerCurrencyCode);
 

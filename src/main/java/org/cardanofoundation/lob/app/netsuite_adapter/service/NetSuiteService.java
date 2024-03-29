@@ -9,7 +9,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserE
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchChunkEvent;
 import org.cardanofoundation.lob.app.netsuite_adapter.client.NetSuiteClient;
-import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestion;
+import org.cardanofoundation.lob.app.netsuite_adapter.domain.entity.NetSuiteIngestionEntity;
 import org.cardanofoundation.lob.app.netsuite_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_adapter.util.MD5Hashing;
 import org.cardanofoundation.lob.app.notification_gateway.domain.event.NotificationEvent;
@@ -52,8 +52,8 @@ public class NetSuiteService {
 
     private final NetSuiteParser netSuiteParser;
 
-    @Value("${lob.events.netsuite.to.core.send.batch.size:25}")
-    private int sendBatchSize = 25;
+    @Value("${lob.events.netsuite.to.core.send.batch.size:100}")
+    private int sendBatchSize = 100;
 
     @Value("${lob.events.netsuite.to.core.netsuite.instance.id:fEU237r9rqAPEGEFY1yr}")
     private String netsuiteInstanceId;
@@ -62,7 +62,7 @@ public class NetSuiteService {
     private boolean isNetSuiteInstanceDebugMode;
 
     @Transactional(readOnly = true)
-    public Optional<NetSuiteIngestion> findIngestionById(String id) {
+    public Optional<NetSuiteIngestionEntity> findIngestionById(String id) {
         return ingestionRepository.findById(id);
     }
 
@@ -104,7 +104,7 @@ public class NetSuiteService {
 
         val netsuiteTransactionLinesJson = bodyM.get();
         val ingestionBodyChecksum = MD5Hashing.md5(netsuiteTransactionLinesJson);
-        val netSuiteIngestion = new NetSuiteIngestion();
+        val netSuiteIngestion = new NetSuiteIngestionEntity();
         netSuiteIngestion.setId(digestAsHex(UUID.randomUUID().toString()));
 
         val compressedBody = compress(netsuiteTransactionLinesJson);
@@ -186,7 +186,7 @@ public class NetSuiteService {
 
         val transactionDataSearchResult = transactionDataSearchResultE.get();
 
-        val transactionsWithViolations = transactionConverter.convert(transactionDataSearchResult);
+        val transactionsWithViolations = transactionConverter.convert(transactionDataSearchResult, batchId);
 
         violationsSenderService.sendViolation(transactionsWithViolations);
         notificationsSenderService.sendNotifications(transactionsWithViolations.violations());

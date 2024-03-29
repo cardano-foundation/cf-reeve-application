@@ -49,11 +49,11 @@ public class AmountsFcyCheckTaskItem implements PipelineTaskItem {
             }
         }
 
-        if (violations.isEmpty()) {
-            return violationTransaction;
+        if (!violations.isEmpty()) {
+            return TransactionWithViolations.create(tx.toBuilder().validationStatus(FAILED).build(), violations);
         }
 
-        return TransactionWithViolations.create(tx.toBuilder().validationStatus(FAILED).build(), violations);
+        return violationTransaction;
     }
 
 }

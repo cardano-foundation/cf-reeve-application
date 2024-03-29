@@ -8,6 +8,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.Sche
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsApprovedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsDispatchApprovedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class AccountingCoreService {
 
     private final TransactionRepositoryGateway transactionRepositoryGateway;
 
+    @Value("${accounting-core.max-approval-batch-size:25}")
     private int maxApprovalBatchSize = 25;
 
     @Transactional

@@ -72,8 +72,8 @@ public record TxLine(
         String memo,
 
         @JsonProperty("Currency")
-        @Positive
-        Long currency,
+        @NotNull
+        String currency,
 
         @NotNull
         @JsonProperty("Exchange Rate")
