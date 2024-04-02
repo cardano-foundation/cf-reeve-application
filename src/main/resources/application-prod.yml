@@ -12,3 +12,6 @@ spring:
     locations:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/prod
+
+  env:
+    active: prod
