@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CHART_OF_ACCOUNT_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
@@ -33,7 +34,7 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
                 .map(item -> {
                     val itemBuilder = item.toBuilder();
 
-                    if (item.getAccountCodeDebit().isPresent()) {
+                    if (item.getAccountCodeDebit().map(String::trim).filter(acc -> !acc.isEmpty()).isPresent()) {
                         val accountCodeDebit = item.getAccountCodeDebit().orElseThrow();
 
                         val accountChartMappingM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeDebit);
@@ -58,7 +59,7 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
                         }
                     }
 
-                    if (item.getAccountCodeCredit().isPresent()) {
+                    if (item.getAccountCodeCredit().map(String::trim).filter(acc -> !acc.isEmpty()).isPresent()) {
                         val accountCodeCredit = item.getAccountCodeCredit().orElseThrow();
 
                         val eventRefCodeM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeCredit);
@@ -97,6 +98,11 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
                     return itemBuilder.build();
                 })
                 .collect(Collectors.toSet());
+
+        if (!violations.isEmpty()) {
+            return TransactionWithViolations
+                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
+        }
 
         return TransactionWithViolations
                 .create(tx.toBuilder().items(items).build(),

@@ -14,6 +14,7 @@ import java.util.Map;
 import static java.math.BigDecimal.ZERO;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.LCY_BALANCE_MUST_BE_ZERO;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class AmountLcyBalanceZerosOutCheckTaskItem implements PipelineTaskItem {
         if (lcySum.signum() != 0) {
             val v = Violation.create(
                     ERROR,
-                    Violation.Source.ERP,
+                    ERP,
                     tx.getOrganisation().getId(),
                     tx.getId(),
                     LCY_BALANCE_MUST_BE_ZERO,

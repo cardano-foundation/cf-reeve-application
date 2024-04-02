@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
 class TxItemsCollapsingTaskItemTest {
 
@@ -204,7 +205,7 @@ class TxItemsCollapsingTaskItemTest {
 
         val txs = TransactionWithViolations.create(Transaction.builder()
                 .id(txId)
-                .validationStatus(ValidationStatus.FAILED)
+                .validationStatus(FAILED)
                 .items(Set.of(TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "0"))
                                 .accountEventCode(Optional.of("e12"))
@@ -222,6 +223,7 @@ class TxItemsCollapsingTaskItemTest {
 
         val newTx = txItemsCollapsingTaskItem.run(txs);
 
+        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
         assertThat(newTx.transaction().getItems()).hasSize(2);
     }
 

@@ -34,8 +34,8 @@ public class ProjectConversionTaskItemTest {
         this.projectConversionTaskItem = new ProjectConversionTaskItem(pipelineTask, organisationPublicApiIF);
     }
 
-    //    1. Project Found and Conversion Succeeds
-//    Test a scenario where the project is successfully found, which should result in a successful conversion without any violations. This tests the positive path and ensures that when everything is as expected, the system behaves correctly.
+    //   Project Found and Conversion Succeeds
+//   Test a scenario where the project is successfully found, which should result in a successful conversion without any violations. This tests the positive path and ensures that when everything is as expected, the system behaves correctly.
     @Test
     public void testProjectFoundConversionSucceeds() {
         val txId = Transaction.id("1", "1");
@@ -61,7 +61,7 @@ public class ProjectConversionTaskItemTest {
         // Further assertions can be added here to check the transformed transaction items if needed
     }
 
-    // 2. Missing Project Results in "Conversion Success" but for sure no violations
+    // Missing Project Results in "Conversion Success" but for sure no violations
     @Test
     public void testMissingProjectResultsInConversionSuccess() {
         val txId = Transaction.id("1", "1");
@@ -83,7 +83,7 @@ public class ProjectConversionTaskItemTest {
         assertThat(newTx.violations()).hasSize(0);
     }
 
-    // 3. Missing Project details in Violation Creation
+    // Missing Project details in Violation Creation
     @Test
     public void testMissingProjectResultsInViolationCreation() {
         val txId = Transaction.id("1", "1");

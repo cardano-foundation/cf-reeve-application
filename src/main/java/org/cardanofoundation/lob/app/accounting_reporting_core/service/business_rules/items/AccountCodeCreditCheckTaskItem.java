@@ -30,7 +30,7 @@ public class AccountCodeCreditCheckTaskItem implements PipelineTaskItem {
         val violations = new HashSet<Violation>();
 
         for (val txItem : tx.getItems()) {
-            if (txItem.getAccountCodeCredit().isEmpty())  {
+            if (txItem.getAccountCodeCredit().map(String::trim).filter(acc -> !acc.isEmpty()).isEmpty())  {
                 val v = Violation.create(
                         ERROR,
                         Violation.Source.LOB,
