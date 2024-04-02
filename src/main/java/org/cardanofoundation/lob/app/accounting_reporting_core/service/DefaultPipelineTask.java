@@ -1,6 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
@@ -14,10 +15,10 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
+@Setter
 public class DefaultPipelineTask implements PipelineTask {
 
-
-    private final List<PipelineTaskItem> taskItems;
+    private List<PipelineTaskItem> items;
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
@@ -51,7 +52,7 @@ public class DefaultPipelineTask implements PipelineTask {
     }
 
     private TransactionWithViolations runTaskItems(TransactionWithViolations transaction) {
-        return taskItems.stream()
+        return items.stream()
                 .reduce(transaction, (tx, taskItem) -> taskItem.run(tx), (tx1, tx2) -> tx2);
     }
 

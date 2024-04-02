@@ -30,6 +30,9 @@ public class Organisation {
     @Column(name = "pre_approve_transactions")
     private Boolean preApproveTransactions;
 
+    @Column(name = "pre_approve_transactions_dispatch")
+    private Boolean preApproveTransactionsDispatch;
+
     @Column(name = "vat_number", nullable = false)
     private String vatNumber;
 
@@ -45,6 +48,10 @@ public class Organisation {
 
     public boolean isPreApproveTransactionsEnabled() {
         return Optional.ofNullable(preApproveTransactions).orElse(false);
+    }
+
+    public boolean isPreApproveTransactionsDispatchEnabled() {
+        return Optional.ofNullable(preApproveTransactionsDispatch).orElse(false);
     }
 
 }

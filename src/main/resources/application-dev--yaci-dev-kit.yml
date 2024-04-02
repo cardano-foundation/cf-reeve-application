@@ -3,6 +3,9 @@
 # local YaciDevKit network, see: https://github.com/bloxbean/yaci-devkit
 
 spring:
+  env:
+    active: dev--yaci-dev-kit
+
   flyway:
     out-of-order: false
     url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
