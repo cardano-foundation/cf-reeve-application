@@ -33,12 +33,12 @@ class SanityCheckFieldsTaskItemTest {
 
     @Test
     void testTransactionPassesSanityCheck() {
-        Transaction transaction = mock(Transaction.class);
+        val transaction = mock(Transaction.class);
         when(validator.validate(transaction)).thenReturn(Collections.emptySet());
 
-        TransactionWithViolations txWithViolations = new TransactionWithViolations(transaction, new HashSet<>());
+        val txWithViolations = new TransactionWithViolations(transaction, new HashSet<>());
 
-        TransactionWithViolations result = taskItem.run(txWithViolations);
+        val result = taskItem.run(txWithViolations);
 
         assertThat(result.violations()).isEmpty();
         verify(validator, times(1)).validate(transaction);
