@@ -79,4 +79,29 @@ public class DiscardZeroBalanceTxItemsTaskItemTest {
         assertThat(newTx.transaction().getItems().stream().map(TransactionItem::getAmountFcy)).containsExactlyInAnyOrder(BigDecimal.valueOf(200));
     }
 
+    @Test
+    void testDiscardAllTxItemsWithZeroBalance() {
+        val txId = Transaction.id("2", "1");
+
+        val txs = TransactionWithViolations.create(Transaction.builder()
+                .id(txId)
+                .items(Set.of(
+                        TransactionItem.builder()
+                                .id(TransactionItem.id(txId, "0"))
+                                .amountLcy(BigDecimal.ZERO)
+                                .amountFcy(BigDecimal.ZERO)
+                                .build(),
+                        TransactionItem.builder()
+                                .id(TransactionItem.id(txId, "1"))
+                                .amountLcy(BigDecimal.ZERO)
+                                .amountFcy(BigDecimal.ZERO)
+                                .build()
+                ))
+                .build());
+
+        val newTx = taskItem.run(txs);
+
+        assertThat(newTx.transaction().getItems()).isEmpty();
+    }
+
 }
