@@ -21,6 +21,10 @@ spring:
       - classpath:db/migration/{vendor}/dev
 
 lob:
+  blockchain:
+    publisher:
+      enabled: false
+
   cardano:
     network: "DEV"
   dispatching:
