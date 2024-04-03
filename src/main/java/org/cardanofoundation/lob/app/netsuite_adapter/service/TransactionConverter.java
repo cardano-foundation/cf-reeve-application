@@ -69,8 +69,8 @@ public class TransactionConverter {
                 .collect(groupingBy(TxLine::transactionNumber));
 
         for (val entry : searchResultItemsPerTransactionNumber.entrySet()) {
-            val txInternalNumber = entry.getKey();
-            val transactionE = createTransactionFromSearchResultItems(organisationId, entry.getValue(), batchId);
+            val transactionLevelTxLines = entry.getValue();
+            val transactionE = createTransactionFromSearchResultItems(organisationId, batchId, transactionLevelTxLines);
 
             if (transactionE.isEmpty()) {
                 violations.add(transactionE.getLeft());
@@ -84,8 +84,9 @@ public class TransactionConverter {
     }
 
     private Either<Violation, Optional<Transaction>> createTransactionFromSearchResultItems(String organisationId,
-                                                                                            List<TxLine> txLines,
-                                                                                            String batchId) {
+                                                                                            String batchId,
+                                                                                            List<TxLine> txLines
+    ) {
         if (txLines.isEmpty()) {
             return Either.right(Optional.empty());
         }
@@ -121,17 +122,17 @@ public class TransactionConverter {
                 return Either.left(accountCreditCodeE.getLeft());
             }
 
-            val projectCodeM = projectCode(organisationId, txLine);
-            if (projectCodeM.isEmpty()) {
-                return Either.left(projectCodeM.getLeft());
-            }
-
             val amountLcy = substractNullFriendly(txLine.amountDebit(), txLine.amountCredit());
             val amountFcy = substractNullFriendly(txLine.amountDebitForeignCurrency(), txLine.amountCreditForeignCurrency());
 
             val costCenterM = costCenterCode(organisationId, txLine);
             if (costCenterM.isLeft()) {
                 return Either.left(costCenterM.getLeft());
+            }
+
+            val projectCodeM = projectCode(organisationId, txLine);
+            if (projectCodeM.isEmpty()) {
+                return Either.left(projectCodeM.getLeft());
             }
 
             val documentE = convertDocument(txLine);
@@ -145,6 +146,7 @@ public class TransactionConverter {
                     .accountCodeDebit(normaliseString(txLine.number()))
                     .accountCodeCredit(accountCreditCodeE.get())
 
+                    //.project(normaliseString(txLine.project()).map(String::trim).map(pc -> Project.builder()
                     .project(projectCodeM.get().map(pc -> Project.builder()
                             .customerCode(pc)
                             .build()
@@ -214,7 +216,7 @@ public class TransactionConverter {
                     .currency(Currency.builder()
                             .customerCode(txLine.currency())
                             .build())
-                    .vat(vatCode(txLine).map(cc -> Vat.builder()
+                    .vat(normaliseString(txLine.taxItem()).map(String::trim).map(cc -> Vat.builder()
                             .customerCode(cc)
                             .build()))
                     .counterparty(convertCounterparty(txLine))
@@ -290,11 +292,6 @@ public class TransactionConverter {
         }
 
         return Either.right(organisationIdM.orElseThrow());
-    }
-
-    private Optional<String> vatCode(TxLine txLine) {
-        return normaliseString(txLine.taxItem())
-                .map(String::trim);
     }
 
     private Either<Violation, Optional<String>> projectCode(String organisationId,
