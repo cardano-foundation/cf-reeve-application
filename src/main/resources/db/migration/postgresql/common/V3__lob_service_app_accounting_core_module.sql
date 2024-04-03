@@ -118,7 +118,7 @@ CREATE TABLE accounting_core_transaction_item (
 
    cost_center_customer_code VARCHAR(255),
    cost_center_external_customer_code VARCHAR(255),
-   cost_center_name VARCHAR(25),
+   cost_center_name VARCHAR(255),
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),

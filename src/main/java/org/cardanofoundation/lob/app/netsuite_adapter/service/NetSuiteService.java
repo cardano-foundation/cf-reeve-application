@@ -131,7 +131,9 @@ public class NetSuiteService {
 
         val storedNetsuiteIngestion = ingestionRepository.saveAndFlush(netSuiteIngestion);
 
-        val systemExtractionParametersE = systemExtractionParametersFactory.createSystemExtractionParameters(userExtractionParameters.getOrganisationId());
+        val organisationId = userExtractionParameters.getOrganisationId();
+
+        val systemExtractionParametersE = systemExtractionParametersFactory.createSystemExtractionParameters(organisationId);
         if (systemExtractionParametersE.isLeft()) {
             log.error("Error creating system extraction parameters: {}", systemExtractionParametersE.getLeft().getDetail());
 
@@ -173,6 +175,17 @@ public class NetSuiteService {
             return;
         }
 
+        if (!userExtractionParameters.getOrganisationId().equals(systemExtractionParameters.getOrganisationId())) {
+            val issue = Problem.builder()
+                    .withTitle("NETSUITE_ADAPTER::ORGANISATION_MISMATCH")
+                    .withDetail(STR."Organisation mismatch, userExtractionParameters.organisationId: \{userExtractionParameters.getOrganisationId() }, systemExtractionParameters.organisationId: \{systemExtractionParameters.getOrganisationId()}")
+                    .build();
+
+            applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
+            return;
+        }
+        val organisationId = userExtractionParameters.getOrganisationId();
+
         val netsuiteIngestion = netsuiteIngestionM.orElseThrow();
 
         val transactionDataSearchResultE = netSuiteParser.parseSearchResults(decompress(netsuiteIngestion.getIngestionBody()));
@@ -186,57 +199,32 @@ public class NetSuiteService {
 
         val transactionDataSearchResult = transactionDataSearchResultE.get();
 
-        val transactionsWithViolations = transactionConverter.convert(transactionDataSearchResult, batchId);
+        val transactionsWithViolations = transactionConverter.convert(organisationId, batchId, transactionDataSearchResult);
 
         violationsSenderService.sendViolation(transactionsWithViolations);
         notificationsSenderService.sendNotifications(transactionsWithViolations.violations());
 
-        val coreTransactionsToOrganisationMap = transactionsWithViolations.transactionPerOrganisationId();
+        val transactionsWithExtractionParametersApplied = extractionParametersFilteringService
+                .applyExtractionParameters(userExtractionParameters, systemExtractionParameters, transactionsWithViolations.transactions());
 
-        log.info("coreTransactionLines count: {}", coreTransactionsToOrganisationMap.size());
+        Partitions.partition(transactionsWithExtractionParametersApplied, sendBatchSize).forEach(txPartition -> {
+            val eventBuilder = TransactionBatchChunkEvent.builder()
+                    .batchId(netsuiteIngestion.getId())
+                    .organisationId(organisationId)
+                    .systemExtractionParameters(systemExtractionParameters)
+                    .totalTransactionsCount(Optional.of(transactionsWithExtractionParametersApplied.size()))
+                    .transactions(txPartition.asSet());
 
-        coreTransactionsToOrganisationMap
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getKey().equals(systemExtractionParameters.getOrganisationId())
-                        && entry.getKey().equals(userExtractionParameters.getOrganisationId()))
-                .forEach(entry -> {
-                    val organisationId = entry.getKey();
-                    val transactions = entry.getValue();
+            if (txPartition.isFirst()) {
+                eventBuilder.status(STARTED);
+            } else if (txPartition.isLast()) {
+                eventBuilder.status(FINISHED);
+            } else {
+                eventBuilder.status(PROCESSING);
+            }
 
-                    val transactionsWithExtractionParametersApplied = extractionParametersFilteringService
-                            .applyExtractionParameters(userExtractionParameters, systemExtractionParameters, transactions);
-
-                    log.info("after filtering tx count: {}", transactionsWithExtractionParametersApplied.size());
-
-                    if (transactionsWithExtractionParametersApplied.isEmpty()) {
-                        log.warn("No core passedTransactions to process for organisationId: {}", organisationId);
-
-                        // TODO send batch failed event?
-                        return;
-                    }
-
-                    log.info("Publishing ERPIngestionEvent event, organisationId: {}, tx count: {}", organisationId, transactions.size());
-
-                    Partitions.partition(transactionsWithExtractionParametersApplied, sendBatchSize).forEach(txPartition -> {
-                        val eventBuilder = TransactionBatchChunkEvent.builder()
-                                .batchId(netsuiteIngestion.getId())
-                                .organisationId(organisationId)
-                                .systemExtractionParameters(systemExtractionParameters)
-                                .totalTransactionsCount(Optional.of(transactionsWithExtractionParametersApplied.size()))
-                                .transactions(txPartition.asSet());
-
-                        if (txPartition.isFirst()) {
-                            eventBuilder.status(STARTED);
-                        } else if (txPartition.isLast()) {
-                            eventBuilder.status(FINISHED);
-                        } else {
-                            eventBuilder.status(PROCESSING);
-                        }
-
-                        applicationEventPublisher.publishEvent(eventBuilder.build());
-                    });
-                });
+            applicationEventPublisher.publishEvent(eventBuilder.build());
+        });
 
         log.info("NetSuite ingestion fully completed.");
     }

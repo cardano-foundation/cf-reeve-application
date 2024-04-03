@@ -5,7 +5,8 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import java.util.Map;
 import java.util.Set;
 
-public record TransactionsWithViolations(Map<String, Set<Transaction>> transactionPerOrganisationId,
+public record TransactionsWithViolations(String organisationId,
+                                         Set<Transaction> transactions,
                                          Set<Violation> violations) {
 
 

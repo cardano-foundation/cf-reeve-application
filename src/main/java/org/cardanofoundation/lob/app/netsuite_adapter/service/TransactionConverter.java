@@ -29,9 +29,10 @@ import static org.cardanofoundation.lob.app.netsuite_adapter.util.MoreString.nor
 @Slf4j
 public class TransactionConverter {
 
+    private final Validator validator;
+
     private final CodesMappingService codesMappingService;
 
-    private final Validator validator;
 
     private final TransactionTypeMapper transactionTypeMapper;
 
@@ -41,63 +42,45 @@ public class TransactionConverter {
     @Value("${lob.events.netsuite.financial.period.source:IMPLICIT}")
     private FinancialPeriodSource financialPeriodSource;
 
-    // split results across multiple organisations
-    public TransactionsWithViolations convert(List<TxLine> txLines, String batchId) {
-        val searchResultsByOrganisation = new ArrayList<OrganisationTxLine>();
-
+    public TransactionsWithViolations convert(String organisationId,
+                                              String batchId,
+                                              List<TxLine> txLines) {
+        val searchResultsByOrganisation = new ArrayList<TxLine>();
+        val transactions = new LinkedHashSet<Transaction>();
         val violations = new LinkedHashSet<Violation>();
 
         for (val txLine : txLines) {
-            val organisationE = organisationId(txLine);
+            val organisationIdE = organisationId(txLine);
 
-            if (organisationE.isEmpty()) {
-                violations.add(organisationE.getLeft());
+            if (organisationIdE.isEmpty()) {
+                violations.add(organisationIdE.getLeft());
                 continue;
             }
 
-            val organisationId = organisationE.get();
+            val localOrgId = organisationIdE.get();
 
-            searchResultsByOrganisation.add(new OrganisationTxLine(organisationId, txLine));
+            if (localOrgId.equals(organisationId)) {
+                searchResultsByOrganisation.add(txLine);
+            }
         }
 
-        val searchResultsByOrganisationMap = searchResultsByOrganisation.stream()
-                .collect(groupingBy(OrganisationTxLine::organisationId));
+        val searchResultItemsPerTransactionNumber = searchResultsByOrganisation
+                .stream()
+                .collect(groupingBy(TxLine::transactionNumber));
 
-        val transactionsByOrganisations = new HashMap<String, Set<Transaction>>();
-        for (val organisationListEntry : searchResultsByOrganisationMap.entrySet()) {
-            val organisationId = organisationListEntry.getKey();
-            val organisationSearchResults = organisationListEntry.getValue()
-                    .stream()
-                    .map(OrganisationTxLine::txLine)
-                    .toList();
+        for (val entry : searchResultItemsPerTransactionNumber.entrySet()) {
+            val txInternalNumber = entry.getKey();
+            val transactionE = createTransactionFromSearchResultItems(organisationId, entry.getValue(), batchId);
 
-            val searchResultItemsPerTransactionNumber = organisationSearchResults
-                    .stream()
-                    .collect(groupingBy(TxLine::transactionNumber));
-
-            for (val transactionNumberEntry : searchResultItemsPerTransactionNumber.entrySet()) {
-                val searchResultItems = transactionNumberEntry.getValue();
-
-                val transactionE = createTransactionFromSearchResultItems(organisationId, searchResultItems, batchId);
-
-                if (transactionE.isEmpty()) {
-                    violations.add(transactionE.getLeft());
-                    continue;
-                }
-
-                val transactionM = transactionE.get();
-
-                transactionM.ifPresent(transaction -> {
-                    transactionsByOrganisations
-                            .computeIfAbsent(organisationId, id -> new HashSet<>())
-                            .add(transaction);
-                });
+            if (transactionE.isEmpty()) {
+                violations.add(transactionE.getLeft());
+                continue;
             }
 
-            log.info("transactionsByOrganisations count: {}", transactionsByOrganisations.size());
+            transactionE.get().ifPresent(transactions::add);
         }
 
-        return new TransactionsWithViolations(transactionsByOrganisations, violations);
+        return new TransactionsWithViolations(organisationId, transactions, violations);
     }
 
     private Either<Violation, Optional<Transaction>> createTransactionFromSearchResultItems(String organisationId,
@@ -107,23 +90,33 @@ public class TransactionConverter {
             return Either.right(Optional.empty());
         }
 
-        val txLine = txLines.getFirst();
+        val firstTxLine = txLines.getFirst();
+        val txId = Transaction.id(organisationId, firstTxLine.transactionNumber());
 
-        val txId = Transaction.id(organisationId, txLine.transactionNumber());
+        val transTypeE = transactionType(organisationId, firstTxLine);
+        if (transTypeE.isEmpty()) {
+            return Either.left(transTypeE.getLeft());
+        }
+        val transactionType = transTypeE.get();
+
+        val txDate = firstTxLine.date();
+        val internalTransactionNumber = firstTxLine.transactionNumber();
+        val fxRate = firstTxLine.exchangeRate();
+        val accountingPeriod = financialPeriod(firstTxLine);
 
         val txItems = new LinkedHashSet<TransactionItem>();
-        for (val result : txLines) {
-            val validationIssues = validator.validate(result);
+        for (val txLine : txLines) {
+            val validationIssues = validator.validate(txLine);
             val isValid = validationIssues.isEmpty();
 
             if (!isValid) {
-                return Either.left(Violation.create(result, INVALID_TRANSACTION_LINE, Map.of(
+                return Either.left(Violation.create(txLine, INVALID_TRANSACTION_LINE, Map.of(
                         "organisationId", organisationId,
-                        "transactionNumber", result.transactionNumber()
+                        "transactionNumber", txLine.transactionNumber()
                 )));
             }
 
-            val accountCreditCodeE = accountCreditCode(organisationId, txLine, result.accountMain());
+            val accountCreditCodeE = accountCreditCode(organisationId, txLine, txLine.accountMain());
             if (accountCreditCodeE.isLeft()) {
                 return Either.left(accountCreditCodeE.getLeft());
             }
@@ -133,23 +126,23 @@ public class TransactionConverter {
                 return Either.left(projectCodeM.getLeft());
             }
 
-            val amountLcy = substractNullFriendly(result.amountDebit(), result.amountCredit());
-            val amountFcy = substractNullFriendly(result.amountDebitForeignCurrency(), result.amountCreditForeignCurrency());
+            val amountLcy = substractNullFriendly(txLine.amountDebit(), txLine.amountCredit());
+            val amountFcy = substractNullFriendly(txLine.amountDebitForeignCurrency(), txLine.amountCreditForeignCurrency());
 
             val costCenterM = costCenterCode(organisationId, txLine);
             if (costCenterM.isLeft()) {
                 return Either.left(costCenterM.getLeft());
             }
 
-            val documentE = convertDocument(organisationId, txLine);
+            val documentE = convertDocument(txLine);
             if (documentE.isLeft()) {
                 return Either.left(documentE.getLeft());
             }
 
             val txItem = TransactionItem.builder()
-                    .id(TransactionItem.id(txId, result.lineID().toString()))
-                    .accountNameDebit(normaliseString(result.name()))
-                    .accountCodeDebit(normaliseString(result.number()))
+                    .id(TransactionItem.id(txId, txLine.lineID().toString()))
+                    .accountNameDebit(normaliseString(txLine.name()))
+                    .accountCodeDebit(normaliseString(txLine.number()))
                     .accountCodeCredit(accountCreditCodeE.get())
 
                     .project(projectCodeM.get().map(pc -> Project.builder()
@@ -171,23 +164,18 @@ public class TransactionConverter {
             txItems.add(txItem);
         }
 
-        val transTypeE = transactionType(organisationId, txLine);
-        if (transTypeE.isEmpty()) {
-            return Either.left(transTypeE.getLeft());
-        }
-
         return Either.right(Optional.of(Transaction.builder()
-                .id(Transaction.id(organisationId, txLine.transactionNumber()))
-                .internalTransactionNumber(txLine.transactionNumber())
-                .entryDate(txLine.date())
+                .id(txId)
+                .internalTransactionNumber(internalTransactionNumber)
+                .entryDate(txDate)
                 .batchId(batchId)
-                .transactionType(transTypeE.get())
-                .accountingPeriod(financialPeriod(txLine))
+                .transactionType(transactionType)
+                .accountingPeriod(accountingPeriod)
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
                         .id(organisationId)
                         .build()
                 )
-                .fxRate(txLine.exchangeRate())
+                .fxRate(fxRate)
                 .items(txItems)
                 .build())
         );
@@ -215,24 +203,18 @@ public class TransactionConverter {
         return Either.right(transactionTypeM.orElseThrow());
     }
 
-    private Either<Violation, Optional<Document>> convertDocument(String organisationId,
-                                                                  TxLine txLine) {
+    private Either<Violation, Optional<Document>> convertDocument(TxLine txLine) {
         val documentNumberM = normaliseString(txLine.documentNumber());
 
         if (documentNumberM.isPresent()) {
             val documentNumber = documentNumberM.orElseThrow();
-
-            val vatE = vatCode(organisationId, txLine);
-            if (vatE.isLeft()) {
-                return Either.left(vatE.getLeft());
-            }
 
             return Either.right(Optional.of(Document.builder()
                     .number(documentNumber)
                     .currency(Currency.builder()
                             .customerCode(txLine.currency())
                             .build())
-                    .vat(vatE.get().map(cc -> Vat.builder()
+                    .vat(vatCode(txLine).map(cc -> Vat.builder()
                             .customerCode(cc)
                             .build()))
                     .counterparty(convertCounterparty(txLine))
@@ -310,27 +292,9 @@ public class TransactionConverter {
         return Either.right(organisationIdM.orElseThrow());
     }
 
-    private Either<Violation, Optional<String>> vatCode(String organisationId,
-                                                        TxLine txLine) {
-        val taxItemM = normaliseString(txLine.taxItem())
-                .map(Long::parseLong);
-
-        if (taxItemM.isPresent()) {
-            val internalId = taxItemM.orElseThrow();
-
-            val vatCodeM = codesMappingService.getCodeMapping(organisationId, internalId, VAT);
-
-            if (vatCodeM.isEmpty()) {
-                return Either.left(Violation.create(txLine, VAT_MAPPING_NOT_FOUND, Map.of(
-                        "organisationId", organisationId,
-                        "internalId", internalId
-                )));
-            }
-
-            return Either.right(vatCodeM);
-        }
-
-        return Either.right(Optional.empty());
+    private Optional<String> vatCode(TxLine txLine) {
+        return normaliseString(txLine.taxItem())
+                .map(String::trim);
     }
 
     private Either<Violation, Optional<String>> projectCode(String organisationId,
@@ -352,10 +316,6 @@ public class TransactionConverter {
         }
 
         return Either.right(Optional.empty());
-    }
-
-    private record OrganisationTxLine(String organisationId,
-                                      TxLine txLine) {
     }
 
 }

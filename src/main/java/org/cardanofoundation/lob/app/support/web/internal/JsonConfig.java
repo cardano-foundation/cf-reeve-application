@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.support.web.internal;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -19,6 +20,7 @@ public class JsonConfig {
         return new ObjectMapper()
                 .setSerializationInclusion(NON_NULL)
                 .enable(ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
+                .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .registerModules(new JavaTimeModule(), new Jdk8Module());
     }
 
