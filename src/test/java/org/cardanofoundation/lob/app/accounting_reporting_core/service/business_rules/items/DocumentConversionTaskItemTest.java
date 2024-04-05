@@ -3,7 +3,6 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CoreCurrencyRepository;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.cardanofoundation.lob.app.organisation.domain.entity.OrganisationCurrency;
 import org.cardanofoundation.lob.app.organisation.domain.entity.OrganisationVat;
@@ -31,14 +30,11 @@ public class DocumentConversionTaskItemTest {
     @Mock
     private CoreCurrencyRepository coreCurrencyRepository;
 
-    @Mock
-    private PipelineTask pipelineTask;
-
     private DocumentConversionTaskItem documentConversionTaskItem;
 
     @BeforeEach
     public void setup() {
-        this.documentConversionTaskItem = new DocumentConversionTaskItem(pipelineTask, organisationPublicApi, coreCurrencyRepository);
+        this.documentConversionTaskItem = new DocumentConversionTaskItem(organisationPublicApi, coreCurrencyRepository);
     }
 
     @Test
@@ -48,7 +44,7 @@ public class DocumentConversionTaskItemTest {
         val customerCode = "custCode";
         val internalTransactionNumber = "INT-1";
 
-        val transaction = TransactionWithViolations.create(Transaction.builder()
+        val transaction = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber(internalTransactionNumber)
                 .organisation(Organisation.builder().id(organisationId).build())
@@ -63,14 +59,14 @@ public class DocumentConversionTaskItemTest {
                                         .currency(Currency.builder().customerCode("USD").build())
                                         .build()))
                                 .build()))
-                .build());
+                .build();
 
         when(organisationPublicApi.findOrganisationByVatAndCode(organisationId, customerCode)).thenReturn(Optional.empty());
 
         val result = documentConversionTaskItem.run(transaction);
 
-        assertThat(result.violations()).isNotEmpty();
-        assertThat(result.violations()).anyMatch(v -> v.code() == VAT_RATE_NOT_FOUND);
+        assertThat(result.getViolations()).isNotEmpty();
+        assertThat(result.getViolations()).anyMatch(v -> v.code() == VAT_RATE_NOT_FOUND);
     }
 
     @Test
@@ -81,7 +77,7 @@ public class DocumentConversionTaskItemTest {
         val vatCustomerCode = "VAT123";
         val internalTransactionNumber = "INT-1";
 
-        val transaction = TransactionWithViolations.create(Transaction.builder()
+        val transaction = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber(internalTransactionNumber)
                 .organisation(Organisation.builder().id(organisationId).build())
@@ -116,7 +112,7 @@ public class DocumentConversionTaskItemTest {
                                 .build())
                 )
 
-                .build());
+                .build();
 
         // Simulate currency lookup failure
         when(organisationPublicApi.findCurrencyByCustomerCurrencyCode(organisationId, customerCurrencyCode))
@@ -125,8 +121,8 @@ public class DocumentConversionTaskItemTest {
         val result = documentConversionTaskItem.run(transaction);
 
         // Assert that a CURRENCY_NOT_FOUND violation is added
-        assertThat(result.violations()).isNotEmpty();
-        assertThat(result.violations()).anyMatch(v -> v.code() == CURRENCY_NOT_FOUND);
+        assertThat(result.getViolations()).isNotEmpty();
+        assertThat(result.getViolations()).anyMatch(v -> v.code() == CURRENCY_NOT_FOUND);
     }
 
     @Test
@@ -137,7 +133,7 @@ public class DocumentConversionTaskItemTest {
         var customerVatCode = "VAT123";
         var currencyId = "ISO_4217:USD";
 
-        var transaction = TransactionWithViolations.create(Transaction.builder()
+        var transaction = Transaction.builder()
                 .id(txId)
                 .organisation(Organisation.builder().id(organisationId).build())
                 .items(Set.of(TransactionItem.builder()
@@ -152,7 +148,7 @@ public class DocumentConversionTaskItemTest {
                                         .build())
                                 .build()))
                         .build()))
-                .build());
+                .build();
 
         // Mock the successful VAT and Currency lookups
         when(organisationPublicApi.findOrganisationByVatAndCode(organisationId, customerVatCode))
@@ -177,7 +173,7 @@ public class DocumentConversionTaskItemTest {
         var result = documentConversionTaskItem.run(transaction);
 
         // Assert no violations are added
-        assertThat(result.violations()).isEmpty();
+        assertThat(result.getViolations()).isEmpty();
     }
 
     @Test
@@ -188,7 +184,7 @@ public class DocumentConversionTaskItemTest {
         var customerVatCode = "UNKNOWN_VAT";
         val internalTransactionNumber = "INT-1";
 
-        var transaction = TransactionWithViolations.create(Transaction.builder()
+        var transaction = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber(internalTransactionNumber)
                 .organisation(Organisation.builder().id(organisationId).build())
@@ -206,7 +202,7 @@ public class DocumentConversionTaskItemTest {
                                                 .build())
                                         .build()))
                                 .build()))
-                .build());
+                .build();
 
         // Simulate failures in VAT and Currency lookups
         when(organisationPublicApi.findOrganisationByVatAndCode(organisationId, customerVatCode))
@@ -218,9 +214,9 @@ public class DocumentConversionTaskItemTest {
         var result = documentConversionTaskItem.run(transaction);
 
         // Assert that the correct violations are added
-        assertThat(result.violations()).hasSize(2);
-        assertThat(result.violations()).anyMatch(v -> v.code() == VAT_RATE_NOT_FOUND);
-        assertThat(result.violations()).anyMatch(v -> v.code() == CURRENCY_NOT_FOUND);
+        assertThat(result.getViolations()).hasSize(2);
+        assertThat(result.getViolations()).anyMatch(v -> v.code() == VAT_RATE_NOT_FOUND);
+        assertThat(result.getViolations()).anyMatch(v -> v.code() == CURRENCY_NOT_FOUND);
     }
 
 }

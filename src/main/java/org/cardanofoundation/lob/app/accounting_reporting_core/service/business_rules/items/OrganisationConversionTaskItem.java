@@ -3,14 +3,16 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CoreCurrencyRepository;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CORE_CURRENCY_NOT_FOUND;
@@ -20,34 +22,28 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @RequiredArgsConstructor
 public class OrganisationConversionTaskItem implements PipelineTaskItem {
 
-    private final PipelineTask pipelineTask;
     private final OrganisationPublicApi organisationPublicApi;
     private final CoreCurrencyRepository coreCurrencyRepository;
 
     @Override
-    public TransactionWithViolations run(TransactionWithViolations transactionWithViolations) {
-        val tx = transactionWithViolations.transaction();
-
+    public Transaction run(Transaction tx) {
         val organisationId = tx.getOrganisation().getId();
         val organisationM = organisationPublicApi.findByOrganisationId(organisationId);
+
+        val violations = new LinkedHashSet<Violation>();
 
         if (organisationM.isEmpty()) {
             val v = Violation.create(
                     ERROR,
                     Violation.Source.LOB,
-                    organisationId,
-                    tx.getId(),
                     ORGANISATION_NOT_FOUND,
-                    pipelineTask.getClass().getSimpleName(),
+                    this.getClass().getSimpleName(),
                     Map.of(
                             "transactionNumber", tx.getInternalTransactionNumber()
                     )
             );
 
-            return TransactionWithViolations.create(tx
-                    .toBuilder()
-                    .validationStatus(FAILED)
-                    .build(), v);
+            violations.add(v);
         }
 
         val organisation = organisationM.orElseThrow();
@@ -58,24 +54,26 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
             val v = Violation.create(
                     ERROR,
                     Violation.Source.INTERNAL,
-                    organisationId,
-                    tx.getId(),
                     CORE_CURRENCY_NOT_FOUND,
-                    pipelineTask.getClass().getSimpleName(),
+                    this.getClass().getSimpleName(),
                     Map.of(
                             "currencyId", organisation.getCurrencyId(),
                             "transactionNumber", tx.getInternalTransactionNumber()
                     )
             );
 
-            return TransactionWithViolations.create(tx
-                            .toBuilder()
-                            .validationStatus(FAILED)
-                            .build(),
-                    v);
+            violations.add(v);
         }
 
-        return TransactionWithViolations.create(tx.toBuilder()
+        if (!violations.isEmpty()) {
+            return tx
+                    .toBuilder()
+                    .validationStatus(FAILED)
+                    .violations(Stream.concat(tx.getViolations().stream(), violations.stream()).collect(Collectors.toSet()))
+                    .build();
+        }
+
+        return tx.toBuilder()
                 .transactionApproved(organisation.isPreApproveTransactionsEnabled())
                 .ledgerDispatchApproved(organisation.isPreApproveTransactionsDispatchEnabled())
                 .organisation(tx.getOrganisation().toBuilder()
@@ -85,7 +83,7 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
                                 .customerCode(coreCurrencyM.orElseThrow().getCurrencyISOCode())
                                 .build()))
                         .build())
-                .build());
+                .build();
     }
 
 }

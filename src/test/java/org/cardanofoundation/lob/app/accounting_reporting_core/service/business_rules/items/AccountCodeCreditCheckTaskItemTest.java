@@ -4,11 +4,8 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -23,11 +20,9 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 public class AccountCodeCreditCheckTaskItemTest {
 
     private PipelineTaskItem taskItem;
-
     @BeforeEach
     public void setup() {
-        val pipelineTask = Mockito.mock(PipelineTask.class);
-        this.taskItem = new AccountCodeCreditCheckTaskItem(pipelineTask);
+        this.taskItem = new AccountCodeCreditCheckTaskItem();
     }
 
     @Test
@@ -35,7 +30,7 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testCreditWorks() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -46,11 +41,11 @@ public class AccountCodeCreditCheckTaskItemTest {
                                 .accountCodeCredit(Optional.of("1"))
                                 .build()
                         ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     @Test
@@ -58,7 +53,7 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testAccountCreditCheckError() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -68,13 +63,13 @@ public class AccountCodeCreditCheckTaskItemTest {
                                 .id(TransactionItem.id(txId, "0"))
                                 .build()
                         ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(1);
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(ACCOUNT_CODE_CREDIT_IS_EMPTY);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(1);
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(ACCOUNT_CODE_CREDIT_IS_EMPTY);
     }
 
     @Test
@@ -82,7 +77,7 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testAccountCreditCheckSkipJournals() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -92,11 +87,11 @@ public class AccountCodeCreditCheckTaskItemTest {
                                 .id(TransactionItem.id(txId, "0"))
                                 .build()
                         ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     // Multiple Items with Mixed Credit Status
@@ -104,7 +99,7 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testMixedCreditItems() {
         val txId = Transaction.id("2", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("2")
                 .organisation(Organisation.builder().id("1").build())
@@ -118,12 +113,12 @@ public class AccountCodeCreditCheckTaskItemTest {
                                 .id(TransactionItem.id(txId, "2"))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(1);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(1);
     }
 
     // Multiple Items, All Without Credit
@@ -131,7 +126,7 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testAllItemsWithoutCredit() {
         val txId = Transaction.id("3", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("3")
                 .organisation(Organisation.builder().id("1").build())
@@ -144,12 +139,12 @@ public class AccountCodeCreditCheckTaskItemTest {
                                 .id(TransactionItem.id(txId, "4"))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(2);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(2);
     }
 
     // Item with Empty String as Credit
@@ -157,7 +152,7 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testItemWithEmptyStringCredit() {
         val txId = Transaction.id("4", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("4")
                 .organisation(Organisation.builder().id("1").build())
@@ -168,12 +163,12 @@ public class AccountCodeCreditCheckTaskItemTest {
                                 .accountCodeCredit(Optional.of(""))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(1);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(1);
     }
 
     // Transaction with No Items
@@ -181,17 +176,17 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testTransactionWithNoItems() {
         val txId = Transaction.id("5", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("5")
                 .organisation(Organisation.builder().id("1").build())
                 .transactionType(FxRevaluation)
                 .items(Collections.emptySet())
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     // Valid Credit with Whitespace
@@ -199,7 +194,7 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testValidCreditWithWhitespace() {
         val txId = Transaction.id("6", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("6")
                 .organisation(Organisation.builder().id("1").build())
@@ -210,11 +205,11 @@ public class AccountCodeCreditCheckTaskItemTest {
                                 .accountCodeCredit(Optional.of(" 100 "))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
 }

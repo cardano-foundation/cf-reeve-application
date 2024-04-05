@@ -2,36 +2,33 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TRANSACTION_ITEMS_EMPTY;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
 public class NoTransactionItemsTaskItem implements PipelineTaskItem {
 
-    private final PipelineTask pipelineTask;
-
     @Override
-    public TransactionWithViolations run(TransactionWithViolations transactionWithViolations) {
-        val tx = transactionWithViolations.transaction();
-
+    public Transaction run(Transaction tx) {
         val violations = new HashSet<Violation>();
 
         if (tx.getItems().isEmpty()) {
             val v = Violation.create(
                     ERROR,
-                    Violation.Source.ERP,
-                    tx.getOrganisation().getId(),
-                    tx.getId(),
+                    ERP,
                     TRANSACTION_ITEMS_EMPTY,
-                    pipelineTask.getClass().getSimpleName(),
+                    this.getClass().getSimpleName(),
                     Map.of("transactionNumber", tx.getInternalTransactionNumber())
             );
 
@@ -39,14 +36,13 @@ public class NoTransactionItemsTaskItem implements PipelineTaskItem {
         }
 
         if (!violations.isEmpty()) {
-            return TransactionWithViolations
-                    .create(tx.toBuilder()
-                                    .validationStatus(FAILED)
-                                    .build(),
-                            violations);
+            return tx.toBuilder()
+                    .validationStatus(FAILED)
+                    .violations(Stream.concat(tx.getViolations().stream(), violations.stream()).collect(Collectors.toSet()))
+                    .build();
         }
 
-        return transactionWithViolations;
+        return tx;
     }
 
 }

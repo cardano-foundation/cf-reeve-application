@@ -82,6 +82,9 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     private Set<TransactionItemEntity> items = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "transaction", orphanRemoval = true, cascade = ALL, fetch = EAGER)
+    private Set<ViolationEntity> violationEntities = new LinkedHashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

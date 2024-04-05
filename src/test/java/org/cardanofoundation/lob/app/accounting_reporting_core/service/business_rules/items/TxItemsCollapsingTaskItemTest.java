@@ -27,7 +27,7 @@ class TxItemsCollapsingTaskItemTest {
     void shouldNotCollapseItems() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .items(Set.of(TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "0"))
@@ -43,19 +43,19 @@ class TxItemsCollapsingTaskItemTest {
                                 .amountFcy(BigDecimal.TEN)
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = txItemsCollapsingTaskItem.run(txs);
 
-        assertThat(newTx.transaction().getItems()).hasSize(2);
-        assertThat(newTx.transaction().getItems()).extracting("accountEventCode").containsExactlyInAnyOrder(Optional.of("e12"), Optional.of("e1212"));
+        assertThat(newTx.getItems()).hasSize(2);
+        assertThat(newTx.getItems()).extracting("accountEventCode").containsExactlyInAnyOrder(Optional.of("e12"), Optional.of("e1212"));
     }
 
     @Test
     void shouldCollapseItems() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .items(Set.of(
                         TransactionItem.builder()
@@ -71,14 +71,14 @@ class TxItemsCollapsingTaskItemTest {
                                 .amountFcy(BigDecimal.TEN)
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = txItemsCollapsingTaskItem.run(txs);
 
-        assertThat(newTx.transaction().getItems()).hasSize(1);
-        assertThat(newTx.transaction().getItems()).extracting("amountLcy").containsExactly(BigDecimal.valueOf(2));
-        assertThat(newTx.transaction().getItems()).extracting("amountFcy").containsExactly(BigDecimal.valueOf(20));
-        assertThat(newTx.transaction().getItems()).extracting("accountEventCode").containsExactly(Optional.of("e12"));
+        assertThat(newTx.getItems()).hasSize(1);
+        assertThat(newTx.getItems()).extracting("amountLcy").containsExactly(BigDecimal.valueOf(2));
+        assertThat(newTx.getItems()).extracting("amountFcy").containsExactly(BigDecimal.valueOf(20));
+        assertThat(newTx.getItems()).extracting("accountEventCode").containsExactly(Optional.of("e12"));
     }
 
     @Test
@@ -88,7 +88,7 @@ class TxItemsCollapsingTaskItemTest {
         val txId3 = Transaction.id("1", "3");
 
         val txs = Set.of(
-                TransactionWithViolations.create(Transaction.builder()
+                Transaction.builder()
                         .id(txId1)
                         .items(Set.of(TransactionItem.builder()
                                         .id(TransactionItem.id(txId1, "0"))
@@ -111,8 +111,8 @@ class TxItemsCollapsingTaskItemTest {
                                         .amountFcy(BigDecimal.TEN)
                                         .build()
                         ))
-                        .build()),
-                TransactionWithViolations.create(Transaction.builder()
+                        .build(),
+                Transaction.builder()
                         .id(txId2)
                         .items(Set.of(TransactionItem.builder()
                                 .id(TransactionItem.id(txId2, "0"))
@@ -125,8 +125,8 @@ class TxItemsCollapsingTaskItemTest {
                                 .amountFcy(BigDecimal.TEN)
                                 .build()
                         ))
-                        .build(), Set.of()),
-                TransactionWithViolations.create(Transaction.builder()
+                        .build(),
+                Transaction.builder()
                         .id(txId3)
                         .items(Set.of(
                                 TransactionItem.builder()
@@ -182,28 +182,30 @@ class TxItemsCollapsingTaskItemTest {
                                         .amountFcy(BigDecimal.TEN)
                                         .build()
                         ))
-                        .build(), Set.of())
+                        .build()
         );
 
-        val newTxs = txs.stream().map(txItemsCollapsingTaskItem::run).collect(Collectors.toCollection( LinkedHashSet::new ));
+        val newTxs = txs.stream()
+                .map(txItemsCollapsingTaskItem::run)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
         assertThat(newTxs).hasSize(3);
-        assertThat(newTxs).extracting("transaction.id").containsExactlyInAnyOrder(txId1, txId2, txId3);
+        assertThat(newTxs).extracting("id").containsExactlyInAnyOrder(txId1, txId2, txId3);
 
-        assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId1)).findFirst().orElseThrow().transaction().getItems()).hasSize(1);
-        assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId2)).findFirst().orElseThrow().transaction().getItems()).hasSize(1);
+        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId1)).findFirst().orElseThrow().getItems()).hasSize(1);
+        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId2)).findFirst().orElseThrow().getItems()).hasSize(1);
 
-        assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId3)).findFirst().orElseThrow().transaction().getItems()).hasSize(2);
+        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId3)).findFirst().orElseThrow().getItems()).hasSize(2);
 
-        assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId3)).findFirst().orElseThrow().transaction().getItems()).extracting("amountLcy").containsExactlyInAnyOrder(BigDecimal.valueOf(2), BigDecimal.valueOf(2));
-        assertThat(newTxs.stream().filter(tx -> tx.transaction().getId().equals(txId3)).findFirst().orElseThrow().transaction().getItems()).extracting("amountFcy").containsExactlyInAnyOrder(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
+        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId3)).findFirst().orElseThrow().getItems()).extracting("amountLcy").containsExactlyInAnyOrder(BigDecimal.valueOf(2), BigDecimal.valueOf(2));
+        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId3)).findFirst().orElseThrow().getItems()).extracting("amountFcy").containsExactlyInAnyOrder(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
     }
 
     @Test
     void mustNotCollapseTxItemsForFailedTransactions() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .validationStatus(FAILED)
                 .items(Set.of(TransactionItem.builder()
@@ -219,12 +221,12 @@ class TxItemsCollapsingTaskItemTest {
                                 .amountFcy(BigDecimal.TEN)
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = txItemsCollapsingTaskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.transaction().getItems()).hasSize(2);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getItems()).hasSize(2);
     }
 
 }

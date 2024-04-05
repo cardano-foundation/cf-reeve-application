@@ -4,8 +4,6 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.AMOUNT_LCY_IS_ZERO;
-import static org.mockito.Mockito.mock;
 
 class AmountsLcyCheckTaskItemTest {
 
@@ -24,8 +21,7 @@ class AmountsLcyCheckTaskItemTest {
 
     @BeforeEach
     public void setup() {
-        val pipelineTask = mock(PipelineTask.class);
-        this.taskItem = new AmountsLcyCheckTaskItem(pipelineTask);
+        this.taskItem = new AmountsLcyCheckTaskItem();
     }
 
     // Testing generation of violation for items with zero LCY and non-zero FCY amounts.
@@ -34,7 +30,7 @@ class AmountsLcyCheckTaskItemTest {
         val txId = Transaction.id("1", "1");
         val orgId = "1";
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id(orgId).build())
@@ -45,13 +41,13 @@ class AmountsLcyCheckTaskItemTest {
                                 .amountFcy(BigDecimal.valueOf(100))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).isNotEmpty();
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(AMOUNT_LCY_IS_ZERO);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).isNotEmpty();
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(AMOUNT_LCY_IS_ZERO);
     }
 
     // Ensuring no violations for items with non-zero LCY amounts.
@@ -59,7 +55,7 @@ class AmountsLcyCheckTaskItemTest {
     void whenLcyAndFcyAreNonZero_thenNoViolations() {
         val txId = Transaction.id("2", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("2")
                 .organisation(Organisation.builder().id("1").build())
@@ -70,12 +66,12 @@ class AmountsLcyCheckTaskItemTest {
                                 .amountFcy(BigDecimal.valueOf(100))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(VALIDATED);
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     // Verifying no violations when both LCY and FCY amounts are zero.
@@ -83,7 +79,7 @@ class AmountsLcyCheckTaskItemTest {
     void whenBothLcyAndFcyAreZero_thenNoViolations() {
         val txId = Transaction.id("3", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("3")
                 .organisation(Organisation.builder().id("1").build())
@@ -94,12 +90,12 @@ class AmountsLcyCheckTaskItemTest {
                                 .amountFcy(BigDecimal.ZERO)
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(VALIDATED);
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
 }

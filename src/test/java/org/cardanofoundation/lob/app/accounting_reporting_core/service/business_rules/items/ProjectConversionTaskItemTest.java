@@ -34,12 +34,12 @@ public class ProjectConversionTaskItemTest {
         this.projectConversionTaskItem = new ProjectConversionTaskItem(pipelineTask, organisationPublicApiIF);
     }
 
-    //   Project Found and Conversion Succeeds
+//   Project Found and Conversion Succeeds
 //   Test a scenario where the project is successfully found, which should result in a successful conversion without any violations. This tests the positive path and ensures that when everything is as expected, the system behaves correctly.
     @Test
     public void testProjectFoundConversionSucceeds() {
         val txId = Transaction.id("1", "1");
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -48,7 +48,7 @@ public class ProjectConversionTaskItemTest {
                         .id(TransactionItem.id(txId, "0"))
                         .project(Optional.of(Project.builder().customerCode("cust_code1").build()))
                         .build()))
-                .build());
+                .build();
 
         when(organisationPublicApiIF.findProject("1", "cust_code1"))
                 .thenReturn(Optional.of(OrganisationProject.builder()
@@ -57,7 +57,7 @@ public class ProjectConversionTaskItemTest {
 
         val newTx = projectConversionTaskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
         // Further assertions can be added here to check the transformed transaction items if needed
     }
 
@@ -66,7 +66,7 @@ public class ProjectConversionTaskItemTest {
     public void testMissingProjectResultsInConversionSuccess() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -75,12 +75,12 @@ public class ProjectConversionTaskItemTest {
                         .id(TransactionItem.id(txId, "0"))
                         .project(Optional.empty()) // Simulate missing project to trigger the violation
                         .build()))
-                .build());
+                .build();
 
         // Action: Run the task item with the transaction
         val newTx = projectConversionTaskItem.run(txs);
 
-        assertThat(newTx.violations()).hasSize(0);
+        assertThat(newTx.getViolations()).hasSize(0);
     }
 
     // Missing Project details in Violation Creation
@@ -88,7 +88,7 @@ public class ProjectConversionTaskItemTest {
     public void testMissingProjectResultsInViolationCreation() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -97,15 +97,15 @@ public class ProjectConversionTaskItemTest {
                         .id(TransactionItem.id(txId, "0"))
                         .project(Optional.of(Project.builder().customerCode("cust_code1").build()))
                         .build()))
-                .build());
+                .build();
 
         when(organisationPublicApiIF.findProject("1", "cust_code1")).thenReturn(Optional.empty());
 
         // Action: Run the task item with the transaction
         val newTx = projectConversionTaskItem.run(txs);
 
-        assertThat(newTx.violations()).isNotEmpty();
-        assertThat(newTx.violations()).anyMatch(v -> v.code() == PROJECT_CODE_NOT_FOUND);
+        assertThat(newTx.getViolations()).isNotEmpty();
+        assertThat(newTx.getViolations()).anyMatch(v -> v.code() == PROJECT_CODE_NOT_FOUND);
     }
 
 }

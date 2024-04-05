@@ -1,11 +1,12 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -22,8 +23,7 @@ class AccountCodeDebitCheckTaskItemTest {
 
     @BeforeEach
     public void setup() {
-        val pipelineTask = Mockito.mock(PipelineTask.class);
-        this.taskItem = new AccountCodeDebitCheckTaskItem(pipelineTask);
+        this.taskItem = new AccountCodeDebitCheckTaskItem();
     }
 
     @Test
@@ -31,7 +31,7 @@ class AccountCodeDebitCheckTaskItemTest {
     public void testCreditWorks() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -42,11 +42,11 @@ class AccountCodeDebitCheckTaskItemTest {
                                 .accountCodeDebit(Optional.of("1"))
                                 .build()
                         ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     @Test
@@ -54,7 +54,7 @@ class AccountCodeDebitCheckTaskItemTest {
     public void testAccountDebitCheckError() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -64,13 +64,13 @@ class AccountCodeDebitCheckTaskItemTest {
                                 .id(TransactionItem.id(txId, "0"))
                                 .build()
                         ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(1);
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(ACCOUNT_CODE_DEBIT_IS_EMPTY);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(1);
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(ACCOUNT_CODE_DEBIT_IS_EMPTY);
     }
 
     @Test
@@ -78,7 +78,7 @@ class AccountCodeDebitCheckTaskItemTest {
     public void testAccountDebitCheckSkipFxRevaluation() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -88,12 +88,11 @@ class AccountCodeDebitCheckTaskItemTest {
                                 .id(TransactionItem.id(txId, "0"))
                                 .build()
                         ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     // Multiple Items with Mixed Debit Status
@@ -101,7 +100,7 @@ class AccountCodeDebitCheckTaskItemTest {
     public void testMixedDebitItems() {
         val txId = Transaction.id("2", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("2")
                 .organisation(Organisation.builder().id("1").build())
@@ -115,12 +114,12 @@ class AccountCodeDebitCheckTaskItemTest {
                                 .id(TransactionItem.id(txId, "2"))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(1);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(1);
     }
 
     // All Items without Debit
@@ -129,7 +128,7 @@ class AccountCodeDebitCheckTaskItemTest {
     public void testAllItemsWithoutDebit() {
         val txId = Transaction.id("3", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("3")
                 .organisation(Organisation.builder().id("1").build())
@@ -142,12 +141,12 @@ class AccountCodeDebitCheckTaskItemTest {
                                 .id(TransactionItem.id(txId, "4"))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(2);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(2);
     }
 
     // Debit Code is an Empty String
@@ -155,7 +154,7 @@ class AccountCodeDebitCheckTaskItemTest {
     public void testItemWithEmptyStringDebit() {
         val txId = Transaction.id("4", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("4")
                 .organisation(Organisation.builder().id("1").build())
@@ -166,12 +165,12 @@ class AccountCodeDebitCheckTaskItemTest {
                                 .accountCodeDebit(Optional.of(""))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(1);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(1);
     }
 
     // Transaction with No Items
@@ -179,17 +178,17 @@ class AccountCodeDebitCheckTaskItemTest {
     public void testTransactionWithNoItems() {
         val txId = Transaction.id("5", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("5")
                 .organisation(Organisation.builder().id("1").build())
                 .transactionType(TransactionType.BillCredit)
                 .items(Collections.emptySet())
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     // Valid Debit with Whitespace
@@ -197,7 +196,7 @@ class AccountCodeDebitCheckTaskItemTest {
     public void testValidDebitWithWhitespace() {
         val txId = Transaction.id("6", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("6")
                 .organisation(Organisation.builder().id("1").build())
@@ -208,11 +207,11 @@ class AccountCodeDebitCheckTaskItemTest {
                                 .accountCodeDebit(Optional.of(" 100 "))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
 }

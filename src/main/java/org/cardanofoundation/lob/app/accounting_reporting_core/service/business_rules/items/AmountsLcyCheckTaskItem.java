@@ -3,12 +3,13 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.AMOUNT_LCY_IS_ZERO;
@@ -18,12 +19,8 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @RequiredArgsConstructor
 public class AmountsLcyCheckTaskItem implements PipelineTaskItem {
 
-    private final PipelineTask pipelineTask;
-
     @Override
-    public TransactionWithViolations run(TransactionWithViolations violationTransaction) {
-        val tx = violationTransaction.transaction();
-
+    public Transaction run(Transaction tx) {
         val violations = new HashSet<Violation>();
 
         for (val txItem : tx.getItems()) {
@@ -31,15 +28,13 @@ public class AmountsLcyCheckTaskItem implements PipelineTaskItem {
                 val v = Violation.create(
                         ERROR,
                         ERP,
-                        tx.getOrganisation().getId(),
-                        tx.getId(),
                         txItem.getId(),
                         AMOUNT_LCY_IS_ZERO,
-                        pipelineTask.getClass().getSimpleName(),
+                        this.getClass().getSimpleName(),
                         Map.of(
                                 "transactionNumber", tx.getInternalTransactionNumber(),
-                                "amountFcy", txItem.getAmountFcy(),
-                                "amountLcy", txItem.getAmountLcy()
+                                "amountFcy", txItem.getAmountFcy().toEngineeringString(),
+                                "amountLcy", txItem.getAmountLcy().toEngineeringString()
                         )
                 );
 
@@ -48,14 +43,13 @@ public class AmountsLcyCheckTaskItem implements PipelineTaskItem {
         }
 
         if (!violations.isEmpty()) {
-            return TransactionWithViolations
-                    .create(tx.toBuilder().validationStatus(FAILED).build(),
-                            violations
-                    );
+            return tx.toBuilder()
+                    .validationStatus(FAILED)
+                    .violations(Stream.concat(tx.getViolations().stream(), violations.stream()).collect(Collectors.toSet()))
+                    .build();
         }
 
-
-        return violationTransaction;
+        return tx;
     }
 
 }

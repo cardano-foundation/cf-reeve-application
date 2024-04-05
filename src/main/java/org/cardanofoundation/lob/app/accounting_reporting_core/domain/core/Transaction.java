@@ -62,6 +62,9 @@ public class Transaction {
     @NotEmpty
     private Set<TransactionItem> items = new LinkedHashSet<>();
 
+    @Builder.Default
+    private Set<Violation> violations = new LinkedHashSet<>();
+
     public static String id(String organisationId,
                             String internalTransactionNumber) {
         return digestAsHex(STR."\{organisationId}::\{internalTransactionNumber}");
@@ -72,6 +75,10 @@ public class Transaction {
     }
 
     public boolean isTheSameBusinessWise(Transaction other) {
+        return isTheSameBusinessWise(other, false);
+    }
+
+    public boolean isTheSameBusinessWise(Transaction other, boolean withViolationsCheck) {
         val equalsBuilder = new EqualsBuilder();
         equalsBuilder.append(this.id, other.id);
         equalsBuilder.append(this.entryDate, other.entryDate);
@@ -82,16 +89,31 @@ public class Transaction {
         equalsBuilder.append(this.internalTransactionNumber, other.internalTransactionNumber);
         equalsBuilder.append(this.validationStatus, other.validationStatus);
 
+        val rootMatch = equalsBuilder.isEquals();
+
         // Compare items only if all other fields are equal
-        if (equalsBuilder.isEquals()) {
+        if (rootMatch) {
             // Ensure both sets are of the same size
             if (this.items.size() != other.items.size()) {
                 return false;
             }
 
-            return this.items.stream()
+            val txItemsMatch = this.items.stream()
                     .allMatch(thisItem -> other.items.stream()
                             .anyMatch(thisItem::isTheSameBusinessWise));
+
+            if (withViolationsCheck) {
+                if (txItemsMatch) {
+                    if (this.violations.size() != other.violations.size()) {
+                        return false;
+                    }
+
+                    return this.violations.stream().allMatch(violation -> other.violations.stream()
+                            .anyMatch(violation::isTheSameBusinessWise));
+                }
+            }
+
+            return txItemsMatch;
         }
 
         return false;

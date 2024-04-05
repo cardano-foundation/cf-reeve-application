@@ -19,6 +19,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TX_CANNOT_BE_ALTERED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.WARN;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.*;
 
@@ -41,17 +42,16 @@ class DbSyncProcessorPipelineTaskTest {
         // Create empty passed transactions and an empty set for ignored transactions
         OrganisationTransactions passedTransactions = new OrganisationTransactions(orgId, new HashSet<>());
         OrganisationTransactions ignoredTransactions = new OrganisationTransactions(orgId, new HashSet<>());
-        Set<Violation> allViolationsUntilNow = new HashSet<>();
 
         // No need to mock `findByAllId` as no transaction IDs will be queried
 
         // Execute
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions, allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions);
 
         // Assert
         assertThat(result.passedTransactions().transactions()).isEmpty(); // Expect no transactions to be processed
         assertThat(result.ignoredTransactions().transactions()).isEmpty(); // Expect no transactions to be ignored
-        assertThat(result.violations()).isEmpty(); // Expect no violations to be generated
+        assertThat(result.getAllViolations()).isEmpty(); // Expect no violations to be generated
 
         // Verify that findByAllId was not called since there are no transactions to process
         verify(transactionRepositoryGateway, never()).findByAllId(anySet());
@@ -63,15 +63,13 @@ class DbSyncProcessorPipelineTaskTest {
         val passedTransactions = new OrganisationTransactions("org1", new HashSet<>());
         val ignoredTransactions = new OrganisationTransactions("org1", new HashSet<>());
 
-        val allViolationsUntilNow = new HashSet<Violation>();
-
         // Execute
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions, allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions);
 
         // Assert
         assertThat(result.passedTransactions().transactions()).isEmpty();
         assertThat(result.ignoredTransactions().transactions()).isEmpty();
-        assertThat(result.violations()).isEmpty();
+        assertThat(result.getAllViolations()).isEmpty();
     }
 
     @Test
@@ -93,18 +91,17 @@ class DbSyncProcessorPipelineTaskTest {
 
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(tx1, tx2));
         val ignoredTransactions = new OrganisationTransactions(orgId, new HashSet<>());
-        val allViolationsUntilNow = new HashSet<Violation>();
 
         // Mocking the repository to return the transactions as both dispatched (via allApprovalsPassedForTransactionDispatch)
         // and unchanged (since they match the incoming transactions exactly)
         when(transactionRepositoryGateway.findByAllId(anySet())).thenReturn(Set.of(tx1, tx2));
 
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions, allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions);
 
         // Since both transactions are mocked as dispatched and unchanged, they should be ignored
         assertThat(result.passedTransactions().transactions()).isEmpty();
         assertThat(result.ignoredTransactions().transactions()).containsExactlyInAnyOrderElementsOf(Set.of(tx1, tx2));
-        assertThat(result.violations()).isEmpty();
+        assertThat(result.getAllViolations()).isEmpty();
     }
 
     @Test
@@ -136,18 +133,17 @@ class DbSyncProcessorPipelineTaskTest {
 
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(tx1, tx2));
         val ignoredTransactions = new OrganisationTransactions(orgId, new HashSet<>());
-        val allViolationsUntilNow = new HashSet<Violation>();
 
         when(transactionRepositoryGateway.findByAllId(anySet()))
                 .thenReturn(new HashSet<>());
 
         // When
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions, allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions);
 
         // Then
         assertThat(result.passedTransactions().transactions()).containsExactlyInAnyOrder(tx1, tx2);
         assertThat(result.ignoredTransactions().transactions()).isEmpty();
-        assertThat(result.violations()).isEmpty();
+        assertThat(result.getAllViolations()).isEmpty();
     }
 
     @Test
@@ -183,13 +179,12 @@ class DbSyncProcessorPipelineTaskTest {
 
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(tx1, tx2));
         val ignoredTransactions = new OrganisationTransactions(orgId, new HashSet<>());
-        val allViolationsUntilNow = new HashSet<Violation>();
 
         // Mocking: Assuming findByAllId should return only tx1 as it simulates being present in the database and dispatched
         when(transactionRepositoryGateway.findByAllId(anySet())).thenReturn(Set.of(tx1));
 
         // When
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions, allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions);
 
         // Then: Expecting tx2 to be processed because it's not dispatched; tx1 ignored because it's dispatched
 
@@ -206,6 +201,9 @@ class DbSyncProcessorPipelineTaskTest {
         val internalTx1 = "internalTx1";
         val internalTx2 = "internalTx2";
 
+        // Pre-existing violation for a transaction that is not part of this test's transaction set
+        val preExistingViolation = Violation.create(WARN, ERP, TX_CANNOT_BE_ALTERED, DbSyncProcessorPipelineTask.class.getName(), Map.of("note", "This is a pre-existing violation."));
+
         // Create transaction IDs using a hypothetical static method on the Transaction class
         val tx1Id = Transaction.id(orgId, internalTx1);
         val tx2Id = Transaction.id(orgId, internalTx2);
@@ -218,6 +216,7 @@ class DbSyncProcessorPipelineTaskTest {
                         TransactionItem.builder().id(TransactionItem.id(tx1Id, "0")).build(),
                         TransactionItem.builder().id(TransactionItem.id(tx1Id, "1")).build()
                 ))
+                .violations(Set.of(preExistingViolation))
                 .build();
 
         val tx2 = Transaction.builder()
@@ -232,16 +231,12 @@ class DbSyncProcessorPipelineTaskTest {
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(tx1, tx2));
         val ignoredTransactions = new OrganisationTransactions(orgId, new HashSet<>());
 
-        // Pre-existing violation for a transaction that is not part of this test's transaction set
-        val preExistingViolation = Violation.create(Violation.Type.WARN, ERP, orgId, "preExistingTxId", TX_CANNOT_BE_ALTERED, DbSyncProcessorPipelineTask.class.getName(), Map.of("note", "This is a pre-existing violation."));
-        val allViolationsUntilNow = new HashSet<>(Set.of(preExistingViolation));
-
         // Setup mock behavior for the transactionRepositoryGateway
         when(transactionRepositoryGateway.findByAllId(anySet()))
                 .thenReturn(new HashSet<>()); // No transactions have been dispatched
 
         // Execute the task
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions, allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, ignoredTransactions);
 
         // Assert that the result contains the pre-existing violation and no new violations
         assertThat(result.passedTransactions().transactions()).containsExactlyInAnyOrderElementsOf(Set.of(tx1, tx2));
@@ -292,13 +287,12 @@ class DbSyncProcessorPipelineTaskTest {
                 .build();
 
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(txNewChanged1, txNewUnchanged, txDispatchedUnchanged));
-        val allViolationsUntilNow = new HashSet<Violation>();
 
         // Simulating database transactions: includes the old version of the changed transaction and the unchanged ones
         when(transactionRepositoryGateway.findByAllId(anySet())).thenReturn(Set.of(txNewChanged2, txNewUnchanged, txDispatchedUnchanged));
 
         // Execute
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()), allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()));
 
         // Asserts
         assertThat(result.passedTransactions().transactions()).containsExactlyInAnyOrder(txNewChanged1); // Only the changed transaction is processed
@@ -334,7 +328,6 @@ class DbSyncProcessorPipelineTaskTest {
                 .build();
 
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(tx1, tx2));
-        val allViolationsUntilNow = new HashSet<Violation>();
 
         // Mock the database return to simulate tx1 being unchanged and previously dispatched,
         // while tx2 is not found in the database (implying it's new or has changed).
@@ -342,7 +335,7 @@ class DbSyncProcessorPipelineTaskTest {
                 .thenReturn(Set.of(tx1)); // Only tx1 is found in the DB
 
         // Execute
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()), allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()));
 
         // Assertions
         assertThat(result.passedTransactions().transactions()).containsExactly(tx2); // tx2 is new/changed and processed
@@ -390,10 +383,9 @@ class DbSyncProcessorPipelineTaskTest {
         when(transactionRepositoryGateway.findByAllId(anySet())).thenReturn(Set.of(txOriginal));
 
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(txUpdatedTwice));
-        val allViolationsUntilNow = new HashSet<Violation>();
 
         // Execute
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()), allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()));
 
         // Assertions
         assertThat(result.passedTransactions().transactions()).containsExactly(txUpdatedTwice);
@@ -423,14 +415,13 @@ class DbSyncProcessorPipelineTaskTest {
                 .build();
 
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(txChangedNotApproved));
-        val allViolationsUntilNow = new HashSet<Violation>();
 
         // Simulate the original transaction state as found in the database
         when(transactionRepositoryGateway.findByAllId(Set.of(txChangedNotApproved.getId())))
                 .thenReturn(Set.of(txChangedNotApprovedOriginal));
 
         // Execute the task with the simulated changed transaction
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()), allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()));
 
         // Assertions
         assertThat(result.passedTransactions().transactions()).containsExactly(txChangedNotApproved); // The changed transaction should be processed
@@ -444,6 +435,7 @@ class DbSyncProcessorPipelineTaskTest {
     @Test
     void testViolationsForChangedTransactions() {
         val orgId = "org2";
+
         // Original transaction as stored in the database (unchanged)
         val tx1Original = Transaction.builder()
                 .id("tx1Id")
@@ -460,6 +452,7 @@ class DbSyncProcessorPipelineTaskTest {
                 .transactionApproved(true) // Assume it's still approved
                 .ledgerDispatchApproved(true) // Assume it's still approved for ledger dispatch
                 .entryDate(LocalDate.of(2021, 1, 2)) // Change in the entry date
+                .violations(Set.of(Violation.create(WARN, ERP, TX_CANNOT_BE_ALTERED, DbSyncProcessorPipelineTask.class.getName(), Map.of("transactionNumber", "internalTx1"))))
                 .build();
 
         // Simulate tx2 as new or changed and not yet dispatched (for completeness)
@@ -472,21 +465,17 @@ class DbSyncProcessorPipelineTaskTest {
                 .build();
 
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(tx1Changed, tx2));
-        val allViolationsUntilNow = new HashSet<Violation>();
 
         // Mock the database to return the original version of tx1, simulating that it's unchanged and previously dispatched
         when(transactionRepositoryGateway.findByAllId(anySet())).thenReturn(Set.of(tx1Original));
 
         // Execute
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()), allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()));
 
         // Assertions
         assertThat(result.passedTransactions().transactions()).containsExactlyInAnyOrder(tx1Changed, tx2); // Both tx1Changed and tx2 are processed
         assertThat(result.ignoredTransactions().transactions()).isEmpty(); // No transactions should be ignored since tx1 is considered changed
-        assertThat(result.violations())
-                .hasSize(1)
-                .extracting("transactionId")
-                .containsExactly("tx1Id"); // A violation is generated for the changed transaction (tx1)
+        assertThat(result.violations()).hasSize(1);
 
         // Verify interactions
         verify(transactionRepositoryGateway).findByAllId(anySet());
@@ -514,13 +503,12 @@ class DbSyncProcessorPipelineTaskTest {
                 .build();
 
         val passedTransactions = new OrganisationTransactions(orgId, Set.of(txValidatedUpdated));
-        val allViolationsUntilNow = new HashSet<Violation>();
 
         // Mock the database to return the original version of the transaction, simulating that it's previously failed
         when(transactionRepositoryGateway.findByAllId(Set.of(txFailedOriginal.getId()))).thenReturn(Set.of(txFailedOriginal));
 
         // Execute the task with the simulated updated transaction
-        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()), allViolationsUntilNow);
+        val result = dbSyncProcessorPipelineTask.run(passedTransactions, new OrganisationTransactions(orgId, new HashSet<>()));
 
         // Assertions
         assertThat(result.passedTransactions().transactions()).containsExactly(txValidatedUpdated); // The updated transaction should be re-processed

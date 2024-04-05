@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -91,10 +92,23 @@ public class TransactionConverter {
                             .accountCodeRefCredit(txItemEntity.getAccountCodeEventRefCredit().orElse(null))
                             .accountNameDebit(txItemEntity.getAccountNameDebit().orElse(null))
                             .accountEventCode(txItemEntity.getAccountEventCode().orElse(null));
+
                 })
                 .collect(Collectors.toSet());
 
+        val violations = transaction.getViolations().stream()
+                .map(violation -> ViolationEntity.builder()
+                        .id(new ViolationEntity.Id(transactionEntity.id(), violation.txItemId().orElse(""), violation.code()))
+                        .transaction(transactionEntity)
+                        .type(violation.type())
+                        .source(violation.source())
+                        .processorModule(violation.processorModule())
+                        //.bag(violation.bag())
+                        .build())
+                .collect(Collectors.toSet());
+
         transactionEntity.items(txItems);
+        transactionEntity.violationEntities(violations);
 
         transactionEntity.createdAt(LocalDateTime.now());
         transactionEntity.updatedAt(LocalDateTime.now());
@@ -155,7 +169,18 @@ public class TransactionConverter {
     }
 
     public Transaction convert(TransactionEntity transactionEntity) {
-        // can you write a converter from transactionEntity to transaction
+        val violations = transactionEntity.violationEntities()
+                .stream()
+                .map(violationEntity -> new org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation(
+                        violationEntity.getType(),
+                        violationEntity.getSource(),
+                        violationEntity.getId().getTxItemId(),
+                        violationEntity.getId().getCode(),
+                        violationEntity.getProcessorModule(),
+                        Map.of()
+                ))
+                //violationEntity.getBag()))
+                .collect(Collectors.toSet());
 
         val items = transactionEntity.items()
                 .stream()
@@ -186,6 +211,7 @@ public class TransactionConverter {
 
                         .amountFcy(txItemEntity.amountFcy())
                         .amountLcy(txItemEntity.amountLcy())
+
                         .build())
                 .collect(Collectors.toSet());
 
@@ -213,6 +239,7 @@ public class TransactionConverter {
                 .ledgerDispatchApproved(transactionEntity.ledgerDispatchApproved())
                 .accountingPeriod(transactionEntity.accountingPeriod())
                 .items(items)
+                .violations(violations)
                 .build();
     }
 

@@ -287,7 +287,7 @@ public class TransactionConverter {
         if (organisationIdM.isEmpty()) {
             return Either.left(Violation.create(txLine, ORGANISATION_MAPPING_NOT_FOUND, Map.of(
                     "netsuiteInstanceId", netsuiteInstanceId,
-                    "internalId", txLine.subsidiary()
+                    "internalId", txLine.subsidiary().toString()
             )));
         }
 

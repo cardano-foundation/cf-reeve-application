@@ -4,11 +4,8 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -24,8 +21,7 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
 
     @BeforeEach
     public void setup() {
-        PipelineTask pipelineTask = Mockito.mock(PipelineTask.class);
-        this.taskItem = new AmountLcyBalanceZerosOutCheckTaskItem(pipelineTask);
+        this.taskItem = new AmountLcyBalanceZerosOutCheckTaskItem();
     }
 
     // Checks that no violations are generated when the LCY balances out to zero across transaction items.
@@ -33,7 +29,7 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
     void whenLcyBalanceZerosOut_thenNoViolations() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -48,11 +44,11 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
                                 .amountLcy(BigDecimal.valueOf(-100))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     // Verifies that a violation is generated when the LCY balance does not zero out.
@@ -60,7 +56,7 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
     void whenLcyBalanceDoesNotZeroOut_thenViolationGenerated() {
         val txId = Transaction.id("2", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("2")
                 .organisation(Organisation.builder().id("1").build())
@@ -71,14 +67,14 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
                                 .amountLcy(BigDecimal.valueOf(-99))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).isNotEmpty();
-        assertThat(newTx.violations().size()).isEqualTo(1);
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(LCY_BALANCE_MUST_BE_ZERO);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).isNotEmpty();
+        assertThat(newTx.getViolations().size()).isEqualTo(1);
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(LCY_BALANCE_MUST_BE_ZERO);
     }
 
     // Confirms that no violations are generated for transactions without any items.
@@ -86,17 +82,17 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
     void whenNoTransactionItems_thenNoViolations() {
         val txId = Transaction.id("3", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("3")
                 .organisation(Organisation.builder().id("1").build())
                 .transactionType(FxRevaluation)
                 .items(Set.of())
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     //Tests that a violation is generated when there's only a single side of the transaction, causing the balance not to zero out.
@@ -104,7 +100,7 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
     void whenOnlyOneSideOfTransaction_thenViolationGenerated() {
         val txId = Transaction.id("4", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("4")
                 .organisation(Organisation.builder().id("1").build())
@@ -115,13 +111,13 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
                                 .amountLcy(BigDecimal.valueOf(100))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).isNotEmpty();
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(LCY_BALANCE_MUST_BE_ZERO);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).isNotEmpty();
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(LCY_BALANCE_MUST_BE_ZERO);
     }
 
     // Ensures that no violations are generated when multiple items result in an LCY balance that zeros out
@@ -129,7 +125,7 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
     void whenLcyBalanceZerosOutWithMultipleItems_thenNoViolations() {
         val txId = Transaction.id("5", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("5")
                 .organisation(Organisation.builder().id("1").build())
@@ -148,11 +144,11 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
                                 .amountLcy(BigDecimal.valueOf(-80))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
 }

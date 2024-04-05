@@ -9,12 +9,10 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TX_CANNOT_BE_ALTERED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
@@ -28,13 +26,12 @@ public class DbSyncProcessorPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions,
-                                    Set<Violation> allViolationUntilNow) {
+                                    OrganisationTransactions ignoredTransactions) {
         val organisationId = passedTransactions.organisationId();
         val incomingTransactions = passedTransactions.transactions();
 
         if (incomingTransactions.isEmpty()) {
-            return new TransformationResult(passedTransactions, ignoredTransactions, allViolationUntilNow);
+            return new TransformationResult(passedTransactions, ignoredTransactions);
         }
 
         val txIds = incomingTransactions.stream()
@@ -45,7 +42,6 @@ public class DbSyncProcessorPipelineTask implements PipelineTask {
                 .stream()
                 .collect(Collectors.toMap(Transaction::getId, Function.identity()));
 
-        val newViolations = new HashSet<>(allViolationUntilNow);
         val toProcessTransactions = new HashSet<Transaction>();
         val toIgnoreTransactions = new HashSet<Transaction>();
 
@@ -56,31 +52,32 @@ public class DbSyncProcessorPipelineTask implements PipelineTask {
             val notStoredYet = txM.isEmpty();
             val isChanged = notStoredYet || (txM.map(tx -> !tx.isTheSameBusinessWise(incomingTx)).orElse(false));
 
+            var newTx = incomingTx;
             if (isDispatchMarked && isChanged) {
-                val violation = Violation.create(
+                val v = Violation.create(
                         WARN,
                         ERP,
-                        organisationId,
-                        incomingTx.getId(),
                         TX_CANNOT_BE_ALTERED,
                         DbSyncProcessorPipelineTask.class.getName(),
                         Map.of("transactionNumber", incomingTx.getInternalTransactionNumber())
                 );
 
-                newViolations.add(violation);
+                newTx = incomingTx
+                        .toBuilder()
+                        .violations(Stream.concat(incomingTx.getViolations().stream(), Set.of(v).stream()).collect(Collectors.toCollection(LinkedHashSet::new)))
+                        .build();
             }
 
             if (isChanged) {
-                toProcessTransactions.add(incomingTx);
+                toProcessTransactions.add(newTx);
             } else {
-                toIgnoreTransactions.add(incomingTx);
+                toIgnoreTransactions.add(newTx);
             }
         }
 
         return new TransformationResult(
                 new OrganisationTransactions(organisationId, toProcessTransactions),
-                new OrganisationTransactions(organisationId, toIgnoreTransactions),
-                newViolations
+                new OrganisationTransactions(organisationId, toIgnoreTransactions)
         );
     }
 

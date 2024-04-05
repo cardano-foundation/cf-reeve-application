@@ -1,7 +1,10 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.cardanofoundation.lob.app.organisation.domain.entity.OrganisationChartOfAccount;
@@ -27,11 +30,7 @@ class AccountEventCodesConversionTaskItemTest {
     @BeforeEach
     public void setup() {
         this.organisationPublicApiIF = mock(OrganisationPublicApiIF.class);
-        val pipelineTask = Mockito.mock(PipelineTask.class);
-        this.taskItem = new AccountEventCodesConversionTaskItem(
-                pipelineTask,
-                organisationPublicApiIF
-        );
+        this.taskItem = new AccountEventCodesConversionTaskItem(organisationPublicApiIF);
     }
 
     @Test
@@ -50,7 +49,7 @@ class AccountEventCodesConversionTaskItemTest {
         when(organisationPublicApiIF.getChartOfAccounts(organisationId, accountCodeDebit))
                 .thenReturn(Optional.of(new OrganisationChartOfAccount(new OrganisationChartOfAccount.Id(organisationId, accountCodeDebit), accountCodeDebit, accountDebitRefCode)));
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id(organisationId).build())
@@ -60,12 +59,13 @@ class AccountEventCodesConversionTaskItemTest {
                         .accountCodeDebit(Optional.of(accountCodeDebit))
                         .accountCodeCredit(Optional.of(accountCodeCredit))
                         .build()))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
-        assertThat(newTx.transaction().getItems()).allMatch(item ->
+        assertThat(newTx.getViolations()).isEmpty();
+
+        assertThat(newTx.getItems()).allMatch(item ->
                 item.getAccountEventCode().isPresent() &&
                         item.getAccountEventCode().get().equals(accountDebitRefCode + accountCreditRefCode));
     }
@@ -80,7 +80,7 @@ class AccountEventCodesConversionTaskItemTest {
         when(organisationPublicApiIF.getChartOfAccounts(organisationId, accountCodeDebit))
                 .thenReturn(Optional.empty());
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("2")
                 .organisation(Organisation.builder().id(organisationId).build())
@@ -89,15 +89,14 @@ class AccountEventCodesConversionTaskItemTest {
                         .id(TransactionItem.id(txId, "1"))
                         .accountCodeDebit(Optional.of(accountCodeDebit))
                         .build()))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(1);
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(CHART_OF_ACCOUNT_NOT_FOUND);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(1);
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(CHART_OF_ACCOUNT_NOT_FOUND);
     }
-
 
     // Chart of Accounts Mapping Not Found for Credit
     @Test
@@ -109,7 +108,7 @@ class AccountEventCodesConversionTaskItemTest {
         when(organisationPublicApiIF.getChartOfAccounts(organisationId, accountCodeCredit))
                 .thenReturn(Optional.empty());
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("3")
                 .organisation(Organisation.builder().id(organisationId).build())
@@ -118,13 +117,13 @@ class AccountEventCodesConversionTaskItemTest {
                         .id(TransactionItem.id(txId, "2"))
                         .accountCodeCredit(Optional.of(accountCodeCredit))
                         .build()))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(1);
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(CHART_OF_ACCOUNT_NOT_FOUND);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(1);
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(CHART_OF_ACCOUNT_NOT_FOUND);
     }
 
     // No Debit or Credit Account Codes Provided
@@ -133,7 +132,7 @@ class AccountEventCodesConversionTaskItemTest {
         val txId = Transaction.id("4", "1");
         val organisationId = "1";
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("4")
                 .organisation(Organisation.builder().id(organisationId).build())
@@ -141,11 +140,11 @@ class AccountEventCodesConversionTaskItemTest {
                 .items(Set.of(TransactionItem.builder()
                         .id(TransactionItem.id(txId, "3"))
                         .build()))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
 }
