@@ -43,6 +43,9 @@ dependencies {
 
     implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
 
+    // needed to store json via JPA in PostgreSQL
+    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.3")
+
     implementation("org.springframework.boot:spring-boot-starter-amqp")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -51,6 +54,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
+
 
 //  runtimeOnly("org.springframework.modulith:spring-modulith-observability")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

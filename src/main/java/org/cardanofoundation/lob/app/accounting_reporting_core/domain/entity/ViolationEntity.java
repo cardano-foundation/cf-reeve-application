@@ -7,8 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
+import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static jakarta.persistence.EnumType.STRING;
@@ -39,22 +42,21 @@ public class ViolationEntity extends AuditEntity implements Persistable<Violatio
     @NotNull
     @Enumerated(STRING)
     @Column(name = "type")
-    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type type;
+    private Violation.Type type;
 
     @NotNull
     @Enumerated(STRING)
     @Column(name = "source")
-    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source source;
+    private Violation.Source source;
 
     @NotBlank
     @Column(name = "processor_module")
     private String processorModule;
 
-//    @ElementCollection
-//    @MapKeyColumn(name = "map_key")
-//    @Column(name = "map_value")
-//    @CollectionTable(name = "violations_bag", joinColumns = @JoinColumn(name = "transaction_id"))
-//    private Map<String, String> bag = new HashMap<>();
+    @Builder.Default
+    @Column(name = "bag")
+    @Type(value = io.hypersistence.utils.hibernate.type.json.JsonType.class)
+    private Map<String, Object> bag = new HashMap<>();
 
     @Override
     public boolean equals(Object o) {
