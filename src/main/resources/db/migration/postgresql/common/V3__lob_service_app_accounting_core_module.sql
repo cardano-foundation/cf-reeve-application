@@ -69,6 +69,7 @@ CREATE TABLE accounting_core_transaction_violation (
    type VARCHAR(255) NOT NULL,
    source VARCHAR(255) NOT NULL,
    processor_module VARCHAR(255) NOT NULL,
+   bag jsonb NOT NULL,
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),

@@ -103,7 +103,7 @@ public class TransactionConverter {
                         .type(violation.type())
                         .source(violation.source())
                         .processorModule(violation.processorModule())
-                        //.bag(violation.bag())
+                        .bag(violation.bag())
                         .build())
                 .collect(Collectors.toSet());
 

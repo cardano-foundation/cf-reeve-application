@@ -11,13 +11,13 @@ public record Violation(Type type,
                         Optional<String> txItemId,
                         Violation.Code code,
                         String processorModule,
-                        Map<String, String> bag) {
+                        Map<String, Object> bag) {
 
     public static Violation create(Type type,
                                    Source source,
                                    Violation.Code violationCode,
                                    String processorModule,
-                                   Map<String, String> bag) {
+                                   Map<String, Object> bag) {
         return new Violation(type, source, Optional.empty(), violationCode, processorModule, bag);
     }
 
@@ -26,7 +26,7 @@ public record Violation(Type type,
                                    String txItemId,
                                    Violation.Code violationCode,
                                    String processorModule,
-                                   Map<String, String> bag) {
+                                   Map<String, Object> bag) {
         return new Violation(type, source, Optional.of(txItemId), violationCode, processorModule, bag);
     }
 
