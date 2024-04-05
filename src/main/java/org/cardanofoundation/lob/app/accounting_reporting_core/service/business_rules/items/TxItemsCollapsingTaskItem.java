@@ -17,11 +17,9 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
 
     @Override
-    public TransactionWithViolations run(TransactionWithViolations transactionWithViolations) {
-        val tx = transactionWithViolations.transaction();
-
+    public Transaction run(Transaction tx) {
         if (tx.getValidationStatus() == FAILED) {
-            return transactionWithViolations;
+            return tx;
         }
 
         val itemsPerKeyMap = tx.getItems()
@@ -47,10 +45,9 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
                 .map(Optional::get)
                 .collect(Collectors.toSet());
 
-        return TransactionWithViolations.create(tx
-                .toBuilder()
+        return tx.toBuilder()
                 .items(txItems)
-                .build());
+                .build();
     }
 
     @EqualsAndHashCode

@@ -55,7 +55,7 @@ public class AccountingCoreService {
         val txIds = transactionRepositoryGateway.readApprovalPendingBlockchainTransactionIds(organisationId, maxApprovalBatchSize, true, true);
 
         if (txIds.isEmpty()) {
-            log.info("No transactions to dispatch for organisation: {}", organisationId);
+            //log.info("No transactions to dispatch for organisation: {}", organisationId);
             return;
         }
 

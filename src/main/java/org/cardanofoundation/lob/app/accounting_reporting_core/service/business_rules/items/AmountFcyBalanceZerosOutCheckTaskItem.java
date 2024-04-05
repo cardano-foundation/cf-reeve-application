@@ -2,13 +2,15 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.math.BigDecimal.ZERO;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
@@ -18,11 +20,8 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @RequiredArgsConstructor
 public class AmountFcyBalanceZerosOutCheckTaskItem implements PipelineTaskItem {
 
-    private final PipelineTask pipelineTask;
-
     @Override
-    public TransactionWithViolations run(TransactionWithViolations violationTransaction) {
-        val tx = violationTransaction.transaction();
+    public Transaction run(Transaction tx) {
         val txItems = tx.getItems();
 
         val fcySum = txItems.stream()
@@ -33,23 +32,21 @@ public class AmountFcyBalanceZerosOutCheckTaskItem implements PipelineTaskItem {
             val v = Violation.create(
                     ERROR,
                     Violation.Source.ERP,
-                    tx.getOrganisation().getId(),
-                    tx.getId(),
                     FCY_BALANCE_MUST_BE_ZERO,
-                    pipelineTask.getClass().getSimpleName(),
+                    this.getClass().getSimpleName(),
                     Map.of(
                             "transactionNumber", tx.getInternalTransactionNumber()
                     )
             );
 
-            return TransactionWithViolations.create(tx
-                            .toBuilder()
-                            .validationStatus(FAILED)
-                            .build(),
-                    v);
+            return tx
+                    .toBuilder()
+                    .validationStatus(FAILED)
+                    .violations(Stream.concat(tx.getViolations().stream(), Set.of(v).stream()).collect(Collectors.toSet()))
+                    .build();
         }
 
-        return violationTransaction;
+        return tx;
     }
 
 }

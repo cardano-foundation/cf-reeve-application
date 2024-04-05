@@ -3,7 +3,6 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +25,7 @@ public class DiscardZeroBalanceTxItemsTaskItemTest {
     public void testNoDiscard() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .items(Set.of(TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "0"))
@@ -44,20 +43,20 @@ public class DiscardZeroBalanceTxItemsTaskItemTest {
                                 .amountFcy(BigDecimal.valueOf(300))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getItems()).hasSize(3);
-        assertThat(newTx.transaction().getItems().stream().map(TransactionItem::getAmountLcy)).containsExactlyInAnyOrder(BigDecimal.valueOf(0), BigDecimal.valueOf(200), BigDecimal.valueOf(300));
-        assertThat(newTx.transaction().getItems().stream().map(TransactionItem::getAmountFcy)).containsExactlyInAnyOrder(BigDecimal.valueOf(100), BigDecimal.valueOf(0), BigDecimal.valueOf(300));
+        assertThat(newTx.getItems()).hasSize(3);
+        assertThat(newTx.getItems().stream().map(TransactionItem::getAmountLcy)).containsExactlyInAnyOrder(BigDecimal.valueOf(0), BigDecimal.valueOf(200), BigDecimal.valueOf(300));
+        assertThat(newTx.getItems().stream().map(TransactionItem::getAmountFcy)).containsExactlyInAnyOrder(BigDecimal.valueOf(100), BigDecimal.valueOf(0), BigDecimal.valueOf(300));
     }
 
     @Test
     public void testDiscardTxItemsWithZeroBalance() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .items(Set.of(TransactionItem.builder()
                                 .id(TransactionItem.id(txId, "0"))
@@ -70,20 +69,20 @@ public class DiscardZeroBalanceTxItemsTaskItemTest {
                                 .amountFcy(BigDecimal.valueOf(200))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getItems()).hasSize(1);
-        assertThat(newTx.transaction().getItems().stream().map(TransactionItem::getAmountLcy)).containsExactlyInAnyOrder(BigDecimal.valueOf(200));
-        assertThat(newTx.transaction().getItems().stream().map(TransactionItem::getAmountFcy)).containsExactlyInAnyOrder(BigDecimal.valueOf(200));
+        assertThat(newTx.getItems()).hasSize(1);
+        assertThat(newTx.getItems().stream().map(TransactionItem::getAmountLcy)).containsExactlyInAnyOrder(BigDecimal.valueOf(200));
+        assertThat(newTx.getItems().stream().map(TransactionItem::getAmountFcy)).containsExactlyInAnyOrder(BigDecimal.valueOf(200));
     }
 
     @Test
     void testDiscardAllTxItemsWithZeroBalance() {
         val txId = Transaction.id("2", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .items(Set.of(
                         TransactionItem.builder()
@@ -97,11 +96,11 @@ public class DiscardZeroBalanceTxItemsTaskItemTest {
                                 .amountFcy(BigDecimal.ZERO)
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getItems()).isEmpty();
+        assertThat(newTx.getItems()).isEmpty();
     }
 
 }

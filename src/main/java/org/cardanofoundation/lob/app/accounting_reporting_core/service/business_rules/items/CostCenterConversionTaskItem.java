@@ -2,15 +2,15 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.COST_CENTER_NOT_FOUND;
@@ -19,12 +19,10 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @RequiredArgsConstructor
 public class CostCenterConversionTaskItem implements PipelineTaskItem {
 
-    private final PipelineTask pipelineTask;
     private final OrganisationPublicApiIF organisationPublicApi;
 
     @Override
-    public TransactionWithViolations run(TransactionWithViolations violationTransaction) {
-        val tx = violationTransaction.transaction();
+    public Transaction run(Transaction tx) {
         val organisationId = tx.getOrganisation().getId();
 
         val violations = new LinkedHashSet<Violation>();
@@ -46,10 +44,8 @@ public class CostCenterConversionTaskItem implements PipelineTaskItem {
                                 ERROR,
                                 Violation.Source.LOB,
                                 organisationId,
-                                tx.getId(),
-                                txItem.getId(),
                                 COST_CENTER_NOT_FOUND,
-                                pipelineTask.getClass().getSimpleName(),
+                                this.getClass().getSimpleName(),
                                 Map.of(
                                         "customerCode", customerCode,
                                         "transactionNumber", tx.getInternalTransactionNumber()
@@ -75,13 +71,15 @@ public class CostCenterConversionTaskItem implements PipelineTaskItem {
                 .collect(Collectors.toSet());
 
         if (!violations.isEmpty()) {
-            return TransactionWithViolations
-                    .create(tx.toBuilder().validationStatus(FAILED).build(), violations);
+            return tx.toBuilder()
+                    .validationStatus(FAILED)
+                    .violations(Stream.concat(tx.getViolations().stream(), violations.stream()).collect(Collectors.toSet()))
+                    .build();
         }
 
-        return TransactionWithViolations.create(tx.toBuilder()
+        return tx.toBuilder()
                 .items(txItems)
-                .build());
+                .build();
     }
 
 }

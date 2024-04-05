@@ -1,8 +1,10 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.cardanofoundation.lob.app.organisation.domain.entity.OrganisationCostCenter;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +22,6 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.COST_CENTER_NOT_FOUND;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,8 +34,7 @@ class CostCenterConversionTaskItemTest {
 
     @BeforeEach
     public void setup() {
-        val pipelineTask = mock(PipelineTask.class);
-        this.taskItem = new CostCenterConversionTaskItem(pipelineTask, organisationPublicApiIF);
+        this.taskItem = new CostCenterConversionTaskItem(organisationPublicApiIF);
     }
 
     @Test
@@ -42,7 +42,7 @@ class CostCenterConversionTaskItemTest {
     void testNoCostCenterConversionSuccess() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -54,12 +54,12 @@ class CostCenterConversionTaskItemTest {
                                         .costCenter(Optional.empty())
                                         .build()
                         ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(VALIDATED);
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     @Test
@@ -73,7 +73,7 @@ class CostCenterConversionTaskItemTest {
                 .externalCustomerCode("2")
                 .build()));
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -85,13 +85,13 @@ class CostCenterConversionTaskItemTest {
                                         .costCenter(Optional.of(CostCenter.builder().customerCode("1").build()))
                                         .build()
                         ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(VALIDATED);
-        assertThat(newTx.violations()).isEmpty();
-        assertThat(newTx.transaction().getItems()).extracting(TransactionItem::getCostCenter).containsExactlyInAnyOrder(Optional.of(CostCenter.builder()
+        assertThat(newTx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(newTx.getViolations()).isEmpty();
+        assertThat(newTx.getItems()).extracting(TransactionItem::getCostCenter).containsExactlyInAnyOrder(Optional.of(CostCenter.builder()
                 .customerCode("1")
                 .externalCustomerCode(Optional.of("2"))
                 .name(Optional.of("Cost Center 1"))
@@ -102,7 +102,7 @@ class CostCenterConversionTaskItemTest {
     void testRunCostCenterNotFound() {
         val txId = Transaction.id("1", "1");
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id("1").build())
@@ -114,14 +114,14 @@ class CostCenterConversionTaskItemTest {
                                         .costCenter(Optional.of(CostCenter.builder().customerCode("1").build()))
                                         .build()
                         ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).isNotEmpty();
-        assertThat(newTx.violations()).hasSize(1);
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(COST_CENTER_NOT_FOUND);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).isNotEmpty();
+        assertThat(newTx.getViolations()).hasSize(1);
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(COST_CENTER_NOT_FOUND);
     }
 
     @Test
@@ -135,7 +135,7 @@ class CostCenterConversionTaskItemTest {
                 .build()));
         when(organisationPublicApiIF.findCostCenter("1", "UNKNOWN")).thenReturn(Optional.empty());
 
-        val txs = TransactionWithViolations.create(Transaction.builder()
+        val txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("2")
                 .organisation(Organisation.builder().id("1").build())
@@ -150,13 +150,13 @@ class CostCenterConversionTaskItemTest {
                                 .costCenter(Optional.of(CostCenter.builder().customerCode("UNKNOWN").build()))
                                 .build()
                 ))
-                .build());
+                .build();
 
         val newTx = taskItem.run(txs);
 
-        assertThat(newTx.transaction().getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.violations()).hasSize(1);
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(COST_CENTER_NOT_FOUND);
+        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(newTx.getViolations()).hasSize(1);
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(COST_CENTER_NOT_FOUND);
     }
 
 }

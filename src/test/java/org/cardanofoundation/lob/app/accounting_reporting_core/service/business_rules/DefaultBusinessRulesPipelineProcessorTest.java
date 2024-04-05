@@ -1,133 +1,86 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.*;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultBusinessRulesPipelineProcessorTest {
 
     @Mock
-    private PipelineTask mockTask1, mockTask2;
+    private PipelineTask pipelineTask;
 
-    private BusinessRulesPipelineProcessor processor;
+    @InjectMocks
+    private DefaultBusinessRulesPipelineProcessor processor;
+
+    private OrganisationTransactions initialOrgTransactions;
+
+    private OrganisationTransactions initialIgnoredTransactions;
 
     @BeforeEach
     void setUp() {
-        processor = new DefaultBusinessRulesPipelineProcessor(Arrays.asList(mockTask1, mockTask2));
+        initialOrgTransactions = new OrganisationTransactions("org1", Set.of());
+        initialIgnoredTransactions = new OrganisationTransactions("org1", Set.of());
     }
 
-    // No Transformations and No Violations
     @Test
-    void givenNoTransformationsAndViolations_whenProcessed_thenRemainUnchanged() {
-        val originalTransactions = new OrganisationTransactions("org1", Set.of());
-        val ignoredTransactions = new OrganisationTransactions("org1", Set.of());
-        val initialViolations = new HashSet<Violation>();
+    void run_NoTasks_ShouldReturnInitialTransactionsUnchanged() {
+        processor = new DefaultBusinessRulesPipelineProcessor(Collections.emptyList());
 
-        when(mockTask1.run(any(), any(), any())).thenReturn(new TransformationResult(originalTransactions, ignoredTransactions, Set.of()));
-        when(mockTask2.run(any(), any(), any())).thenReturn(new TransformationResult(originalTransactions, ignoredTransactions, Set.of()));
+        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions);
 
-        val result = processor.run(originalTransactions, ignoredTransactions, initialViolations);
-
-        assertThat(result.passedTransactions()).isEqualTo(originalTransactions);
-        assertThat(result.ignoredTransactions()).isEqualTo(ignoredTransactions);
-        assertThat(result.violations()).isEmpty();
+        assertThat(initialOrgTransactions).isEqualTo(result.passedTransactions());
+        assertThat(initialIgnoredTransactions).isEqualTo(result.ignoredTransactions());
     }
 
-    //  Adds Violations
     @Test
-    void givenTaskAddsViolations_whenProcessed_thenAggregateViolations() {
-        val originalTransactions = new OrganisationTransactions("org1", Set.of());
-        val ignoredTransactions = new OrganisationTransactions("org1", Set.of());
-        val initialViolations = new HashSet<Violation>();
-        val violation = new Violation(Violation.Type.ERROR, INTERNAL, "org1", "tx1", Optional.empty(), TX_SANITY_CHECK_FAIL, "MockTask", Map.of());
+    void run_SingleTask_ShouldTransformTransactions() {
+        OrganisationTransactions transformedOrgTransactions =  new OrganisationTransactions("org1", Set.of());
+        OrganisationTransactions ignoredTransactions =  new OrganisationTransactions("org1", Set.of());
+        when(pipelineTask.run(any(), any())).thenReturn(new TransformationResult(transformedOrgTransactions, ignoredTransactions));
 
-        when(mockTask1.run(any(), any(), any())).thenReturn(new TransformationResult(originalTransactions, ignoredTransactions, Set.of(violation)));
-        when(mockTask2.run(any(), any(), any())).thenReturn(new TransformationResult(originalTransactions, ignoredTransactions, Set.of()));
+        processor = new DefaultBusinessRulesPipelineProcessor(List.of(pipelineTask));
 
-        val result = processor.run(originalTransactions, ignoredTransactions, initialViolations);
+        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions);
 
-        assertThat(result.violations()).containsExactly(violation);
+        assertThat(transformedOrgTransactions).isEqualTo(result.passedTransactions());
+        assertThat(ignoredTransactions).isEqualTo(result.ignoredTransactions());
     }
 
-    // Transform Transactions
     @Test
-    void givenTasksTransformTransactions_whenProcessed_thenUpdatePassedTransactions() {
-        val orgId = "org1";
-        val tx1Id = Transaction.id(orgId, "1");
+    void run_MultipleTasks_ShouldAccumulateTransformations() {
+        OrganisationTransactions firstTransformedOrgTransactions = new OrganisationTransactions("org1", Set.of());
+        OrganisationTransactions secondTransformedOrgTransactions = new OrganisationTransactions("org1", Set.of());
+        OrganisationTransactions firstIgnoredTransactions = new OrganisationTransactions("org1", Set.of());
+        OrganisationTransactions secondIgnoredTransactions = new OrganisationTransactions("org1", Set.of());
 
-        val tx1 = Transaction.builder()
-                .id(tx1Id)
-                .internalTransactionNumber("1")
-                .organisation(Organisation.builder().id(orgId).build())
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(tx1Id, "0"))
-                                .amountLcy(BigDecimal.ZERO)
-                                .amountFcy(BigDecimal.valueOf(100))
-                                .build()
-                ))
-                .build();
+        val firstTask = mock(PipelineTask.class);
+        val secondTask = mock(PipelineTask.class);
 
-        val originalTransactions = new OrganisationTransactions(orgId, Set.of());
-        val transformedTransactions = new OrganisationTransactions(orgId, Set.of(tx1));
-        val ignoredTransactions = new OrganisationTransactions(orgId, Set.of());
-        val initialViolations = new HashSet<Violation>();
+        when(firstTask.run(any(), any())).thenReturn(new TransformationResult(firstTransformedOrgTransactions, firstIgnoredTransactions));
+        when(secondTask.run(any(), any())).thenReturn(new TransformationResult(secondTransformedOrgTransactions, secondIgnoredTransactions));
 
-        when(mockTask1.run(any(), any(), any())).thenReturn(new TransformationResult(transformedTransactions, ignoredTransactions, Set.of()));
-        when(mockTask2.run(any(), any(), any())).thenReturn(new TransformationResult(transformedTransactions, ignoredTransactions, Set.of()));
+        processor = new DefaultBusinessRulesPipelineProcessor(List.of(firstTask, secondTask));
 
-        val result = processor.run(originalTransactions, ignoredTransactions, initialViolations);
+        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions);
 
-        assertThat(result.passedTransactions().transactions()).containsExactly(tx1);
-    }
-
-    // Mixed Violations and Transformations
-    @Test
-    void givenTasksAddViolationsAndTransform_whenProcessed_thenUpdateTransactionsAndViolations() {
-        val orgId = "org1";
-        val tx3Id = Transaction.id(orgId, "tx3");
-
-        val tx3 = Transaction.builder()
-                .id(tx3Id)
-                .internalTransactionNumber("tx3")
-                .organisation(Organisation.builder().id(orgId).build())
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(tx3Id, "0"))
-                                .amountLcy(BigDecimal.ZERO)
-                                .amountFcy(BigDecimal.valueOf(100))
-                                .build()
-                ))
-                .build();
-
-        val originalTransactions = new OrganisationTransactions(orgId, Set.of());
-        val transformedTransactions = new OrganisationTransactions(orgId, Set.of(tx3));
-        val ignoredTransactions = new OrganisationTransactions(orgId, Set.of());
-        val initialViolations = new HashSet<Violation>();
-        val violationFromTask1 = new Violation(Violation.Type.WARN, LOB, orgId, "tx1", Optional.empty(), DOCUMENT_MUST_BE_PRESENT, "MockTask1", Map.of());
-        val violationFromTask2 = new Violation(Violation.Type.ERROR, ERP, orgId, "tx2", Optional.empty(), ACCOUNT_CODE_CREDIT_IS_EMPTY, "MockTask2", Map.of());
-
-        when(mockTask1.run(any(), any(), any())).thenReturn(new TransformationResult(transformedTransactions, ignoredTransactions, Set.of(violationFromTask1)));
-        when(mockTask2.run(any(), any(), any())).thenReturn(new TransformationResult(transformedTransactions, ignoredTransactions, Set.of(violationFromTask2)));
-
-        val result = processor.run(originalTransactions, ignoredTransactions, initialViolations);
-
-        assertThat(result.passedTransactions().transactions()).containsExactly(tx3);
-        assertThat(result.violations()).containsExactlyInAnyOrder(violationFromTask1, violationFromTask2);
+        assertThat(secondTransformedOrgTransactions).isEqualTo(result.passedTransactions());
+        assertThat(secondIgnoredTransactions).isEqualTo(result.ignoredTransactions());
     }
 
 }

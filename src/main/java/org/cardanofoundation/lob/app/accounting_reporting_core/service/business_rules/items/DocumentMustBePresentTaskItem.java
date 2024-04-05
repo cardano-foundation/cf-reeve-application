@@ -2,12 +2,13 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.DOCUMENT_MUST_BE_PRESENT;
@@ -16,12 +17,8 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @RequiredArgsConstructor
 public class DocumentMustBePresentTaskItem implements PipelineTaskItem {
 
-    private final PipelineTask pipelineTask;
-
     @Override
-    public TransactionWithViolations run(TransactionWithViolations withPossibleViolations) {
-        val tx = withPossibleViolations.transaction();
-
+    public Transaction run(Transaction tx) {
         val violations = new HashSet<Violation>();
 
         for (val txItem : tx.getItems()) {
@@ -29,11 +26,9 @@ public class DocumentMustBePresentTaskItem implements PipelineTaskItem {
                 val v = Violation.create(
                         ERROR,
                         Violation.Source.LOB,
-                        tx.getOrganisation().getId(),
-                        tx.getId(),
                         txItem.getId(),
                         DOCUMENT_MUST_BE_PRESENT,
-                        pipelineTask.getClass().getSimpleName(),
+                        this.getClass().getSimpleName(),
                         Map.of(
                                 "transactionNumber", tx.getInternalTransactionNumber()
                         )
@@ -44,14 +39,13 @@ public class DocumentMustBePresentTaskItem implements PipelineTaskItem {
         }
 
         if (!violations.isEmpty()) {
-            return TransactionWithViolations
-                    .create(tx.toBuilder()
-                                    .validationStatus(FAILED)
-                                    .build(),
-                            violations);
+            return tx.toBuilder()
+                    .validationStatus(FAILED)
+                    .violations(Stream.concat(tx.getViolations().stream(), violations.stream()).collect(Collectors.toSet()))
+                    .build();
         }
 
-        return withPossibleViolations;
+        return tx;
     }
 
 }

@@ -2,7 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 
 import java.util.stream.Collectors;
 
@@ -12,11 +12,9 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 public class DebitAccountCheckTaskItem implements PipelineTaskItem {
 
     @Override
-    public TransactionWithViolations run(TransactionWithViolations transactionWithViolations) {
-        val tx = transactionWithViolations.transaction();
-
+    public Transaction run(Transaction tx) {
         if (tx.getValidationStatus() == FAILED) {
-            return transactionWithViolations;
+            return tx;
         }
 
         // we accept only transaction items that are NOT sending to the same account, if they are we discard them
@@ -25,11 +23,10 @@ public class DebitAccountCheckTaskItem implements PipelineTaskItem {
                 .filter(txItem -> !txItem.getAccountCodeDebit().equals(txItem.getAccountCodeCredit()))
                 .collect(Collectors.toSet());
 
-        return TransactionWithViolations.create(tx
+        return tx
                 .toBuilder()
                 .items(txItems)
-                .build()
-        );
+                .build();
     }
 
 }

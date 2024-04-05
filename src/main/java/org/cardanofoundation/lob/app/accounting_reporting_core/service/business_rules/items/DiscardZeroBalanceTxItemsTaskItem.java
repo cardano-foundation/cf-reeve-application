@@ -2,28 +2,22 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import io.vavr.Predicates;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionWithViolations;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 
 import java.util.stream.Collectors;
-
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
 public class DiscardZeroBalanceTxItemsTaskItem implements PipelineTaskItem {
 
     @Override
-    public TransactionWithViolations run(TransactionWithViolations violationTransaction) {
-        val tx = violationTransaction.transaction();
-
+    public Transaction run(Transaction tx) {
         val txItems = tx.getItems()
                 .stream()
                 .filter(Predicates.not(txItem -> txItem.getAmountLcy().signum() == 0 && txItem.getAmountFcy().signum() == 0))
                 .collect(Collectors.toSet());
 
-        return TransactionWithViolations.create(
-                tx.toBuilder()
-                        .items(txItems)
-                        .build()
-        );
+        return tx.toBuilder()
+                .items(txItems)
+                .build();
     }
 
 }

@@ -1,11 +1,11 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
-import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -19,8 +19,7 @@ class AmountFcyBalanceZerosOutCheckTaskItemTest {
 
     @BeforeEach
     public void setup() {
-        val pipelineTask = Mockito.mock(PipelineTask.class);
-        this.taskItem = new AmountFcyBalanceZerosOutCheckTaskItem(pipelineTask);
+        this.taskItem = new AmountFcyBalanceZerosOutCheckTaskItem();
     }
 
     @Test
@@ -29,7 +28,7 @@ class AmountFcyBalanceZerosOutCheckTaskItemTest {
         var txId = Transaction.id("1", "1");
         var organisationId = "1";
 
-        var txs = TransactionWithViolations.create(Transaction.builder()
+        var txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("1")
                 .organisation(Organisation.builder().id(organisationId).build())
@@ -38,11 +37,11 @@ class AmountFcyBalanceZerosOutCheckTaskItemTest {
                         TransactionItem.builder().id(TransactionItem.id(txId, "0")).amountFcy(new BigDecimal("100")).build(),
                         TransactionItem.builder().id(TransactionItem.id(txId, "1")).amountFcy(new BigDecimal("-100")).build()
                 ))
-                .build());
+                .build();
 
         var newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
     @Test
@@ -51,7 +50,7 @@ class AmountFcyBalanceZerosOutCheckTaskItemTest {
         var txId = Transaction.id("2", "1");
         var organisationId = "1";
 
-        var txs = TransactionWithViolations.create(Transaction.builder()
+        var txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("2")
                 .organisation(Organisation.builder().id(organisationId).build())
@@ -60,12 +59,12 @@ class AmountFcyBalanceZerosOutCheckTaskItemTest {
                         TransactionItem.builder().id(TransactionItem.id(txId, "0")).amountFcy(new BigDecimal("100")).build(),
                         TransactionItem.builder().id(TransactionItem.id(txId, "1")).amountFcy(new BigDecimal("-90")).build()
                 ))
-                .build());
+                .build();
 
         var newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isNotEmpty();
-        assertThat(newTx.violations().iterator().next().code()).isEqualTo(FCY_BALANCE_MUST_BE_ZERO);
+        assertThat(newTx.getViolations()).isNotEmpty();
+        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(FCY_BALANCE_MUST_BE_ZERO);
     }
 
     @Test
@@ -74,17 +73,17 @@ class AmountFcyBalanceZerosOutCheckTaskItemTest {
         var txId = Transaction.id("3", "1");
         var organisationId = "1";
 
-        var txs = TransactionWithViolations.create(Transaction.builder()
+        var txs = Transaction.builder()
                 .id(txId)
                 .internalTransactionNumber("3")
                 .organisation(Organisation.builder().id(organisationId).build())
                 .transactionType(TransactionType.FxRevaluation)
                 .items(Set.of())
-                .build());
+                .build();
 
         var newTx = taskItem.run(txs);
 
-        assertThat(newTx.violations()).isEmpty();
+        assertThat(newTx.getViolations()).isEmpty();
     }
 
 }

@@ -27,10 +27,7 @@ public class NotificationsSenderService {
                         .withTitle(STR."ACCOUNTING_CORE:\{violation.code()}")
                         .withDetail(STR."Accounting Business Rule Error, code: \{violation.code()}")
                         .with("processorModule", violation.processorModule())
-                        .with("module", "ACCOUNTING_CORE")
-                        .with("organisationId", violation.organisationId())
-                        .with("transactionId", violation.transactionId()
-                        );
+                        .with("module", "ACCOUNTING_CORE");
 
                 violation.txItemId().ifPresent(txItemId -> problemBuilder.with("txItemId", txItemId));
 

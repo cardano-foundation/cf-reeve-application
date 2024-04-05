@@ -61,6 +61,35 @@ CREATE TABLE accounting_core_transaction (
    PRIMARY KEY (transaction_id)
 );
 
+CREATE TABLE accounting_core_transaction_violation (
+   transaction_id CHAR(64) NOT NULL,
+   tx_item_id CHAR(64) NOT NULL,
+   code VARCHAR(255) NOT NULL,
+
+   type VARCHAR(255) NOT NULL,
+   source VARCHAR(255) NOT NULL,
+   processor_module VARCHAR(255) NOT NULL,
+
+   created_by VARCHAR(255),
+   updated_by VARCHAR(255),
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
+
+   CONSTRAINT fk_accounting_core_transaction_violation_id FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
+
+   PRIMARY KEY (transaction_id, tx_item_id, code)
+);
+
+--CREATE TABLE violations_bag (
+--    transaction_id CHAR(64) NOT NULL,
+--    map_key VARCHAR(255),
+--    map_value TEXT,
+--
+--    CONSTRAINT fk_transaction_id FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
+--
+--    PRIMARY KEY (transaction_id, map_key)
+--);
+
 CREATE TABLE accounting_core_transaction_filtering_params_transaction_number (
    owner_id CHAR(64) NOT NULL,
    transaction_number VARCHAR(255) NOT NULL,

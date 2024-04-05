@@ -1,36 +1,45 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
+import lombok.val;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import java.util.Map;
 import java.util.Optional;
 
 public record Violation(Type type,
                         Source source,
-                        String organisationId,
-                        String transactionId,
                         Optional<String> txItemId,
                         Violation.Code code,
                         String processorModule,
-                        Map<String, Object> bag) {
+                        Map<String, String> bag) {
 
     public static Violation create(Type type,
                                    Source source,
-                                   String organisationId,
-                                   String transactionId,
                                    Violation.Code violationCode,
                                    String processorModule,
-                                   Map<String, Object> bag) {
-        return new Violation(type, source, organisationId, transactionId, Optional.empty(), violationCode, processorModule, bag);
+                                   Map<String, String> bag) {
+        return new Violation(type, source, Optional.empty(), violationCode, processorModule, bag);
     }
 
     public static Violation create(Type type,
                                    Source source,
-                                   String organisationId,
-                                   String transactionId,
                                    String txItemId,
                                    Violation.Code violationCode,
                                    String processorModule,
-                                   Map<String, Object> bag) {
-        return new Violation(type, source, organisationId, transactionId, Optional.of(txItemId), violationCode, processorModule, bag);
+                                   Map<String, String> bag) {
+        return new Violation(type, source, Optional.of(txItemId), violationCode, processorModule, bag);
+    }
+
+    public boolean isTheSameBusinessWise(Violation violation) {
+        val equalsBuilder = new EqualsBuilder();
+        equalsBuilder.append(type, violation.type);
+        equalsBuilder.append(source, violation.source);
+        equalsBuilder.append(txItemId, violation.txItemId);
+        equalsBuilder.append(code, violation.code);
+//        equalsBuilder.append(processorModule, violation.processorModule);
+//        equalsBuilder.append(bag, violation.bag);
+
+        return equalsBuilder.isEquals();
     }
 
     public enum Type {

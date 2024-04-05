@@ -15,7 +15,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,8 +41,7 @@ public class ERPIncomingDataProcessor {
 
         val finalTransformationResult = businessRulesPipelineProcessor.run(
                 new OrganisationTransactions(organisationId, transactions),
-                OrganisationTransactions.empty(organisationId),
-                new HashSet<>()
+                OrganisationTransactions.empty(organisationId)
         );
 
         val passedTransactions = finalTransformationResult.passedTransactions().transactions();
@@ -54,7 +52,7 @@ public class ERPIncomingDataProcessor {
         applicationEventPublisher.publishEvent(new BusinessRulesAppliedEvent(organisationId, batchId, totalTransactionsCount));
 
         // TODO store violations in the database
-        notificationsSenderService.sendNotifications(finalTransformationResult.violations());
+        //notificationsSenderService.sendNotifications(finalTransformationResult.getAllViolations());
     }
 
     @Transactional

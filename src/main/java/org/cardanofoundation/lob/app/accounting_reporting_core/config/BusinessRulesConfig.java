@@ -48,85 +48,49 @@ public class BusinessRulesConfig {
     }
 
     private PipelineTask sanityCheckPipelineTask() {
-        val pipelineTask = new DefaultPipelineTask();
-
-        val steps = List.<PipelineTaskItem>of(
+        return new DefaultPipelineTask(List.of(
                 new SanityCheckFieldsTaskItem(validator)
-        );
-
-        pipelineTask.setItems(steps);
-
-        return pipelineTask;
+        ));
     }
 
     private PipelineTask preCleansingPipelineTask() {
-        val pipelineTask = new DefaultPipelineTask();
-
-        val steps = List.<PipelineTaskItem>of(
+        return new DefaultPipelineTask(List.of(
                 new DiscardZeroBalanceTxItemsTaskItem()
-        );
-
-        pipelineTask.setItems(steps);
-
-        return pipelineTask;
+        ));
     }
 
     private PipelineTask preValidationPipelineTask() {
-        val pipelineTask = new DefaultPipelineTask();
-
-        val steps = List.of(
-                new AmountsFcyCheckTaskItem(pipelineTask),
-                new AmountsLcyCheckTaskItem(pipelineTask),
-                new AmountLcyBalanceZerosOutCheckTaskItem(pipelineTask),
-                new AmountFcyBalanceZerosOutCheckTaskItem(pipelineTask)
-        );
-
-        pipelineTask.setItems(steps);
-
-        return pipelineTask;
+        return new DefaultPipelineTask(List.of(
+                new AmountsFcyCheckTaskItem(),
+                new AmountsLcyCheckTaskItem(),
+                new AmountLcyBalanceZerosOutCheckTaskItem(),
+                new AmountFcyBalanceZerosOutCheckTaskItem()
+        ));
     }
 
     private PipelineTask conversionPipelineTask() {
-        val pipelineTask = new DefaultPipelineTask();
-
-        val steps = List.of(
-                new OrganisationConversionTaskItem(pipelineTask, organisationPublicApi, currencyRepository),
-                new DocumentConversionTaskItem(pipelineTask, organisationPublicApi, currencyRepository),
-                new CostCenterConversionTaskItem(pipelineTask, organisationPublicApi),
-                new AccountEventCodesConversionTaskItem(pipelineTask, organisationPublicApi)
-        );
-
-        pipelineTask.setItems(steps);
-
-        return pipelineTask;
+        return new DefaultPipelineTask(List.of(
+                new OrganisationConversionTaskItem(organisationPublicApi, currencyRepository),
+                new DocumentConversionTaskItem(organisationPublicApi, currencyRepository),
+                new CostCenterConversionTaskItem(organisationPublicApi),
+                new AccountEventCodesConversionTaskItem(organisationPublicApi)
+        ));
     }
 
     private PipelineTask postCleansingPipelineTask() {
-        val pipelineTask = new DefaultPipelineTask();
-
-        val steps = List.of(
+        return new DefaultPipelineTask(List.of(
                 new DebitAccountCheckTaskItem(),
                 new TxItemsCollapsingTaskItem()
-        );
-
-        pipelineTask.setItems(steps);
-
-        return pipelineTask;
+        ));
     }
 
     private PipelineTask postValidationPipelineTask() {
-        val pipelineTask = new DefaultPipelineTask();
-
-        val steps = List.of(
-                new AccountCodeDebitCheckTaskItem(pipelineTask),
-                new AccountCodeCreditCheckTaskItem(pipelineTask),
-                new DocumentMustBePresentTaskItem(pipelineTask),
-                new NoTransactionItemsTaskItem(pipelineTask)
-        );
-
-        pipelineTask.setItems(steps);
-
-        return pipelineTask;
+        return new DefaultPipelineTask(List.of(
+                new AccountCodeDebitCheckTaskItem(),
+                new AccountCodeCreditCheckTaskItem(),
+                new DocumentMustBePresentTaskItem(),
+                new NoTransactionItemsTaskItem()
+        ));
     }
 
 }
