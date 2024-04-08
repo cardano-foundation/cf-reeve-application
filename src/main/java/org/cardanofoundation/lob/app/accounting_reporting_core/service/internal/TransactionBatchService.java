@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus.CREATED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus.FINALIZED;
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 @Service
 @Slf4j
@@ -65,7 +66,7 @@ public class TransactionBatchService {
                 .build());
     }
 
-    @Transactional
+    @Transactional(propagation = REQUIRES_NEW)
     public void updateTransactionBatchStatusAndStats(String batchId,
                                                      Optional<Integer> totalTransactionsCount) {
         val txBatchM = transactionBatchRepositoryGateway.findById(batchId);

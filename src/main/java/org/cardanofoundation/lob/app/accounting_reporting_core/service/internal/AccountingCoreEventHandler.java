@@ -2,9 +2,9 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.*;
-import org.cardanofoundation.lob.app.support.collections.Partitions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchChunkEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
@@ -17,8 +17,6 @@ public class AccountingCoreEventHandler {
     private final ERPIncomingDataProcessor erpIncomingDataProcessor;
 
     private final LedgerService ledgerService;
-
-    private final TransactionBatchService transactionBatchService;
 
     @Value("${lob.blockchain_publisher.send.batch.size:100}")
     private int sendBatchSize = 100;
@@ -51,34 +49,6 @@ public class AccountingCoreEventHandler {
         log.info("Received LedgerUpdatedEvent event, event: {}", event.getStatusUpdates());
 
         ledgerService.updateTransactionsWithNewLedgerDispatchStatuses(event.getStatusUpdates());
-    }
-
-    @ApplicationModuleListener
-    public void handleTxApprovedEvent(TxsApprovedEvent event) {
-        log.info("Received TxsApprovedEvent event.");
-
-        for (val partition : Partitions.partition(event.getTransactionIds(), sendBatchSize)) {
-            ledgerService.tryToDispatchTransactionToBlockchainPublisher(event.getOrganisationId(), partition.asSet());
-        }
-    }
-
-    @ApplicationModuleListener
-    public void handleTxDispatchApprovedEvent(TxsDispatchApprovedEvent event) {
-        log.info("Received TxsApprovedEvent event.");
-
-        for (val partition : Partitions.partition(event.getTransactionIds(), sendBatchSize)) {
-            ledgerService.tryToDispatchTransactionToBlockchainPublisher(event.getOrganisationId(), partition.asSet());
-        }
-    }
-
-    @ApplicationModuleListener
-    public void handleBusinessRulesApplied(BusinessRulesAppliedEvent event) {
-        log.info("Received BusinessRulesAppliedEvent event, event: {}", event.getOrganisationId());
-
-        transactionBatchService.updateTransactionBatchStatusAndStats(
-                event.getBatchId(),
-                event.getTotalTransactionsCount()
-        );
     }
 
 }

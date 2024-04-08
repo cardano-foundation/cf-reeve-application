@@ -9,9 +9,7 @@ import org.jmolecules.event.annotation.DomainEvent;
 
 import java.util.UUID;
 
-/**
- * @param organisationTransactions
- */
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
