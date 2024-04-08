@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ScheduledIngestionEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsApprovedEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TxsDispatchApprovedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -66,18 +64,14 @@ public class AccountingCoreService {
     public void approveTransactions(String organisationId, Set<String> transactionIds) {
         log.info("approveTransactions, transactionIds: {}", transactionIds);
 
-        transactionRepositoryGateway.approveTransactions(transactionIds);
-
-        applicationEventPublisher.publishEvent(new TxsApprovedEvent(organisationId, transactionIds));
+        transactionRepositoryGateway.approveTransactions(organisationId, transactionIds);
     }
 
     @Transactional
     public void approveTransactionsDispatch(String organisationId, Set<String> transactionIds) {
         log.info("approveTransactionsDispatch, transactionIds: {}", transactionIds);
 
-        transactionRepositoryGateway.approveTransactionsDispatch(transactionIds);
-
-        applicationEventPublisher.publishEvent(new TxsDispatchApprovedEvent(organisationId, transactionIds));
+        transactionRepositoryGateway.approveTransactionsDispatch(organisationId, transactionIds);
     }
 
 }

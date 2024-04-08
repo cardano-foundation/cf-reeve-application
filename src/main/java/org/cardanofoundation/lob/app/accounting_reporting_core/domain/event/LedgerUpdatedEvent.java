@@ -9,11 +9,6 @@ import org.jmolecules.event.annotation.DomainEvent;
 
 import java.util.Set;
 
-/**
- * Event used after data has been sent or updated on the blockchain
- *
- * @param statusUpdates
- */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

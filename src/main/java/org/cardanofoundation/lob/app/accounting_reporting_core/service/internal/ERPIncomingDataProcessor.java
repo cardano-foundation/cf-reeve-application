@@ -6,12 +6,10 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.BusinessRulesAppliedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchAssocRepositoryGateway;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,21 +22,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ERPIncomingDataProcessor {
 
-    private final NotificationsSenderService notificationsSenderService;
     private final BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
     private final TransactionBatchService transactionBatchService;
     private final TransactionRepository transactionRepository;
     private final TransactionConverter transactionConverter;
     private final TransactionBatchAssocRepositoryGateway transactionBatchAssocRepositoryGateway;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
-
     @Transactional
     public void continueIngestion(String organisationId,
                                   String batchId,
                                   Optional<Integer> totalTransactionsCount,
                                   Set<Transaction> transactions) {
-
         val finalTransformationResult = businessRulesPipelineProcessor.run(
                 new OrganisationTransactions(organisationId, transactions),
                 OrganisationTransactions.empty(organisationId)
@@ -49,10 +43,7 @@ public class ERPIncomingDataProcessor {
 
         dbUpdateTransactionBatch(batchId, passedTransactions);
 
-        applicationEventPublisher.publishEvent(new BusinessRulesAppliedEvent(organisationId, batchId, totalTransactionsCount));
-
-        // TODO store violations in the database
-        //notificationsSenderService.sendNotifications(finalTransformationResult.getAllViolations());
+        transactionBatchService.updateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
     }
 
     @Transactional

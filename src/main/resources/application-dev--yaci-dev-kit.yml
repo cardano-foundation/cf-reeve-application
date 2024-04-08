@@ -23,7 +23,7 @@ spring:
 lob:
   blockchain:
     publisher:
-      enabled: false
+      enabled: true
 
   cardano:
     network: "DEV"

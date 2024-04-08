@@ -8,7 +8,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,14 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class LedgerService {
 
     private final TransactionRepository transactionRepository;
-
-    private final TransactionRepositoryGateway transactionRepositoryGateway;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -57,20 +57,15 @@ public class LedgerService {
         }
     }
 
-    @Transactional
+    @Transactional(propagation = REQUIRES_NEW)
     public void tryToDispatchTransactionToBlockchainPublisher(String organisationId,
-                                                              Set<String> transactionIds) {
-        log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", transactionIds);
+                                                              Set<Transaction> transactions) {
+        log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", transactions.stream().map(Transaction::getId).collect(Collectors.toSet()));
 
-        val dispatchPendingTransactions = transactionRepositoryGateway.findByAllId(transactionIds)
-                .stream()
+        val dispatchPendingTransactions = transactions.stream()
                 .filter(Transaction::allApprovalsPassedForTransactionDispatch)
+                .filter(tx -> tx.getLedgerDispatchStatus() == NOT_DISPATCHED)
                 .collect(Collectors.toSet());
-
-        if (dispatchPendingTransactions.isEmpty()) {
-            //log.warn("Transaction not found for id: {}", transactionIds);
-            return;
-        }
 
         val piiFilteredOutTransactions = piiDataFilteringService.apply(dispatchPendingTransactions);
 
