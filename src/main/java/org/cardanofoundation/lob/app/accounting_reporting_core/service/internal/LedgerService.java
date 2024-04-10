@@ -1,0 +1,75 @@
+package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
+import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class LedgerService {
+
+    private final TransactionRepository transactionRepository;
+
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    private final TransactionBatchService transactionBatchService;
+
+    private final PIIDataFilteringService piiDataFilteringService;
+
+    @Transactional
+    public void updateTransactionsWithNewLedgerDispatchStatuses(Set<TxStatusUpdate> txStatusUpdates) {
+        log.info("Updating dispatch status for statusMapCount: {}", txStatusUpdates.size());
+
+        storeLatestLedgerUpdateState(txStatusUpdates);
+        transactionBatchService.updateBatchesPerTransactions(txStatusUpdates);
+
+        log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdates.size());
+    }
+
+    private void storeLatestLedgerUpdateState(Set<TxStatusUpdate> txStatusUpdates) {
+        for (val txStatusUpdate : txStatusUpdates) {
+            val txId = txStatusUpdate.getTxId();
+            val transactionM = transactionRepository.findById(txId);
+
+            if (transactionM.isEmpty()) {
+                //log.warn("Transaction not found for id: {}", txId);
+                continue;
+            }
+
+            val transactionEntity = transactionM.orElseThrow();
+
+            transactionRepository.save(transactionEntity.ledgerDispatchStatus(txStatusUpdate.getStatus()));
+        }
+    }
+
+    @Transactional(propagation = REQUIRES_NEW)
+    public void tryToDispatchTransactionToBlockchainPublisher(String organisationId,
+                                                              Set<Transaction> transactions) {
+        log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", transactions.stream().map(Transaction::getId).collect(Collectors.toSet()));
+
+        val dispatchPendingTransactions = transactions.stream()
+                .filter(Transaction::allApprovalsPassedForTransactionDispatch)
+                .filter(tx -> tx.getLedgerDispatchStatus() == NOT_DISPATCHED)
+                .collect(Collectors.toSet());
+
+        val piiFilteredOutTransactions = piiDataFilteringService.apply(dispatchPendingTransactions);
+
+        applicationEventPublisher.publishEvent(LedgerUpdateCommand.create(new OrganisationTransactions(organisationId, piiFilteredOutTransactions)));
+    }
+
+}

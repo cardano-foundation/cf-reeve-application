@@ -1,0 +1,49 @@
+# here we specify only properties to override from the default values specified in the application.properties file
+
+# local YaciDevKit network, see: https://github.com/bloxbean/yaci-devkit
+
+spring:
+  env:
+    active: dev--yaci-dev-kit
+
+  flyway:
+    out-of-order: false
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
+    user: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    schemas: ${DB_SCHEMA:lob_service}
+    # baselineOnMigrate this will create a baseline version if none exists (https://flywaydb.org/documentation/configuration/parameters/baselineOnMigrate)
+    baselineOnMigrate: true
+    enabled: true
+    validateMigrationNaming: true
+    locations:
+      - classpath:db/migration/{vendor}/common
+      - classpath:db/migration/{vendor}/dev
+
+lob:
+  blockchain:
+    publisher:
+      enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:false}
+
+  cardano:
+    network: "DEV"
+  dispatching:
+    strategy:
+      type: "IMMEDIATE"
+
+  blockfrost:
+    url: "http://localhost:8080/api/v1/"
+  # locally YaciDevKit runs on port 8080
+    api:
+      key: ""
+
+  netsuite:
+    financial:
+      period:
+        source: IMPLICIT
+
+  l1:
+    transaction:
+      metadata:
+        validation:
+          enable: false
