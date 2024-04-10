@@ -68,6 +68,10 @@ public class TransactionBatchEntity extends AuditEntity implements Persistable<S
     @Column(name = "status")
     private TransactionBatchStatus status = TransactionBatchStatus.CREATED;
 
+    public String getOrganisationId() {
+        return filteringParameters.getOrganisationId();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
