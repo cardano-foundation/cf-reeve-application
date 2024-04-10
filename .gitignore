@@ -24,27 +24,20 @@ bin/
 *.iws
 *.iml
 *.ipr
+.jpb
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
 ### VS Code ###
 .vscode/
-
-
 ### ENV ###
 .env
 
 
-### Maven ###
-.m2/settings.xml
-
 ### Jenv ###
 .java-version
+
+.DS_Store
+.minio_bucket*
+.jqwik-database

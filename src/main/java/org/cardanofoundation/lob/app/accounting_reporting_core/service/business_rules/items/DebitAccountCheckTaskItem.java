@@ -1,0 +1,32 @@
+package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
+
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+
+import java.util.stream.Collectors;
+
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
+
+@Slf4j
+public class DebitAccountCheckTaskItem implements PipelineTaskItem {
+
+    @Override
+    public Transaction run(Transaction tx) {
+        if (tx.getValidationStatus() == FAILED) {
+            return tx;
+        }
+
+        // we accept only transaction items that are NOT sending to the same account, if they are we discard them
+        val txItems = tx.getItems()
+                .stream()
+                .filter(txItem -> !txItem.getAccountCodeDebit().equals(txItem.getAccountCodeCredit()))
+                .collect(Collectors.toSet());
+
+        return tx
+                .toBuilder()
+                .items(txItems)
+                .build();
+    }
+
+}
