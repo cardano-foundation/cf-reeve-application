@@ -6,6 +6,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 public interface BusinessRulesPipelineProcessor {
 
     TransformationResult run(OrganisationTransactions passedTransactions,
-                             OrganisationTransactions ignoredTransactions);
+                             OrganisationTransactions ignoredTransactions,
+                             ProcessorFlags flags);
 
 }

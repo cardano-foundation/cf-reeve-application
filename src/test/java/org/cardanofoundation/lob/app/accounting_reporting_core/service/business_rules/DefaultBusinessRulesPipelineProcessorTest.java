@@ -42,7 +42,7 @@ class DefaultBusinessRulesPipelineProcessorTest {
     void run_NoTasks_ShouldReturnInitialTransactionsUnchanged() {
         processor = new DefaultBusinessRulesPipelineProcessor(Collections.emptyList());
 
-        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions);
+        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions, ProcessorFlags.defaultFlags());
 
         assertThat(initialOrgTransactions).isEqualTo(result.passedTransactions());
         assertThat(initialIgnoredTransactions).isEqualTo(result.ignoredTransactions());
@@ -52,11 +52,11 @@ class DefaultBusinessRulesPipelineProcessorTest {
     void run_SingleTask_ShouldTransformTransactions() {
         OrganisationTransactions transformedOrgTransactions =  new OrganisationTransactions("org1", Set.of());
         OrganisationTransactions ignoredTransactions =  new OrganisationTransactions("org1", Set.of());
-        when(pipelineTask.run(any(), any())).thenReturn(new TransformationResult(transformedOrgTransactions, ignoredTransactions));
+        when(pipelineTask.run(any(), any(), any(ProcessorFlags.class))).thenReturn(new TransformationResult(transformedOrgTransactions, ignoredTransactions));
 
         processor = new DefaultBusinessRulesPipelineProcessor(List.of(pipelineTask));
 
-        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions);
+        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions, ProcessorFlags.defaultFlags());
 
         assertThat(transformedOrgTransactions).isEqualTo(result.passedTransactions());
         assertThat(ignoredTransactions).isEqualTo(result.ignoredTransactions());
@@ -72,12 +72,12 @@ class DefaultBusinessRulesPipelineProcessorTest {
         val firstTask = mock(PipelineTask.class);
         val secondTask = mock(PipelineTask.class);
 
-        when(firstTask.run(any(), any())).thenReturn(new TransformationResult(firstTransformedOrgTransactions, firstIgnoredTransactions));
-        when(secondTask.run(any(), any())).thenReturn(new TransformationResult(secondTransformedOrgTransactions, secondIgnoredTransactions));
+        when(firstTask.run(any(), any(), any(ProcessorFlags.class))).thenReturn(new TransformationResult(firstTransformedOrgTransactions, firstIgnoredTransactions));
+        when(secondTask.run(any(), any(), any(ProcessorFlags.class))).thenReturn(new TransformationResult(secondTransformedOrgTransactions, secondIgnoredTransactions));
 
         processor = new DefaultBusinessRulesPipelineProcessor(List.of(firstTask, secondTask));
 
-        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions);
+        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions, ProcessorFlags.defaultFlags());
 
         assertThat(secondTransformedOrgTransactions).isEqualTo(result.passedTransactions());
         assertThat(secondIgnoredTransactions).isEqualTo(result.ignoredTransactions());

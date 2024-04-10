@@ -8,6 +8,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organ
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.PipelineTaskItem;
 
 import java.util.List;
@@ -22,7 +23,8 @@ public class DefaultPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions) {
+                                    OrganisationTransactions ignoredTransactions,
+                                    ProcessorFlags flags) {
         if (passedTransactions.transactions().isEmpty()) {
             return new TransformationResult(passedTransactions, ignoredTransactions);
         }
@@ -43,7 +45,7 @@ public class DefaultPipelineTask implements PipelineTask {
                 .reduce(
                         transaction,
                         (tx, taskItem) -> taskItem.run(tx),
-                        (tx1, tx2) -> tx2); // combiner???
+                        (tx1, tx2) -> tx2); // TODO combiner???
     }
 
 }
