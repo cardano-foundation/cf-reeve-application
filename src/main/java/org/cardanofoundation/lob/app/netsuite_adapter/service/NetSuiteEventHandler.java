@@ -18,10 +18,10 @@ public class NetSuiteEventHandler {
     public void handleScheduledIngestionEvent(ScheduledIngestionEvent event) {
         log.info("Handling ScheduledIngestionEvent...");
 
-        netSuiteService.startERPExtraction(
+        netSuiteService.startNewERPExtraction(
                 event.getInitiator(),
                 event.getUserExtractionParameters()
-        );
+                );
 
         log.info("Handled ScheduledIngestionEvent.");
     }

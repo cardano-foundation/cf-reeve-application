@@ -33,6 +33,8 @@ public class ERPIncomingDataProcessor {
                                   String batchId,
                                   Optional<Integer> totalTransactionsCount,
                                   Set<Transaction> transactions) {
+        log.info("Processing ERPTransactionChunk event, batchId: {}, transactions: {}", batchId, transactions.size());
+
         val finalTransformationResult = businessRulesPipelineProcessor.run(
                 new OrganisationTransactions(organisationId, transactions),
                 OrganisationTransactions.empty(organisationId)

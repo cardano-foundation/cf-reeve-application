@@ -29,14 +29,4 @@ public class UserExtractionParameters {
     @Builder.Default
     private List<String> transactionNumbers = List.of();
 
-    public static UserExtractionParameters acceptAll(String organisationId,
-                                                     LocalDate from,
-                                                     LocalDate to) {
-        return UserExtractionParameters.builder()
-                .organisationId(organisationId)
-                .from(from)
-                .to(to)
-                .build();
-    }
-
 }

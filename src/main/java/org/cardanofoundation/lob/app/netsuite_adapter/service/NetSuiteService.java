@@ -71,8 +71,8 @@ public class NetSuiteService {
     }
 
     @Transactional
-    public void startERPExtraction(String initiator,
-                                   UserExtractionParameters userExtractionParameters) {
+    public void startNewERPExtraction(String initiator,
+                                      UserExtractionParameters userExtractionParameters) {
         log.info("Running ingestion...");
 
         val netSuiteJsonE = retrieveLatestNetsuiteTransactionLines();
@@ -214,7 +214,6 @@ public class NetSuiteService {
                     .systemExtractionParameters(systemExtractionParameters)
                     .totalTransactionsCount(Optional.of(transactionsWithExtractionParametersApplied.size()))
                     .transactions(txPartition.asSet());
-
             if (txPartition.isFirst()) {
                 eventBuilder.status(STARTED);
             } else if (txPartition.isLast()) {

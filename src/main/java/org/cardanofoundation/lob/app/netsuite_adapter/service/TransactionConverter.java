@@ -33,7 +33,6 @@ public class TransactionConverter {
 
     private final CodesMappingService codesMappingService;
 
-
     private final TransactionTypeMapper transactionTypeMapper;
 
     @Value("${lob.events.netsuite.to.core.netsuite.instance.id:fEU237r9rqAPEGEFY1yr}")
@@ -146,7 +145,6 @@ public class TransactionConverter {
                     .accountCodeDebit(normaliseString(txLine.number()))
                     .accountCodeCredit(accountCreditCodeE.get())
 
-                    //.project(normaliseString(txLine.project()).map(String::trim).map(pc -> Project.builder()
                     .project(projectCodeM.get().map(pc -> Project.builder()
                             .customerCode(pc)
                             .build()
