@@ -7,9 +7,10 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organ
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchAssocRepositoryGateway;
+import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchAssocRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,18 +27,20 @@ public class ERPIncomingDataProcessor {
     private final TransactionBatchService transactionBatchService;
     private final TransactionRepository transactionRepository;
     private final TransactionConverter transactionConverter;
-    private final TransactionBatchAssocRepositoryGateway transactionBatchAssocRepositoryGateway;
+    private final TransactionBatchAssocRepository transactionBatchAssocRepository;
 
     @Transactional
     public void continueIngestion(String organisationId,
                                   String batchId,
                                   Optional<Integer> totalTransactionsCount,
-                                  Set<Transaction> transactions) {
+                                  Set<Transaction> transactions,
+                                  boolean reprocess) {
         log.info("Processing ERPTransactionChunk event, batchId: {}, transactions: {}", batchId, transactions.size());
 
         val finalTransformationResult = businessRulesPipelineProcessor.run(
                 new OrganisationTransactions(organisationId, transactions),
-                OrganisationTransactions.empty(organisationId)
+                OrganisationTransactions.empty(organisationId),
+                reprocess ? ProcessorFlags.builder().skipDeduplicationCheck(true).build() : ProcessorFlags.defaultFlags()
         );
 
         val passedTransactions = finalTransformationResult.passedTransactions().transactions();
@@ -67,14 +70,20 @@ public class ERPIncomingDataProcessor {
                                           Set<Transaction> toDispatchTransactions) {
         log.info("Updating transaction batch, batchId: {}", batchId);
 
-        transactionRepository.saveAll(transactionConverter.convertToDb(toDispatchTransactions));
+        val dbTransactions= transactionConverter.convertToDb(toDispatchTransactions);
+
+        transactionRepository.saveAll(dbTransactions);
 
         val transactionBatchAssocEntities = toDispatchTransactions
                 .stream()
-                .map(tx -> new TransactionBatchAssocEntity(new TransactionBatchAssocEntity.Id(batchId, tx.getId())))
+                .map(tx -> {
+                    val id = new TransactionBatchAssocEntity.Id(batchId, tx.getId());
+
+                    return transactionBatchAssocRepository.findById(id).orElseGet(() -> new TransactionBatchAssocEntity(id));
+                })
                 .collect(Collectors.toSet());
 
-        transactionBatchAssocRepositoryGateway.storeAll(transactionBatchAssocEntities);
+        transactionBatchAssocRepository.saveAll(transactionBatchAssocEntities);
     }
 
 }

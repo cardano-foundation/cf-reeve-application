@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CHART_OF_ACCOUNT_NOT_FOUND;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
@@ -38,7 +39,8 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
                         if (accountChartMappingM.isEmpty()) {
                             val v = Violation.create(
                                     ERROR,
-                                    Violation.Source.LOB,
+                                    LOB,
+                                    item.getId(),
                                     CHART_OF_ACCOUNT_NOT_FOUND,
                                     this.getClass().getSimpleName(),
                                     Map.of(
@@ -61,7 +63,8 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
                         if (eventRefCodeM.isEmpty()) {
                             val v = Violation.create(
                                     ERROR,
-                                    Violation.Source.LOB,
+                                    LOB,
+                                    item.getId(),
                                     CHART_OF_ACCOUNT_NOT_FOUND,
                                     this.getClass().getSimpleName(),
                                     Map.of(
@@ -99,7 +102,9 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
                     .build();
         }
 
-        return tx.toBuilder().items(items).build();
+        return tx.toBuilder()
+                .items(items)
+                .build();
     }
 
 }

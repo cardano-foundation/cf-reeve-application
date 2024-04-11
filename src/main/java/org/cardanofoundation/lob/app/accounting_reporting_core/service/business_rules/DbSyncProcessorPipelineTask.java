@@ -26,7 +26,12 @@ public class DbSyncProcessorPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions) {
+                                    OrganisationTransactions ignoredTransactions,
+                                    ProcessorFlags flags) {
+        if (flags.isSkipDeduplicationCheck()) {
+            return new TransformationResult(passedTransactions, ignoredTransactions);
+        }
+
         val organisationId = passedTransactions.organisationId();
         val incomingTransactions = passedTransactions.transactions();
 
