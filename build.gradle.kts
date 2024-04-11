@@ -1,8 +1,12 @@
+import info.solidsoft.gradle.pitest.PitestPlugin
+import info.solidsoft.gradle.pitest.PitestTask
+
 plugins {
     java
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
     id("com.github.ben-manes.versions") version "0.50.0"
+    id("info.solidsoft.pitest") version "1.15.0"
 }
 
 group = "de.cardanofoundation"
@@ -100,6 +104,8 @@ dependencies {
     testImplementation("org.wiremock:wiremock-standalone:3.3.1")
     testImplementation("net.jqwik:jqwik:1.7.4") // Jqwik for property-based testing
     testImplementation("org.assertj:assertj-core:3.25.2")
+    testImplementation("org.pitest:pitest-junit5-plugin:1.2.1")
+
 }
 
 dependencyManagement {
@@ -123,8 +129,20 @@ tasks {
         jvmArgs(ENABLE_PREVIEW)
     }
 
-
+    withType<PitestTask>() {
+        jvmArgs(ENABLE_PREVIEW)
+    }
     withType<JavaExec>() {
         jvmArgs(ENABLE_PREVIEW)
     }
+}
+pitest {
+    //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
+    jvmArgs.add("--enable-preview")
+    targetClasses.set(setOf("org.cardanofoundation.lob.app.*"))
+    targetTests.set(setOf("org.cardanofoundation.lob.app.*"))
+    exportLineCoverage = true
+    timestampedReports = false
+    threads = 4
+    // ...
 }
