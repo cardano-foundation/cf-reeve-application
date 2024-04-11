@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.DOCUMENT_MUST_BE_PRESENT;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class DocumentMustBePresentTaskItem implements PipelineTaskItem {
             if (txItem.getDocument().isEmpty()) {
                 val v = Violation.create(
                         ERROR,
-                        Violation.Source.LOB,
+                        ERP,
                         txItem.getId(),
                         DOCUMENT_MUST_BE_PRESENT,
                         this.getClass().getSimpleName(),

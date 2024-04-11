@@ -6,19 +6,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ReIngestionIntents;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.AccountingCoreService;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ReIngestionIntents.ReprocessType.ONLY_FAILED;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -28,6 +25,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class ExperimentalAccountingCoreResource {
 
     private final AccountingCoreService accountingCoreService;
+    private final TransactionBatchService transactionBatchService;
 
     @PostConstruct
     public void init() {
@@ -46,12 +44,28 @@ public class ExperimentalAccountingCoreResource {
 
         accountingCoreService.scheduleIngestion(userExtractionParameters);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .build();
     }
 
-    @RequestMapping(value = "/reschedule/{batch_id}", method = POST, produces = "application/json")
-    public ResponseEntity<?> reschedule(@Valid @PathVariable("batch_id") String batchId, @RequestParam("reprocess_type") Optional<ReIngestionIntents.ReprocessType> reprocessType) {
-        return accountingCoreService.scheduleReIngestion(batchId, ReIngestionIntents.newIngestion(reprocessType.orElse(ONLY_FAILED)))
+    @RequestMapping(value = "/reschedule/failed/{batch_id}", method = POST, produces = "application/json")
+    public ResponseEntity<?> reprocessFailed(@Valid @PathVariable("batch_id") String batchId) {
+        return accountingCoreService.scheduleReIngestionForFailed(batchId)
+                .fold(problem -> {
+                    return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                }, success -> {
+                    return ResponseEntity.ok().build();
+                });
+    }
+
+    @RequestMapping(value = "/reschedule/last-failed", method = POST, produces = "application/json")
+    public ResponseEntity<?> reprocessFailedForLastBatch() {
+
+        // q: sort by creation time, most recent first and take the most recent
+        val lastBatchM = transactionBatchService.findAll().stream().sorted((a, b) -> b.createdAt().compareTo(a.createdAt()))
+                .findFirst();
+
+        return accountingCoreService.scheduleReIngestionForFailed(lastBatchM.orElseThrow().getId())
                 .fold(problem -> {
                     return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
                 }, success -> {

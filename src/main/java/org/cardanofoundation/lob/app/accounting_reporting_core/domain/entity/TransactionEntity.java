@@ -109,4 +109,9 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
         return createdAt == null;
     }
 
+    @Override
+    public String toString() {
+        return STR."TransactionEntity{id='\{id}\{'\''}, transactionInternalNumber='\{transactionInternalNumber}\{'\''}, batchId='\{batchId}'}";
+    }
+
 }

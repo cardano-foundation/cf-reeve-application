@@ -38,7 +38,8 @@ public class AccountingCoreEventHandler {
                 transactionBatchChunkEvent.getOrganisationId(),
                 transactionBatchChunkEvent.getBatchId(),
                 transactionBatchChunkEvent.getTotalTransactionsCount(),
-                transactionBatchChunkEvent.getTransactions()
+                transactionBatchChunkEvent.getTransactions(),
+                false
         );
 
         log.info("Finished processing handleERPTransactionChunk event...., event, batch_id: {}", transactionBatchChunkEvent.getBatchId());

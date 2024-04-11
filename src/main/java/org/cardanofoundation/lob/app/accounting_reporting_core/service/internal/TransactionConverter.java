@@ -177,9 +177,8 @@ public class TransactionConverter {
                         violationEntity.getId().getTxItemId(),
                         violationEntity.getId().getCode(),
                         violationEntity.getProcessorModule(),
-                        Map.of()
+                        violationEntity.getBag()
                 ))
-                //violationEntity.getBag()))
                 .collect(Collectors.toSet());
 
         val items = transactionEntity.items()
