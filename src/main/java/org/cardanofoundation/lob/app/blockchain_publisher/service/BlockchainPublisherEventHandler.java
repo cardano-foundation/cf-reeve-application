@@ -12,18 +12,20 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BlockchainPublisherEventHandler {
 
+    private final TransactionConverter transactionConverter;
     private final BlockchainPublisherService blockchainPublisherService;
 
     @ApplicationModuleListener
     public void handleLedgerUpdateCommand(LedgerUpdateCommand command) {
         val uploadId = command.getUploadId();
-        val transactions = command.getOrganisationTransactions();
+        val organisationId = command.getOrganisationId();
+        val transactions = command.getTransactions();
 
         log.info("Received LedgerUpdateCommand command..., uploadId: {}", uploadId);
 
-        val organisationId = command.getOrganisationTransactions().organisationId();
+        val txs = transactionConverter.convertToDb(transactions);
 
-        blockchainPublisherService.storeTransactionForDispatchLater(organisationId, transactions);
+        blockchainPublisherService.storeTransactionForDispatchLater(organisationId, txs);
     }
 
 }

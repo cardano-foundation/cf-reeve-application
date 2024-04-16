@@ -20,7 +20,7 @@ public class Organisation {
     @Builder.Default
     private Optional<@Size(min = 1, max =  50) String> shortName = Optional.empty();
 
-    @Builder.Default
-    private Optional<Currency> currency = Optional.empty();
+    @Size(min = 1, max =  255) @NotBlank
+    private String currencyId;
 
 }

@@ -49,8 +49,7 @@ public record Violation(Type type,
 
     public enum Source {
         ERP,
-        LOB,
-        INTERNAL
+        LOB
     }
 
     public enum Code {
@@ -58,19 +57,19 @@ public record Violation(Type type,
         TX_CANNOT_BE_ALTERED,
         ACCOUNT_CODE_CREDIT_IS_EMPTY,
         ACCOUNT_CODE_DEBIT_IS_EMPTY,
-        TX_SANITY_CHECK_FAIL,
+        TX_TECHNICAL_FAILURE,
         LCY_BALANCE_MUST_BE_ZERO,
         FCY_BALANCE_MUST_BE_ZERO,
         AMOUNT_LCY_IS_ZERO,
         AMOUNT_FCY_IS_ZERO,
         TRANSACTION_ITEMS_EMPTY,
-        VAT_RATE_NOT_FOUND,
+        VAT_DATA_NOT_FOUND,
         CORE_CURRENCY_NOT_FOUND,
-        CURRENCY_NOT_FOUND,
-        COST_CENTER_NOT_FOUND,
-        PROJECT_CODE_NOT_FOUND,
+        CURRENCY_DATA_NOT_FOUND,
+        COST_CENTER_DATA_NOT_FOUND,
+        PROJECT_DATA_NOT_FOUND,
         CHART_OF_ACCOUNT_NOT_FOUND,
-        ORGANISATION_NOT_FOUND,
+        ORGANISATION_DATA_NOT_FOUND,
     }
 
 }

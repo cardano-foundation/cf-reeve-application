@@ -11,13 +11,13 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Doc
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Project;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Vat;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
+import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,9 +28,10 @@ import java.util.stream.Collectors;
 public class TransactionConverter {
 
     private final CoreCurrencyService coreCurrencyService;
+    private final Clock clock;
 
-    public FilteringParameters convert(SystemExtractionParameters systemExtractionParameters,
-                                       UserExtractionParameters userExtractionParameters) {
+    public FilteringParameters convertToDbDetached(SystemExtractionParameters systemExtractionParameters,
+                                                   UserExtractionParameters userExtractionParameters) {
         return FilteringParameters.builder()
                 .organisationId(userExtractionParameters.getOrganisationId())
                 .transactionTypes(userExtractionParameters.getTransactionTypes())
@@ -42,80 +43,79 @@ public class TransactionConverter {
                 .build();
     }
 
-    public Set<TransactionEntity> convertToDb(Set<Transaction> transactions) {
+    public Set<TransactionEntity> convertToDbDetached(Set<Transaction> transactions) {
         return transactions.stream()
-                .map(this::convert)
-                .collect(Collectors.toSet());
-    }
-
-    public Set<Transaction> convertFromDb(List<TransactionEntity> transactionEntities) {
-        return transactionEntities.stream()
-                .map(this::convert)
+                .map(this::convertToDbDetached)
                 .collect(Collectors.toSet());
     }
 
     public Set<Transaction> convertFromDb(Set<TransactionEntity> transactionEntities) {
         return transactionEntities.stream()
-                .map(this::convert)
+                .map(this::convertToDbDetached)
                 .collect(Collectors.toSet());
     }
 
-    public TransactionEntity convert(Transaction transaction) {
-        val transactionEntity = new TransactionEntity()
-                .id(transaction.getId())
-                .batchId(transaction.getBatchId())
-                .transactionInternalNumber(transaction.getInternalTransactionNumber())
-                .transactionType(transaction.getTransactionType())
-                .entryDate(transaction.getEntryDate())
-                .organisation(convertOrganisation(transaction))
-                .fxRate(transaction.getFxRate())
-                .validationStatus(transaction.getValidationStatus())
-                .ledgerDispatchStatus(transaction.getLedgerDispatchStatus())
-                .accountingPeriod(transaction.getAccountingPeriod())
-                .transactionApproved(transaction.isTransactionApproved())
-                .ledgerDispatchApproved(transaction.isLedgerDispatchApproved());
-
-        val txItems = transaction.getItems()
+    private TransactionEntity convertToDbDetached(Transaction transaction) {
+        val violations = transaction.getViolations()
                 .stream()
-                .map(txItemEntity -> {
-                    return new TransactionItemEntity()
-                            .id(txItemEntity.getId())
-                            .transaction(transactionEntity)
-                            .document(convert(txItemEntity.getDocument()))
-                            .amountLcy(txItemEntity.getAmountLcy())
-                            .costCenter(convertCostCenter(txItemEntity.getCostCenter()))
-                            .amountFcy(txItemEntity.getAmountFcy())
-                            .project(convertProject(txItemEntity.getProject()))
-                            .accountCodeDebit(txItemEntity.getAccountCodeDebit().orElse(null))
-                            .accountCodeRefDebit(txItemEntity.getAccountCodeEventRefDebit().orElse(null))
-                            .accountCodeCredit(txItemEntity.getAccountCodeCredit().orElse(null))
-                            .accountCodeRefCredit(txItemEntity.getAccountCodeEventRefCredit().orElse(null))
-                            .accountNameDebit(txItemEntity.getAccountNameDebit().orElse(null))
-                            .accountEventCode(txItemEntity.getAccountEventCode().orElse(null));
+                .map(violation -> {
+                    val violationEntity = new Violation();
+                    violationEntity.setCode(violation.code());
+                    violationEntity.setTxItemId(violation.txItemId());
+                    violationEntity.setType(violation.type());
+                    violationEntity.setSource(violation.source());
+                    violationEntity.setProcessorModule(violation.processorModule());
+                    violationEntity.setBag(violation.bag());
 
+                    return violationEntity;
                 })
                 .collect(Collectors.toSet());
 
-        val violations = transaction.getViolations().stream()
-                .map(violation -> ViolationEntity.builder()
-                        .id(new ViolationEntity.Id(transactionEntity.id(), violation.txItemId().orElse(""), violation.code()))
-                        .transaction(transactionEntity)
-                        .type(violation.type())
-                        .source(violation.source())
-                        .processorModule(violation.processorModule())
-                        .bag(violation.bag())
-                        .build())
+        val txItems = transaction.getItems()
+                .stream()
+                .map(txItem -> {
+                    val doc = convertToDbDetached(txItem.getDocument());
+
+                    val txItemEntity = new TransactionItemEntity();
+
+                    txItemEntity.setId(txItem.getId());
+                    txItemEntity.setDocument(doc);
+                    txItemEntity.setAmountLcy(txItem.getAmountLcy());
+                    txItemEntity.setAmountFcy(txItem.getAmountFcy());
+                    txItemEntity.setCostCenter(convertCostCenter(txItem.getCostCenter()));
+                    txItemEntity.setProject(convertProject(txItem.getProject()));
+                    txItemEntity.setAccountCodeDebit(txItem.getAccountCodeDebit().orElse(null));
+                    txItemEntity.setAccountCodeRefDebit(txItem.getAccountCodeEventRefDebit().orElse(null));
+                    txItemEntity.setAccountCodeCredit(txItem.getAccountCodeCredit().orElse(null));
+                    txItemEntity.setAccountCodeRefCredit(txItem.getAccountCodeEventRefCredit().orElse(null));
+                    txItemEntity.setAccountNameDebit(txItem.getAccountNameDebit().orElse(null));
+                    txItemEntity.setAccountEventCode(txItem.getAccountEventCode().orElse(null));
+
+                    return txItemEntity;
+                })
                 .collect(Collectors.toSet());
 
-        transactionEntity.items(txItems);
-        transactionEntity.violationEntities(violations);
+        val txEntity = new TransactionEntity();
+        txEntity.setId(transaction.getId());
+        txEntity.setBatchId(transaction.getBatchId());
+        txEntity.setTransactionInternalNumber(transaction.getInternalTransactionNumber());
+        txEntity.setTransactionType(transaction.getTransactionType());
+        txEntity.setEntryDate(transaction.getEntryDate());
+        txEntity.setOrganisation(convertOrganisation(transaction));
+        txEntity.setFxRate(transaction.getFxRate());
+        txEntity.setValidationStatus(transaction.getValidationStatus());
+        txEntity.setLedgerDispatchStatus(transaction.getLedgerDispatchStatus());
+        txEntity.setAccountingPeriod(transaction.getAccountingPeriod());
+        txEntity.setTransactionApproved(transaction.isTransactionApproved());
+        txEntity.setLedgerDispatchApproved(transaction.isLedgerDispatchApproved());
+        txEntity.setUpdatedAt(LocalDateTime.now(clock));
 
-        transactionEntity.createdAt(LocalDateTime.now());
-        transactionEntity.updatedAt(LocalDateTime.now());
-        transactionEntity.createdBy("system");
-        transactionEntity.updatedBy("system");
+        txItems.forEach(i -> i.setTransaction(txEntity));
 
-        return transactionEntity;
+        txEntity.setViolations(violations);
+        txEntity.setItems(txItems);
+
+        return txEntity;
     }
 
     private Project convertProject(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project> project) {
@@ -138,14 +138,11 @@ public class TransactionConverter {
         return Organisation.builder()
                 .id(transaction.getOrganisation().getId())
                 .shortName(transaction.getOrganisation().getShortName().orElse(null))
-                .currency(transaction.getOrganisation().getCurrency().map(c -> Currency.builder()
-                        .id(c.getCoreCurrency().map(CoreCurrency::toExternalId).orElse(null))
-                        .customerCode(c.getCustomerCode())
-                        .build()).orElse(null))
+                .currencyId(transaction.getOrganisation().getCurrencyId())
                 .build();
     }
 
-    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Document convert(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document> docM) {
+    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Document convertToDbDetached(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document> docM) {
         return docM.map(doc -> Document.builder()
                         .num(doc.getNumber())
 
@@ -168,23 +165,25 @@ public class TransactionConverter {
                 .orElse(null);
     }
 
-    public Transaction convert(TransactionEntity transactionEntity) {
-        val violations = transactionEntity.violationEntities()
+    private Transaction convertToDbDetached(TransactionEntity transactionEntity) {
+        val violations = transactionEntity.getViolations()
                 .stream()
-                .map(violationEntity -> new org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation(
-                        violationEntity.getType(),
-                        violationEntity.getSource(),
-                        violationEntity.getId().getTxItemId(),
-                        violationEntity.getId().getCode(),
-                        violationEntity.getProcessorModule(),
-                        violationEntity.getBag()
-                ))
+                .map(violationEntity -> {
+                    return new org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation(
+                            violationEntity.getType(),
+                            violationEntity.getSource(),
+                            violationEntity.getTxItemId(),
+                            violationEntity.getCode(),
+                            violationEntity.getProcessorModule(),
+                            violationEntity.getBag()
+                    );
+                })
                 .collect(Collectors.toSet());
 
-        val items = transactionEntity.items()
+        val items = transactionEntity.getItems()
                 .stream()
                 .map(txItemEntity -> TransactionItem.builder()
-                        .id(txItemEntity.id())
+                        .id(txItemEntity.getId())
 
                         .accountCodeDebit(txItemEntity.getAccountCodeDebit())
                         .accountCodeEventRefDebit(txItemEntity.getAccountCodeRefDebit())
@@ -206,43 +205,38 @@ public class TransactionConverter {
                                 .name(costCenter.getName())
                                 .build()))
 
-                        .document(convert(txItemEntity.document()))
+                        .document(txItemEntity.getDocument().flatMap(this::convertToDbDetached))
 
-                        .amountFcy(txItemEntity.amountFcy())
-                        .amountLcy(txItemEntity.amountLcy())
+                        .amountFcy(txItemEntity.getAmountFcy())
+                        .amountLcy(txItemEntity.getAmountLcy())
 
                         .build())
                 .collect(Collectors.toSet());
 
         return Transaction.builder()
-                .id(transactionEntity.id())
-                .batchId(transactionEntity.batchId())
+                .id(transactionEntity.getId())
+                .batchId(transactionEntity.getBatchId())
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
-                        .id(transactionEntity.organisation().getId())
-                        .shortName(transactionEntity.organisation().getShortName())
-                        .currency(transactionEntity.organisation().getCurrency().map(c -> {
-                            return org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency.builder()
-                                    .customerCode(c.getCustomerCode())
-                                    .coreCurrency(coreCurrencyService.findByCurrencyId(c.getId().orElseThrow()))
-                                    .build();
-                        }))
+                        .id(transactionEntity.getOrganisation().getId())
+                        .shortName(transactionEntity.getOrganisation().getShortName())
+                        .currencyId(transactionEntity.getOrganisation().getCurrencyId())
                         .build())
-                .entryDate(transactionEntity.entryDate())
-                .validationStatus(transactionEntity.validationStatus())
-                .transactionType(transactionEntity.transactionType())
-                .internalTransactionNumber(transactionEntity.transactionInternalNumber())
-                .fxRate(transactionEntity.fxRate())
+                .entryDate(transactionEntity.getEntryDate())
+                .validationStatus(transactionEntity.getValidationStatus())
+                .transactionType(transactionEntity.getTransactionType())
+                .internalTransactionNumber(transactionEntity.getTransactionInternalNumber())
+                .fxRate(transactionEntity.getFxRate())
 
-                .transactionApproved(transactionEntity.transactionApproved())
-                .ledgerDispatchStatus(transactionEntity.ledgerDispatchStatus())
-                .ledgerDispatchApproved(transactionEntity.ledgerDispatchApproved())
-                .accountingPeriod(transactionEntity.accountingPeriod())
+                .transactionApproved(transactionEntity.getTransactionApproved())
+                .ledgerDispatchStatus(transactionEntity.getLedgerDispatchStatus())
+                .ledgerDispatchApproved(transactionEntity.getLedgerDispatchApproved())
+                .accountingPeriod(transactionEntity.getAccountingPeriod())
                 .items(items)
                 .violations(violations)
                 .build();
     }
 
-    private Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document> convert(@Nullable Document doc) {
+    private Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document> convertToDbDetached(@Nullable Document doc) {
         if (doc == null) {
             return Optional.empty();
         }
@@ -265,6 +259,30 @@ public class TransactionConverter {
                         .build()))
 
                 .build());
+    }
+
+    public void useFieldsFromDetached(TransactionEntity attached,
+                                      TransactionEntity detached) {
+        attached.setId(detached.getId());
+        attached.setBatchId(detached.getBatchId());
+        attached.setOrganisation(detached.getOrganisation());
+        attached.setFxRate(detached.getFxRate());
+        attached.setLedgerDispatchApproved(detached.getLedgerDispatchApproved());
+        attached.setTransactionApproved(detached.getTransactionApproved());
+        attached.setTransactionType(detached.getTransactionType());
+        attached.setEntryDate(detached.getEntryDate());
+        attached.setValidationStatus(detached.getValidationStatus());
+        attached.setLedgerDispatchStatus(detached.getLedgerDispatchStatus());
+        attached.setAccountingPeriod(detached.getAccountingPeriod());
+        attached.setTransactionInternalNumber(detached.getTransactionInternalNumber());
+        attached.setUpdatedAt(LocalDateTime.now(clock));
+        attached.setUpdatedBy(detached.getUpdatedBy());
+
+        attached.getViolations().clear();
+        attached.getViolations().addAll(detached.getViolations());
+
+        attached.getItems().clear();
+        attached.getItems().addAll(detached.getItems());
     }
 
 }

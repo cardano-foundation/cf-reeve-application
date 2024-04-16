@@ -4,10 +4,8 @@ import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CoreCurrencyRepository;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.DefaultPipelineTask;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.DbSyncProcessorPipelineTask;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.DefaultBusinessRulesPipelineProcessor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.*;
@@ -23,7 +21,6 @@ import java.util.List;
 public class BusinessRulesConfig {
 
     private final Validator validator;
-    private final TransactionRepositoryGateway transactionRepositoryGateway;
     private final OrganisationPublicApi organisationPublicApi;
     private final CoreCurrencyRepository currencyRepository;
 
@@ -34,13 +31,14 @@ public class BusinessRulesConfig {
         pipelineTasks.add(sanityCheckPipelineTask());
 
         pipelineTasks.add(preCleansingPipelineTask());
+
         pipelineTasks.add(preValidationPipelineTask());
 
         pipelineTasks.add(conversionPipelineTask());
 
         pipelineTasks.add(postCleansingPipelineTask());
+
         pipelineTasks.add(postValidationPipelineTask());
-        pipelineTasks.add(new DbSyncProcessorPipelineTask(transactionRepositoryGateway));
 
         pipelineTasks.add(sanityCheckPipelineTask());
 

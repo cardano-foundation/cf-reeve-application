@@ -2,18 +2,16 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Optional;
 
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Getter
+@EqualsAndHashCode
 public class Currency {
 
     @Nullable

@@ -3,9 +3,8 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,11 +23,9 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 public class LedgerService {
 
     private final TransactionRepository transactionRepository;
-
     private final ApplicationEventPublisher applicationEventPublisher;
-
     private final TransactionBatchService transactionBatchService;
-
+    private final TransactionConverter transactionConverter;
     private final PIIDataFilteringService piiDataFilteringService;
 
     @Transactional
@@ -47,29 +44,34 @@ public class LedgerService {
             val transactionM = transactionRepository.findById(txId);
 
             if (transactionM.isEmpty()) {
-                //log.warn("Transaction not found for id: {}", txId);
                 continue;
             }
 
             val transactionEntity = transactionM.orElseThrow();
 
-            transactionRepository.save(transactionEntity.ledgerDispatchStatus(txStatusUpdate.getStatus()));
+            transactionEntity.setLedgerDispatchStatus(txStatusUpdate.getStatus());
+
+            transactionRepository.save(transactionEntity);
         }
     }
 
     @Transactional(propagation = REQUIRES_NEW)
     public void tryToDispatchTransactionToBlockchainPublisher(String organisationId,
-                                                              Set<Transaction> transactions) {
-        log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", transactions.stream().map(Transaction::getId).collect(Collectors.toSet()));
+                                                              Set<TransactionEntity> transactions) {
+        log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", transactions.stream()
+                .map(TransactionEntity::getId)
+                .collect(Collectors.toSet()));
 
         val dispatchPendingTransactions = transactions.stream()
-                .filter(Transaction::allApprovalsPassedForTransactionDispatch)
+                .filter(TransactionEntity::allApprovalsPassedForTransactionDispatch)
                 .filter(tx -> tx.getLedgerDispatchStatus() == NOT_DISPATCHED)
                 .collect(Collectors.toSet());
 
-        val piiFilteredOutTransactions = piiDataFilteringService.apply(dispatchPendingTransactions);
+        val txs = transactionConverter.convertFromDb(dispatchPendingTransactions);
 
-        applicationEventPublisher.publishEvent(LedgerUpdateCommand.create(new OrganisationTransactions(organisationId, piiFilteredOutTransactions)));
+        val piiFilteredOutTransactions = piiDataFilteringService.apply(txs);
+
+        applicationEventPublisher.publishEvent(LedgerUpdateCommand.create(organisationId, piiFilteredOutTransactions));
     }
 
 }

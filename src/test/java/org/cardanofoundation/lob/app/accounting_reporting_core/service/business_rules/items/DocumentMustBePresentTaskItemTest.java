@@ -1,13 +1,14 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Document;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,86 +25,84 @@ class DocumentMustBePresentTaskItemTest {
 
     @Test
     void shouldNotModifyTransactionWhenAllDocumentsPresent() {
-        val itemWithDocument = TransactionItem.builder()
-                .id("itemWithDocument")
-                .document(Optional.of(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document.builder()
-                        .build()))
-                .build();
+        val document = Document.builder().build();
 
-        val items = Set.of(itemWithDocument);
+        val itemWithDocument = new TransactionItemEntity();
+        itemWithDocument.setId("itemWithDocument");
+        itemWithDocument.setDocument(document);
 
-        val transaction = Transaction.builder()
-                .internalTransactionNumber("txn123")
-                .items(items)
-                .violations(new HashSet<>())
-                .build();
+        val items = new HashSet<TransactionItemEntity>();
+        items.add(itemWithDocument);
 
-        val result = taskItem.run(transaction);
+        val transaction = new TransactionEntity();
+        transaction.setTransactionInternalNumber("txn123");
+        transaction.setItems(items);
+        transaction.setViolations(new HashSet<>());
 
-        assertThat(result.getViolations()).isEmpty();
-        assertThat(result.getValidationStatus()).isNotEqualTo(FAILED);
+        taskItem.run(transaction);
+
+        assertThat(transaction.getViolations()).isEmpty();
+        assertThat(transaction.getValidationStatus()).isNotEqualTo(FAILED);
     }
 
     @Test
     void shouldAddViolationWhenDocumentIsMissing() {
-        val itemWithoutDocument = TransactionItem.builder()
-                .id("itemWithoutDocument")
-                .document(Optional.empty())
-                .build();
+        val itemWithoutDocument = new TransactionItemEntity();
+        itemWithoutDocument.setId("itemWithoutDocument");
+        itemWithoutDocument.setDocument(null);
 
-        val items = Set.of(itemWithoutDocument);
+        val items = new HashSet<TransactionItemEntity>();
+        items.add(itemWithoutDocument);
 
-        val transaction = Transaction.builder()
-                .internalTransactionNumber("txn123")
-                .items(items)
-                .violations(new HashSet<>())
-                .build();
+        val transaction = new TransactionEntity();
+        transaction.setTransactionInternalNumber("txn123");
+        transaction.setItems(items);
+        transaction.setViolations(new HashSet<>());
 
-        val result = taskItem.run(transaction);
+        taskItem.run(transaction);
 
-        assertThat(result.getViolations()).isNotEmpty();
-        assertThat(result.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(transaction.getViolations()).isNotEmpty();
+        assertThat(transaction.getValidationStatus()).isEqualTo(FAILED);
     }
 
     @Test
     void shouldHandleMixedDocumentPresenceCorrectly() {
-        val itemWithDocument = TransactionItem.builder()
-                .id("itemWithDocument")
-                .document(Optional.of(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document.builder()
-                        .build()))
-                .build();
+        val document = Document.builder().build();
 
-        val itemWithoutDocument = TransactionItem.builder()
-                .id("itemWithoutDocument")
-                .document(Optional.empty())
-                .build();
+        val itemWithDocument = new TransactionItemEntity();
+        itemWithDocument.setId("itemWithDocument");
+        itemWithDocument.setDocument(document);
 
-        val items = Set.of(itemWithDocument, itemWithoutDocument);
+        val itemWithoutDocument = new TransactionItemEntity();
+        itemWithoutDocument.setId("itemWithoutDocument");
+        itemWithoutDocument.setDocument(null);
 
-        val transaction = Transaction.builder()
-                .internalTransactionNumber("txn123")
-                .items(items)
-                .violations(new HashSet<>())
-                .build();
+        Set<TransactionItemEntity> items = new LinkedHashSet<>();
+        items.add(itemWithDocument);
+        items.add(itemWithoutDocument);
 
-        val result = taskItem.run(transaction);
+        val transaction = new TransactionEntity();
+        transaction.setTransactionInternalNumber("txn123");
+        transaction.setItems(items);
+        transaction.setViolations(new HashSet<>());
 
-        assertThat(result.getViolations()).hasSize(1);
-        assertThat(result.getValidationStatus()).isEqualTo(FAILED);
+        taskItem.run(transaction);
+
+        assertThat(transaction.getViolations()).hasSize(1);
+        assertThat(transaction.getValidationStatus()).isEqualTo(FAILED);
     }
 
     @Test
     void shouldNotAddViolationForEmptyItems() {
-        val transaction = Transaction.builder()
-                .internalTransactionNumber("txn123")
-                .items(new HashSet<>())
-                .violations(new HashSet<>())
-                .build();
+        val transaction = new TransactionEntity();
+        transaction.setTransactionInternalNumber("txn123");
+        transaction.setItems(new HashSet<>());
+        transaction.setViolations(new HashSet<>());
 
-        val result = taskItem.run(transaction);
+        taskItem.run(transaction);
 
-        assertThat(result.getViolations()).isEmpty();
-        assertThat(result.getValidationStatus()).isNotEqualTo(FAILED);
+        assertThat(transaction.getViolations()).isEmpty();
+        assertThat(transaction.getValidationStatus()).isNotEqualTo(FAILED);
     }
 
 }

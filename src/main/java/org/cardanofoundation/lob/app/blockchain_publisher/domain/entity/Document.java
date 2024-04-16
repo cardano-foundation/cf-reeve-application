@@ -8,12 +8,11 @@ import lombok.experimental.Accessors;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-@Accessors(fluent = true)
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @Embeddable
 public class Document {

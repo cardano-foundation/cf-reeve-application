@@ -2,8 +2,9 @@ package org.cardanofoundation.lob.app.support.audit;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.val;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -13,10 +14,10 @@ import java.time.LocalDateTime;
 
 import static jakarta.persistence.TemporalType.TIMESTAMP;
 
-@Accessors(fluent = true)
 @Setter
 @Getter
 @MappedSuperclass
+@NoArgsConstructor
 public abstract class AuditEntity {
 
     @Column(name = "created_by")
@@ -37,9 +38,20 @@ public abstract class AuditEntity {
     @LastModifiedDate
     protected LocalDateTime updatedAt;
 
+    @Transient
+    protected boolean isNew = true;
+
+    @PostLoad
+    void markNotNew() {
+        this.isNew = false;
+    }
+
     @PrePersist
     protected void onCreate() {
-        createdAt = updatedAt = LocalDateTime.now();
+        val now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+        this.isNew = false;
     }
 
     @PreUpdate

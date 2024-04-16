@@ -36,6 +36,7 @@ public class PIIDataFilteringService implements Function<Set<Transaction>, Set<T
 
                     return trx.toBuilder()
                             .items(txItems)
+                            .violations(Set.of())
                             .build();
                 })
                 .collect(Collectors.toSet());

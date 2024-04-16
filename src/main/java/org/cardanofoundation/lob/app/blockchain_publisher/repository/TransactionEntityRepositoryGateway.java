@@ -24,12 +24,6 @@ public class TransactionEntityRepositoryGateway {
     public Set<TransactionEntity> storeOnlyNewTransactions(Set<TransactionEntity> transactionEntities) {
         log.info("StoreOnlyNewTransactions..., transactionEntitiesCount:{}", transactionEntities.size());
 
-        // check in db if transaction already exists
-        // store only the ones that were new
-        // return status for the ones that were not new
-
-        val allTransactions = transactionEntities.stream().collect(toSet());
-
         val txIds = transactionEntities.stream()
                 .map(TransactionEntity::getId)
                 .collect(toSet());
@@ -39,7 +33,7 @@ public class TransactionEntityRepositoryGateway {
                 .stream()
                 .collect(toSet());
 
-        val newTransactions = Sets.difference(allTransactions, existingTransactions);
+        val newTransactions = Sets.difference(transactionEntities, existingTransactions);
 
         return Stream.concat(transactionEntityRepository.saveAll(newTransactions)
                         .stream(), existingTransactions.stream())

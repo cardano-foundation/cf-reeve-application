@@ -2,16 +2,14 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Getter
+@EqualsAndHashCode
 public class Project {
 
     @NotBlank

@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -32,8 +32,6 @@ public class AccountingCoreService {
 
     private final TransactionBatchRepository transactionBatchRepository;
 
-    private final TransactionConverter transactionConverter;
-
     private final ERPIncomingDataProcessor erpIncomingDataProcessor;
 
     private final TransactionRepositoryGateway transactionRepositoryGateway;
@@ -52,6 +50,7 @@ public class AccountingCoreService {
     public Either<Problem, Boolean> scheduleReIngestionForFailed(String batchId) {
         log.info("scheduleReIngestion..., batchId: {}", batchId);
 
+        // TODO optimisation, we should filter this on the db side not here because fetching all transactions for a batch is not efficient
         val txBatchM = transactionBatchRepository.findById(batchId);
         if (txBatchM.isEmpty()) {
             return Either.left(Problem.builder()
@@ -63,17 +62,25 @@ public class AccountingCoreService {
 
         val txBatch = txBatchM.get();
 
-        val txs =  txBatch.transactions().stream()
-                .filter(tx -> tx.validationStatus() == FAILED)
-                .map(transactionConverter::convert)
+        //TODO this filtering here should be moved to db layer
+        val txs =  txBatch.getTransactions().stream()
+                .filter(tx -> tx.getValidationStatus() == FAILED)
                 // reprocess only the ones that have not been approved to dispatch yet, actually it is just a sanity check because it should never happen
                 // and we should never allow approving failed transactions
                 .filter(tx -> !tx.allApprovalsPassedForTransactionDispatch())
                 // we are interested only in the ones that have LOB violations (conversion issues)
-                .filter(tx -> tx.getViolations().stream().anyMatch(v -> v.source() == LOB))
+                .filter(tx -> tx.getViolations().stream().anyMatch(v -> v.getSource() == LOB))
                 .collect(Collectors.toSet());
 
-        erpIncomingDataProcessor.continueIngestion(txBatch.getOrganisationId(), batchId, Optional.of(txs.size()), txs, true);
+        if (txs.isEmpty()) {
+            return Either.right(true);
+        }
+
+        val processorFlags = ProcessorFlags.builder()
+                .reprocess(true)
+                .build();
+
+        erpIncomingDataProcessor.continueIngestion(txBatch.getOrganisationId(), batchId, Optional.of(txs.size()), txs, processorFlags);
 
         return Either.right(true);
     }

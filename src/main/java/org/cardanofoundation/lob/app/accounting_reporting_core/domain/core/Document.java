@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.Optional;
 
@@ -29,15 +28,5 @@ public class Document {
     @Builder.Default
     @NotNull
     private Optional<Counterparty> counterparty = Optional.empty();
-
-    public boolean isTheSameBusinessWise() {
-        val equalsBuilder = new EqualsBuilder();
-        equalsBuilder.append(this.number, this.number);
-
-        return equalsBuilder.isEquals()
-                && this.currency.isTheSameBusinessWise()
-                && this.vat.map(Vat::isTheSameBusinessWise).orElse(true)
-                && this.counterparty.map(Counterparty::isTheSameBusinessWise).orElse(true);
-    }
 
 }

@@ -2,16 +2,12 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.ACCOUNT_CODE_DEBIT_IS_EMPTY;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
@@ -20,38 +16,25 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 public class AccountCodeDebitCheckTaskItem implements PipelineTaskItem {
 
     @Override
-    public Transaction run(Transaction tx) {
-        val violations = new LinkedHashSet<Violation>();
-
+    public void run(TransactionEntity tx) {
         if (tx.getTransactionType() == FxRevaluation) {
-            return tx;
+            return;
         }
 
         for (val txItem : tx.getItems()) {
-            if (txItem.getAccountCodeDebit().map(String::trim).filter(code -> !code.isEmpty()).isEmpty())  {
-                val v = Violation.create(
-                        ERROR,
-                        ERP,
-                        txItem.getId(),
-                        ACCOUNT_CODE_DEBIT_IS_EMPTY,
-                        this.getClass().getSimpleName(),
-                        Map.of(
-                                "transactionNumber", tx.getInternalTransactionNumber()
-                        )
-                );
+            if (txItem.getAccountCodeDebit().map(String::trim).filter(code -> !code.isEmpty()).isEmpty()) {
+                val v = Violation.builder()
+                        .code(ACCOUNT_CODE_DEBIT_IS_EMPTY)
+                        .txItemId(txItem.getId())
+                        .type(ERROR)
+                        .source(ERP)
+                        .processorModule(this.getClass().getSimpleName())
+                        .bag(Map.of("transactionNumber", tx.getTransactionInternalNumber()))
+                        .build();
 
-                violations.add(v);
+                tx.addViolation(v);
             }
         }
-
-        if (!violations.isEmpty()) {
-            return tx.toBuilder()
-                    .validationStatus(FAILED)
-                    .violations(Stream.concat(tx.getViolations().stream(), violations.stream()).collect(Collectors.toSet()))
-                    .build();
-        }
-
-        return tx;
     }
 
 }

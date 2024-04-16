@@ -7,7 +7,6 @@ import lombok.val;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -44,7 +43,7 @@ public class DelayedDispatchingStrategy implements DispatchingStrategy {
 
         val prioritisedTransactions = txs.stream()
                 .filter(tx -> {
-                    val mustPublishDate = tx.createdAt().plus(maxTxDelay);
+                    val mustPublishDate = tx.getCreatedAt().plus(maxTxDelay);
 
                     return now.isAfter(mustPublishDate);
                 })

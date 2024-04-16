@@ -1,7 +1,10 @@
 package org.cardanofoundation.lob.app.organisation.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
 import java.math.BigDecimal;
@@ -10,7 +13,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Entity(name = "organisation_vat")
-@Builder
 public class OrganisationVat extends AuditEntity {
 
     @EmbeddedId
