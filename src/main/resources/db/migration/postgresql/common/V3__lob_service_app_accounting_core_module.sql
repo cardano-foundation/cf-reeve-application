@@ -47,6 +47,9 @@ CREATE TABLE accounting_core_transaction (
    --organisation_currency_customer_code VARCHAR(255),
    organisation_currency_id VARCHAR(255),
 
+   user_comment VARCHAR(255),
+   rejection_status VARCHAR(255) NOT NULL,
+
    validation_status VARCHAR(255) NOT NULL,
 
    transaction_approved BOOLEAN NOT NULL,
