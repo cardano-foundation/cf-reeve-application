@@ -2,21 +2,16 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Currency;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CoreCurrencyRepository;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CORE_CURRENCY_NOT_FOUND;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.ORGANISATION_NOT_FOUND;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.ORGANISATION_DATA_NOT_FOUND;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
@@ -26,24 +21,25 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
     private final CoreCurrencyRepository coreCurrencyRepository;
 
     @Override
-    public Transaction run(Transaction tx) {
+    public void run(TransactionEntity tx) {
         val organisationId = tx.getOrganisation().getId();
         val organisationM = organisationPublicApi.findByOrganisationId(organisationId);
 
-        val violations = new LinkedHashSet<Violation>();
-
         if (organisationM.isEmpty()) {
-            val v = Violation.create(
-                    ERROR,
-                    Violation.Source.LOB,
-                    ORGANISATION_NOT_FOUND,
-                    this.getClass().getSimpleName(),
-                    Map.of(
-                            "transactionNumber", tx.getInternalTransactionNumber()
+            val v = Violation.builder()
+                    .code(ORGANISATION_DATA_NOT_FOUND)
+                    .txItemId(tx.getId())
+                    .type(ERROR)
+                    .source(LOB)
+                    .processorModule(this.getClass().getSimpleName())
+                    .bag(
+                            Map.of(
+                                    "transactionNumber", tx.getTransactionInternalNumber()
+                            )
                     )
-            );
+                    .build();
 
-            violations.add(v);
+            tx.addViolation(v);
         }
 
         val organisation = organisationM.orElseThrow();
@@ -51,39 +47,30 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
         val coreCurrencyM = coreCurrencyRepository.findByCurrencyId(organisation.getCurrencyId());
 
         if (coreCurrencyM.isEmpty()) {
-            val v = Violation.create(
-                    ERROR,
-                    Violation.Source.INTERNAL,
-                    CORE_CURRENCY_NOT_FOUND,
-                    this.getClass().getSimpleName(),
-                    Map.of(
-                            "currencyId", organisation.getCurrencyId(),
-                            "transactionNumber", tx.getInternalTransactionNumber()
+            val v = Violation.builder()
+                    .code(CORE_CURRENCY_NOT_FOUND)
+                    .txItemId(tx.getId())
+                    .type(ERROR)
+                    .source(LOB)
+                    .processorModule(this.getClass().getSimpleName())
+                    .bag(
+                            Map.of(
+                                    "currencyId", organisation.getCurrencyId(),
+                                    "transactionNumber", tx.getTransactionInternalNumber()
+                            )
                     )
-            );
-
-            violations.add(v);
-        }
-
-        if (!violations.isEmpty()) {
-            return tx
-                    .toBuilder()
-                    .validationStatus(FAILED)
-                    .violations(Stream.concat(tx.getViolations().stream(), violations.stream()).collect(Collectors.toSet()))
                     .build();
+
+            tx.addViolation(v);
         }
 
-        return tx.toBuilder()
-                .transactionApproved(organisation.isPreApproveTransactionsEnabled())
-                .ledgerDispatchApproved(organisation.isPreApproveTransactionsDispatchEnabled())
-                .organisation(tx.getOrganisation().toBuilder()
-                        .shortName(Optional.of(organisation.getShortName()))
-                        .currency(Optional.of(Currency.builder()
-                                .coreCurrency(coreCurrencyM)
-                                .customerCode(coreCurrencyM.orElseThrow().getCurrencyISOCode())
-                                .build()))
-                        .build())
-                .build();
+        tx.setTransactionApproved(organisation.isPreApproveTransactionsEnabled());
+        tx.setLedgerDispatchApproved(organisation.isPreApproveTransactionsDispatchEnabled());
+        tx.setOrganisation(tx.getOrganisation().toBuilder()
+                .shortName(organisation.getShortName())
+                .currencyId(organisation.getCurrencyId())
+                .build()
+        );
     }
 
 }

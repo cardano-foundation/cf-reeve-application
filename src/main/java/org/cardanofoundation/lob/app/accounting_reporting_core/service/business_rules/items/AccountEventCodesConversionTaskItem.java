@@ -2,18 +2,15 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
+import org.cardanofoundation.lob.app.organisation.domain.entity.OrganisationChartOfAccount;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CHART_OF_ACCOUNT_NOT_FOUND;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
@@ -23,88 +20,73 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
     private final OrganisationPublicApiIF organisationPublicApi;
 
     @Override
-    public Transaction run(Transaction tx) {
-        val violations = new HashSet<Violation>();
-
+    public void run(TransactionEntity tx) {
         val organisationId = tx.getOrganisation().getId();
 
-        val items = tx.getItems().stream()
-                .map(item -> {
-                    val itemBuilder = item.toBuilder();
+        for (val item : tx.getItems()) {
+            if (item.getAccountCodeDebit().map(String::trim).filter(acc -> !acc.isEmpty()).isPresent()) {
+                val accountCodeDebit = item.getAccountCodeDebit().orElseThrow();
 
-                    if (item.getAccountCodeDebit().map(String::trim).filter(acc -> !acc.isEmpty()).isPresent()) {
-                        val accountCodeDebit = item.getAccountCodeDebit().orElseThrow();
+                val accountChartMappingM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeDebit);
 
-                        val accountChartMappingM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeDebit);
-                        if (accountChartMappingM.isEmpty()) {
-                            val v = Violation.create(
-                                    ERROR,
-                                    LOB,
-                                    item.getId(),
-                                    CHART_OF_ACCOUNT_NOT_FOUND,
-                                    this.getClass().getSimpleName(),
+                if (accountChartMappingM.isEmpty()) {
+                    val v = Violation.builder()
+                            .code(CHART_OF_ACCOUNT_NOT_FOUND)
+                            .txItemId(item.getId())
+                            .type(ERROR)
+                            .source(LOB)
+                            .processorModule(this.getClass().getSimpleName())
+                            .bag(
                                     Map.of(
                                             "accountCode", accountCodeDebit,
                                             "type", "DEBIT",
-                                            "transactionNumber", tx.getInternalTransactionNumber()
+                                            "transactionNumber", tx.getTransactionInternalNumber()
                                     )
-                            );
+                            )
+                            .build();
 
-                            violations.add(v);
-                        } else {
-                            itemBuilder.accountCodeEventRefDebit(Optional.of(accountChartMappingM.orElseThrow().getEventRefCode()));
-                        }
-                    }
+                    tx.addViolation(v);
+                } else {
+                    item.setAccountCodeRefDebit(accountChartMappingM.map(OrganisationChartOfAccount::getEventRefCode).orElse(null));
+                }
+            }
 
-                    if (item.getAccountCodeCredit().map(String::trim).filter(acc -> !acc.isEmpty()).isPresent()) {
-                        val accountCodeCredit = item.getAccountCodeCredit().orElseThrow();
+            if (item.getAccountCodeCredit().map(String::trim).filter(acc -> !acc.isEmpty()).isPresent()) {
+                val accountCodeCredit = item.getAccountCodeCredit().orElseThrow();
 
-                        val eventRefCodeM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeCredit);
-                        if (eventRefCodeM.isEmpty()) {
-                            val v = Violation.create(
-                                    ERROR,
-                                    LOB,
-                                    item.getId(),
-                                    CHART_OF_ACCOUNT_NOT_FOUND,
-                                    this.getClass().getSimpleName(),
+                val eventRefCodeM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeCredit);
+                if (eventRefCodeM.isEmpty()) {
+
+                    val v = Violation.builder()
+                            .txItemId(item.getId())
+                            .code(CHART_OF_ACCOUNT_NOT_FOUND)
+                            .type(ERROR)
+                            .source(ERP)
+                            .processorModule(this.getClass().getSimpleName())
+                            .bag(
                                     Map.of(
                                             "accountCode", accountCodeCredit,
                                             "type", "CREDIT",
-                                            "transactionNumber", tx.getInternalTransactionNumber()
+                                            "transactionNumber", tx.getTransactionInternalNumber()
                                     )
-                            );
+                            )
+                            .build();
 
-                            violations.add(v);
-                        } else {
-                            itemBuilder.accountCodeEventRefCredit(Optional.of(eventRefCodeM.orElseThrow().getEventRefCode()));
-                        }
-                    }
+                    tx.addViolation(v);
+                } else {
+                    item.setAccountCodeRefCredit(eventRefCodeM.map(OrganisationChartOfAccount::getEventRefCode).orElse(null));
+                }
+            }
 
-                    val tempItem = itemBuilder.build();
+            if (item.getAccountCodeRefDebit().isPresent() && item.getAccountCodeRefCredit().isPresent()) {
+                val accountDebitRefCode = item.getAccountCodeRefDebit().orElseThrow();
+                val accountCreditRefCode = item.getAccountCodeRefCredit().orElseThrow();
 
-                    if (tempItem.getAccountCodeEventRefDebit().isPresent() && tempItem.getAccountCodeEventRefCredit().isPresent()) {
-                        val accountDebitRefCode = tempItem.getAccountCodeEventRefDebit().orElseThrow();
-                        val accountCreditRefCode = tempItem.getAccountCodeEventRefCredit().orElseThrow();
+                val eventCode = STR."\{accountDebitRefCode}\{accountCreditRefCode}";
 
-                        val eventCode = STR."\{accountDebitRefCode}\{accountCreditRefCode}";
-
-                        itemBuilder.accountEventCode(Optional.of(eventCode));
-                    }
-
-                    return itemBuilder.build();
-                })
-                .collect(Collectors.toSet());
-
-        if (!violations.isEmpty()) {
-            return tx.toBuilder()
-                    .validationStatus(FAILED)
-                    .violations(Stream.concat(tx.getViolations().stream(), violations.stream()).collect(Collectors.toSet()))
-                    .build();
+                item.setAccountEventCode(eventCode);
+            }
         }
-
-        return tx.toBuilder()
-                .items(items)
-                .build();
     }
 
 }

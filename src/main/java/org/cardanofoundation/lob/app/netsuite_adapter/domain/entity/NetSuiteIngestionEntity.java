@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
@@ -37,7 +38,7 @@ public class NetSuiteIngestionEntity extends AuditEntity implements Persistable<
 
     @Override
     public boolean isNew() {
-        return createdAt == null;
+        return isNew;
     }
 
 }

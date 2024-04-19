@@ -2,10 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -14,7 +11,8 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Builder
+@Builder(toBuilder = true)
+@EqualsAndHashCode
 public class Organisation {
 
     @NotBlank
@@ -23,15 +21,10 @@ public class Organisation {
     @Nullable
     private String shortName;
 
-    @Nullable
-    private Currency currency;
+    private String currencyId;
 
     public Optional<String> getShortName() {
         return Optional.ofNullable(shortName);
-    }
-
-    public Optional<Currency> getCurrency() {
-        return Optional.ofNullable(currency);
     }
 
 }

@@ -96,8 +96,8 @@ public class MetadataSerialiser {
     private static MetadataMap serialise(Document document) {
         val metadataMap = MetadataBuilder.createMap();
 
-        metadataMap.put("number", document.num());
-        metadataMap.put("currency", serialise(document.currency()));
+        metadataMap.put("number", document.getNum());
+        metadataMap.put("currency", serialise(document.getCurrency()));
 
         document.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
         document.getCounterparty().ifPresent(counterparty -> metadataMap.put("counterparty", serialiseCounterparty(counterparty)));
@@ -148,8 +148,9 @@ public class MetadataSerialiser {
 
         metadataMap.put("id", org.getId());
         metadataMap.put("short_name", org.getShortName());
-        // send VAT_ID to the blockchain
-        metadataMap.put("currency", serialise(org.getCurrency()));
+        metadataMap.put("vat_id", "????");
+        // TODO: send VAT_ID to the blockchain
+        //metadataMap.put("currency", serialise(org.getCurrency()));
 
         return metadataMap;
     }

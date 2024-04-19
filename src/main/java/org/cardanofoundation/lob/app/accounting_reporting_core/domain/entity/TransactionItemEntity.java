@@ -2,11 +2,8 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 
 import com.google.common.base.Objects;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
+import lombok.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
@@ -14,13 +11,13 @@ import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-@Accessors(fluent = true)
 @Getter
 @Setter
 @Entity(name = "accounting_reporting_core.TransactionItemEntity")
 @Table(name = "accounting_core_transaction_item")
 @NoArgsConstructor
 @ToString
+@AllArgsConstructor
 //@Audited
 //@EntityListeners({AuditingEntityListener.class})
 public class TransactionItemEntity extends AuditEntity implements Persistable<String> {
@@ -36,7 +33,7 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
 
     @Override
     public boolean isNew() {
-        return createdAt == null;
+        return isNew;
     }
 
     @Nullable
@@ -154,6 +151,25 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public boolean isTheSameBusinessWise(TransactionItemEntity other) {
+        val equalsBuilder = new EqualsBuilder();
+        equalsBuilder.append(this.id, other.id);
+        equalsBuilder.append(this.amountFcy, other.amountFcy);
+        equalsBuilder.append(this.amountLcy, other.amountLcy);
+        equalsBuilder.append(this.accountCodeDebit, other.accountCodeDebit);
+        equalsBuilder.append(this.accountCodeRefDebit, other.accountCodeRefDebit);
+        equalsBuilder.append(this.accountNameDebit, other.accountNameDebit);
+        equalsBuilder.append(this.accountCodeCredit, other.accountCodeCredit);
+        equalsBuilder.append(this.accountCodeRefCredit, other.accountCodeRefCredit);
+        equalsBuilder.append(this.accountEventCode, other.accountEventCode);
+
+        equalsBuilder.append(this.costCenter, other.costCenter);
+        equalsBuilder.append(this.document, other.document);
+        equalsBuilder.append(this.project, other.project);
+
+        return equalsBuilder.isEquals();
     }
 
 }

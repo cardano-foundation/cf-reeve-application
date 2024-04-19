@@ -13,11 +13,6 @@ import java.util.Set;
 
 public interface TransactionRepository extends JpaRepository<TransactionEntity, String> {
 
-//    @Query("SELECT t FROM accounting_reporting_core.TransactionEntity t WHERE t.organisation.id = :organisationId AND t.id in :transactionIds AND t.ledgerDispatchStatus IN :ledgerDispatchStatus ORDER BY t.createdAt ASC")
-//    Set<TransactionEntity> findTransactionsByLedgerDispatchStatus(@Param("organisationId") String organisationId,
-//                                                                  @Param("transactionIds") Set<String> transactionIds,
-//                                                                  @Param("ledgerDispatchStatus") Set<LedgerDispatchStatus> ledgerDispatchStatuses);
-
     @Query("SELECT t.id FROM accounting_reporting_core.TransactionEntity t WHERE t.organisation.id = :organisationId AND t.ledgerDispatchStatus IN :dispatchStatuses AND t.validationStatus IN :validationStatuses" +
             " AND (t.ledgerDispatchApproved = :ledgerDispatchApproved" +
             " OR t.transactionApproved = :transactionApproved) " +

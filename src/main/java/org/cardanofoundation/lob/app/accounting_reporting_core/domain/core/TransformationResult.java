@@ -1,5 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

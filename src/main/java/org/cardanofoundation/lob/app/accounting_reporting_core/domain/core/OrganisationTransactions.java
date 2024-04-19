@@ -1,5 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +13,7 @@ import java.util.Set;
  */
 public record OrganisationTransactions(
         String organisationId,
-        Set<Transaction> transactions
+        Set<TransactionEntity> transactions
 ) {
 
     public static OrganisationTransactions empty(String organisationId) {

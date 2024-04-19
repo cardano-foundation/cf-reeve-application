@@ -5,14 +5,15 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.PipelineTaskItem;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -23,29 +24,25 @@ public class DefaultPipelineTask implements PipelineTask {
 
     @Override
     public TransformationResult run(OrganisationTransactions passedTransactions,
-                                    OrganisationTransactions ignoredTransactions,
-                                    ProcessorFlags flags) {
+                                    OrganisationTransactions ignoredTransactions) {
         if (passedTransactions.transactions().isEmpty()) {
             return new TransformationResult(passedTransactions, ignoredTransactions);
         }
 
-        val txs = passedTransactions.transactions()
-                .stream()
-                .map(this::runTaskItems)
-                .collect(Collectors.toSet());
+        for (val transactionEntity : passedTransactions.transactions()) {
+            runTaskItems(transactionEntity);
+        }
 
         return new TransformationResult(
-                new OrganisationTransactions(passedTransactions.organisationId(), txs),
+                new OrganisationTransactions(passedTransactions.organisationId(), passedTransactions.transactions()),
                 ignoredTransactions
         );
     }
 
-    private Transaction runTaskItems(Transaction transaction) {
-        return items.stream()
-                .reduce(
-                        transaction,
-                        (tx, taskItem) -> taskItem.run(tx),
-                        (tx1, tx2) -> tx2); // TODO combiner???
+    private void runTaskItems(TransactionEntity transaction) {
+        for (val taskItem : items) {
+            taskItem.run(transaction);
+        }
     }
 
 }

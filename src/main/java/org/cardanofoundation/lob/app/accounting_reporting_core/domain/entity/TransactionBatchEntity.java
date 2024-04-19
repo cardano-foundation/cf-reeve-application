@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
@@ -16,9 +15,6 @@ import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static jakarta.persistence.FetchType.EAGER;
-
-@Accessors(fluent = true)
 @Getter
 @Setter
 @Entity(name = "accounting_reporting_core.TransactionBatchEntity")
@@ -43,7 +39,7 @@ public class TransactionBatchEntity extends AuditEntity implements Persistable<S
     @NotNull
     private FilteringParameters filteringParameters;
 
-    @ManyToMany(fetch = EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "accounting_core_transaction_batch_assoc",
             joinColumns = @JoinColumn(name = "transaction_batch_id"),
@@ -102,7 +98,7 @@ public class TransactionBatchEntity extends AuditEntity implements Persistable<S
 
     @Override
     public boolean isNew() {
-        return createdAt == null;
+        return isNew;
     }
 
 }

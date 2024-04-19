@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.jmolecules.event.annotation.DomainEvent;
 
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -18,10 +19,12 @@ import java.util.UUID;
 public class LedgerUpdateCommand {
 
     private UUID uploadId;
-    private OrganisationTransactions organisationTransactions;
+    private String organisationId;
+    private Set<Transaction> transactions;
 
-    public static LedgerUpdateCommand create(OrganisationTransactions organisationTransactions) {
-        return new LedgerUpdateCommand(UUID.randomUUID(), organisationTransactions);
+    public static LedgerUpdateCommand create(String organisationId,
+                                             Set<Transaction> txs) {
+        return new LedgerUpdateCommand(UUID.randomUUID(), organisationId, txs);
     }
 
 }

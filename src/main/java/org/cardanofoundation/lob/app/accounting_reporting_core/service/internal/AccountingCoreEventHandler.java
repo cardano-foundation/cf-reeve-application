@@ -2,10 +2,11 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchChunkEvent;
-import org.springframework.beans.factory.annotation.Value;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,9 @@ public class AccountingCoreEventHandler {
 
     private final ERPIncomingDataProcessor erpIncomingDataProcessor;
 
-    private final LedgerService ledgerService;
+    private final TransactionConverter transactionConverter;
 
-    @Value("${lob.blockchain_publisher.send.batch.size:100}")
-    private int sendBatchSize = 100;
+    private final LedgerService ledgerService;
 
     @ApplicationModuleListener
     public void handleERPIngestionStored(ERPIngestionStored event) {
@@ -34,12 +34,16 @@ public class AccountingCoreEventHandler {
     public void handleERPTransactionChunk(TransactionBatchChunkEvent transactionBatchChunkEvent) {
         log.info("Received handleERPTransactionChunk event...., event, batch_id: {}, chunk_size:{}", transactionBatchChunkEvent.getBatchId(), transactionBatchChunkEvent.getTransactions().size());
 
+        val detachedDbTxs = transactionConverter.convertToDbDetached(transactionBatchChunkEvent.getTransactions());
+
         erpIncomingDataProcessor.continueIngestion(
                 transactionBatchChunkEvent.getOrganisationId(),
                 transactionBatchChunkEvent.getBatchId(),
                 transactionBatchChunkEvent.getTotalTransactionsCount(),
-                transactionBatchChunkEvent.getTransactions(),
-                false
+                detachedDbTxs,
+                ProcessorFlags.builder()
+                        .reprocess(false)
+                        .build()
         );
 
         log.info("Finished processing handleERPTransactionChunk event...., event, batch_id: {}", transactionBatchChunkEvent.getBatchId());

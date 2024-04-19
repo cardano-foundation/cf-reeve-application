@@ -46,15 +46,16 @@ public class TransactionBatchService {
                                        SystemExtractionParameters systemExtractionParameters) {
         log.info("Creating transaction batch, batchId: {}, initiator: {}, instanceId: {}, filteringParameters: {}", batchId, initiator, instanceId, userExtractionParameters);
 
-        val transactionBatchEntity = new TransactionBatchEntity()
-                .id(batchId)
-                .transactions(Set.of()) // initially empty
-                .filteringParameters(transactionConverter.convert(systemExtractionParameters, userExtractionParameters))
-                .status(CREATED)
-                .updatedBy(initiator)
-                .createdBy(initiator);
+        val transactionBatchEntity = new TransactionBatchEntity();
 
-        transactionBatchRepository.save((TransactionBatchEntity) transactionBatchEntity);
+        transactionBatchEntity.setId(batchId);
+        transactionBatchEntity.setTransactions(Set.of());
+        transactionBatchEntity.setFilteringParameters(transactionConverter.convertToDbDetached(systemExtractionParameters, userExtractionParameters));
+        transactionBatchEntity.setStatus(CREATED);
+        transactionBatchEntity.setCreatedBy(initiator);
+        transactionBatchEntity.setUpdatedBy(initiator);
+
+        transactionBatchRepository.save(transactionBatchEntity);
 
         log.info("Transaction batch created, batchId: {}", batchId);
 
@@ -69,6 +70,8 @@ public class TransactionBatchService {
     @Transactional(propagation = REQUIRES_NEW)
     public void updateTransactionBatchStatusAndStats(String batchId,
                                                      Optional<Integer> totalTransactionsCount) {
+        log.info("Updating transaction batch status and statistics, batchId: {}", batchId);
+
         val txBatchM = transactionBatchRepositoryGateway.findById(batchId);
 
         if (txBatchM.isEmpty()) {
@@ -77,16 +80,17 @@ public class TransactionBatchService {
         }
 
         val txBatch = txBatchM.orElseThrow();
+        log.info("Batch tx count:{}", txBatch.getTransactions().size());
 
-        if (txBatch.status() == FINALIZED) {
-            log.info("Transaction batch already finalized or failed, batchId: {}", batchId);
+        if (txBatch.getStatus() == FINALIZED) {
+            log.warn("Transaction batch already finalized or failed, batchId: {}", batchId);
             return;
         }
 
         val totalTxCount = totalTxCount(txBatch, totalTransactionsCount);
 
-        txBatch.batchStatistics(txBatchStatsCalculator.reCalcStats(txBatch, totalTxCount));
-        txBatch.status(txBatchStatusCalculator.reCalcStatus(txBatch, totalTxCount));
+        txBatch.setBatchStatistics(txBatchStatsCalculator.reCalcStats(txBatch, totalTxCount));
+        txBatch.setStatus(txBatchStatusCalculator.reCalcStatus(txBatch, totalTxCount));
 
         transactionBatchRepository.save(txBatch);
     }
@@ -111,11 +115,11 @@ public class TransactionBatchService {
             }
 
             val allBatchesIdsAssociatedWithThisTransaction = transactionBatchAssocs.stream()
-                    .map(id -> id.id().transactionBatchId())
+                    .map(id -> id.getId().getTransactionBatchId())
                     .collect(Collectors.toSet());
 
             transactionBatchRepository.findAllById(allBatchesIdsAssociatedWithThisTransaction)
-                    .forEach(txBatch -> updateTransactionBatchStatusAndStats(txBatch.id(), Optional.empty()));
+                    .forEach(txBatch -> updateTransactionBatchStatusAndStats(txBatch.getId(), Optional.empty()));
         }
     }
 

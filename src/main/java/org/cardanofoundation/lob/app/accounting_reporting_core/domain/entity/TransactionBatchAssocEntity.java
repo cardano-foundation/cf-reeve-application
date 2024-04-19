@@ -4,10 +4,10 @@ import com.google.common.base.Objects;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
-@Accessors(fluent = true)
 @Getter
 @Setter
 @Entity(name = "accounting_reporting_core.TransactionBatchAssocEntity")
@@ -44,7 +44,7 @@ public class TransactionBatchAssocEntity extends AuditEntity implements Persista
 
     @Override
     public boolean isNew() {
-        return createdAt == null;
+        return isNew;
     }
 
     @Embeddable

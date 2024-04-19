@@ -1,9 +1,11 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,78 +26,69 @@ class AmountsLcyCheckTaskItemTest {
         this.taskItem = new AmountsLcyCheckTaskItem();
     }
 
-    // Testing generation of violation for items with zero LCY and non-zero FCY amounts.
     @Test
     void whenLcyIsZeroAndFcyIsNonZero_thenViolationGenerated() {
         val txId = Transaction.id("1", "1");
         val orgId = "1";
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("1")
-                .organisation(Organisation.builder().id(orgId).build())
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .amountLcy(BigDecimal.ZERO)
-                                .amountFcy(BigDecimal.valueOf(100))
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "0"));
+        txItem1.setAmountLcy(BigDecimal.ZERO);
+        txItem1.setAmountFcy(BigDecimal.valueOf(100));
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(Organisation.builder().id(orgId).build());
+        tx.setItems(Set.of(txItem1));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.getViolations()).isNotEmpty();
-        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(AMOUNT_LCY_IS_ZERO);
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getViolations()).isNotEmpty();
+        assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(AMOUNT_LCY_IS_ZERO);
     }
 
-    // Ensuring no violations for items with non-zero LCY amounts.
     @Test
     void whenLcyAndFcyAreNonZero_thenNoViolations() {
         val txId = Transaction.id("2", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("2")
-                .organisation(Organisation.builder().id("1").build())
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "1"))
-                                .amountLcy(BigDecimal.valueOf(100))
-                                .amountFcy(BigDecimal.valueOf(100))
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "1"));
+        txItem1.setAmountLcy(BigDecimal.valueOf(100));
+        txItem1.setAmountFcy(BigDecimal.valueOf(100));
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("2");
+        tx.setOrganisation(Organisation.builder().id("1").build());
+        tx.setItems(Set.of(txItem1));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(VALIDATED);
-        assertThat(newTx.getViolations()).isEmpty();
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getViolations()).isEmpty();
     }
 
-    // Verifying no violations when both LCY and FCY amounts are zero.
     @Test
     void whenBothLcyAndFcyAreZero_thenNoViolations() {
         val txId = Transaction.id("3", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("3")
-                .organisation(Organisation.builder().id("1").build())
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "2"))
-                                .amountLcy(BigDecimal.ZERO)
-                                .amountFcy(BigDecimal.ZERO)
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "2"));
+        txItem1.setAmountLcy(BigDecimal.ZERO);
+        txItem1.setAmountFcy(BigDecimal.ZERO);
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("3");
+        tx.setOrganisation(Organisation.builder().id("1").build());
+        tx.setItems(Set.of(txItem1));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(VALIDATED);
-        assertThat(newTx.getViolations()).isEmpty();
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getViolations()).isEmpty();
     }
 
 }

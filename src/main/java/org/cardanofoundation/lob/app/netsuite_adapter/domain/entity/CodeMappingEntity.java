@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app.netsuite_adapter.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
@@ -29,7 +30,7 @@ public class CodeMappingEntity extends AuditEntity implements Persistable<CodeMa
 
     @Override
     public boolean isNew() {
-        return createdAt == null;
+        return isNew;
     }
 
     @Embeddable
