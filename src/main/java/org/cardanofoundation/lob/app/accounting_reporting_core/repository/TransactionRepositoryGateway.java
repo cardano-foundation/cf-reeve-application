@@ -4,6 +4,7 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService;
 import org.springframework.data.domain.Limit;
@@ -154,6 +155,48 @@ public class TransactionRepositoryGateway {
                         transactionApprovalNeeded,
                         ledgerApprovalNeeded,
                         Limit.of(limit));
+    }
+
+    public Either<Problem, Boolean> changeTransactionComment(String txId, String userComment) {
+        val txM = transactionRepository.findById(txId);
+
+        if (txM.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("TX_NOT_FOUND")
+                    .withDetail(STR."Transaction with id \{txId} not found")
+                    .with("txId", txId)
+                    .build()
+            );
+        }
+
+        val tx = txM.orElseThrow();
+
+        tx.setUserComment(userComment);
+
+        val savedTx = transactionRepository.save(tx);
+
+        return Either.right(savedTx.getUserComment().equals(userComment));
+    }
+
+    public Either<Problem, Boolean> changeTransactionRejectionStatus(String txId, RejectionStatus rejectionStatus) {
+        val txM = transactionRepository.findById(txId);
+
+        if (txM.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("TX_NOT_FOUND")
+                    .withDetail(STR."Transaction with id \{txId} not found")
+                    .with("txId", txId)
+                    .build()
+            );
+        }
+
+        val tx = txM.orElseThrow();
+
+        tx.setRejectionStatus(rejectionStatus);
+
+        val savedTx = transactionRepository.save(tx);
+
+        return Either.right(savedTx.getRejectionStatus() == rejectionStatus);
     }
 
 }
