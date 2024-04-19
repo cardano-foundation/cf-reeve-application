@@ -1,14 +1,17 @@
 package org.cardanofoundation.lob.app.organisation.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Entity(name = "organisation_currency")
-@Builder
 public class OrganisationCurrency extends AuditEntity {
 
     @EmbeddedId

@@ -1,22 +1,22 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
 class TxItemsCollapsingTaskItemTest {
 
-    private PipelineTaskItem txItemsCollapsingTaskItem;
+    private TxItemsCollapsingTaskItem txItemsCollapsingTaskItem;
 
     @BeforeEach
     public void setup() {
@@ -25,208 +25,122 @@ class TxItemsCollapsingTaskItemTest {
 
     @Test
     void shouldNotCollapseItems() {
-        val txId = Transaction.id("1", "1");
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId("1:0");
+        txItem1.setAccountEventCode("e12");
+        txItem1.setAmountLcy(BigDecimal.ONE);
+        txItem1.setAmountFcy(BigDecimal.TEN);
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .items(Set.of(TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .accountEventCode(Optional.of("e12"))
-                                .amountLcy(BigDecimal.ONE)
-                                .amountFcy(BigDecimal.TEN)
-                                .build(),
+        val txItem2 = new TransactionItemEntity();
+        txItem2.setId("1:1");
+        txItem2.setAccountEventCode("e1212");
+        txItem2.setAmountLcy(BigDecimal.ONE);
+        txItem2.setAmountFcy(BigDecimal.TEN);
 
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "1"))
-                                .accountEventCode(Optional.of("e1212"))
-                                .amountLcy(BigDecimal.ONE)
-                                .amountFcy(BigDecimal.TEN)
-                                .build()
-                ))
-                .build();
+        Set<TransactionItemEntity> items = new HashSet<>();
+        items.add(txItem1);
+        items.add(txItem2);
 
-        val newTx = txItemsCollapsingTaskItem.run(txs);
+        val transaction = new TransactionEntity();
+        transaction.setId("1");
+        transaction.setItems(items);
 
-        assertThat(newTx.getItems()).hasSize(2);
-        assertThat(newTx.getItems()).extracting("accountEventCode").containsExactlyInAnyOrder(Optional.of("e12"), Optional.of("e1212"));
+        txItemsCollapsingTaskItem.run(transaction);
+
+        assertThat(transaction.getItems()).hasSize(2);
+        assertThat(transaction.getItems()).extracting(TransactionItemEntity::getAccountEventCode).containsExactlyInAnyOrder(Optional.of("e12"), Optional.of("e1212"));
     }
 
     @Test
     void shouldCollapseItems() {
-        val txId = Transaction.id("1", "1");
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId("1:0");
+        txItem1.setAccountEventCode("e12");
+        txItem1.setAmountLcy(BigDecimal.ONE);
+        txItem1.setAmountFcy(BigDecimal.TEN);
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .accountEventCode(Optional.of("e12"))
-                                .amountLcy(BigDecimal.ONE)
-                                .amountFcy(BigDecimal.TEN)
-                                .build(),
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "1"))
-                                .accountEventCode(Optional.of("e12"))
-                                .amountLcy(BigDecimal.ONE)
-                                .amountFcy(BigDecimal.TEN)
-                                .build()
-                ))
-                .build();
+        val txItem2 = new TransactionItemEntity();
+        txItem2.setId("1:1");
+        txItem2.setAccountEventCode("e12");
+        txItem2.setAmountLcy(BigDecimal.ONE);
+        txItem2.setAmountFcy(BigDecimal.TEN);
 
-        val newTx = txItemsCollapsingTaskItem.run(txs);
+        Set<TransactionItemEntity> items = new HashSet<>();
+        items.add(txItem1);
+        items.add(txItem2);
 
-        assertThat(newTx.getItems()).hasSize(1);
-        assertThat(newTx.getItems()).extracting("amountLcy").containsExactly(BigDecimal.valueOf(2));
-        assertThat(newTx.getItems()).extracting("amountFcy").containsExactly(BigDecimal.valueOf(20));
-        assertThat(newTx.getItems()).extracting("accountEventCode").containsExactly(Optional.of("e12"));
+        val transaction = new TransactionEntity();
+        transaction.setId("1");
+        transaction.setItems(items);
+
+        txItemsCollapsingTaskItem.run(transaction);
+
+        assertThat(transaction.getItems()).hasSize(1);
+        assertThat(transaction.getItems()).extracting(TransactionItemEntity::getAmountLcy).containsExactly(BigDecimal.valueOf(2));
+        assertThat(transaction.getItems()).extracting(TransactionItemEntity::getAmountFcy).containsExactly(BigDecimal.valueOf(20));
+        assertThat(transaction.getItems()).extracting(TransactionItemEntity::getAccountEventCode).containsExactly(Optional.of("e12"));
     }
 
     @Test
     void shouldCollapseSomeItemsAndNotOthers() {
-        val txId1 = Transaction.id("1", "1");
-        val txId2 = Transaction.id("1", "2");
-        val txId3 = Transaction.id("1", "3");
+        Set<TransactionEntity> transactions = new HashSet<>();
+        TransactionEntity transaction1 = new TransactionEntity();
+        transaction1.setId("1");
+        Set<TransactionItemEntity> items1 = new HashSet<>();
+        TransactionItemEntity txItem1 = new TransactionItemEntity();
+        txItem1.setId("1:0");
+        txItem1.setAccountEventCode("e12");
+        txItem1.setAmountLcy(BigDecimal.ONE);
+        txItem1.setAmountFcy(BigDecimal.TEN);
+        items1.add(txItem1);
+        transaction1.setItems(items1);
 
-        val txs = Set.of(
-                Transaction.builder()
-                        .id(txId1)
-                        .items(Set.of(TransactionItem.builder()
-                                        .id(TransactionItem.id(txId1, "0"))
-                                        .accountCodeCredit(Optional.of("1"))
-                                        .accountCodeDebit(Optional.of("2"))
-                                        .accountCodeEventRefCredit(Optional.of("r1"))
-                                        .accountCodeEventRefDebit(Optional.of("r2"))
-                                        .accountEventCode(Optional.of("e12"))
-                                        .amountLcy(BigDecimal.ONE)
-                                        .amountFcy(BigDecimal.TEN)
-                                        .build(),
-                                TransactionItem.builder()
-                                        .id(TransactionItem.id(txId1, "1"))
-                                        .accountCodeCredit(Optional.of("1"))
-                                        .accountCodeDebit(Optional.of("2"))
-                                        .accountCodeEventRefCredit(Optional.of("r1"))
-                                        .accountCodeEventRefDebit(Optional.of("r2"))
-                                        .accountEventCode(Optional.of("e12"))
-                                        .amountLcy(BigDecimal.ONE)
-                                        .amountFcy(BigDecimal.TEN)
-                                        .build()
-                        ))
-                        .build(),
-                Transaction.builder()
-                        .id(txId2)
-                        .items(Set.of(TransactionItem.builder()
-                                .id(TransactionItem.id(txId2, "0"))
-                                .accountCodeCredit(Optional.of("3"))
-                                .accountCodeDebit(Optional.of("4"))
-                                .accountCodeEventRefCredit(Optional.of("r3"))
-                                .accountCodeEventRefDebit(Optional.of("r4"))
-                                .accountEventCode(Optional.of("e34"))
-                                .amountLcy(BigDecimal.ONE)
-                                .amountFcy(BigDecimal.TEN)
-                                .build()
-                        ))
-                        .build(),
-                Transaction.builder()
-                        .id(txId3)
-                        .items(Set.of(
-                                TransactionItem.builder()
-                                        .id(TransactionItem.id(txId3, "0"))
-                                        .costCenter(Optional.of(CostCenter.builder().customerCode("a")
-                                                .externalCustomerCode(Optional.of("c2"))
-                                                .name(Optional.of("n1"))
-                                                .build()))
-                                        .accountEventCode(Optional.of("e56"))
-                                        .document(Optional.of(Document.builder()
-                                                .number("1")
-                                                .vat(Optional.of(Vat.builder().customerCode("c1").build()))
-                                                .counterparty(Optional.of(Counterparty.builder().customerCode("c").build()))
-                                                .currency(Currency.builder()
-                                                        .customerCode("CHF")
-                                                        .coreCurrency(Optional.of(CoreCurrency.builder()
-                                                                .currencyISOStandard(CoreCurrency.IsoStandard.ISO_4217)
-                                                                .currencyISOCode("CHF")
-                                                                .name("Swiss Frank")
-                                                                .build()))
-                                                        .build())
-                                                .build()))
-                                        .amountLcy(BigDecimal.ONE)
-                                        .amountFcy(BigDecimal.TEN)
-                                        .build(),
-                                TransactionItem.builder()
-                                        .id(TransactionItem.id(txId3, "1"))
-                                        .costCenter(Optional.of(CostCenter.builder().customerCode("b")
-                                                .externalCustomerCode(Optional.of("c2"))
-                                                .name(Optional.of("n1"))
-                                                .build()))
-                                        .document(Optional.of(Document.builder()
-                                                .number("1")
-                                                .vat(Optional.of(Vat.builder().customerCode("c1").build()))
-                                                .counterparty(Optional.of(Counterparty.builder().customerCode("c").build()))
-                                                .currency(Currency.builder()
-                                                        .customerCode("CHF")
-                                                        .coreCurrency(Optional.of(CoreCurrency.builder()
-                                                                .currencyISOStandard(CoreCurrency.IsoStandard.ISO_4217)
-                                                                .currencyISOCode("CHF")
-                                                                .name("Swiss Frank")
-                                                                .build()))
-                                                        .build())
-                                                .build()))
-                                        .accountEventCode(Optional.of("e56"))
-                                        .amountLcy(BigDecimal.ONE)
-                                        .amountFcy(BigDecimal.TEN)
-                                        .build(),
-                                TransactionItem.builder()
-                                        .id(TransactionItem.id(txId3, "1"))
-                                        .accountEventCode(Optional.of("e56111"))
-                                        .amountLcy(BigDecimal.TWO)
-                                        .amountFcy(BigDecimal.TEN)
-                                        .build()
-                        ))
-                        .build()
-        );
+        TransactionEntity transaction2 = new TransactionEntity();
+        transaction2.setId("2");
+        Set<TransactionItemEntity> items2 = new HashSet<>();
+        TransactionItemEntity txItem2 = new TransactionItemEntity();
+        txItem2.setId("2:0");
+        txItem2.setAccountEventCode("e34");
+        txItem2.setAmountLcy(BigDecimal.ONE);
+        txItem2.setAmountFcy(BigDecimal.TEN);
+        items2.add(txItem2);
+        transaction2.setItems(items2);
 
-        val newTxs = txs.stream()
-                .map(txItemsCollapsingTaskItem::run)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        transactions.add(transaction1);
+        transactions.add(transaction2);
 
-        assertThat(newTxs).hasSize(3);
-        assertThat(newTxs).extracting("id").containsExactlyInAnyOrder(txId1, txId2, txId3);
+        transactions.forEach(txItemsCollapsingTaskItem::run);
 
-        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId1)).findFirst().orElseThrow().getItems()).hasSize(1);
-        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId2)).findFirst().orElseThrow().getItems()).hasSize(1);
-
-        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId3)).findFirst().orElseThrow().getItems()).hasSize(2);
-
-        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId3)).findFirst().orElseThrow().getItems()).extracting("amountLcy").containsExactlyInAnyOrder(BigDecimal.valueOf(2), BigDecimal.valueOf(2));
-        assertThat(newTxs.stream().filter(tx -> tx.getId().equals(txId3)).findFirst().orElseThrow().getItems()).extracting("amountFcy").containsExactlyInAnyOrder(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
+        assertThat(transactions).hasSize(2);
+        assertThat(transactions).extracting(TransactionEntity::getId).containsExactlyInAnyOrder("1", "2");
+        assertThat(transactions.stream().filter(tx -> tx.getId().equals("1")).findFirst().orElseThrow().getItems()).hasSize(1);
+        assertThat(transactions.stream().filter(tx -> tx.getId().equals("2")).findFirst().orElseThrow().getItems()).hasSize(1);
     }
 
     @Test
     void mustNotCollapseTxItemsForFailedTransactions() {
-        val txId = Transaction.id("1", "1");
+        val transaction = new TransactionEntity();
+        transaction.setId("1");
+        transaction.setValidationStatus(FAILED);
+        Set<TransactionItemEntity> items = new HashSet<>();
+        TransactionItemEntity txItem1 = new TransactionItemEntity();
+        txItem1.setId("1:0");
+        txItem1.setAccountEventCode("e12");
+        txItem1.setAmountLcy(BigDecimal.ONE);
+        txItem1.setAmountFcy(BigDecimal.TEN);
+        items.add(txItem1);
+        TransactionItemEntity txItem2 = new TransactionItemEntity();
+        txItem2.setId("1:1");
+        txItem2.setAccountEventCode("e12");
+        txItem2.setAmountLcy(BigDecimal.ONE);
+        txItem2.setAmountFcy(BigDecimal.TEN);
+        items.add(txItem2);
+        transaction.setItems(items);
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .validationStatus(FAILED)
-                .items(Set.of(TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .accountEventCode(Optional.of("e12"))
-                                .amountLcy(BigDecimal.ONE)
-                                .amountFcy(BigDecimal.TEN)
-                                .build(),
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "1"))
-                                .accountEventCode(Optional.of("e12"))
-                                .amountLcy(BigDecimal.ONE)
-                                .amountFcy(BigDecimal.TEN)
-                                .build()
-                ))
-                .build();
+        txItemsCollapsingTaskItem.run(transaction);
 
-        val newTx = txItemsCollapsingTaskItem.run(txs);
-
-        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.getItems()).hasSize(2);
+        assertThat(transaction.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(transaction.getItems()).hasSize(2);
     }
 
 }

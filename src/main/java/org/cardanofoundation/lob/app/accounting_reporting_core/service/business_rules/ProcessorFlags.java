@@ -11,7 +11,7 @@ import lombok.Getter;
 public class ProcessorFlags {
 
     @Builder.Default
-    private boolean skipDeduplicationCheck = false;
+    private boolean reprocess = false;
 
     public static ProcessorFlags defaultFlags() {
         return ProcessorFlags.builder().build();

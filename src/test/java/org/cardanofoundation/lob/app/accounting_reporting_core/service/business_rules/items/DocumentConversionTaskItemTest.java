@@ -1,7 +1,9 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CoreCurrency;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.*;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CoreCurrencyRepository;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.cardanofoundation.lob.app.organisation.domain.entity.OrganisationCurrency;
@@ -13,12 +15,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CURRENCY_NOT_FOUND;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.VAT_RATE_NOT_FOUND;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CoreCurrency.IsoStandard.ISO_4217;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CURRENCY_DATA_NOT_FOUND;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.VAT_DATA_NOT_FOUND;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,185 +41,173 @@ public class DocumentConversionTaskItemTest {
     }
 
     @Test
-    public void testVatRateNotFoundAddsViolation() {
+    public void testVatDataNotFoundAddsViolation() {
         val txId = "1";
+        val txInternalNumber = "txn123";
         val organisationId = "org1";
         val customerCode = "custCode";
-        val internalTransactionNumber = "INT-1";
 
-        val transaction = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber(internalTransactionNumber)
-                .organisation(Organisation.builder().id(organisationId).build())
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .document(Optional.of(Document.builder()
-                                        .vat(Optional.of(Vat.builder()
-                                                .customerCode(customerCode)
-                                                .rate(Optional.empty()) // VAT rate is missing
-                                                .build()))
-                                        .currency(Currency.builder().customerCode("USD").build())
-                                        .build()))
-                                .build()))
+        val document = Document.builder()
+                .vat(Vat.builder()
+                        .customerCode(customerCode)
+                        .build())
+                .currency(Currency.builder()
+                        .customerCode("USD")
+                        .build())
                 .build();
+
+        val txItem = new TransactionItemEntity();
+        txItem.setId(TransactionItem.id(txId, "0"));
+        txItem.setDocument(document);
+
+        val items = new LinkedHashSet<TransactionItemEntity>();
+        items.add(txItem);
+
+        val transaction = new TransactionEntity();
+        transaction.setId(txId);
+        transaction.setTransactionInternalNumber(txInternalNumber);
+        transaction.setOrganisation(Organisation.builder()
+                .id(organisationId)
+                .build()
+        );
+        transaction.setItems(items);
 
         when(organisationPublicApi.findOrganisationByVatAndCode(organisationId, customerCode)).thenReturn(Optional.empty());
 
-        val result = documentConversionTaskItem.run(transaction);
+        documentConversionTaskItem.run(transaction);
 
-        assertThat(result.getViolations()).isNotEmpty();
-        assertThat(result.getViolations()).anyMatch(v -> v.code() == VAT_RATE_NOT_FOUND);
+        assertThat(transaction.getViolations()).isNotEmpty();
+        assertThat(transaction.getViolations()).anyMatch(v -> v.getCode() == VAT_DATA_NOT_FOUND);
     }
 
     @Test
     public void testCurrencyNotFoundAddsViolation() {
         val txId = "1";
+        val txInternalNumber = "txn123";
         val organisationId = "org1";
         val customerCurrencyCode = "USD";
-        val vatCustomerCode = "VAT123";
-        val internalTransactionNumber = "INT-1";
 
-        val transaction = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber(internalTransactionNumber)
-                .organisation(Organisation.builder().id(organisationId).build())
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .document(Optional.of(Document.builder()
-                                        .vat(Optional.of(Vat.builder()
-                                                .customerCode(vatCustomerCode)
-                                                .rate(Optional.of(BigDecimal.valueOf(0.2)))
-                                                .build())
-                                        )
-                                        .currency(Currency.builder()
-                                                .customerCode(customerCurrencyCode)
-                                                .coreCurrency(Optional.empty()) // Core currency is initially missing
-                                                .build())
-                                        .build()))
-                                .build(),
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "1"))
-                                .document(Optional.of(Document.builder()
-                                        .vat(Optional.of(Vat.builder()
-                                                .customerCode(vatCustomerCode)
-                                                .rate(Optional.of(BigDecimal.valueOf(0.2)))
-                                                .build())
-                                        )
-                                        .currency(Currency.builder()
-                                                .customerCode(customerCurrencyCode)
-                                                .coreCurrency(Optional.empty()) // Core currency is initially missing
-                                                .build())
-                                        .build()))
-                                .build())
-                )
-
+        val document = Document.builder()
+                .currency(Currency.builder()
+                        .customerCode(customerCurrencyCode)
+                        .build())
                 .build();
 
-        // Simulate currency lookup failure
-        when(organisationPublicApi.findCurrencyByCustomerCurrencyCode(organisationId, customerCurrencyCode))
-                .thenReturn(Optional.empty());
+        val txItem = new TransactionItemEntity();
+        txItem.setId(TransactionItem.id(txId, "0"));
+        txItem.setDocument(document);
 
-        val result = documentConversionTaskItem.run(transaction);
+        val items = new LinkedHashSet<TransactionItemEntity>();
+        items.add(txItem);
 
-        // Assert that a CURRENCY_NOT_FOUND violation is added
-        assertThat(result.getViolations()).isNotEmpty();
-        assertThat(result.getViolations()).anyMatch(v -> v.code() == CURRENCY_NOT_FOUND);
+        val transaction = new TransactionEntity();
+        transaction.setId(txId);
+        transaction.setTransactionInternalNumber(txInternalNumber);
+        transaction.setOrganisation(Organisation.builder()
+                .id(organisationId)
+                .build());
+        transaction.setItems(items);
+
+        when(organisationPublicApi.findCurrencyByCustomerCurrencyCode(organisationId, customerCurrencyCode)).thenReturn(Optional.empty());
+
+        documentConversionTaskItem.run(transaction);
+
+        assertThat(transaction.getViolations()).isNotEmpty();
+        assertThat(transaction.getViolations()).anyMatch(v -> v.getCode() == CURRENCY_DATA_NOT_FOUND);
     }
 
     @Test
     public void testSuccessfulDocumentConversion() {
-        var txId = "1";
-        var organisationId = "org1";
-        var customerCurrencyCode = "USD";
-        var customerVatCode = "VAT123";
-        var currencyId = "ISO_4217:USD";
+        val txId = "1";
+        val txInternalNumber = "txn123";
+        val organisationId = "org1";
+        val customerCurrencyCode = "USD";
+        val customerVatCode = "VAT123";
+        val currencyId = "ISO_4217:USD";
 
-        var transaction = Transaction.builder()
-                .id(txId)
-                .organisation(Organisation.builder().id(organisationId).build())
-                .items(Set.of(TransactionItem.builder()
-                        .document(Optional.of(Document.builder()
-                                .vat(Optional.of(Vat.builder()
-                                        .customerCode(customerVatCode)
-                                        .rate(Optional.empty()) // Initially missing, to be enriched
-                                        .build()))
-                                .currency(Currency.builder()
-                                        .customerCode(customerCurrencyCode)
-                                        .coreCurrency(Optional.empty()) // Initially missing, to be enriched
-                                        .build())
-                                .build()))
-                        .build()))
+        val document = Document.builder()
+                .vat(Vat.builder()
+                        .customerCode(customerVatCode)
+                        .build())
+                .currency(Currency.builder()
+                        .customerCode(customerCurrencyCode)
+                        .build())
                 .build();
 
-        // Mock the successful VAT and Currency lookups
+        val txItem = new TransactionItemEntity();
+        txItem.setDocument(document);
+
+        val items = new LinkedHashSet<TransactionItemEntity>();
+        items.add(txItem);
+
+        val transaction = new TransactionEntity();
+        transaction.setId(txId);
+        transaction.setTransactionInternalNumber(txInternalNumber);
+        transaction.setOrganisation(Organisation.builder()
+                .id(organisationId)
+                .build());
+        transaction.setItems(items);
+
         when(organisationPublicApi.findOrganisationByVatAndCode(organisationId, customerVatCode))
-                .thenReturn(Optional.of(OrganisationVat.builder()
-                        .id(new OrganisationVat.Id(organisationId, customerVatCode))
-                        .rate(BigDecimal.valueOf(0.2))
-                        .build()));
+                .thenReturn(Optional.of(new OrganisationVat(new OrganisationVat.Id(organisationId, customerVatCode), BigDecimal.valueOf(0.2))));
 
         when(organisationPublicApi.findCurrencyByCustomerCurrencyCode(organisationId, customerCurrencyCode))
-                .thenReturn(Optional.of(OrganisationCurrency.builder().id(new OrganisationCurrency.Id(organisationId, customerCurrencyCode))
-                        .currencyId(currencyId)
-                        .build()));
+                .thenReturn(Optional.of(new OrganisationCurrency(new OrganisationCurrency.Id(organisationId, customerCurrencyCode), currencyId)));
 
         when(coreCurrencyRepository.findByCurrencyId(currencyId))
                 .thenReturn(Optional.of(CoreCurrency.builder()
-                        .currencyISOStandard(CoreCurrency.IsoStandard.ISO_4217)
-                        .currencyISOCode("USD")
-                        .name("USD Dollar")
-                        .build())
-                );
+                                .currencyISOStandard(ISO_4217)
+                                .name("USD Dollar")
+                                .currencyISOCode("USD")
+                        .build()));
 
-        var result = documentConversionTaskItem.run(transaction);
+        documentConversionTaskItem.run(transaction);
 
-        // Assert no violations are added
-        assertThat(result.getViolations()).isEmpty();
+        assertThat(transaction.getViolations()).isEmpty();
     }
 
     @Test
     public void testDocumentConversionWithMultipleViolations() {
-        var txId = "1";
-        var organisationId = "org1";
-        var customerCurrencyCode = "UNKNOWN_CURRENCY";
-        var customerVatCode = "UNKNOWN_VAT";
-        val internalTransactionNumber = "INT-1";
+        val txId = "1";
+        val txInternalNumber = "txn123";
+        val organisationId = "org1";
+        val customerCurrencyCode = "UNKNOWN_CURRENCY";
+        val customerVatCode = "UNKNOWN_VAT";
 
-        var transaction = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber(internalTransactionNumber)
-                .organisation(Organisation.builder().id(organisationId).build())
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .document(Optional.of(Document.builder()
-                                        .vat(Optional.of(Vat.builder()
-                                                .customerCode(customerVatCode)
-                                                .rate(Optional.empty())
-                                                .build()))
-                                        .currency(Currency.builder()
-                                                .customerCode(customerCurrencyCode)
-                                                .coreCurrency(Optional.empty())
-                                                .build())
-                                        .build()))
-                                .build()))
+        val document = Document.builder()
+                .vat(Vat.builder()
+                        .customerCode(customerVatCode)
+                        .build())
+                .currency(Currency.builder()
+                        .customerCode(customerCurrencyCode)
+                        .build())
                 .build();
 
-        // Simulate failures in VAT and Currency lookups
+        val txItem = new TransactionItemEntity();
+        txItem.setDocument(document);
+
+        val items = new LinkedHashSet<TransactionItemEntity>();
+        items.add(txItem);
+
+        val transaction = new TransactionEntity();
+        transaction.setId(txId);
+        transaction.setTransactionInternalNumber(txInternalNumber);
+        transaction.setOrganisation(Organisation.builder()
+                .id(organisationId)
+                .build());
+        transaction.setItems(items);
+
         when(organisationPublicApi.findOrganisationByVatAndCode(organisationId, customerVatCode))
                 .thenReturn(Optional.empty());
 
         when(organisationPublicApi.findCurrencyByCustomerCurrencyCode(organisationId, customerCurrencyCode))
                 .thenReturn(Optional.empty());
 
-        var result = documentConversionTaskItem.run(transaction);
+        documentConversionTaskItem.run(transaction);
 
-        // Assert that the correct violations are added
-        assertThat(result.getViolations()).hasSize(2);
-        assertThat(result.getViolations()).anyMatch(v -> v.code() == VAT_RATE_NOT_FOUND);
-        assertThat(result.getViolations()).anyMatch(v -> v.code() == CURRENCY_NOT_FOUND);
+        assertThat(transaction.getViolations()).hasSize(2);
+        assertThat(transaction.getViolations()).anyMatch(v -> v.getCode() == VAT_DATA_NOT_FOUND);
+        assertThat(transaction.getViolations()).anyMatch(v -> v.getCode() == CURRENCY_DATA_NOT_FOUND);
     }
 
 }

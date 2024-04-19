@@ -3,7 +3,6 @@ package org.cardanofoundation.lob.app.blockchain_publisher.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.L1SubmissionData;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 public class BlockchainPublisherService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final TransactionConverter transactionConverter;
     private final TransactionEntityRepositoryGateway transactionEntityRepositoryGateway;
     private final BlockchainPublishStatusMapper blockchainPublishStatusMapper;
 
@@ -33,21 +31,18 @@ public class BlockchainPublisherService {
 
     @Transactional
     public void storeTransactionForDispatchLater(String organisationId,
-                                                 OrganisationTransactions organisationTransactions) {
+                                                 Set<TransactionEntity> transactions) {
         log.info("dispatchTransactionsToBlockchains..., orgId:{}", organisationId);
 
-        val txEntities = transactionConverter.convertToDb(organisationTransactions.transactions());
+        val allNewAndOldTransactionsStored = transactionEntityRepositoryGateway.storeOnlyNewTransactions(transactions);
 
-        val allNewAndOldTransactionsStored = transactionEntityRepositoryGateway.storeOnlyNewTransactions(txEntities);
-
-        notifyTransactionStored(organisationTransactions, allNewAndOldTransactionsStored);
+        notifyTransactionStored(organisationId, allNewAndOldTransactionsStored);
     }
 
     @Transactional
-    private void notifyTransactionStored(OrganisationTransactions organisationTransactions,
+    private void notifyTransactionStored(String organisationId,
                                          Set<TransactionEntity> allNewAndOldTransactionsStored) {
         Partitions.partition(allNewAndOldTransactionsStored, dispatchBatchSize).forEach(partition -> {
-
             val txStatusUpdates = partition.asSet().stream()
                     .map(txEntity -> {
                         val assuranceLevelM = txEntity.getL1SubmissionData()
@@ -59,7 +54,7 @@ public class BlockchainPublisherService {
                     })
                     .collect(Collectors.toSet());
 
-            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(organisationTransactions.organisationId(), txStatusUpdates));
+            applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(organisationId, txStatusUpdates));
         });
     }
 

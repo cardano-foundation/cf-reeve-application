@@ -2,16 +2,11 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TRANSACTION_ITEMS_EMPTY;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
@@ -20,29 +15,22 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 public class NoTransactionItemsTaskItem implements PipelineTaskItem {
 
     @Override
-    public Transaction run(Transaction tx) {
-        val violations = new HashSet<Violation>();
-
+    public void run(TransactionEntity tx) {
         if (tx.getItems().isEmpty()) {
-            val v = Violation.create(
-                    ERROR,
-                    ERP,
-                    TRANSACTION_ITEMS_EMPTY,
-                    this.getClass().getSimpleName(),
-                    Map.of("transactionNumber", tx.getInternalTransactionNumber())
-            );
-
-            violations.add(v);
-        }
-
-        if (!violations.isEmpty()) {
-            return tx.toBuilder()
-                    .validationStatus(FAILED)
-                    .violations(Stream.concat(tx.getViolations().stream(), violations.stream()).collect(Collectors.toSet()))
+            val v = Violation.builder()
+                    .code(TRANSACTION_ITEMS_EMPTY)
+                    .type(ERROR)
+                    .source(ERP)
+                    .processorModule(this.getClass().getSimpleName())
+                    .bag(
+                            Map.of(
+                                    "transactionNumber", tx.getTransactionInternalNumber()
+                            )
+                    )
                     .build();
-        }
 
-        return tx;
+            tx.addViolation(v);
+        }
     }
 
 }

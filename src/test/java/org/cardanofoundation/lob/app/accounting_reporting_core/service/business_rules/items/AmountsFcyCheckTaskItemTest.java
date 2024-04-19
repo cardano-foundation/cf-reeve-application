@@ -1,10 +1,12 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +14,6 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.AMOUNT_FCY_IS_ZERO;
@@ -26,105 +27,93 @@ class AmountsFcyCheckTaskItemTest {
         this.taskItem = new AmountsFcyCheckTaskItem();
     }
 
-    // Testing violation generation for non-FxRevaluation transactions with zero FCY and non-zero LCY amounts.
     @Test
     void whenFcyIsZeroAndLcyIsNonZero_thenViolationGenerated() {
         val txId = Transaction.id("1", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("1")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(TransactionType.BillCredit) // A type different from FxRevaluation
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .amountFcy(BigDecimal.ZERO)
-                                .amountLcy(BigDecimal.valueOf(100))
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "0"));
+        txItem1.setAmountFcy(BigDecimal.ZERO);
+        txItem1.setAmountLcy(BigDecimal.valueOf(100));
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(Organisation.builder().id("1").build());
+        tx.setTransactionType(TransactionType.BillCredit);
+        tx.setItems(Set.of(txItem1));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.getViolations()).isNotEmpty();
-        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(AMOUNT_FCY_IS_ZERO);
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getViolations()).isNotEmpty();
+        assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(AMOUNT_FCY_IS_ZERO);
     }
 
-    // Ensuring no violations for FxRevaluation transactions regardless of FCY and LCY amounts.
     @Test
     void whenTransactionTypeIsFxRevaluation_thenNoViolations() {
         val txId = Transaction.id("2", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("2")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(FxRevaluation) // This type should be exempt
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "1"))
-                                .amountFcy(BigDecimal.ZERO)
-                                .amountLcy(BigDecimal.valueOf(100))
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "1"));
+        txItem1.setAmountFcy(BigDecimal.ZERO);
+        txItem1.setAmountLcy(BigDecimal.valueOf(100));
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("2");
+        tx.setOrganisation(Organisation.builder().id("1").build());
+        tx.setTransactionType(TransactionType.FxRevaluation);
+        tx.setItems(Set.of(txItem1));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(VALIDATED);
-        assertThat(newTx.getViolations()).isEmpty();
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getViolations()).isEmpty();
     }
 
-    // Verifying no violations when both FCY and LCY amounts are non-zero.
     @Test
     void whenBothFcyAndLcyAreNonZero_thenNoViolations() {
         val txId = Transaction.id("3", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("3")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(TransactionType.BillCredit) // Ensure this isn't FxRevaluation
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "2"))
-                                .amountFcy(BigDecimal.valueOf(50))
-                                .amountLcy(BigDecimal.valueOf(100))
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "2"));
+        txItem1.setAmountFcy(BigDecimal.valueOf(50));
+        txItem1.setAmountLcy(BigDecimal.valueOf(100));
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("3");
+        tx.setOrganisation(Organisation.builder().id("1").build());
+        tx.setTransactionType(TransactionType.BillCredit);
+        tx.setItems(Set.of(txItem1));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(VALIDATED);
-        assertThat(newTx.getViolations()).isEmpty();
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getViolations()).isEmpty();
     }
 
-    // Confirming no violations are generated when both FCY and LCY amounts are zero.
     @Test
     void whenBothFcyAndLcyAreZero_thenNoViolations() {
         val txId = Transaction.id("4", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("4")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(TransactionType.BillCredit) // Ensure this isn't FxRevaluation
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "3"))
-                                .amountFcy(BigDecimal.ZERO)
-                                .amountLcy(BigDecimal.ZERO)
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "3"));
+        txItem1.setAmountFcy(BigDecimal.ZERO);
+        txItem1.setAmountLcy(BigDecimal.ZERO);
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("4");
+        tx.setOrganisation(Organisation.builder().id("1").build());
+        tx.setTransactionType(TransactionType.BillCredit);
+        tx.setItems(Set.of(txItem1));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(VALIDATED);
-        assertThat(newTx.getViolations()).isEmpty();
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getViolations()).isEmpty();
     }
 
 }

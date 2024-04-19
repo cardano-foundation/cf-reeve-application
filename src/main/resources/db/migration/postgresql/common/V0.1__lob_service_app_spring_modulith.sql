@@ -22,5 +22,4 @@ ON event_publication
 
 CREATE INDEX IF NOT EXISTS event_publication_completion_date_idx ON event_publication (completion_date);
 
-
 -- CREATE INDEX idx_text_search ON your_table USING gin (to_tsvector('english', text_column));

@@ -17,6 +17,6 @@ public class Organisation {
 
     private String shortName;
 
-    private Currency currency;
+    private String currencyId;
 
 }

@@ -62,8 +62,7 @@ public class ExperimentalAccountingCoreResource {
     public ResponseEntity<?> reprocessFailedForLastBatch() {
 
         // q: sort by creation time, most recent first and take the most recent
-        val lastBatchM = transactionBatchService.findAll().stream().sorted((a, b) -> b.createdAt().compareTo(a.createdAt()))
-                .findFirst();
+        val lastBatchM = transactionBatchService.findAll().stream().min((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
 
         return accountingCoreService.scheduleReIngestionForFailed(lastBatchM.orElseThrow().getId())
                 .fold(problem -> {

@@ -1,25 +1,25 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.Journal;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.*;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.ACCOUNT_CODE_CREDIT_IS_EMPTY;
 
 public class AccountCodeCreditCheckTaskItemTest {
 
     private PipelineTaskItem taskItem;
+
     @BeforeEach
     public void setup() {
         this.taskItem = new AccountCodeCreditCheckTaskItem();
@@ -30,22 +30,21 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testCreditWorks() {
         val txId = Transaction.id("1", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("1")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(FxRevaluation)
-                .items(
-                        Set.of(TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .accountCodeCredit(Optional.of("1"))
-                                .build()
-                        ))
-                .build();
+        val txItem = new TransactionItemEntity();
+        txItem.setId(TransactionItem.id(txId, "0"));
+        txItem.setAccountCodeCredit("1");
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation.builder().id("1").build());
+        tx.setTransactionType(FxRevaluation);
+        tx.setItems(Set.of(txItem));
 
-        assertThat(newTx.getViolations()).isEmpty();
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getViolations()).isEmpty();
     }
 
     @Test
@@ -53,23 +52,21 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testAccountCreditCheckError() {
         val txId = Transaction.id("1", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("1")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(FxRevaluation)
-                .items(
-                        Set.of(TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .build()
-                        ))
-                .build();
+        val txItem = new TransactionItemEntity();
+        txItem.setId(TransactionItem.id(txId, "0"));
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation.builder().id("1").build());
+        tx.setTransactionType(FxRevaluation);
+        tx.setItems(Set.of(txItem));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.getViolations()).hasSize(1);
-        assertThat(newTx.getViolations().iterator().next().code()).isEqualTo(ACCOUNT_CODE_CREDIT_IS_EMPTY);
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getViolations()).hasSize(1);
+        assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(ACCOUNT_CODE_CREDIT_IS_EMPTY);
     }
 
     @Test
@@ -77,21 +74,20 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testAccountCreditCheckSkipJournals() {
         val txId = Transaction.id("1", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("1")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(Journal)
-                .items(
-                        Set.of(TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "0"))
-                                .build()
-                        ))
-                .build();
+        val txItem = new TransactionItemEntity();
+        txItem.setId(TransactionItem.id(txId, "0"));
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation.builder().id("1").build());
+        tx.setTransactionType(Journal);
+        tx.setItems(Set.of(txItem));
 
-        assertThat(newTx.getViolations()).isEmpty();
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getViolations()).isEmpty();
     }
 
     // Multiple Items with Mixed Credit Status
@@ -99,117 +95,110 @@ public class AccountCodeCreditCheckTaskItemTest {
     public void testMixedCreditItems() {
         val txId = Transaction.id("2", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("2")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(FxRevaluation)
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "1"))
-                                .accountCodeCredit(Optional.of("100"))
-                                .build(),
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "2"))
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "0"));
+        txItem1.setAccountCodeCredit("100");
 
-        val newTx = taskItem.run(txs);
+        val txItem2 = new TransactionItemEntity();
+        txItem2.setId(TransactionItem.id(txId, "2"));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.getViolations()).hasSize(1);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation.builder().id("1").build());
+        tx.setTransactionType(FxRevaluation);
+        tx.setItems(Set.of(txItem1, txItem2));
+
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getViolations()).hasSize(1);
     }
 
     // Multiple Items, All Without Credit
     @Test
     public void testAllItemsWithoutCredit() {
-        val txId = Transaction.id("3", "1");
+        val txId = Transaction.id("2", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("3")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(FxRevaluation)
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "3"))
-                                .build(),
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "4"))
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "0"));
 
-        val newTx = taskItem.run(txs);
+        val txItem2 = new TransactionItemEntity();
+        txItem2.setId(TransactionItem.id(txId, "2"));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.getViolations()).hasSize(2);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation.builder().id("1").build());
+        tx.setTransactionType(FxRevaluation);
+        tx.setItems(Set.of(txItem1, txItem2));
+
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getViolations()).hasSize(2);
     }
 
     // Item with Empty String as Credit
     @Test
     public void testItemWithEmptyStringCredit() {
-        val txId = Transaction.id("4", "1");
+        val txId = Transaction.id("2", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("4")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(FxRevaluation)
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "5"))
-                                .accountCodeCredit(Optional.of(""))
-                                .build()
-                ))
-                .build();
+        val txItem1 = new TransactionItemEntity();
+        txItem1.setId(TransactionItem.id(txId, "0"));
+        txItem1.setAccountCodeCredit(" ");
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation.builder().id("1").build());
+        tx.setTransactionType(BillCredit);
+        tx.setItems(Set.of(txItem1));
 
-        assertThat(newTx.getValidationStatus()).isEqualTo(FAILED);
-        assertThat(newTx.getViolations()).hasSize(1);
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getViolations()).hasSize(1);
     }
 
     // Transaction with No Items
     @Test
     public void testTransactionWithNoItems() {
-        val txId = Transaction.id("5", "1");
+        val txId = Transaction.id("2", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("5")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(FxRevaluation)
-                .items(Collections.emptySet())
-                .build();
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation.builder().id("1").build());
+        tx.setTransactionType(BillCredit);
+        tx.setItems(Set.of());
 
-        val newTx = taskItem.run(txs);
+        taskItem.run(tx);
 
-        assertThat(newTx.getViolations()).isEmpty();
+        assertThat(tx.getViolations()).isEmpty();
     }
+
 
     // Valid Credit with Whitespace
     @Test
     public void testValidCreditWithWhitespace() {
-        val txId = Transaction.id("6", "1");
+        val txId = Transaction.id("1", "1");
 
-        val txs = Transaction.builder()
-                .id(txId)
-                .internalTransactionNumber("6")
-                .organisation(Organisation.builder().id("1").build())
-                .transactionType(FxRevaluation)
-                .items(Set.of(
-                        TransactionItem.builder()
-                                .id(TransactionItem.id(txId, "6"))
-                                .accountCodeCredit(Optional.of(" 100 "))
-                                .build()
-                ))
-                .build();
+        val txItem = new TransactionItemEntity();
+        txItem.setId(TransactionItem.id(txId, "0"));
+        txItem.setAccountCodeCredit(" 100 ");
 
-        val newTx = taskItem.run(txs);
+        val tx = new TransactionEntity();
+        tx.setId(txId);
+        tx.setTransactionInternalNumber("1");
+        tx.setOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation.builder().id("1").build());
+        tx.setTransactionType(Journal);
+        tx.setItems(Set.of(txItem));
 
-        assertThat(newTx.getViolations()).isEmpty();
+        taskItem.run(tx);
+
+        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getViolations()).isEmpty();
     }
 
 }

@@ -4,16 +4,14 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,7 +26,6 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 public class TransactionRepositoryGateway {
 
     private final TransactionRepository transactionRepository;
-    private final TransactionConverter transactionConverter;
     private final LedgerService ledgerService;
 
     @Transactional
@@ -48,7 +45,7 @@ public class TransactionRepositoryGateway {
 
         val tx = txM.orElseThrow();
 
-        if (tx.validationStatus() == FAILED) {
+        if (tx.getValidationStatus() == FAILED) {
             return Either.left(Problem.builder()
                     .withTitle("CANNOT_APPROVE_FAILED_TX")
                     .withDetail(STR."Cannot approve a failed transaction, transactionId: \{transactionId}")
@@ -57,13 +54,15 @@ public class TransactionRepositoryGateway {
             );
         }
 
-        val savedTx = transactionRepository.save(tx.transactionApproved(true));
-        val organisationId = savedTx.organisation().getId();
+        tx.setTransactionApproved(true);
 
-        if (savedTx.transactionApproved()) {
-            ledgerService.tryToDispatchTransactionToBlockchainPublisher(organisationId, Set.of(transactionConverter.convert(savedTx)));
+        val savedTx = transactionRepository.save(tx);
+        val organisationId = savedTx.getOrganisation().getId();
 
-            return Either.right(savedTx.transactionApproved());
+        if (savedTx.getTransactionApproved()) {
+            ledgerService.tryToDispatchTransactionToBlockchainPublisher(organisationId, Set.of(savedTx));
+
+            return Either.right(savedTx.getTransactionApproved());
         }
 
         return Either.right(false);
@@ -75,18 +74,15 @@ public class TransactionRepositoryGateway {
 
         val transactions = transactionRepository.findAllById(transactionIds)
                 .stream()
-                .filter(tx -> tx.validationStatus() != FAILED)
-                .map(tx -> tx.transactionApproved(true))
+                .filter(tx -> tx.getValidationStatus() != FAILED)
+                .peek(tx -> tx.setTransactionApproved(true))
                 .collect(Collectors.toSet());
 
-        val savedTxs = transactionRepository.saveAll(transactions)
-                .stream()
-                .map(transactionConverter::convert)
-                .collect(Collectors.toSet());
+        val savedTxs = transactionRepository.saveAll(transactions);
 
-        ledgerService.tryToDispatchTransactionToBlockchainPublisher(organisationId, savedTxs);
+        ledgerService.tryToDispatchTransactionToBlockchainPublisher(organisationId, Set.copyOf(savedTxs));
 
-        return savedTxs.stream().map(Transaction::getId).collect(Collectors.toSet());
+        return savedTxs.stream().map(TransactionEntity::getId).collect(Collectors.toSet());
     }
 
     @Transactional
@@ -95,18 +91,15 @@ public class TransactionRepositoryGateway {
 
         val transactions = transactionRepository.findAllById(transactionIds)
                 .stream()
-                .filter(tx -> tx.validationStatus() != FAILED)
-                .map(tx -> tx.ledgerDispatchApproved(true))
+                .filter(tx -> tx.getValidationStatus() != FAILED)
+                .peek(tx -> tx.setLedgerDispatchApproved(true))
                 .collect(Collectors.toSet());
 
-        val savedTxs = transactionRepository.saveAll(transactions)
-                .stream()
-                .map(transactionConverter::convert)
-                .collect(Collectors.toSet());
+        val savedTxs = transactionRepository.saveAll(transactions);
 
-        ledgerService.tryToDispatchTransactionToBlockchainPublisher(organisationId, savedTxs);
+        ledgerService.tryToDispatchTransactionToBlockchainPublisher(organisationId, Set.copyOf(savedTxs));
 
-        return savedTxs.stream().map(Transaction::getId).collect(Collectors.toSet());
+        return savedTxs.stream().map(TransactionEntity::getId).collect(Collectors.toSet());
     }
 
     @Transactional
@@ -126,7 +119,7 @@ public class TransactionRepositoryGateway {
 
         val tx = txM.orElseThrow();
 
-        if (tx.validationStatus() == FAILED) {
+        if (tx.getValidationStatus() == FAILED) {
             return Either.left(Problem.builder()
                     .withTitle("CANNOT_APPROVE_FAILED_TX")
                     .withDetail(STR."Cannot approve dispatch for a failed transaction, transactionId: \{transactionId}")
@@ -135,12 +128,14 @@ public class TransactionRepositoryGateway {
             );
         }
 
-        val savedTx = transactionRepository.save(tx.ledgerDispatchApproved(true));
+        tx.setLedgerDispatchApproved(true);
 
-        if (savedTx.ledgerDispatchApproved()) {
-            ledgerService.tryToDispatchTransactionToBlockchainPublisher(savedTx.organisation().getId(), Set.of(transactionConverter.convert(savedTx)));
+        val savedTx = transactionRepository.save(tx);
 
-            return Either.right(savedTx.ledgerDispatchApproved());
+        if (savedTx.getLedgerDispatchApproved()) {
+            ledgerService.tryToDispatchTransactionToBlockchainPublisher(savedTx.getOrganisation().getId(), Set.of(savedTx));
+
+            return Either.right(savedTx.getLedgerDispatchApproved());
         }
 
         return Either.right(false);
@@ -159,31 +154,6 @@ public class TransactionRepositoryGateway {
                         transactionApprovalNeeded,
                         ledgerApprovalNeeded,
                         Limit.of(limit));
-    }
-
-//    public Set<Transaction> findDispatchedTransactions(String organisationId,
-//                                                       Set<Transaction> transactions) {
-//        val transactionIds = transactionIds(transactions);
-//
-//        val seenTransactionStatuses = LedgerDispatchStatus.allDispatchedStatuses();
-//
-//        val dbTransactions = transactionRepository.findTransactionsByLedgerDispatchStatus(
-//                organisationId,
-//                transactionIds,
-//                seenTransactionStatuses
-//        );
-//
-//        return transactionConverter.convertFromDb(dbTransactions);
-//    }
-
-    public Optional<Transaction> findById(String transactionId) {
-        return transactionRepository.findById(transactionId).map(transactionConverter::convert);
-    }
-
-    public Set<Transaction> findByAllId(Set<String> transactionIds) {
-        val dbTransactions = transactionRepository.findAllById(transactionIds);
-
-        return transactionConverter.convertFromDb(dbTransactions);
     }
 
 }

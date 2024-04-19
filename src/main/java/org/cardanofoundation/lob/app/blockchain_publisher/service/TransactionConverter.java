@@ -29,19 +29,19 @@ public class TransactionConverter {
     }
 
     public TransactionEntity convert(Transaction tx) {
-        val transactionEntity = TransactionEntity.builder()
-                .id(tx.getId())
-                .internalNumber(tx.getInternalTransactionNumber())
-                .batchId(tx.getBatchId())
-                .transactionType(tx.getTransactionType())
-                .organisation(convertOrganisation(tx.getOrganisation()))
-                .fxRate(tx.getFxRate())
-                .entryDate(tx.getEntryDate())
-                .accountingPeriod(tx.getAccountingPeriod())
-                .l1SubmissionData(L1SubmissionData.builder()
-                        .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
-                        .build())
-                .build();
+        val transactionEntity = new TransactionEntity();
+        transactionEntity.setId(tx.getId());
+        transactionEntity.setInternalNumber(tx.getInternalTransactionNumber());
+        transactionEntity.setBatchId(tx.getBatchId());
+        transactionEntity.setTransactionType(tx.getTransactionType());
+        transactionEntity.setOrganisation(convertOrganisation(tx.getOrganisation()));
+        transactionEntity.setFxRate(tx.getFxRate());
+        transactionEntity.setEntryDate(tx.getEntryDate());
+        transactionEntity.setAccountingPeriod(tx.getAccountingPeriod());
+        transactionEntity.setL1SubmissionData(L1SubmissionData.builder()
+                .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
+                .build()
+        );
 
         transactionEntity.setItems(convertTxItems(tx, transactionEntity));
 
@@ -59,12 +59,12 @@ public class TransactionConverter {
         return Organisation.builder()
                 .id(org.getId())
                 .shortName(org.getShortName().orElseThrow())
-                .currency(new Currency(org.getCurrency().orElseThrow().getCoreCurrency().orElseThrow().toExternalId()))
+                .currencyId(org.getCurrencyId())
                 .build();
     }
 
     private static Document convertDocument(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Document doc) {
-        return new Document()
+        return Document.builder()
                 .num(doc.getNumber())
                 .currency(Currency.builder()
                         .id(doc.getCurrency().getCoreCurrency().orElseThrow().toExternalId())
@@ -76,28 +76,31 @@ public class TransactionConverter {
                 .counterparty(doc.getCounterparty().map(cp -> Counterparty.builder()
                         .customerCode(cp.getCustomerCode())
                         .type(cp.getType())
-                        .build()).orElse(null));
+                        .build()).orElse(null))
+                .build();
     }
 
     @OneToOne
     public TransactionItemEntity convert(TransactionEntity parent,
                                          TransactionItem txItem) {
-        return TransactionItemEntity.builder()
-                .id(txItem.getId())
-                .transaction(parent)
-                .eventCode(txItem.getAccountEventCode().orElse(null))
-                .amountFcy(txItem.getAmountFcy())
-                .project(txItem.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null))
-                .document(convertDocument(txItem.getDocument().orElseThrow()))
-                .costCenter(txItem.getCostCenter().map(cc -> {
-                    val ccBuilder = CostCenter.builder();
+        val txItemEntity = new TransactionItemEntity();
+        txItemEntity.setId(txItem.getId());
+        txItemEntity.setTransaction(parent);
+        txItemEntity.setEventCode(txItem.getAccountEventCode().orElse(null));
+        txItemEntity.setAmountFcy(txItem.getAmountFcy());
+        txItemEntity.setProject(txItem.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null));
+        txItemEntity.setDocument(convertDocument(txItem.getDocument().orElseThrow()));
+        txItemEntity.setCostCenter(txItem.getCostCenter().map(cc -> {
+            val ccBuilder = CostCenter.builder();
 
-                    cc.getExternalCustomerCode().ifPresent(ccBuilder::customerCode);
-                    cc.getName().ifPresent(ccBuilder::name);
+            cc.getExternalCustomerCode().ifPresent(ccBuilder::customerCode);
+            cc.getName().ifPresent(ccBuilder::name);
 
-                    return ccBuilder.build();
-                }).orElse(null))
-                .build();
+            return ccBuilder.build();
+        }).orElse(null));
+
+
+        return txItemEntity;
     }
 
 }

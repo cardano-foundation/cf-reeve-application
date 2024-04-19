@@ -3,7 +3,9 @@ package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 import com.google.common.base.Objects;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
+import org.springframework.data.domain.Persistable;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -16,11 +18,10 @@ import static jakarta.persistence.FetchType.EAGER;
 @Entity(name = "blockchain_publisher.TransactionItemEntity")
 @Table(name = "blockchain_publisher_transaction_item")
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
 //@Audited
 //@EntityListeners({AuditingEntityListener.class})
-public class TransactionItemEntity extends AuditEntity {
+public class TransactionItemEntity extends AuditEntity implements Persistable<String> {
 
     @Id
     @Column(name = "transaction_item_id", nullable = false)
@@ -85,6 +86,11 @@ public class TransactionItemEntity extends AuditEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
     }
 
 }
