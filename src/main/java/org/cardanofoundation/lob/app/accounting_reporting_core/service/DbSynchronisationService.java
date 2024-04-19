@@ -33,21 +33,26 @@ public class DbSynchronisationService {
 
     @Transactional
     public void synchroniseAndFlushToDb(String batchId,
-                                        OrganisationTransactions transactions,
+                                        OrganisationTransactions incomingTransactions,
                                         Optional<Integer> totalTransactionsCount,
                                         ProcessorFlags flags) {
-        if (transactions.transactions().isEmpty()) {
-            return;
-        }
-         if (flags.isReprocess()) {
-            // TODO should we check if we are NOT changing transactions which are already marked as dispatched?
-            dbUpdateTransactionBatch(batchId, transactions);
+        if (incomingTransactions.transactions().isEmpty()) {
+            log.info("No transactions to process, batchId: {}", batchId);
             return;
         }
 
-        val organisationId = transactions.organisationId();
+        if (flags.isReprocess()) {
+            // TODO should we check if we are NOT changing incomingTransactions which are already marked as dispatched?
+            dbUpdateTransactionBatch(batchId, incomingTransactions);
+        } else {
+            processTransactionsForTheFirstTime(batchId, incomingTransactions, totalTransactionsCount);
+        }
+    }
 
-        val incomingDetachedTransactions = transactions.transactions();
+    private void processTransactionsForTheFirstTime(String batchId, OrganisationTransactions incomingTransactions, Optional<Integer> totalTransactionsCount) {
+        val organisationId = incomingTransactions.organisationId();
+
+        val incomingDetachedTransactions = incomingTransactions.transactions();
 
         val txIds = incomingDetachedTransactions.stream()
                 .map(TransactionEntity::getId)
@@ -68,24 +73,12 @@ public class DbSynchronisationService {
 
             if (isDispatchMarked && isChanged) {
                 log.warn("Transaction cannot be altered, it is already marked as dispatched, transactionNumber: {}", incomingTx.getTransactionInternalNumber());
-//                val v = Violation.builder()
-//                        .code(TX_CANNOT_BE_ALTERED)
-//                        .type(WARN)
-//                        .source(LOB)
-//                        .processorModule(this.getClass().getSimpleName())
-//                        .bag(
-//                                Map.of(
-//                                        "transactionNumber", incomingTx.getTransactionInternalNumber()
-//                                )
-//                        )
-//                        .build();
-//
-//                incomingTx.addViolation(v);
             }
 
             if (isChanged && !isDispatchMarked) {
                 if (txM.isPresent()) {
                     val attached = txM.orElseThrow();
+
                     transactionConverter.useFieldsFromDetached(attached, incomingTx);
 
                     toProcessTransactions.add(attached);
