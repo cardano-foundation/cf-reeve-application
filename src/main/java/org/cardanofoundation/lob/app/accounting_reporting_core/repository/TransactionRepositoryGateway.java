@@ -61,7 +61,7 @@ public class TransactionRepositoryGateway {
         val organisationId = savedTx.getOrganisation().getId();
 
         if (savedTx.getTransactionApproved()) {
-            ledgerService.tryToDispatchTransactionToBlockchainPublisher(organisationId, Set.of(savedTx));
+            ledgerService.checkIfThereAreTransactionsToDispatch(organisationId, Set.of(savedTx));
 
             return Either.right(savedTx.getTransactionApproved());
         }
@@ -81,7 +81,7 @@ public class TransactionRepositoryGateway {
 
         val savedTxs = transactionRepository.saveAll(transactions);
 
-        ledgerService.tryToDispatchTransactionToBlockchainPublisher(organisationId, Set.copyOf(savedTxs));
+        ledgerService.checkIfThereAreTransactionsToDispatch(organisationId, Set.copyOf(savedTxs));
 
         return savedTxs.stream().map(TransactionEntity::getId).collect(Collectors.toSet());
     }
@@ -98,7 +98,7 @@ public class TransactionRepositoryGateway {
 
         val savedTxs = transactionRepository.saveAll(transactions);
 
-        ledgerService.tryToDispatchTransactionToBlockchainPublisher(organisationId, Set.copyOf(savedTxs));
+        ledgerService.checkIfThereAreTransactionsToDispatch(organisationId, Set.copyOf(savedTxs));
 
         return savedTxs.stream().map(TransactionEntity::getId).collect(Collectors.toSet());
     }
@@ -134,7 +134,7 @@ public class TransactionRepositoryGateway {
         val savedTx = transactionRepository.save(tx);
 
         if (savedTx.getLedgerDispatchApproved()) {
-            ledgerService.tryToDispatchTransactionToBlockchainPublisher(savedTx.getOrganisation().getId(), Set.of(savedTx));
+            ledgerService.checkIfThereAreTransactionsToDispatch(savedTx.getOrganisation().getId(), Set.of(savedTx));
 
             return Either.right(savedTx.getLedgerDispatchApproved());
         }

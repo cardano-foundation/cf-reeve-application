@@ -40,7 +40,7 @@ public class FilteringParameters {
 
     @Builder.Default
     @NotNull
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "accounting_core_transaction_filtering_params_transaction_number",
             joinColumns = @JoinColumn(name = "owner_id")

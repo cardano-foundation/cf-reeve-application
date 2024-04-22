@@ -261,8 +261,8 @@ public class TransactionConverter {
                 .build());
     }
 
-    public void useFieldsFromDetached(TransactionEntity attached,
-                                      TransactionEntity detached) {
+    public void copyFields(TransactionEntity attached,
+                           TransactionEntity detached) {
         attached.setId(detached.getId());
         attached.setBatchId(detached.getBatchId());
         attached.setOrganisation(detached.getOrganisation());

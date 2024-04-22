@@ -21,6 +21,8 @@ public class AccountingCoreEventHandler {
 
     private final LedgerService ledgerService;
 
+    private final TransactionBatchService transactionBatchService;
+
     @ApplicationModuleListener
     public void handleERPIngestionStored(ERPIngestionStored event) {
         log.info("Received handleERPIngestionStored event, event: {}", event);
@@ -53,7 +55,10 @@ public class AccountingCoreEventHandler {
     public void handleLedgerUpdatedEvent(LedgerUpdatedEvent event) {
         log.info("Received LedgerUpdatedEvent event, event: {}", event.getStatusUpdates());
 
-        ledgerService.updateTransactionsWithNewLedgerDispatchStatuses(event.getStatusUpdates());
+        val txStatusUpdatesMap = event.statusUpdatesMap();
+
+        ledgerService.updateTransactionsWithNewLedgerDispatchStatuses(txStatusUpdatesMap);
+        transactionBatchService.updateBatchesPerTransactions(txStatusUpdatesMap);
     }
 
 }

@@ -87,7 +87,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     @Enumerated(STRING)
     private RejectionStatus rejectionStatus = NOT_REJECTED;
 
-    @ElementCollection
+    @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "accounting_core_transaction_violation", joinColumns = @JoinColumn(name = "transaction_id"))
     @AttributeOverrides({
             @AttributeOverride(name = "code", column = @Column(name = "code", nullable = false)),

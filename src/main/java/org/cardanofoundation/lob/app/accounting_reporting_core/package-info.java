@@ -6,5 +6,6 @@
         "support::audit",
         "support::crypto",
         "support::collections",
+        "support::reactive"
 })
 package org.cardanofoundation.lob.app.accounting_reporting_core;

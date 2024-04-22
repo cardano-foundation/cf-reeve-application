@@ -56,6 +56,8 @@ public class TransactionBatchEntity extends AuditEntity implements Persistable<S
             @AttributeOverride(name = "dispatchedTransactionsCount", column = @Column(name = "stats_dispatched_transactions_count")),
             @AttributeOverride(name = "completedTransactionsCount", column = @Column(name = "stats_completed_transactions_count")),
             @AttributeOverride(name = "finalizedTransactionsCount", column = @Column(name = "stats_finalized_transactions_count")),
+            @AttributeOverride(name = "failedSourceERPTransactionsCount", column = @Column(name = "stats_failed_source_erp_transactions_count")),
+            @AttributeOverride(name = "failedSourceLOBTransactionsCount", column = @Column(name = "stats_failed_source_lob_transactions_count")),
     })
     @Nullable
     private BatchStatistics batchStatistics = new BatchStatistics();

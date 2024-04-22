@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,43 +26,36 @@ public class LedgerService {
 
     private final TransactionRepository transactionRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final TransactionBatchService transactionBatchService;
     private final TransactionConverter transactionConverter;
     private final PIIDataFilteringService piiDataFilteringService;
 
     @Transactional
-    public void updateTransactionsWithNewLedgerDispatchStatuses(Set<TxStatusUpdate> txStatusUpdates) {
-        log.info("Updating dispatch status for statusMapCount: {}", txStatusUpdates.size());
+    public void updateTransactionsWithNewLedgerDispatchStatuses(Map<String, TxStatusUpdate> txStatusUpdatesMap) {
+        log.info("Updating dispatch status for statusMapCount: {}", txStatusUpdatesMap.size());
 
-        storeLatestLedgerUpdateState(txStatusUpdates);
-        transactionBatchService.updateBatchesPerTransactions(txStatusUpdates);
+        val txIds = txStatusUpdatesMap.keySet();
 
-        log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdates.size());
-    }
+        val transactionEntities = transactionRepository.findAllById(txIds);
 
-    private void storeLatestLedgerUpdateState(Set<TxStatusUpdate> txStatusUpdates) {
-        for (val txStatusUpdate : txStatusUpdates) {
-            val txId = txStatusUpdate.getTxId();
-            val transactionM = transactionRepository.findById(txId);
-
-            if (transactionM.isEmpty()) {
-                continue;
-            }
-
-            val transactionEntity = transactionM.orElseThrow();
-
-            transactionEntity.setLedgerDispatchStatus(txStatusUpdate.getStatus());
-
-            transactionRepository.save(transactionEntity);
+        for (val tx : transactionEntities) {
+            val txStatusUpdate = txStatusUpdatesMap.get(tx.getId());
+            tx.setLedgerDispatchStatus(txStatusUpdate.getStatus());
         }
+
+        transactionRepository.saveAll(transactionEntities);
+
+        log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdatesMap.size());
     }
 
+    // TODO this could be also run by a job every 5 minutes and reading txs from db
     @Transactional(propagation = REQUIRES_NEW)
-    public void tryToDispatchTransactionToBlockchainPublisher(String organisationId,
-                                                              Set<TransactionEntity> transactions) {
-        log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", transactions.stream()
+    public void checkIfThereAreTransactionsToDispatch(String organisationId,
+                                                      Set<TransactionEntity> transactions) {
+        val txIds = transactions.stream()
                 .map(TransactionEntity::getId)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toSet());
+
+        log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", txIds);
 
         val dispatchPendingTransactions = transactions.stream()
                 .filter(TransactionEntity::allApprovalsPassedForTransactionDispatch)
@@ -69,9 +63,13 @@ public class LedgerService {
                 .filter(tx -> tx.getLedgerDispatchStatus() == NOT_DISPATCHED)
                 .collect(Collectors.toSet());
 
-        val txs = transactionConverter.convertFromDb(dispatchPendingTransactions);
+        if (dispatchPendingTransactions.isEmpty()) {
+            log.info("No transactions to dispatch for organisationId: {}", organisationId);
+            return;
+        }
 
-        val piiFilteredOutTransactions = piiDataFilteringService.apply(txs);
+        val canonicalTxs = transactionConverter.convertFromDb(dispatchPendingTransactions);
+        val piiFilteredOutTransactions = piiDataFilteringService.apply(canonicalTxs);
 
         applicationEventPublisher.publishEvent(LedgerUpdateCommand.create(organisationId, piiFilteredOutTransactions));
     }
