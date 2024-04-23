@@ -10,8 +10,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.repository.Transa
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionItemRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +31,10 @@ public class DbSynchronisationService {
     private final TransactionBatchService transactionBatchService;
 
     @Transactional
-    public void synchroniseAndFlushToDb(String batchId,
-                                        OrganisationTransactions incomingTransactions,
-                                        Optional<Integer> totalTransactionsCount,
-                                        ProcessorFlags flags) {
+    public void synchronise(String batchId,
+                            OrganisationTransactions incomingTransactions,
+                            Optional<Integer> totalTransactionsCount,
+                            ProcessorFlags flags) {
         val transactions = incomingTransactions.transactions();
 
         if (transactions.isEmpty()) {
@@ -47,7 +45,7 @@ public class DbSynchronisationService {
 
         if (flags.isReprocess()) {
             // TODO should we check if we are NOT changing incomingTransactions which are already marked as dispatched?
-            storeTransactionsWithinBatch(batchId, incomingTransactions);
+            storeTransactions(batchId, incomingTransactions);
         } else {
             val organisationId = incomingTransactions.organisationId();
             processTransactionsForTheFirstTime(batchId, organisationId, transactions, totalTransactionsCount);
@@ -92,13 +90,13 @@ public class DbSynchronisationService {
             }
         }
 
-        storeTransactionsWithinBatch(batchId, new OrganisationTransactions(organisationId, toProcessTransactions));
+        storeTransactions(batchId, new OrganisationTransactions(organisationId, toProcessTransactions));
 
         transactionBatchService.updateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
     }
 
-    private void storeTransactionsWithinBatch(String batchId,
-                                              OrganisationTransactions transactions) {
+    private void storeTransactions(String batchId,
+                                   OrganisationTransactions transactions) {
         log.info("Updating transaction batch, batchId: {}", batchId);
 
         val txs = transactions.transactions();

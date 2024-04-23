@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
-import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.BlockchainPublishStatus.STORED;
 
 @Service
 @Slf4j
@@ -21,14 +20,14 @@ public class TransactionConverter {
 
     private final BlockchainPublishStatusMapper blockchainPublishStatusMapper;
 
-    public Set<TransactionEntity> convertToDb(Set<Transaction> transactions) {
+    public Set<TransactionEntity> convertToDbDetached(Set<Transaction> transactions) {
         return transactions
                 .stream()
-                .map(this::convert)
+                .map(this::convertToDbDetached)
                 .collect(toSet());
     }
 
-    public TransactionEntity convert(Transaction tx) {
+    public TransactionEntity convertToDbDetached(Transaction tx) {
         val transactionEntity = new TransactionEntity();
         transactionEntity.setId(tx.getId());
         transactionEntity.setInternalNumber(tx.getInternalTransactionNumber());
@@ -38,8 +37,10 @@ public class TransactionConverter {
         transactionEntity.setFxRate(tx.getFxRate());
         transactionEntity.setEntryDate(tx.getEntryDate());
         transactionEntity.setAccountingPeriod(tx.getAccountingPeriod());
+
+        val publishStatus = blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus());
         transactionEntity.setL1SubmissionData(L1SubmissionData.builder()
-                .publishStatus(blockchainPublishStatusMapper.convert(tx.getLedgerDispatchStatus()).orElse(STORED))
+                .publishStatus(publishStatus)
                 .build()
         );
 
@@ -51,7 +52,7 @@ public class TransactionConverter {
     private Set<TransactionItemEntity> convertTxItems(Transaction tx, TransactionEntity transactionEntity) {
         return tx.getItems()
                 .stream()
-                .map(tl -> convert(transactionEntity, tl))
+                .map(tl -> convertToDbDetached(transactionEntity, tl))
                 .collect(toSet());
     }
 
@@ -81,8 +82,8 @@ public class TransactionConverter {
     }
 
     @OneToOne
-    public TransactionItemEntity convert(TransactionEntity parent,
-                                         TransactionItem txItem) {
+    public TransactionItemEntity convertToDbDetached(TransactionEntity parent,
+                                                     TransactionItem txItem) {
         val txItemEntity = new TransactionItemEntity();
         txItemEntity.setId(txItem.getId());
         txItemEntity.setTransaction(parent);

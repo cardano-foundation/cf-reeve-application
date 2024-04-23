@@ -75,6 +75,10 @@ public record TxLine(
         @NotNull
         String currency,
 
+        @JsonProperty("Symbol")
+        @NotNull
+        String currencySymbol,
+
         @NotNull
         @JsonProperty("Exchange Rate")
         @Positive

@@ -13,7 +13,7 @@ import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
 @Entity
-@Table(name = "netsuite_ingestion")
+@Table(name = "netsuite_adapter_ingestion")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -37,8 +37,8 @@ public class NetSuiteIngestionEntity extends AuditEntity implements Persistable<
     private String ingestionBodyChecksum;
 
     @Override
-    public boolean isNew() {
-        return isNew;
+    public String getId() {
+        return id;
     }
 
 }

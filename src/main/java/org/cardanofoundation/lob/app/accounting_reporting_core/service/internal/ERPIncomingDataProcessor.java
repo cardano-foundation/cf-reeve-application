@@ -54,7 +54,7 @@ public class ERPIncomingDataProcessor {
 
         log.info("PASSING transactions: {}", transactions.size());
 
-        dbSynchronisationService.synchroniseAndFlushToDb(batchId,
+        dbSynchronisationService.synchronise(batchId,
                 finalTransformationResult.passedTransactions(),
                 totalTransactionsCount,
                 processorFlags

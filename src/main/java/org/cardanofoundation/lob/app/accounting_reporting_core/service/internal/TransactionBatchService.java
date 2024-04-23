@@ -83,20 +83,20 @@ public class TransactionBatchService {
                                                      Optional<Integer> totalTransactionsCount) {
         try {
             val debouncer = debouncerManager.getDebouncer(batchId, () -> {
-                doUpdateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
+                invokeUpdateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
             }, batchStatsDebounceDuration);
 
             debouncer.call();
         } catch (ExecutionException e) {
             log.warn("Error while getting debouncer for batchId: {}", batchId, e);
 
-            doUpdateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
+            invokeUpdateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
         }
     }
 
     @Transactional(propagation = SUPPORTS)
-    private void doUpdateTransactionBatchStatusAndStats(String batchId,
-                                                     Optional<Integer> totalTransactionsCount) {
+    private void invokeUpdateTransactionBatchStatusAndStats(String batchId,
+                                                            Optional<Integer> totalTransactionsCount) {
         log.info("EXPENSIVE::Updating transaction batch status and statistics, batchId: {}", batchId);
 
         val txBatchM = transactionBatchRepositoryGateway.findById(batchId);

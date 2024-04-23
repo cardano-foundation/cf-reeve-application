@@ -98,9 +98,4 @@ public class TransactionBatchEntity extends AuditEntity implements Persistable<S
         return id;
     }
 
-    @Override
-    public boolean isNew() {
-        return isNew;
-    }
-
 }

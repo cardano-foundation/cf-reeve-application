@@ -38,8 +38,6 @@ public class NetSuiteService {
 
     private final NetSuiteClient netSuiteClient;
 
-    private final NotificationsSenderService notificationsSenderService;
-
     private final ViolationsSenderService violationsSenderService;
 
     private final TransactionConverter transactionConverter;
@@ -202,7 +200,6 @@ public class NetSuiteService {
         val transactionsWithViolations = transactionConverter.convert(organisationId, batchId, transactionDataSearchResult);
 
         violationsSenderService.sendViolation(transactionsWithViolations);
-        notificationsSenderService.sendNotifications(transactionsWithViolations.violations());
 
         val transactionsWithExtractionParametersApplied = extractionParametersFilteringService
                 .applyExtractionParameters(userExtractionParameters, systemExtractionParameters, transactionsWithViolations.transactions());

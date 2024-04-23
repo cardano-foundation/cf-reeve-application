@@ -7,18 +7,14 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService;
-import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 
 @Service
 @Slf4j
@@ -140,21 +136,6 @@ public class TransactionRepositoryGateway {
         }
 
         return Either.right(false);
-    }
-
-    public Set<String> readApprovalPendingBlockchainTransactionIds(String organisationId,
-                                                                   int limit,
-                                                                   boolean transactionApprovalNeeded,
-                                                                   boolean ledgerApprovalNeeded
-    ) {
-        return transactionRepository
-                .findTransactionIdsByStatuses(
-                        organisationId,
-                        List.of(NOT_DISPATCHED),
-                        List.of(VALIDATED),
-                        transactionApprovalNeeded,
-                        ledgerApprovalNeeded,
-                        Limit.of(limit));
     }
 
     public Either<Problem, Boolean> changeTransactionComment(String txId, String userComment) {

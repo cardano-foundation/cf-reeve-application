@@ -212,7 +212,7 @@ public class TransactionConverter {
             return Either.right(Optional.of(Document.builder()
                     .number(documentNumber)
                     .currency(Currency.builder()
-                            .customerCode(txLine.currency())
+                            .customerCode(txLine.currencySymbol())
                             .build())
                     .vat(normaliseString(txLine.taxItem()).map(String::trim).map(cc -> Vat.builder()
                             .customerCode(cc)

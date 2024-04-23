@@ -48,7 +48,7 @@ class DbSynchronisationServiceTest {
         val batchId = "batch1";
         val organisationTransactions = new OrganisationTransactions("org1", Set.of());
 
-        service.synchroniseAndFlushToDb(batchId, organisationTransactions, Optional.of(0), new ProcessorFlags(false));
+        service.synchronise(batchId, organisationTransactions, Optional.of(0), new ProcessorFlags(false));
         verify(transactionBatchService).updateTransactionBatchStatusAndStats(eq(batchId), eq(Optional.of(0)));
         verifyNoInteractions(transactionRepository);
         verifyNoInteractions(transactionItemRepository);
@@ -70,7 +70,7 @@ class DbSynchronisationServiceTest {
         val transactions = new OrganisationTransactions("org1", txs);
 
         when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer((Answer<TransactionEntity>) invocation -> (TransactionEntity) invocation.getArgument(0));
-        service.synchroniseAndFlushToDb(batchId, transactions, Optional.of(1), new ProcessorFlags(true));
+        service.synchronise(batchId, transactions, Optional.of(1), new ProcessorFlags(true));
 
         verify(transactionRepository).save(eq(tx1));
         verify(transactionBatchAssocRepository).saveAll(any(Set.class));
@@ -94,7 +94,7 @@ class DbSynchronisationServiceTest {
 
         when(transactionRepository.findAllById(eq(Set.of(txId)))).thenReturn(List.of(tx1));
 
-        service.synchroniseAndFlushToDb(batchId, transactions, Optional.of(1), new ProcessorFlags(false));
+        service.synchronise(batchId, transactions, Optional.of(1), new ProcessorFlags(false));
 
         verify(transactionRepository, never()).save(any());
         verify(transactionItemRepository, never()).save(any());
@@ -124,7 +124,7 @@ class DbSynchronisationServiceTest {
         when(transactionRepository.findAllById(any())).thenReturn(List.of());
         when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer((Answer<TransactionEntity>) invocation -> (TransactionEntity) invocation.getArgument(0));
 
-        service.synchroniseAndFlushToDb(batchId, transactions, Optional.of(txs.size()), new ProcessorFlags(false));
+        service.synchronise(batchId, transactions, Optional.of(txs.size()), new ProcessorFlags(false));
 
         verify(transactionRepository).save(eq(tx1));
         verify(transactionItemRepository).saveAll(eq(items));
@@ -155,7 +155,7 @@ class DbSynchronisationServiceTest {
 
         when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer((Answer<TransactionEntity>) invocation -> (TransactionEntity) invocation.getArgument(0));
 
-        service.synchroniseAndFlushToDb(batchId, mixedTransactions, Optional.of(2), new ProcessorFlags(false));
+        service.synchronise(batchId, mixedTransactions, Optional.of(2), new ProcessorFlags(false));
 
         verify(transactionRepository, never()).save(dispatchedTx);
         verify(transactionRepository).save(notDispatchedTx);
