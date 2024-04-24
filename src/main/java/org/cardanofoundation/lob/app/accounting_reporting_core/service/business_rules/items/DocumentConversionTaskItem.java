@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CoreCurrency;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Vat;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Document;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
@@ -16,9 +17,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.*;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.*;
 
 @RequiredArgsConstructor
 public class DocumentConversionTaskItem implements PipelineTaskItem {
@@ -125,7 +126,7 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
 
     private void addViolation(TransactionEntity tx,
                               TransactionItemEntity txItem,
-                              org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code code,
+                              ViolationCode code,
                               Map<String, Object> bag) {
         val violation = Violation.builder()
                 .txItemId(txItem.getId())
