@@ -2,13 +2,18 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.cardanofoundation.lob.app.organisation.domain.entity.OrganisationChartOfAccount;
 
 import java.util.Map;
+import java.util.Optional;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType.CREDIT;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType.DEBIT;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CHART_OF_ACCOUNT_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
@@ -24,68 +29,74 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
         val organisationId = tx.getOrganisation().getId();
 
         for (val item : tx.getItems()) {
-            if (item.getAccountCodeDebit().map(String::trim).filter(acc -> !acc.isEmpty()).isPresent()) {
-                val accountCodeDebit = item.getAccountCodeDebit().orElseThrow();
+            processAccountCode(DEBIT, item.getAccountCodeDebit(), organisationId, item, tx);
+            processAccountCode(CREDIT, item.getAccountCodeCredit(), organisationId, item, tx);
 
-                val accountChartMappingM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeDebit);
+            setAccountEventCode(item);
+        }
+    }
 
-                if (accountChartMappingM.isEmpty()) {
-                    val v = Violation.builder()
-                            .code(CHART_OF_ACCOUNT_NOT_FOUND)
-                            .txItemId(item.getId())
-                            .type(ERROR)
-                            .source(LOB)
-                            .processorModule(this.getClass().getSimpleName())
-                            .bag(
-                                    Map.of(
-                                            "accountCode", accountCodeDebit,
-                                            "type", "DEBIT",
-                                            "transactionNumber", tx.getTransactionInternalNumber()
-                                    )
-                            )
-                            .build();
+    private void processAccountCode(OperationType type,
+                                    Optional<String> accountCodeM,
+                                    String organisationId,
+                                    TransactionItemEntity item,
+                                    TransactionEntity tx) {
+        accountCodeM.map(String::trim)
+                .filter(acc -> !acc.isEmpty())
+                .ifPresent(accountCode -> {
+                    val accountChartMappingM = organisationPublicApi.getChartOfAccounts(organisationId, accountCode);
 
-                    tx.addViolation(v);
-                } else {
-                    item.setAccountCodeRefDebit(accountChartMappingM.map(OrganisationChartOfAccount::getEventRefCode).orElse(null));
-                }
-            }
+                    accountChartMappingM.ifPresentOrElse(
+                            chartOfAccount -> setAccountCodeRef(type, item, chartOfAccount),
+                            () -> addViolation(accountCode, type, item, tx, determineSource(type))
+                    );
+                });
+    }
 
-            if (item.getAccountCodeCredit().map(String::trim).filter(acc -> !acc.isEmpty()).isPresent()) {
-                val accountCodeCredit = item.getAccountCodeCredit().orElseThrow();
+    private void setAccountCodeRef(OperationType type,
+                                   TransactionItemEntity item,
+                                   OrganisationChartOfAccount chartOfAccount) {
+        switch (type) {
+            case DEBIT:
+                item.setAccountCodeRefDebit(chartOfAccount.getEventRefCode());
+                break;
+            case CREDIT:
+                item.setAccountCodeRefCredit(chartOfAccount.getEventRefCode());
+                break;
+        }
+    }
 
-                val eventRefCodeM = organisationPublicApi.getChartOfAccounts(organisationId, accountCodeCredit);
-                if (eventRefCodeM.isEmpty()) {
+    private void addViolation(String accountCode, OperationType type, TransactionItemEntity item, TransactionEntity tx, Violation.Source source) {
+        val violation = org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation.builder()
+                .txItemId(item.getId())
+                .code(CHART_OF_ACCOUNT_NOT_FOUND)
+                .type(ERROR)
+                .source(source)
+                .processorModule(this.getClass().getSimpleName())
+                .bag(Map.of(
+                        "accountCode", accountCode,
+                        "type", type.name(),
+                        "transactionNumber", tx.getTransactionInternalNumber()
+                ))
+                .build();
 
-                    val v = Violation.builder()
-                            .txItemId(item.getId())
-                            .code(CHART_OF_ACCOUNT_NOT_FOUND)
-                            .type(ERROR)
-                            .source(ERP)
-                            .processorModule(this.getClass().getSimpleName())
-                            .bag(
-                                    Map.of(
-                                            "accountCode", accountCodeCredit,
-                                            "type", "CREDIT",
-                                            "transactionNumber", tx.getTransactionInternalNumber()
-                                    )
-                            )
-                            .build();
+        tx.addViolation(violation);
+    }
 
-                    tx.addViolation(v);
-                } else {
-                    item.setAccountCodeRefCredit(eventRefCodeM.map(OrganisationChartOfAccount::getEventRefCode).orElse(null));
-                }
-            }
+    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source determineSource(OperationType type) {
+        return switch (type) {
+            case DEBIT -> LOB;
+            case CREDIT -> ERP;
+        };
+    }
 
-            if (item.getAccountCodeRefDebit().isPresent() && item.getAccountCodeRefCredit().isPresent()) {
-                val accountDebitRefCode = item.getAccountCodeRefDebit().orElseThrow();
-                val accountCreditRefCode = item.getAccountCodeRefCredit().orElseThrow();
+    private void setAccountEventCode(TransactionItemEntity item) {
+        Optional<String> accountDebitRefCode = item.getAccountCodeRefDebit();
+        Optional<String> accountCreditRefCode = item.getAccountCodeRefCredit();
 
-                val eventCode = STR."\{accountDebitRefCode}\{accountCreditRefCode}";
-
-                item.setAccountEventCode(eventCode);
-            }
+        if (accountDebitRefCode.isPresent() && accountCreditRefCode.isPresent()) {
+            val eventCode = STR."\{accountDebitRefCode.orElseThrow()}\{accountCreditRefCode.orElseThrow()}";
+            item.setAccountEventCode(eventCode);
         }
     }
 
