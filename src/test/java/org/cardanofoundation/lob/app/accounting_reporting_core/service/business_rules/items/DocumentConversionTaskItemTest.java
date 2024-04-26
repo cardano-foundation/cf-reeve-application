@@ -164,6 +164,10 @@ public class DocumentConversionTaskItemTest {
         documentConversionTaskItem.run(transaction);
 
         assertThat(transaction.getViolations()).isEmpty();
+        assertThat(transaction.getItems()).hasSize(1);
+        assertThat(transaction.getItems().iterator().next().getDocument().orElseThrow().getCurrency().getId().orElseThrow()).isEqualTo(currencyId);
+        assertThat(transaction.getItems().iterator().next().getDocument().orElseThrow().getVat().orElseThrow().getRate().orElseThrow()).isEqualTo(BigDecimal.valueOf(0.2));
+        assertThat(transaction.getItems().iterator().next().getDocument().orElseThrow().getCurrency().getCustomerCode()).isEqualTo("USD");
     }
 
     @Test
