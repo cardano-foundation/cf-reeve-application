@@ -16,10 +16,9 @@ import org.springframework.stereotype.Service;
 public class AccountingCoreEventHandler {
 
     private final ERPIncomingDataProcessor erpIncomingDataProcessor;
-
     private final TransactionConverter transactionConverter;
-
     private final LedgerService ledgerService;
+    private final TransactionBatchService transactionBatchService;
 
     @ApplicationModuleListener
     public void handleERPIngestionStored(ERPIngestionStored event) {
@@ -53,7 +52,10 @@ public class AccountingCoreEventHandler {
     public void handleLedgerUpdatedEvent(LedgerUpdatedEvent event) {
         log.info("Received LedgerUpdatedEvent event, event: {}", event.getStatusUpdates());
 
-        ledgerService.updateTransactionsWithNewLedgerDispatchStatuses(event.getStatusUpdates());
+        val txStatusUpdatesMap = event.statusUpdatesMap();
+
+        ledgerService.updateTransactionsWithNewStatuses(txStatusUpdatesMap);
+        transactionBatchService.updateBatchesPerTransactions(txStatusUpdatesMap);
     }
 
 }

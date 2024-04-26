@@ -6,7 +6,6 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.DbSynchronisationService;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,7 @@ public class ERPIncomingDataProcessor {
 
         log.info("PASSING transactions: {}", transactions.size());
 
-        dbSynchronisationService.synchroniseAndFlushToDb(batchId,
+        dbSynchronisationService.synchronise(batchId,
                 finalTransformationResult.passedTransactions(),
                 totalTransactionsCount,
                 processorFlags

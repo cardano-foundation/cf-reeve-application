@@ -17,13 +17,10 @@ public class BlockchainPublisherEventHandler {
 
     @ApplicationModuleListener
     public void handleLedgerUpdateCommand(LedgerUpdateCommand command) {
-        val uploadId = command.getUploadId();
         val organisationId = command.getOrganisationId();
         val transactions = command.getTransactions();
 
-        log.info("Received LedgerUpdateCommand command..., uploadId: {}", uploadId);
-
-        val txs = transactionConverter.convertToDb(transactions);
+        val txs = transactionConverter.convertToDbDetached(transactions);
 
         blockchainPublisherService.storeTransactionForDispatchLater(organisationId, txs);
     }

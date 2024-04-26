@@ -9,7 +9,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.Sche
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,15 +28,9 @@ import static org.zalando.problem.Status.NOT_FOUND;
 public class AccountingCoreService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
-
     private final TransactionBatchRepository transactionBatchRepository;
-
     private final ERPIncomingDataProcessor erpIncomingDataProcessor;
-
     private final TransactionRepositoryGateway transactionRepositoryGateway;
-
-    @Value("${accounting-core.max-approval-batch-size:25}")
-    private int maxApprovalBatchSize = 25;
 
     @Transactional
     public void scheduleIngestion(UserExtractionParameters userExtractionParameters) {
@@ -50,7 +43,6 @@ public class AccountingCoreService {
     public Either<Problem, Boolean> scheduleReIngestionForFailed(String batchId) {
         log.info("scheduleReIngestion..., batchId: {}", batchId);
 
-        // TODO optimisation, we should filter this on the db side not here because fetching all transactions for a batch is not efficient
         val txBatchM = transactionBatchRepository.findById(batchId);
         if (txBatchM.isEmpty()) {
             return Either.left(Problem.builder()
@@ -62,7 +54,6 @@ public class AccountingCoreService {
 
         val txBatch = txBatchM.get();
 
-        //TODO this filtering here should be moved to db layer
         val txs =  txBatch.getTransactions().stream()
                 .filter(tx -> tx.getValidationStatus() == FAILED)
                 // reprocess only the ones that have not been approved to dispatch yet, actually it is just a sanity check because it should never happen
@@ -83,19 +74,6 @@ public class AccountingCoreService {
         erpIncomingDataProcessor.continueIngestion(txBatch.getOrganisationId(), batchId, Optional.of(txs.size()), txs, processorFlags);
 
         return Either.right(true);
-    }
-
-    @Transactional
-    public void readBatchAndApproveTransactionsWithDispatch(String organisationId) {
-        log.info("readBatchAndApproveTransactionsWithDispatch, organisationId: {}, maxDispatchBatchSize: {}", organisationId, maxApprovalBatchSize);
-
-        val txIds = transactionRepositoryGateway.readApprovalPendingBlockchainTransactionIds(organisationId, maxApprovalBatchSize, true, true);
-
-        if (txIds.isEmpty()) {
-            return;
-        }
-
-        approveTransactionsDispatch(organisationId, txIds);
     }
 
     @Transactional

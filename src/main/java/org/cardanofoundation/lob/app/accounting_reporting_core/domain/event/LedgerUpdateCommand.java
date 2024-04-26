@@ -8,7 +8,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.jmolecules.event.annotation.DomainEvent;
 
 import java.util.Set;
-import java.util.UUID;
 
 
 @AllArgsConstructor
@@ -18,13 +17,12 @@ import java.util.UUID;
 @DomainEvent
 public class LedgerUpdateCommand {
 
-    private UUID uploadId;
     private String organisationId;
     private Set<Transaction> transactions;
 
     public static LedgerUpdateCommand create(String organisationId,
                                              Set<Transaction> txs) {
-        return new LedgerUpdateCommand(UUID.randomUUID(), organisationId, txs);
+        return new LedgerUpdateCommand(organisationId, txs);
     }
 
 }

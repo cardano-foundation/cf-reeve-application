@@ -2,8 +2,10 @@ package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 
 import com.google.common.base.Objects;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
@@ -89,8 +91,8 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     }
 
     @Override
-    public boolean isNew() {
-        return isNew;
+    public String getId() {
+        return id;
     }
 
 }

@@ -19,10 +19,18 @@ import static java.util.stream.Collectors.toSet;
 public class TransactionEntityRepositoryGateway {
 
     private final TransactionEntityRepository transactionEntityRepository;
+    private final TransactionItemEntityRepository transactionItemEntityRepository;
 
+    /**
+     * Store only new transactions. We want our interface to be idempotent so if somebody sents the same transaction
+     * we will ignore it.
+     *
+     * @param transactionEntities
+     * @return stored transactions
+     */
     @Transactional
     public Set<TransactionEntity> storeOnlyNewTransactions(Set<TransactionEntity> transactionEntities) {
-        log.info("StoreOnlyNewTransactions..., transactionEntitiesCount:{}", transactionEntities.size());
+        log.info("StoreOnlyNewTransactions..., storeOnlyNewTransactions:{}", transactionEntities.size());
 
         val txIds = transactionEntities.stream()
                 .map(TransactionEntity::getId)
@@ -35,9 +43,15 @@ public class TransactionEntityRepositoryGateway {
 
         val newTransactions = Sets.difference(transactionEntities, existingTransactions);
 
-        return Stream.concat(transactionEntityRepository.saveAll(newTransactions)
+        val newTxs = Stream.concat(transactionEntityRepository.saveAll(newTransactions)
                         .stream(), existingTransactions.stream())
                 .collect(toSet());
+
+        for (val tx : newTxs) {
+            transactionItemEntityRepository.saveAll(tx.getItems());
+        }
+
+        return newTxs;
     }
 
 }

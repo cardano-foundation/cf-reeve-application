@@ -87,7 +87,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     @Enumerated(STRING)
     private RejectionStatus rejectionStatus = NOT_REJECTED;
 
-    @ElementCollection
+    @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "accounting_core_transaction_violation", joinColumns = @JoinColumn(name = "transaction_id"))
     @AttributeOverrides({
             @AttributeOverride(name = "code", column = @Column(name = "code", nullable = false)),
@@ -147,6 +147,13 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
         return false;
     }
 
+    public boolean isDispatchReady() {
+        return allApprovalsPassedForTransactionDispatch()
+                && rejectionStatus == NOT_REJECTED
+                && validationStatus == ValidationStatus.VALIDATED
+                && ledgerDispatchStatus == NOT_DISPATCHED;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -164,11 +171,6 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     @Override
     public String getId() {
         return id;
-    }
-
-    @Override
-    public boolean isNew() {
-        return isNew;
     }
 
     @Override

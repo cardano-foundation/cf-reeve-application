@@ -32,11 +32,6 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
         return id;
     }
 
-    @Override
-    public boolean isNew() {
-        return isNew;
-    }
-
     @Nullable
     @Column(name = "account_code_debit")
     private String accountCodeDebit;

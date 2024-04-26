@@ -7,16 +7,20 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxSta
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
+import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
+import org.cardanofoundation.lob.app.support.collections.Partitions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus.NOT_REJECTED;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+import static org.springframework.transaction.annotation.Propagation.SUPPORTS;
 
 @Service
 @Slf4j
@@ -25,55 +29,77 @@ public class LedgerService {
 
     private final TransactionRepository transactionRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final TransactionBatchService transactionBatchService;
     private final TransactionConverter transactionConverter;
     private final PIIDataFilteringService piiDataFilteringService;
+    private final OrganisationPublicApi organisationPublicApi;
+
+    @Value("${ledger.dispatch.batch.size:100}")
+    private int dispatchBatchSize;
 
     @Transactional
-    public void updateTransactionsWithNewLedgerDispatchStatuses(Set<TxStatusUpdate> txStatusUpdates) {
-        log.info("Updating dispatch status for statusMapCount: {}", txStatusUpdates.size());
+    public void updateTransactionsWithNewStatuses(Map<String, TxStatusUpdate> statuses) {
+        log.info("Updating dispatch status for statusMapCount: {}", statuses.size());
 
-        storeLatestLedgerUpdateState(txStatusUpdates);
-        transactionBatchService.updateBatchesPerTransactions(txStatusUpdates);
+        val txIds = statuses.keySet();
 
-        log.info("Updated dispatch status for statusMapCount: {} completed.", txStatusUpdates.size());
-    }
+        val transactionEntities = transactionRepository.findAllById(txIds);
 
-    private void storeLatestLedgerUpdateState(Set<TxStatusUpdate> txStatusUpdates) {
-        for (val txStatusUpdate : txStatusUpdates) {
-            val txId = txStatusUpdate.getTxId();
-            val transactionM = transactionRepository.findById(txId);
-
-            if (transactionM.isEmpty()) {
-                continue;
-            }
-
-            val transactionEntity = transactionM.orElseThrow();
-
-            transactionEntity.setLedgerDispatchStatus(txStatusUpdate.getStatus());
-
-            transactionRepository.save(transactionEntity);
+        for (val tx : transactionEntities) {
+            val txStatusUpdate = statuses.get(tx.getId());
+            tx.setLedgerDispatchStatus(txStatusUpdate.getStatus());
         }
+
+        transactionRepository.saveAll(transactionEntities);
+
+        log.info("Updated dispatch status for statusMapCount: {} completed.", statuses.size());
     }
 
     @Transactional(propagation = REQUIRES_NEW)
-    public void tryToDispatchTransactionToBlockchainPublisher(String organisationId,
-                                                              Set<TransactionEntity> transactions) {
-        log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", transactions.stream()
+    public void checkIfThereAreTransactionsToDispatch(String organisationId,
+                                                      Set<TransactionEntity> transactions) {
+        val txIds = transactions.stream()
                 .map(TransactionEntity::getId)
-                .collect(Collectors.toSet()));
-
-        val dispatchPendingTransactions = transactions.stream()
-                .filter(TransactionEntity::allApprovalsPassedForTransactionDispatch)
-                .filter(tx -> tx.getRejectionStatus() == NOT_REJECTED)
-                .filter(tx -> tx.getLedgerDispatchStatus() == NOT_DISPATCHED)
                 .collect(Collectors.toSet());
 
-        val txs = transactionConverter.convertFromDb(dispatchPendingTransactions);
+        log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", txIds);
 
-        val piiFilteredOutTransactions = piiDataFilteringService.apply(txs);
+        val dispatchPendingTransactions = transactions.stream()
+                .filter(TransactionEntity::isDispatchReady)
+                .collect(Collectors.toSet());
 
-        applicationEventPublisher.publishEvent(LedgerUpdateCommand.create(organisationId, piiFilteredOutTransactions));
+        dispatchTransactions(organisationId, dispatchPendingTransactions);
+    }
+
+    @Transactional(propagation = REQUIRES_NEW)
+    public void dispatchPending(int limit) {
+        for (val organisation : organisationPublicApi.listAll()) {
+            val dispatchTransactions = transactionRepository.findDispatchTransactions(organisation.getId(), Limit.of(limit));
+
+            log.info("dispatchPending, organisationId: {}, total tx count: {}", organisation.getId(), dispatchTransactions.size());
+
+            dispatchTransactions(organisation.getId(), dispatchTransactions);
+        }
+    }
+
+    @Transactional(propagation = SUPPORTS)
+    public void dispatchTransactions(String organisationId,
+                                     Set<TransactionEntity> transactions) {
+        log.info("dispatchTransactionToBlockchainPublisher, total tx count: {}", transactions.size());
+
+        if (transactions.isEmpty()) {
+            return;
+        }
+
+        val canonicalTxs = transactionConverter.convertFromDb(transactions);
+        val piiFilteredOutTransactions = piiDataFilteringService.apply(canonicalTxs);
+
+        for (val partition : Partitions.partition(piiFilteredOutTransactions, dispatchBatchSize)) {
+            val txs = partition.asSet();
+
+            log.info("dispatchTransactionToBlockchainPublisher, partitionSize: {}", txs.size());
+
+            applicationEventPublisher.publishEvent(LedgerUpdateCommand.create(organisationId, txs));
+        }
     }
 
 }

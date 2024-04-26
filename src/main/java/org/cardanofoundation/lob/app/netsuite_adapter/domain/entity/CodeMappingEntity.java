@@ -13,7 +13,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Getter
 @Setter
 @Entity(name = "netsuite.CodeMappingEntity")
-@Table(name = "netsuite_code_mapping")
+@Table(name = "netsuite_adapter_code_mapping")
 @NoArgsConstructor
 public class CodeMappingEntity extends AuditEntity implements Persistable<CodeMappingEntity.Id> {
 
@@ -27,11 +27,6 @@ public class CodeMappingEntity extends AuditEntity implements Persistable<CodeMa
 
     @Column(name = "customerCode")
     private String code;
-
-    @Override
-    public boolean isNew() {
-        return isNew;
-    }
 
     @Embeddable
     @Getter

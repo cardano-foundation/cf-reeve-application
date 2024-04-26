@@ -59,4 +59,8 @@ public abstract class AuditEntity {
         updatedAt = LocalDateTime.now();
     }
 
+    public boolean isNew() {
+        return isNew;
+    }
+
 }
