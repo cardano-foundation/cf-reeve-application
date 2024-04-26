@@ -65,6 +65,9 @@ class AccountEventCodesConversionTaskItemTest {
 
         assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
         assertThat(tx.getViolations()).isEmpty();
+        assertThat(tx.getItems().iterator().next().getAccountCodeRefDebit().orElseThrow()).isEqualTo(accountDebitRefCode);
+        assertThat(tx.getItems().iterator().next().getAccountCodeRefCredit().orElseThrow()).isEqualTo(accountCreditRefCode);
+        assertThat(tx.getItems().iterator().next().getAccountEventCode().orElseThrow()).isEqualTo("DR_REFCR_REF");
     }
 
     @Test
@@ -139,6 +142,7 @@ class AccountEventCodesConversionTaskItemTest {
         taskItem.run(tx);
 
         assertThat(tx.getViolations()).isEmpty();
+        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
     }
 
 }
