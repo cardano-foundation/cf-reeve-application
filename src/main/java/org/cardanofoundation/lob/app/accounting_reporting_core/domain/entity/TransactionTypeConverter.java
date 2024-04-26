@@ -7,9 +7,12 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @Converter(autoApply = true)
 public class TransactionTypeConverter implements AttributeConverter<List<TransactionType>, Integer> {
+
+    private static final Function<TransactionType, Integer> typeToNumber = TransactionTypeMapper.createTypeToNumber();
 
     @Override
     public Integer convertToDatabaseColumn(List<TransactionType> attribute) {
@@ -19,7 +22,7 @@ public class TransactionTypeConverter implements AttributeConverter<List<Transac
 
         int value = 0;
         for (val type : attribute) {
-            value |= type.getValue();
+            value |= typeToNumber.apply(type);
         }
 
         return value;
@@ -33,7 +36,9 @@ public class TransactionTypeConverter implements AttributeConverter<List<Transac
 
         List<TransactionType> transactionTypes = new ArrayList<>();
         for (val type : TransactionType.values()) {
-            if ((dbData & type.getValue()) == type.getValue()) {
+            val typeValue = typeToNumber.apply(type);
+
+            if ((dbData & typeValue) == typeValue) {
                 transactionTypes.add(type);
             }
         }
