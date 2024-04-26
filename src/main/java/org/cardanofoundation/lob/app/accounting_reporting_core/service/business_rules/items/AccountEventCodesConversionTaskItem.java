@@ -66,7 +66,11 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
         }
     }
 
-    private void addViolation(String accountCode, OperationType type, TransactionItemEntity item, TransactionEntity tx, Violation.Source source) {
+    private void addViolation(String accountCode,
+                              OperationType type,
+                              TransactionItemEntity item,
+                              TransactionEntity tx,
+                              Violation.Source source) {
         val violation = org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation.builder()
                 .txItemId(item.getId())
                 .code(CHART_OF_ACCOUNT_NOT_FOUND)
@@ -92,8 +96,8 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
     }
 
     private void setAccountEventCode(TransactionItemEntity item) {
-        Optional<String> accountDebitRefCode = item.getAccountCodeRefDebit();
-        Optional<String> accountCreditRefCode = item.getAccountCodeRefCredit();
+        val accountDebitRefCode = item.getAccountCodeRefDebit();
+        val accountCreditRefCode = item.getAccountCodeRefCredit();
 
         if (accountDebitRefCode.isPresent() && accountCreditRefCode.isPresent()) {
             val eventCode = STR."\{accountDebitRefCode.orElseThrow()}\{accountCreditRefCode.orElseThrow()}";
