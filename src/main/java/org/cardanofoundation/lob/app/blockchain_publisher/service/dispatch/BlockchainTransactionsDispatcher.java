@@ -36,17 +36,11 @@ import static org.cardanofoundation.lob.app.blockchain_publisher.domain.core.OnC
 public class BlockchainTransactionsDispatcher {
 
     private final TransactionEntityRepository transactionEntityRepository;
-
     private final OrganisationPublicApi organisationPublicApi;
-
     private final L1TransactionCreator l1TransactionCreator;
-
     private final TransactionSubmissionService transactionSubmissionService;
-
     private final BlockchainPublishStatusMapper blockchainPublishStatusMapper;
-
     private final ApplicationEventPublisher applicationEventPublisher;
-
     private final DispatchingStrategy dispatchingStrategy;
 
     @Value("${lob.blockchain.publisher.pullBatchSize:50}")
@@ -126,7 +120,6 @@ public class BlockchainTransactionsDispatcher {
         }
 
         return Optional.empty();
-        //return createAndSendBlockchainTransactions(organisationId, serialisedTx.remainingTransactions());
     }
 
     @Transactional

@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core.service;
+package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal;
 
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
@@ -9,7 +9,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.repository.Transa
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionItemRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +16,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.DISPATCHED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
@@ -43,11 +45,12 @@ class DbSynchronisationServiceTest {
 
     @Test
     void shouldDoNothingWithEmptyTransactions() {
+        val batchId = "batch1";
         val organisationTransactions = new OrganisationTransactions("org1", Set.of());
 
-        service.synchroniseAndFlushToDb("batch1", organisationTransactions, Optional.of(0), new ProcessorFlags(false));
+        service.synchronise(batchId, organisationTransactions, Optional.of(0), new ProcessorFlags(false));
+        verify(transactionBatchService).updateTransactionBatchStatusAndStats(eq(batchId), eq(Optional.of(0)));
         verifyNoInteractions(transactionRepository);
-        verifyNoInteractions(transactionBatchService);
         verifyNoInteractions(transactionItemRepository);
     }
 
@@ -67,7 +70,7 @@ class DbSynchronisationServiceTest {
         val transactions = new OrganisationTransactions("org1", txs);
 
         when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer((Answer<TransactionEntity>) invocation -> (TransactionEntity) invocation.getArgument(0));
-        service.synchroniseAndFlushToDb(batchId, transactions, Optional.of(1), new ProcessorFlags(true));
+        service.synchronise(batchId, transactions, Optional.of(1), new ProcessorFlags(true));
 
         verify(transactionRepository).save(eq(tx1));
         verify(transactionBatchAssocRepository).saveAll(any(Set.class));
@@ -76,19 +79,22 @@ class DbSynchronisationServiceTest {
     @Test
     void shouldNotUpdateDispatchedTransactions() {
         val batchId = "batch1";
+        val txId = "tx1";
+        val orgId = "org1";
+
         val tx1 = new TransactionEntity();
-        tx1.setId("tx1");
+        tx1.setId(txId);
         tx1.setTransactionInternalNumber("txn123");
         tx1.setTransactionApproved(true);
         tx1.setLedgerDispatchApproved(true);
         tx1.setLedgerDispatchStatus(DISPATCHED);
 
         val txs = Set.of(tx1);
-        val transactions = new OrganisationTransactions("org1", txs);
+        val transactions = new OrganisationTransactions(orgId, txs);
 
-        when(transactionRepository.findAllById(eq(Set.of("tx1")))).thenReturn(List.of(tx1));
+        when(transactionRepository.findAllById(eq(Set.of(txId)))).thenReturn(List.of(tx1));
 
-        service.synchroniseAndFlushToDb(batchId, transactions, Optional.of(1), new ProcessorFlags(false));
+        service.synchronise(batchId, transactions, Optional.of(1), new ProcessorFlags(false));
 
         verify(transactionRepository, never()).save(any());
         verify(transactionItemRepository, never()).save(any());
@@ -98,6 +104,7 @@ class DbSynchronisationServiceTest {
     void shouldStoreNewTransactions() {
         val batchId = "batch1";
         val tx1Id = "3112ec27094335dd858948b3086817d7e290586d235c529be21f03ba5d583503";
+        val orgId = "org1";
 
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(tx1Id, "0"));
@@ -112,12 +119,12 @@ class DbSynchronisationServiceTest {
         tx1.setItems(items);
 
         val txs = Set.of(tx1);
-        val transactions = new OrganisationTransactions("org1", txs);
+        val transactions = new OrganisationTransactions(orgId, txs);
 
         when(transactionRepository.findAllById(any())).thenReturn(List.of());
         when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer((Answer<TransactionEntity>) invocation -> (TransactionEntity) invocation.getArgument(0));
 
-        service.synchroniseAndFlushToDb(batchId, transactions, Optional.of(txs.size()), new ProcessorFlags(false));
+        service.synchronise(batchId, transactions, Optional.of(txs.size()), new ProcessorFlags(false));
 
         verify(transactionRepository).save(eq(tx1));
         verify(transactionItemRepository).saveAll(eq(items));
@@ -125,25 +132,30 @@ class DbSynchronisationServiceTest {
 
     @Test
     void shouldHandleMixedTransactions() {
+        val tx1Id = "3112ec27094335dd858948b3086817d7e290586d235c529be21f03ba5d583503";
+        val tx2Id = "44f7f0e32ca04ad46b1d6a0a1dbf14a6aac6f5fb96067725de5f0345d3619afe";
+        val orgId = "org1";
+        val batchId = "batch1";
+
         val dispatchedTx = new TransactionEntity();
-        dispatchedTx.setId("tx1");
+        dispatchedTx.setId(tx1Id);
         dispatchedTx.setTransactionApproved(true);
         dispatchedTx.setLedgerDispatchApproved(true);
         dispatchedTx.setLedgerDispatchStatus(DISPATCHED);
 
         val notDispatchedTx = new TransactionEntity();
-        notDispatchedTx.setId("tx2");
+        notDispatchedTx.setId(tx2Id);
         dispatchedTx.setTransactionApproved(true);
         notDispatchedTx.setLedgerDispatchApproved(false);
         notDispatchedTx.setLedgerDispatchStatus(NOT_DISPATCHED);
 
         val txs = Set.of(dispatchedTx, notDispatchedTx);
-        val mixedTransactions = new OrganisationTransactions("org1", txs);
+        val mixedTransactions = new OrganisationTransactions(orgId, txs);
         when(transactionRepository.findAllById(any())).thenReturn(List.of(dispatchedTx));
 
         when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer((Answer<TransactionEntity>) invocation -> (TransactionEntity) invocation.getArgument(0));
 
-        service.synchroniseAndFlushToDb("batch1", mixedTransactions, Optional.of(2), new ProcessorFlags(false));
+        service.synchronise(batchId, mixedTransactions, Optional.of(2), new ProcessorFlags(false));
 
         verify(transactionRepository, never()).save(dispatchedTx);
         verify(transactionRepository).save(notDispatchedTx);

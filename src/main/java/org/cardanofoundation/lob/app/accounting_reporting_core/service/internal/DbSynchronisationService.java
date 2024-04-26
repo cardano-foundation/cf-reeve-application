@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.accounting_reporting_core.service;
+package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,13 +10,12 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.repository.Transa
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionItemRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,28 +31,31 @@ public class DbSynchronisationService {
     private final TransactionBatchService transactionBatchService;
 
     @Transactional
-    public void synchroniseAndFlushToDb(String batchId,
-                                        OrganisationTransactions incomingTransactions,
-                                        Optional<Integer> totalTransactionsCount,
-                                        ProcessorFlags flags) {
-        if (incomingTransactions.transactions().isEmpty()) {
+    public void synchronise(String batchId,
+                            OrganisationTransactions incomingTransactions,
+                            Optional<Integer> totalTransactionsCount,
+                            ProcessorFlags flags) {
+        val transactions = incomingTransactions.transactions();
+
+        if (transactions.isEmpty()) {
             log.info("No transactions to process, batchId: {}", batchId);
+            transactionBatchService.updateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
             return;
         }
 
         if (flags.isReprocess()) {
             // TODO should we check if we are NOT changing incomingTransactions which are already marked as dispatched?
-            dbUpdateTransactionBatch(batchId, incomingTransactions);
+            storeTransactions(batchId, incomingTransactions);
         } else {
-            processTransactionsForTheFirstTime(batchId, incomingTransactions, totalTransactionsCount);
+            val organisationId = incomingTransactions.organisationId();
+            processTransactionsForTheFirstTime(batchId, organisationId, transactions, totalTransactionsCount);
         }
     }
 
-    private void processTransactionsForTheFirstTime(String batchId, OrganisationTransactions incomingTransactions, Optional<Integer> totalTransactionsCount) {
-        val organisationId = incomingTransactions.organisationId();
-
-        val incomingDetachedTransactions = incomingTransactions.transactions();
-
+    private void processTransactionsForTheFirstTime(String batchId,
+                                                    String organisationId,
+                                                    Set<TransactionEntity> incomingDetachedTransactions,
+                                                    Optional<Integer> totalTransactionsCount) {
         val txIds = incomingDetachedTransactions.stream()
                 .map(TransactionEntity::getId)
                 .collect(Collectors.toSet());
@@ -62,7 +64,7 @@ public class DbSynchronisationService {
                 .stream()
                 .collect(Collectors.toMap(TransactionEntity::getId, Function.identity()));
 
-        val toProcessTransactions = new HashSet<TransactionEntity>();
+        val toProcessTransactions = new LinkedHashSet<TransactionEntity>();
 
         for (val incomingTx : incomingDetachedTransactions) {
             val txM = Optional.ofNullable(databaseTransactionsMap.get(incomingTx.getId()));
@@ -79,7 +81,7 @@ public class DbSynchronisationService {
                 if (txM.isPresent()) {
                     val attached = txM.orElseThrow();
 
-                    transactionConverter.useFieldsFromDetached(attached, incomingTx);
+                    transactionConverter.copyFields(attached, incomingTx);
 
                     toProcessTransactions.add(attached);
                 } else {
@@ -88,21 +90,20 @@ public class DbSynchronisationService {
             }
         }
 
-        dbUpdateTransactionBatch(batchId, new OrganisationTransactions(organisationId, toProcessTransactions));
+        storeTransactions(batchId, new OrganisationTransactions(organisationId, toProcessTransactions));
+
         transactionBatchService.updateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
     }
 
-    private void dbUpdateTransactionBatch(String batchId,
-                                          OrganisationTransactions transactions) {
+    private void storeTransactions(String batchId,
+                                   OrganisationTransactions transactions) {
         log.info("Updating transaction batch, batchId: {}", batchId);
 
         val txs = transactions.transactions();
 
         for (val tx : txs) {
             val saved = transactionRepository.save(tx);
-
             saved.getItems().forEach(i -> i.setTransaction(saved));
-
             transactionItemRepository.saveAll(tx.getItems());
         }
 

@@ -26,6 +26,12 @@ public class BatchStatistics {
     private Integer failedTransactionsCount;
 
     @Nullable
+    private Integer failedSourceERPTransactionsCount;
+
+    @Nullable
+    private Integer failedSourceLOBTransactionsCount;
+
+    @Nullable
     private Integer approvedTransactionsCount;
 
     @Nullable
@@ -64,12 +70,35 @@ public class BatchStatistics {
         return Optional.ofNullable(dispatchedTransactionsCount);
     }
 
+    public Optional<Integer> getFailedSourceERPTransactionsCount() {
+        return Optional.ofNullable(failedSourceERPTransactionsCount);
+    }
+
+    public Optional<Integer> getFailedSourceLOBTransactionsCount() {
+        return Optional.ofNullable(failedSourceLOBTransactionsCount);
+    }
+
     public Optional<Integer> getCompletedTransactionsCount() {
         return Optional.ofNullable(completedTransactionsCount);
     }
 
     public Optional<Integer> getFinalizedTransactionsCount() {
         return Optional.ofNullable(finalizedTransactionsCount);
+    }
+
+    public static BatchStatistics empty() {
+        return BatchStatistics.builder()
+                .totalTransactionsCount(0)
+                .processedTransactionsCount(0)
+                .approvedTransactionsCount(0)
+                .approvedTransactionsDispatchCount(0)
+                .failedTransactionsCount(0)
+                .failedSourceERPTransactionsCount(0)
+                .failedSourceERPTransactionsCount(0)
+                .dispatchedTransactionsCount(0)
+                .completedTransactionsCount(0)
+                .finalizedTransactionsCount(0)
+                .build();
     }
 
 }

@@ -17,10 +17,6 @@ public class TxBatchStatusCalculator {
 
     public TransactionBatchStatus reCalcStatus(TransactionBatchEntity transactionBatchEntity,
                                                Optional<Integer> totalTransactionsCount) {
-        if (totalTransactionsCount.isPresent() && totalTransactionsCount.orElseThrow() == 0) {
-            return TransactionBatchStatus.FINALIZED;
-        }
-
         val allBatchTransactions = transactionBatchEntity.getTransactions();
 
         val validTransactionsCount = allBatchTransactions

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("blockchain_publisher.TransactionDispatcherJob")
 @Slf4j
 @RequiredArgsConstructor
 @ConditionalOnProperty(value = "lob.blockchain.publisher.enabled", havingValue = "true")

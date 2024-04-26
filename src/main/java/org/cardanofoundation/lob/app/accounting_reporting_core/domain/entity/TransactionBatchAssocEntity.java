@@ -42,11 +42,6 @@ public class TransactionBatchAssocEntity extends AuditEntity implements Persista
         return id;
     }
 
-    @Override
-    public boolean isNew() {
-        return isNew;
-    }
-
     @Embeddable
     @AllArgsConstructor
     @NoArgsConstructor

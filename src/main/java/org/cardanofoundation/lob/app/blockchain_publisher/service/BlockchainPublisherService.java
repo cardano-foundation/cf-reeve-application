@@ -34,28 +34,32 @@ public class BlockchainPublisherService {
                                                  Set<TransactionEntity> transactions) {
         log.info("dispatchTransactionsToBlockchains..., orgId:{}", organisationId);
 
-        val allNewAndOldTransactionsStored = transactionEntityRepositoryGateway.storeOnlyNewTransactions(transactions);
+        val storedTransactions = transactionEntityRepositoryGateway.storeOnlyNewTransactions(transactions);
 
-        notifyTransactionStored(organisationId, allNewAndOldTransactionsStored);
+        notifyTransactionStored(organisationId, storedTransactions);
     }
 
     @Transactional
     private void notifyTransactionStored(String organisationId,
-                                         Set<TransactionEntity> allNewAndOldTransactionsStored) {
-        Partitions.partition(allNewAndOldTransactionsStored, dispatchBatchSize).forEach(partition -> {
+                                         Set<TransactionEntity> txs) {
+        val partitions = Partitions.partition(txs, dispatchBatchSize);
+
+        for (val partition : partitions) {
             val txStatusUpdates = partition.asSet().stream()
                     .map(txEntity -> {
                         val assuranceLevelM = txEntity.getL1SubmissionData()
                                 .flatMap(L1SubmissionData::getAssuranceLevel);
-                        val blockchainPublishStatusM = txEntity.getL1SubmissionData().flatMap(L1SubmissionData::getPublishStatus);
 
-                        return new TxStatusUpdate(txEntity.getId(),
-                                blockchainPublishStatusMapper.convert(blockchainPublishStatusM, assuranceLevelM));
+                        val blockchainPublishStatusM = txEntity.getL1SubmissionData().flatMap(L1SubmissionData::getPublishStatus);
+                        val status = blockchainPublishStatusMapper.convert(blockchainPublishStatusM, assuranceLevelM);
+                        val txId = txEntity.getId();
+
+                        return new TxStatusUpdate(txId, status);
                     })
                     .collect(Collectors.toSet());
 
             applicationEventPublisher.publishEvent(new LedgerUpdatedEvent(organisationId, txStatusUpdates));
-        });
+        }
     }
 
 }

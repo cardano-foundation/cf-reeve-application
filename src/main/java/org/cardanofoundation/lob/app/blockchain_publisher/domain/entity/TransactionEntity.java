@@ -101,8 +101,8 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     }
 
     @Override
-    public boolean isNew() {
-        return isNew;
+    public String getId() {
+        return id;
     }
 
 }

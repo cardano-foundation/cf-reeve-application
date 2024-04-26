@@ -12,18 +12,24 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.Tran
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchAssocRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepositoryGateway;
+import org.cardanofoundation.lob.app.support.reactive.DebouncerManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus.CREATED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus.FINALIZED;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+import static org.springframework.transaction.annotation.Propagation.SUPPORTS;
 
 @Service
 @Slf4j
@@ -37,6 +43,10 @@ public class TransactionBatchService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TxBatchStatusCalculator txBatchStatusCalculator;
     private final TxBatchStatsCalculator txBatchStatsCalculator;
+    private final DebouncerManager debouncerManager;
+
+    @Value("${batch.stats.debounce.duration:PT3S}")
+    private Duration batchStatsDebounceDuration;
 
     @Transactional
     public void createTransactionBatch(String batchId,
@@ -46,11 +56,12 @@ public class TransactionBatchService {
                                        SystemExtractionParameters systemExtractionParameters) {
         log.info("Creating transaction batch, batchId: {}, initiator: {}, instanceId: {}, filteringParameters: {}", batchId, initiator, instanceId, userExtractionParameters);
 
-        val transactionBatchEntity = new TransactionBatchEntity();
+        val filteringParameters = transactionConverter.convertToDbDetached(systemExtractionParameters, userExtractionParameters);
 
+        val transactionBatchEntity = new TransactionBatchEntity();
         transactionBatchEntity.setId(batchId);
         transactionBatchEntity.setTransactions(Set.of());
-        transactionBatchEntity.setFilteringParameters(transactionConverter.convertToDbDetached(systemExtractionParameters, userExtractionParameters));
+        transactionBatchEntity.setFilteringParameters(filteringParameters);
         transactionBatchEntity.setStatus(CREATED);
         transactionBatchEntity.setCreatedBy(initiator);
         transactionBatchEntity.setUpdatedBy(initiator);
@@ -70,7 +81,23 @@ public class TransactionBatchService {
     @Transactional(propagation = REQUIRES_NEW)
     public void updateTransactionBatchStatusAndStats(String batchId,
                                                      Optional<Integer> totalTransactionsCount) {
-        log.info("Updating transaction batch status and statistics, batchId: {}", batchId);
+        try {
+            val debouncer = debouncerManager.getDebouncer(batchId, () -> {
+                invokeUpdateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
+            }, batchStatsDebounceDuration);
+
+            debouncer.call();
+        } catch (ExecutionException e) {
+            log.warn("Error while getting debouncer for batchId: {}", batchId, e);
+
+            invokeUpdateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
+        }
+    }
+
+    @Transactional(propagation = SUPPORTS)
+    private void invokeUpdateTransactionBatchStatusAndStats(String batchId,
+                                                            Optional<Integer> totalTransactionsCount) {
+        log.info("EXPENSIVE::Updating transaction batch status and statistics, batchId: {}", batchId);
 
         val txBatchM = transactionBatchRepositoryGateway.findById(batchId);
 
@@ -93,33 +120,27 @@ public class TransactionBatchService {
         txBatch.setStatus(txBatchStatusCalculator.reCalcStatus(txBatch, totalTxCount));
 
         transactionBatchRepository.save(txBatch);
-    }
-
-    private static Optional<Integer> totalTxCount(TransactionBatchEntity txBatch,
-                                                  Optional<Integer> totalTransactionsCount) {
-        return Optional.ofNullable(totalTransactionsCount
-                .orElse(txBatch.getBatchStatistics().
-                        flatMap(BatchStatistics::getTotalTransactionsCount)
-                        .orElse(null)));
+        log.info("EXPENSIVE::Transaction batch status and statistics updated, batchId: {}", batchId);
     }
 
     @Transactional
-    public void updateBatchesPerTransactions(Set<TxStatusUpdate> txStatusUpdates) {
-        for (val txStatusUpdate : txStatusUpdates) {
+    public void updateBatchesPerTransactions(Map<String, TxStatusUpdate> txStatusUpdates) {
+        for (val txStatusUpdate : txStatusUpdates.values()) {
             val txId = txStatusUpdate.getTxId();
-            val transactionBatchAssocs = transactionBatchAssocRepository.findAllByTxId(txId);
+            val transactionBatchAssocsSet = transactionBatchAssocRepository.findAllByTxId(txId);
 
-            if (transactionBatchAssocs.isEmpty()) {
+            if (transactionBatchAssocsSet.isEmpty()) {
                 log.warn("Transaction batch assoc not found for id: {}", txId);
                 continue;
             }
 
-            val allBatchesIdsAssociatedWithThisTransaction = transactionBatchAssocs.stream()
+            val allBatchesIdsAssociatedWithThisTransaction = transactionBatchAssocsSet.stream()
                     .map(id -> id.getId().getTransactionBatchId())
                     .collect(Collectors.toSet());
 
-            transactionBatchRepository.findAllById(allBatchesIdsAssociatedWithThisTransaction)
-                    .forEach(txBatch -> updateTransactionBatchStatusAndStats(txBatch.getId(), Optional.empty()));
+            for (val txBatch : transactionBatchRepository.findAllById(allBatchesIdsAssociatedWithThisTransaction)) {
+                updateTransactionBatchStatusAndStats(txBatch.getId(), totalTxCount(txBatch, Optional.empty()));
+            }
         }
     }
 
@@ -131,6 +152,14 @@ public class TransactionBatchService {
     @Transactional
     public Optional<TransactionBatchEntity> findById(String batchId) {
         return transactionBatchRepository.findById(batchId);
+    }
+
+    private static Optional<Integer> totalTxCount(TransactionBatchEntity txBatch,
+                                                  Optional<Integer> totalTransactionsCount) {
+        return Optional.ofNullable(totalTransactionsCount
+                .orElse(txBatch.getBatchStatistics().
+                        flatMap(BatchStatistics::getTotalTransactionsCount)
+                        .orElse(null)));
     }
 
 }
