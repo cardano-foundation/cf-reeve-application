@@ -27,6 +27,9 @@ public class Organisation {
     @Column(name = "long_name", nullable = false)
     private String longName;
 
+    @Column(name = "dummy_account")
+    private String dummyAccount;
+
     @Column(name = "pre_approve_transactions")
     private Boolean preApproveTransactions;
 
@@ -52,6 +55,10 @@ public class Organisation {
 
     public boolean isPreApproveTransactionsDispatchEnabled() {
         return Optional.ofNullable(preApproveTransactionsDispatch).orElse(false);
+    }
+
+    public Optional<String> getDummyAccount() {
+        return Optional.ofNullable(dummyAccount);
     }
 
 }

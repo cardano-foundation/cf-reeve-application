@@ -14,10 +14,10 @@ import java.util.Optional;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType.CREDIT;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType.DEBIT;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.CHART_OF_ACCOUNT_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.CHART_OF_ACCOUNT_NOT_FOUND;
 
 @RequiredArgsConstructor
 public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
@@ -70,6 +70,7 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
         val violation = org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation.builder()
                 .txItemId(item.getId())
                 .code(CHART_OF_ACCOUNT_NOT_FOUND)
+                .subCode(type.name())
                 .type(ERROR)
                 .source(source)
                 .processorModule(this.getClass().getSimpleName())

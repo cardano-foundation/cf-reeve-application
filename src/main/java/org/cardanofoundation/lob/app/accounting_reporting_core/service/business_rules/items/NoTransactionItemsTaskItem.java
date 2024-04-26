@@ -7,7 +7,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Vio
 
 import java.util.Map;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.TRANSACTION_ITEMS_EMPTY;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.TRANSACTION_ITEMS_EMPTY;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 

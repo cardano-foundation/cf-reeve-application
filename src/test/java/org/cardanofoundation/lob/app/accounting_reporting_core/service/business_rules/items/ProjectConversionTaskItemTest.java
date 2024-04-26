@@ -1,7 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Project;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
@@ -107,7 +107,7 @@ public class ProjectConversionTaskItemTest {
         projectConversionTaskItem.run(transaction);
 
         assertThat(transaction.getViolations()).isNotEmpty();
-        assertThat(transaction.getViolations()).anyMatch(v -> v.getCode() == Violation.Code.PROJECT_DATA_NOT_FOUND);
+        assertThat(transaction.getViolations()).anyMatch(v -> v.getCode() == ViolationCode.PROJECT_DATA_NOT_FOUND);
     }
 
 }

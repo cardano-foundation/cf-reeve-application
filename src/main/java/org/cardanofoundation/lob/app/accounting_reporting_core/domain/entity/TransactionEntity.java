@@ -91,6 +91,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     @CollectionTable(name = "accounting_core_transaction_violation", joinColumns = @JoinColumn(name = "transaction_id"))
     @AttributeOverrides({
             @AttributeOverride(name = "code", column = @Column(name = "code", nullable = false)),
+            @AttributeOverride(name = "subCode", column = @Column(name = "sub_code", nullable = false)),
             @AttributeOverride(name = "type", column = @Column(name = "type", nullable = false)),
             @AttributeOverride(name = "txItemId", column = @Column(name = "tx_item_id", nullable = false)),
             @AttributeOverride(name = "source", column = @Column(name = "source", nullable = false)),
@@ -150,7 +151,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TransactionEntity that = (TransactionEntity) o;
+        val that = (TransactionEntity) o;
 
         return Objects.equal(id, that.id);
     }

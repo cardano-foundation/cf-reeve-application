@@ -70,13 +70,14 @@ CREATE TABLE accounting_core_transaction_violation (
    code VARCHAR(255) NOT NULL,
 
    type VARCHAR(255) NOT NULL,
+   sub_code VARCHAR(255) NOT NULL,
    source VARCHAR(255) NOT NULL,
    processor_module VARCHAR(255) NOT NULL,
    bag jsonb NOT NULL,
 
    CONSTRAINT fk_accounting_core_transaction_violation_id FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
 
-   PRIMARY KEY (transaction_id, tx_item_id, code)
+   PRIMARY KEY (transaction_id, tx_item_id, code, sub_code)
 );
 
 CREATE TABLE accounting_core_transaction_filtering_params_transaction_number (
