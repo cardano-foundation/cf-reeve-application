@@ -3,7 +3,6 @@ package org.cardanofoundation.lob.app.netsuite_adapter.util;
 import io.micrometer.common.lang.Nullable;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 public class MoreBigDecimal {
 
@@ -19,12 +18,9 @@ public class MoreBigDecimal {
         return a.subtract(b);
     }
 
-    public static BigDecimal substractNullFriendly(@Nullable BigDecimal a, @Nullable BigDecimal b) {
+    public static BigDecimal substractNullFriendly(@Nullable BigDecimal a,
+                                                   @Nullable BigDecimal b) {
         return zeroForNull(a).subtract(zeroForNull(b));
-    }
-
-    public static Optional<BigDecimal> substractOpt(@Nullable BigDecimal a, @Nullable BigDecimal b) {
-        return Optional.ofNullable(substract(zeroForNull(a), zeroForNull(b)));
     }
 
 }

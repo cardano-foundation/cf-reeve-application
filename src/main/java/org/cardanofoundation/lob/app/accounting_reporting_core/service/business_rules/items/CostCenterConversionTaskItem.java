@@ -8,7 +8,7 @@ import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 
 import java.util.Map;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code.COST_CENTER_DATA_NOT_FOUND;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.COST_CENTER_DATA_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 

@@ -5,6 +5,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode;
 import org.hibernate.annotations.Type;
 
 import java.util.HashMap;
@@ -28,11 +29,14 @@ public class Violation {
 
     @NotNull
     @Enumerated(STRING)
-    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Code code;
+    private ViolationCode code;
 
     @NotNull
     @Enumerated(STRING)
     private org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type type;
+
+    @Builder.Default
+    private String subCode = "";
 
     @NotNull
     @Enumerated(STRING)

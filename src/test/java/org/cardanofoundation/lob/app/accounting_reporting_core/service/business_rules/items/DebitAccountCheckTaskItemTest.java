@@ -142,13 +142,13 @@ public class DebitAccountCheckTaskItemTest {
 
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(txId, "0"));
-        txItem1.setAccountCodeCredit(null);
+        txItem1.clearAccountCodeCredit();
         txItem1.setAccountCodeDebit("6");
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId(TransactionItem.id(txId, "1"));
         txItem2.setAccountCodeCredit("7");
-        txItem2.setAccountCodeDebit(null);
+        txItem2.clearAccountCodeDebit();
 
         val txItems = new LinkedHashSet<TransactionItemEntity>();
         txItems.add(txItem1);

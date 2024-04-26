@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
@@ -103,6 +104,14 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     @Nullable
     private Document document;
 
+    public void clearAccountCodeCredit() {
+        this.accountCodeCredit = null;
+    }
+
+    public void clearAccountCodeDebit() {
+        this.accountCodeDebit = null;
+    }
+
     public Optional<String> getAccountCodeDebit() {
         return Optional.ofNullable(accountCodeDebit);
     }
@@ -137,6 +146,15 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
 
     public Optional<Document> getDocument() {
         return Optional.ofNullable(document);
+    }
+
+
+    public Optional<OperationType> getOperationType() {
+        val amountLcy = this.amountLcy.intValue();
+
+        if (amountLcy == 0) return Optional.empty();
+
+        return amountLcy < 0 ? Optional.of(OperationType.CREDIT) : Optional.of(OperationType.DEBIT);
     }
 
     @Override
