@@ -183,9 +183,12 @@ public class TransactionConverter {
 
     private YearMonth financialPeriod(TxLine txLine) {
         return switch (financialPeriodSource) {
-            case IMPLICIT:
-                yield YearMonth.from(txLine.date());
-            case EXPLICIT: throw new UnsupportedOperationException("Explicit financial period source is not supported yet");
+            case IMPLICIT -> YearMonth.from(txLine.date());
+            case EXPLICIT -> {
+                val endDate = txLine.endDate();
+
+                yield YearMonth.from(endDate);
+            }
         };
     }
 
