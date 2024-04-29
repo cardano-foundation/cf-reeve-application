@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import jakarta.validation.constraints.*;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 // https://docs.google.com/spreadsheets/d/1iGo1t2bLuWSONOYo6kG9uXSzt7laCrM8gluKkx8tmn0/edit#gid=501685631
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -36,9 +39,6 @@ public record TxLine(
 
         @JsonProperty("Company Name")
         String companyName,
-
-        @JsonProperty("Period")
-        String period,
 
         @JsonProperty("Tax Item")
         String taxItem,
@@ -78,6 +78,13 @@ public record TxLine(
         @JsonProperty("Symbol")
         @NotNull
         String currencySymbol,
+
+        // this is accounting period date
+        @JsonProperty("End Date")
+        @JsonSerialize(using = LocalDateSerializer.class)
+        @JsonDeserialize(using = LocalDateDeserializer.class)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+        LocalDate endDate,
 
         @NotNull
         @JsonProperty("Exchange Rate")
