@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.app.netsuite_adapter.service;
 
-import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -64,16 +63,12 @@ public class NetSuiteService {
         return ingestionRepository.findById(id);
     }
 
-    public Either<Problem, Optional<String>> retrieveLatestNetsuiteTransactionLines() {
-        return netSuiteClient.retrieveLatestNetsuiteTransactionLines();
-    }
-
     @Transactional
     public void startNewERPExtraction(String initiator,
                                       UserExtractionParameters userExtractionParameters) {
         log.info("Running ingestion...");
 
-        val netSuiteJsonE = retrieveLatestNetsuiteTransactionLines();
+        val netSuiteJsonE = netSuiteClient.retrieveLatestNetsuiteTransactionLines();
 
         if (netSuiteJsonE.isEmpty()) {
             log.error("Error retrieving data from NetSuite API: {}", netSuiteJsonE.getLeft().getDetail());
@@ -82,6 +77,8 @@ public class NetSuiteService {
                     .withTitle("NETSUITE_ADAPTER::NETSUITE_API_ERROR")
                     .withDetail(STR."Error retrieving data from NetSuite API, url: \{netSuiteClient.netsuiteUrl()}")
                     .build();
+
+            log.error(STR."NetSuite Adapter, issue: \{issue}");
 
             applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
             return;
@@ -96,6 +93,8 @@ public class NetSuiteService {
                     .withDetail(STR."No data to read from NetSuite API, url: \{netSuiteClient.netsuiteUrl()}")
                     .build();
 
+            log.error(STR."NetSuite Adapter, issue: \{issue}");
+
             applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
             return;
         }
@@ -107,12 +106,12 @@ public class NetSuiteService {
 
         val compressedBody = compress(netsuiteTransactionLinesJson);
         if (compressedBody == null) {
-            log.error("Error compressing data from NetSuite API: {}", netSuiteJsonE.getLeft().getDetail());
-
             val issue = Problem.builder()
                     .withTitle("NETSUITE_ADAPTER::NETSUITE_API_ERROR")
                     .withDetail(STR."Error compressing data from NetSuite API, url: \{netSuiteClient.netsuiteUrl()}")
                     .build();
+
+            log.error(STR."NetSuite Adapter, issue: \{issue}");
 
             applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
             return;
@@ -135,7 +134,11 @@ public class NetSuiteService {
         if (systemExtractionParametersE.isLeft()) {
             log.error("Error creating system extraction parameters: {}", systemExtractionParametersE.getLeft().getDetail());
 
-            applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, systemExtractionParametersE.getLeft()));
+            val issue = NotificationEvent.create(ERROR, systemExtractionParametersE.getLeft());
+
+            log.error(STR."NetSuite Adapter, issue: \{issue}");
+
+            applicationEventPublisher.publishEvent(issue);
             return;
         }
 
@@ -169,6 +172,8 @@ public class NetSuiteService {
                     .withDetail(STR."NetSuite ingestion not found, batchId: \{batchId}")
                     .build();
 
+            log.error(STR."NetSuite Adapter, issue: \{issue}");
+
             applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
             return;
         }
@@ -178,6 +183,8 @@ public class NetSuiteService {
                     .withTitle("NETSUITE_ADAPTER::ORGANISATION_MISMATCH")
                     .withDetail(STR."Organisation mismatch, userExtractionParameters.organisationId: \{userExtractionParameters.getOrganisationId() }, systemExtractionParameters.organisationId: \{systemExtractionParameters.getOrganisationId()}")
                     .build();
+
+            log.error(STR."NetSuite Adapter, issue: \{issue}");
 
             applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, issue));
             return;
@@ -191,7 +198,11 @@ public class NetSuiteService {
         if (transactionDataSearchResultE.isEmpty()) {
             log.warn("Error parsing NetSuite search result: {}", transactionDataSearchResultE.getLeft());
 
-            applicationEventPublisher.publishEvent(NotificationEvent.create(ERROR, transactionDataSearchResultE.getLeft()));
+            val issue = NotificationEvent.create(ERROR, transactionDataSearchResultE.getLeft());
+
+            log.error(STR."NetSuite Adapter, issue: \{issue}");
+
+            applicationEventPublisher.publishEvent(issue);
             return;
         }
 
