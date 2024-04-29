@@ -13,8 +13,8 @@ public class NotificationEventHandler {
 
     @ApplicationModuleListener
     public void handleNotification(NotificationEvent notification) {
-        if (notification.severity() == ERROR && notification.problem().isPresent()) {
-            //log.error(STR."\{notification}");
+        if (notification.severity() == ERROR) {
+            log.error(STR."\{notification}");
         }
     }
 
