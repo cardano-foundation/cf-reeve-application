@@ -15,7 +15,11 @@ public class Organisation {
 
     private String id;
 
-    private String shortName;
+    private String name;
+
+    private String taxIdNumber;
+
+    private String countryCode;
 
     private String currencyId;
 

@@ -4,7 +4,9 @@ CREATE TABLE blockchain_publisher_transaction (
    internal_number VARCHAR(255) NOT NULL,
    batch_id CHAR(64) NOT NULL,
 
-   organisation_short_name VARCHAR(50) NOT NULL,
+   organisation_name VARCHAR(255) NOT NULL,
+   organisation_tax_id_number VARCHAR(255) NOT NULL,
+   organisation_country_code VARCHAR(2) NOT NULL,
    organisation_currency_id VARCHAR(255) NOT NULL,
 
    transaction_type VARCHAR(255) NOT NULL,
