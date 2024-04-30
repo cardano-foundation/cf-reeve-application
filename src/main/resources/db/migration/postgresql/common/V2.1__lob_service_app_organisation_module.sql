@@ -71,7 +71,7 @@ CREATE TABLE organisation_project (
 
 CREATE TABLE organisation_chart_of_account (
    organisation_id CHAR(64) NOT NULL,
-   customer_code VARCHAR(10) NOT NULL,
+   customer_code VARCHAR(255) NOT NULL,
    ref_code VARCHAR(255) NOT NULL,
    event_ref_code VARCHAR(255) NOT NULL,
 

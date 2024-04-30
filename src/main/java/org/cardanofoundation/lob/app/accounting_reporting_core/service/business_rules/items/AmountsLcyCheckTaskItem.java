@@ -28,8 +28,8 @@ public class AmountsLcyCheckTaskItem implements PipelineTaskItem {
                         .bag(
                                 Map.of(
                                         "transactionNumber", tx.getTransactionInternalNumber(),
-                                        "amountFcy", txItem.getAmountFcy().toEngineeringString(),
-                                        "amountLcy", txItem.getAmountFcy().toEngineeringString()
+                                        "amountFcy", txItem.getAmountFcy().toEngineeringString()    ,
+                                        "amountLcy", txItem.getAmountLcy().toEngineeringString()
                                 )
                         )
                         .build();
