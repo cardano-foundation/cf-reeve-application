@@ -137,7 +137,9 @@ public class TransactionConverter {
     private static Organisation convertOrganisation(Transaction transaction) {
         return Organisation.builder()
                 .id(transaction.getOrganisation().getId())
-                .shortName(transaction.getOrganisation().getShortName().orElse(null))
+                .name(transaction.getOrganisation().getName().orElse(null))
+                .taxIdNumber(transaction.getOrganisation().getTaxIdNumber().orElse(null))
+                .countryCode(transaction.getOrganisation().getCountryCode().orElse(null))
                 .currencyId(transaction.getOrganisation().getCurrencyId())
                 .build();
     }
@@ -218,7 +220,9 @@ public class TransactionConverter {
                 .batchId(transactionEntity.getBatchId())
                 .organisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation.builder()
                         .id(transactionEntity.getOrganisation().getId())
-                        .shortName(transactionEntity.getOrganisation().getShortName())
+                        .name(transactionEntity.getOrganisation().getName())
+                        .countryCode(transactionEntity.getOrganisation().getCountryCode())
+                        .taxIdNumber(transactionEntity.getOrganisation().getTaxIdNumber())
                         .currencyId(transactionEntity.getOrganisation().getCurrencyId())
                         .build())
                 .entryDate(transactionEntity.getEntryDate())

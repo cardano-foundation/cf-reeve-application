@@ -1,9 +1,9 @@
 CREATE TABLE organisation (
    organisation_id CHAR(64) NOT NULL,
-   short_name VARCHAR(50) NOT NULL,
-   long_name VARCHAR(255) NOT NULL,
+   name VARCHAR(255) NOT NULL,
+   tax_id_number VARCHAR(255) NOT NULL,
+   country_code VARCHAR(2) NOT NULL,
    dummy_account VARCHAR(255),
-   vat_number VARCHAR(255) NOT NULL,
    accounting_period_months INT NOT NULL,
    currency_id VARCHAR(255) NOT NULL,
    pre_approve_transactions BOOLEAN,

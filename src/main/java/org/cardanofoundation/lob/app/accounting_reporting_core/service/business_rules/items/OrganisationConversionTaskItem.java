@@ -67,7 +67,9 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
         tx.setTransactionApproved(organisation.isPreApproveTransactionsEnabled());
         tx.setLedgerDispatchApproved(organisation.isPreApproveTransactionsDispatchEnabled());
         tx.setOrganisation(tx.getOrganisation().toBuilder()
-                .shortName(organisation.getShortName())
+                .name(organisation.getName())
+                .taxIdNumber(organisation.getTaxIdNumber())
+                .countryCode(organisation.getCountryCode())
                 .currencyId(organisation.getCurrencyId())
                 .build()
         );

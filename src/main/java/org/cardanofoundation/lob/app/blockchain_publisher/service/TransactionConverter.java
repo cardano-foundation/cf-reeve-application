@@ -59,7 +59,9 @@ public class TransactionConverter {
     private static Organisation convertOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Organisation org) {
         return Organisation.builder()
                 .id(org.getId())
-                .shortName(org.getShortName().orElseThrow())
+                .name(org.getName().orElseThrow())
+                .countryCode(org.getCountryCode().orElseThrow())
+                .taxIdNumber(org.getTaxIdNumber().orElseThrow())
                 .currencyId(org.getCurrencyId())
                 .build();
     }

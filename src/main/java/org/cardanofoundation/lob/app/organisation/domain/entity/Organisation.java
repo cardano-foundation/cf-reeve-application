@@ -21,11 +21,14 @@ public class Organisation {
     @Column(name = "organisation_id", nullable = false)
     private String id;
 
-    @Column(name = "short_name", nullable = false)
-    private String shortName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "long_name", nullable = false)
-    private String longName;
+    @Column(name = "tax_id_number", nullable = false)
+    private String taxIdNumber;
+
+    @Column(name = "country_code", nullable = false)
+    private String countryCode;
 
     @Column(name = "dummy_account")
     private String dummyAccount;
@@ -35,9 +38,6 @@ public class Organisation {
 
     @Column(name = "pre_approve_transactions_dispatch")
     private Boolean preApproveTransactionsDispatch;
-
-    @Column(name = "vat_number", nullable = false)
-    private String vatNumber;
 
     @Column(name = "accounting_period_months", nullable = false)
     private int accountPeriodMonths;

@@ -19,12 +19,27 @@ public class Organisation {
     private String id;
 
     @Nullable
-    private String shortName;
+    private String name;
 
+    @Nullable
+    private String countryCode;
+
+    @Nullable
+    private String taxIdNumber;
+
+    @Nullable
     private String currencyId;
 
-    public Optional<String> getShortName() {
-        return Optional.ofNullable(shortName);
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
+    }
+
+    public Optional<String> getCountryCode() {
+        return Optional.ofNullable(countryCode);
+    }
+
+    public Optional<String> getTaxIdNumber() {
+        return Optional.ofNullable(taxIdNumber);
     }
 
 }
