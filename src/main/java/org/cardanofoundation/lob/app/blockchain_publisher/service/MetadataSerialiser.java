@@ -147,10 +147,10 @@ public class MetadataSerialiser {
         val metadataMap = MetadataBuilder.createMap();
 
         metadataMap.put("id", org.getId());
-        metadataMap.put("short_name", org.getShortName());
-        metadataMap.put("vat_id", "????");
-        // TODO: send VAT_ID to the blockchain
-        //metadataMap.put("currency", serialise(org.getCurrency()));
+        metadataMap.put("name", org.getName());
+        metadataMap.put("tax_id_number", org.getTaxIdNumber());
+        metadataMap.put("currency_id", org.getCurrencyId());
+        metadataMap.put("country_code", org.getCountryCode());
 
         return metadataMap;
     }

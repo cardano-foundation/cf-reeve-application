@@ -18,7 +18,14 @@ public class Organisation {
     @Size(min = 1, max =  255) @NotBlank  private String id;
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  50) String> shortName = Optional.empty();
+    private Optional<@Size(min = 1, max =  255) String> name = Optional.empty();
+
+    @Builder.Default
+    private Optional<@Size(min = 1, max =  255) String> taxIdNumber = Optional.empty();
+
+    @Builder.Default
+    // ISO 3166-1 alpha-2
+    private Optional<@Size(min = 2, max =  2) String> countryCode = Optional.empty();
 
     @Size(min = 1, max =  255) @NotBlank
     private String currencyId;
