@@ -12,6 +12,8 @@ import java.util.Set;
 @Service
 public class MetadataSerialiser {
 
+    public static final String VERSION = "1.0";
+
     public MetadataMap serialiseToMetadataMap(String organisationId,
                                               Set<TransactionEntity> transactions,
                                               long creationSlot) {
@@ -41,6 +43,7 @@ public class MetadataSerialiser {
         val metadataMap = MetadataBuilder.createMap();
 
         metadataMap.put("creation_slot", BigInteger.valueOf(creationSlot));
+        metadataMap.put("version", VERSION);
 
         return metadataMap;
     }
@@ -58,7 +61,6 @@ public class MetadataSerialiser {
 
         metadataMap.put("date", transaction.getEntryDate().toString());
         metadataMap.put("accounting_period", transaction.getAccountingPeriod().toString());
-        metadataMap.put("fx_rate", transaction.getFxRate().toEngineeringString());
 
         val transactionItemsMetadataList = MetadataBuilder.createList();
 
@@ -80,7 +82,7 @@ public class MetadataSerialiser {
 
     private static MetadataMap serialise(CostCenter costCenter) {
         val metadataMap = MetadataBuilder.createMap();
-        metadataMap.put("code", costCenter.getCustomerCode());
+        metadataMap.put("cust_code", costCenter.getCustomerCode());
         metadataMap.put("name", costCenter.getName());
 
         return metadataMap;
@@ -88,7 +90,7 @@ public class MetadataSerialiser {
 
     private static MetadataMap serialise(Project project) {
         val metadataMap = MetadataBuilder.createMap();
-        metadataMap.put("code", project.getCustomerCode());
+        metadataMap.put("cust_code", project.getCustomerCode());
 
         return metadataMap;
     }
@@ -100,15 +102,15 @@ public class MetadataSerialiser {
         metadataMap.put("currency", serialise(document.getCurrency()));
 
         document.getVat().ifPresent(vat -> metadataMap.put("vat", serialise(vat)));
-        document.getCounterparty().ifPresent(counterparty -> metadataMap.put("counterparty", serialiseCounterparty(counterparty)));
+        document.getCounterparty().ifPresent(counterparty -> metadataMap.put("counterparty", serialise(counterparty)));
 
 
         return metadataMap;
     }
 
-    private static MetadataMap serialiseCounterparty(Counterparty counterparty) {
+    private static MetadataMap serialise(Counterparty counterparty) {
         val counterpartyMap = MetadataBuilder.createMap();
-        counterpartyMap.put("code", counterparty.getCustomerCode());
+        counterpartyMap.put("cust_code", counterparty.getCustomerCode());
         counterpartyMap.put("type", counterparty.getType().name());
 
         return counterpartyMap;
@@ -117,12 +119,14 @@ public class MetadataSerialiser {
     private static MetadataMap serialise(Currency currency) {
         val metadataMap = MetadataBuilder.createMap();
         metadataMap.put("id", currency.getId());
+        metadataMap.put("cust_code", currency.getCustomerCode());
 
         return metadataMap;
     }
 
     private static MetadataMap serialise(Vat vat) {
         val vatMetadataMap = MetadataBuilder.createMap();
+        vatMetadataMap.put("cust_code", vat.getCustomerCode());
         vatMetadataMap.put("rate", vat.getRate().toEngineeringString());
 
         return vatMetadataMap;
@@ -134,11 +138,22 @@ public class MetadataSerialiser {
         metadataMap.put("id", transactionItemEntity.getId());
         metadataMap.put("amount", transactionItemEntity.getAmountFcy().toEngineeringString());
 
-        transactionItemEntity.getEventCode().ifPresent(eventCode -> metadataMap.put("event_code", eventCode));
+        transactionItemEntity.getAccountEvent().ifPresent(accountEvent -> metadataMap.put("event_code", serialise(accountEvent)));
         transactionItemEntity.getProject().ifPresent(project -> metadataMap.put("project", serialise(project)));
         transactionItemEntity.getCostCenter().ifPresent(costCenter -> metadataMap.put("cost_center", serialise(costCenter)));
 
+        metadataMap.put("fx_rate", transactionItemEntity.getFxRate().toEngineeringString());
+
         metadataMap.put("document", serialise(transactionItemEntity.getDocument()));
+
+        return metadataMap;
+    }
+
+    private static MetadataMap serialise(AccountEvent accountEvent) {
+        val metadataMap = MetadataBuilder.createMap();
+
+        metadataMap.put("code", accountEvent.getCode());
+        metadataMap.put("name", accountEvent.getName());
 
         return metadataMap;
     }

@@ -45,8 +45,8 @@ public class Organisation {
     @Column(name = "currency_id", nullable = false)
     private String currencyId;
 
-    public static String id(String vatId) {
-        return digestAsHex(vatId);
+    public static String id(String countryCode, String taxIdNumber) {
+        return digestAsHex(STR."\{countryCode}::\{taxIdNumber}");
     }
 
     public boolean isPreApproveTransactionsEnabled() {

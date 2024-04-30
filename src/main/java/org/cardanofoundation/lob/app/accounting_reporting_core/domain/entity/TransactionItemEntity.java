@@ -32,29 +32,28 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
         return id;
     }
 
+    @AttributeOverrides({
+            @AttributeOverride(name = "code", column = @Column(name = "account_code_debit")),
+            @AttributeOverride(name = "refCode", column = @Column(name = "account_ref_code_debit")),
+            @AttributeOverride(name = "name", column = @Column(name = "account_name_debit"))
+    })
     @Nullable
-    @Column(name = "account_code_debit")
-    private String accountCodeDebit;
+    private Account accountDebit;
+
+    @AttributeOverrides({
+            @AttributeOverride(name = "code", column = @Column(name = "account_code_credit")),
+            @AttributeOverride(name = "refCode", column = @Column(name = "account_ref_code_credit")),
+            @AttributeOverride(name = "name", column = @Column(name = "account_name_credit"))
+    })
+    @Nullable
+    private Account accountCredit;
 
     @Nullable
-    @Column(name = "account_code_ref_debit")
-    private String accountCodeRefDebit;
-
-    @Nullable
-    @Column(name = "account_code_credit")
-    private String accountCodeCredit;
-
-    @Nullable
-    @Column(name = "account_code_ref_credit")
-    private String accountCodeRefCredit;
-
-    @Nullable
-    @Column(name = "account_name_debit")
-    private String accountNameDebit;
-
-    @Nullable
-    @Column(name = "account_event_code")
-    private String accountEventCode;
+    @AttributeOverrides({
+            @AttributeOverride(name = "code", column = @Column(name = "account_event_code")),
+            @AttributeOverride(name = "name", column = @Column(name = "account_event_name")),
+    })
+    private AccountEvent accountEvent;
 
     @Column(name = "amount_fcy", nullable = false)
     private BigDecimal amountFcy;
@@ -65,6 +64,9 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "transaction_id")
     private TransactionEntity transaction;
+
+    @Column(name = "fx_rate", nullable = false)
+    private BigDecimal fxRate;
 
     @Embedded
     @AttributeOverrides({
@@ -100,35 +102,23 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     private Document document;
 
     public void clearAccountCodeCredit() {
-        this.accountCodeCredit = null;
+        this.accountCredit = null;
     }
 
     public void clearAccountCodeDebit() {
-        this.accountCodeDebit = null;
+        this.accountDebit = null;
     }
 
-    public Optional<String> getAccountCodeDebit() {
-        return Optional.ofNullable(accountCodeDebit);
+    public Optional<Account> getAccountDebit() {
+        return Optional.ofNullable(accountDebit);
     }
 
-    public Optional<String> getAccountNameDebit() {
-        return Optional.ofNullable(accountNameDebit);
+    public Optional<Account> getAccountCredit() {
+        return Optional.ofNullable(accountCredit);
     }
 
-    public Optional<String> getAccountCodeCredit() {
-        return Optional.ofNullable(accountCodeCredit);
-    }
-
-    public Optional<String> getAccountCodeRefDebit() {
-        return Optional.ofNullable(accountCodeRefDebit);
-    }
-
-    public Optional<String> getAccountCodeRefCredit() {
-        return Optional.ofNullable(accountCodeRefCredit);
-    }
-
-    public Optional<String> getAccountEventCode() {
-        return Optional.ofNullable(accountEventCode);
+    public Optional<AccountEvent> getAccountEvent() {
+        return Optional.ofNullable(accountEvent);
     }
 
     public Optional<Project> getProject() {
@@ -171,16 +161,16 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
         equalsBuilder.append(this.id, other.id);
         equalsBuilder.append(this.amountFcy, other.amountFcy);
         equalsBuilder.append(this.amountLcy, other.amountLcy);
-        equalsBuilder.append(this.accountCodeDebit, other.accountCodeDebit);
-        equalsBuilder.append(this.accountCodeRefDebit, other.accountCodeRefDebit);
-        equalsBuilder.append(this.accountNameDebit, other.accountNameDebit);
-        equalsBuilder.append(this.accountCodeCredit, other.accountCodeCredit);
-        equalsBuilder.append(this.accountCodeRefCredit, other.accountCodeRefCredit);
-        equalsBuilder.append(this.accountEventCode, other.accountEventCode);
+
+        equalsBuilder.append(this.accountDebit, other.accountDebit);
+        equalsBuilder.append(this.accountCredit, other.accountCredit);
+        equalsBuilder.append(this.accountEvent, other.accountEvent);
 
         equalsBuilder.append(this.costCenter, other.costCenter);
         equalsBuilder.append(this.document, other.document);
         equalsBuilder.append(this.project, other.project);
+
+        equalsBuilder.append(this.fxRate, other.fxRate);
 
         return equalsBuilder.isEquals();
     }

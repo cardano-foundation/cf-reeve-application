@@ -61,9 +61,6 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     @Column(name = "accounting_period", nullable = false)
     private YearMonth accountingPeriod;
 
-    @Column(name = "fx_rate", nullable = false)
-    private BigDecimal fxRate;
-
     @Nullable
     @Embedded
     @AttributeOverrides({

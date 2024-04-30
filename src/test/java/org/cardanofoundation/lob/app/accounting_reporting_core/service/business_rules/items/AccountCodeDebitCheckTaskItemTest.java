@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Account;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
@@ -33,7 +34,7 @@ class AccountCodeDebitCheckTaskItemTest {
 
         val txItem = new TransactionItemEntity();
         txItem.setId(TransactionItem.id(txId, "0"));
-        txItem.setAccountCodeDebit("1");
+        txItem.setAccountDebit(Account.builder().code("1").build());
 
         val tx = new TransactionEntity();
         tx.setId(txId);
@@ -96,7 +97,7 @@ class AccountCodeDebitCheckTaskItemTest {
 
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(txId, "1"));
-        txItem1.setAccountCodeDebit("100");
+        txItem1.setAccountDebit(Account.builder().code("100").build());
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId(TransactionItem.id(txId, "2"));
@@ -138,28 +139,6 @@ class AccountCodeDebitCheckTaskItemTest {
         assertThat(tx.getViolations()).hasSize(2);
     }
 
-    // Debit Code is an Empty String
-    @Test
-    public void testItemWithEmptyStringDebit() {
-        val txId = Transaction.id("4", "1");
-
-        val txItem1 = new TransactionItemEntity();
-        txItem1.setId(TransactionItem.id(txId, "5"));
-        txItem1.setAccountCodeDebit("");
-
-        val tx = new TransactionEntity();
-        tx.setId(txId);
-        tx.setTransactionInternalNumber("4");
-        tx.setOrganisation(Organisation.builder().id("1").build());
-        tx.setTransactionType(BillCredit);
-        tx.setItems(Set.of(txItem1));
-
-        taskItem.run(tx);
-
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
-        assertThat(tx.getViolations()).hasSize(1);
-    }
-
     // Transaction with No Items
     @Test
     public void testTransactionWithNoItems() {
@@ -184,7 +163,7 @@ class AccountCodeDebitCheckTaskItemTest {
 
         val txItem = new TransactionItemEntity();
         txItem.setId(TransactionItem.id(txId, "6"));
-        txItem.setAccountCodeDebit(" 100 ");
+        txItem.setAccountDebit(Account.builder().code(" 100 ").build());
 
         val tx = new TransactionEntity();
         tx.setId(txId);

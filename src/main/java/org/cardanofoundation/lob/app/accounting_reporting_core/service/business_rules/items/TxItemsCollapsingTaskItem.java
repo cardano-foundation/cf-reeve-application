@@ -29,7 +29,7 @@ public class TxItemsCollapsingTaskItem implements PipelineTaskItem {
                         .documentNum(txItem.getDocument().map(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Document::getNum))
                         .documentCurrencyId(txItem.getDocument().flatMap(d -> d.getCurrency().getId()))
                         .documentCounterpartyCustomerCode(txItem.getDocument().flatMap(d -> d.getCounterparty().map(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Counterparty::getCustomerCode)))
-                        .accountEventCode(txItem.getAccountEventCode())
+                        .accountEventCode(txItem.getAccountEvent().map(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.AccountEvent::getCode))
                         .build())
                 );
 

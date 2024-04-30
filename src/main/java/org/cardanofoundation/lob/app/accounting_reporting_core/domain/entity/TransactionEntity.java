@@ -11,7 +11,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Valid
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.LinkedHashSet;
@@ -65,9 +64,6 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
             @AttributeOverride(name = "currencyId", column = @Column(name = "organisation_currency_id")),
     })
     private Organisation organisation;
-
-    @Column(name = "fx_rate", nullable = false)
-    private BigDecimal fxRate;
 
     @Column(name = "validation_status", nullable = false)
     @Enumerated(STRING)
@@ -127,7 +123,6 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
         equalsBuilder.append(this.entryDate, other.entryDate);
         equalsBuilder.append(this.transactionType, other.transactionType);
         equalsBuilder.append(this.organisation, other.organisation);
-        equalsBuilder.append(this.fxRate, other.fxRate);
         equalsBuilder.append(this.accountingPeriod, other.accountingPeriod);
         equalsBuilder.append(this.transactionInternalNumber, other.transactionInternalNumber);
         equalsBuilder.append(this.validationStatus, other.validationStatus);

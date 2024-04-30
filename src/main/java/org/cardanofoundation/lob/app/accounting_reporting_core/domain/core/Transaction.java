@@ -41,10 +41,6 @@ public class Transaction {
     private LedgerDispatchStatus ledgerDispatchStatus = LedgerDispatchStatus.NOT_DISPATCHED;
 
     @NotNull
-    @PositiveOrZero
-    private BigDecimal fxRate;
-
-    @NotNull
     @Builder.Default
     private ValidationStatus validationStatus = ValidationStatus.VALIDATED;
 

@@ -4,10 +4,12 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Account;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
+import org.cardanofoundation.lob.app.organisation.domain.entity.AccountEvent;
 import org.cardanofoundation.lob.app.organisation.domain.entity.OrganisationChartOfAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,10 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.CHART_OF_ACCOUNT_NOT_FOUND;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class AccountEventCodesConversionTaskItemTest {
+class AccountAccountEventCodesConversionTaskItemTest {
 
     private PipelineTaskItem taskItem;
 
@@ -43,16 +46,28 @@ class AccountEventCodesConversionTaskItemTest {
         val accountCodeCredit = "2";
         val organisationId = "1";
 
-        when(organisationPublicApiIF.getChartOfAccounts(organisationId, accountCodeCredit))
-                .thenReturn(Optional.of(new OrganisationChartOfAccount(new OrganisationChartOfAccount.Id(organisationId, accountCodeCredit), accountCodeCredit, accountCreditRefCode)));
+        when(organisationPublicApiIF.getChartOfAccounts(eq(organisationId), eq(accountCodeCredit)))
+                .thenReturn(Optional.of(new OrganisationChartOfAccount(new OrganisationChartOfAccount.Id(organisationId, accountCodeCredit), accountCodeCredit, accountCreditRefCode, "name1")));
 
-        when(organisationPublicApiIF.getChartOfAccounts(organisationId, accountCodeDebit))
-                .thenReturn(Optional.of(new OrganisationChartOfAccount(new OrganisationChartOfAccount.Id(organisationId, accountCodeDebit), accountCodeDebit, accountDebitRefCode)));
+        when(organisationPublicApiIF.getChartOfAccounts(eq(organisationId), eq(accountCodeDebit)))
+                .thenReturn(Optional.of(new OrganisationChartOfAccount(new OrganisationChartOfAccount.Id(organisationId, accountCodeDebit), accountCodeDebit, accountDebitRefCode, "name2")));
+
+        when(organisationPublicApiIF.findEventCode(eq(organisationId), eq("DR_REFCR_REF"))).thenReturn(Optional.of(AccountEvent.builder()
+                .name("name")
+                .build()));
 
         val txItem = new TransactionItemEntity();
         txItem.setId(TransactionItem.id(txId, "0"));
-        txItem.setAccountCodeDebit(accountCodeDebit);
-        txItem.setAccountCodeCredit(accountCodeCredit);
+
+        txItem.setAccountDebit(Account.builder()
+                .code(accountCodeDebit)
+                .build()
+        );
+
+        txItem.setAccountCredit(Account.builder()
+                .code(accountCodeCredit)
+                .build()
+        );
 
         val tx = new TransactionEntity();
         tx.setId(txId);
@@ -65,9 +80,10 @@ class AccountEventCodesConversionTaskItemTest {
 
         assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
         assertThat(tx.getViolations()).isEmpty();
-        assertThat(tx.getItems().iterator().next().getAccountCodeRefDebit().orElseThrow()).isEqualTo(accountDebitRefCode);
-        assertThat(tx.getItems().iterator().next().getAccountCodeRefCredit().orElseThrow()).isEqualTo(accountCreditRefCode);
-        assertThat(tx.getItems().iterator().next().getAccountEventCode().orElseThrow()).isEqualTo("DR_REFCR_REF");
+
+        assertThat(tx.getItems().iterator().next().getAccountDebit().map(Account::getRefCode).orElseThrow()).isEqualTo(Optional.of(accountDebitRefCode));
+        assertThat(tx.getItems().iterator().next().getAccountCredit().map(Account::getRefCode).orElseThrow()).isEqualTo(Optional.of(accountCreditRefCode));
+        assertThat(tx.getItems().iterator().next().getAccountEvent().map(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.AccountEvent::getCode).orElseThrow()).isEqualTo("DR_REFCR_REF");
     }
 
     @Test
@@ -81,7 +97,11 @@ class AccountEventCodesConversionTaskItemTest {
 
         val txItem = new TransactionItemEntity();
         txItem.setId(TransactionItem.id(txId, "1"));
-        txItem.setAccountCodeDebit(accountCodeDebit);
+
+        txItem.setAccountDebit(Account.builder()
+                .code(accountCodeDebit)
+                .build()
+        );
 
         val tx = new TransactionEntity();
         tx.setId(txId);
@@ -108,7 +128,11 @@ class AccountEventCodesConversionTaskItemTest {
 
         val txItem = new TransactionItemEntity();
         txItem.setId(TransactionItem.id(txId, "2"));
-        txItem.setAccountCodeCredit(accountCodeCredit);
+
+        txItem.setAccountCredit(Account.builder()
+                .code(accountCodeCredit)
+                .build()
+        );
 
         val tx = new TransactionEntity();
         tx.setId(txId);

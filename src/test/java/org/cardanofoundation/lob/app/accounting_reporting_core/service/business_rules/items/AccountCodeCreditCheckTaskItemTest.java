@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Account;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,8 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         val txItem = new TransactionItemEntity();
         txItem.setId(TransactionItem.id(txId, "0"));
-        txItem.setAccountCodeCredit("1");
+
+        txItem.setAccountCredit(Account.builder().code("1").build());
 
         val tx = new TransactionEntity();
         tx.setId(txId);
@@ -97,7 +99,8 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(txId, "0"));
-        txItem1.setAccountCodeCredit("100");
+
+        txItem1.setAccountCredit(Account.builder().code("100").build());
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId(TransactionItem.id(txId, "2"));
@@ -146,7 +149,7 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(txId, "0"));
-        txItem1.setAccountCodeCredit(" ");
+        txItem1.setAccountCredit(Account.builder().code(" ").build());
 
         val tx = new TransactionEntity();
         tx.setId(txId);
@@ -178,7 +181,6 @@ public class AccountCodeCreditCheckTaskItemTest {
         assertThat(tx.getViolations()).isEmpty();
     }
 
-
     // Valid Credit with Whitespace
     @Test
     public void testValidCreditWithWhitespace() {
@@ -186,13 +188,13 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         val txItem = new TransactionItemEntity();
         txItem.setId(TransactionItem.id(txId, "0"));
-        txItem.setAccountCodeCredit(" 100 ");
+        txItem.setAccountCredit(Account.builder().code(" 100 ").build());
 
         val tx = new TransactionEntity();
         tx.setId(txId);
         tx.setTransactionInternalNumber("1");
         tx.setOrganisation(org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation.builder().id("1").build());
-        tx.setTransactionType(Journal);
+        tx.setTransactionType(FxRevaluation);
         tx.setItems(Set.of(txItem));
 
         taskItem.run(tx);

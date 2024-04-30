@@ -1,6 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items;
 
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.AccountEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +28,18 @@ class TxItemsCollapsingTaskItemTest {
     void shouldNotCollapseItems() {
         val txItem1 = new TransactionItemEntity();
         txItem1.setId("1:0");
-        txItem1.setAccountEventCode("e12");
+        txItem1.setAccountEvent(AccountEvent.builder()
+                .code("e12")
+                .build());
         txItem1.setAmountLcy(BigDecimal.ONE);
         txItem1.setAmountFcy(BigDecimal.TEN);
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId("1:1");
-        txItem2.setAccountEventCode("e1212");
+        txItem2.setAccountEvent(AccountEvent.builder()
+                .code("e1212")
+                .build());
+
         txItem2.setAmountLcy(BigDecimal.ONE);
         txItem2.setAmountFcy(BigDecimal.TEN);
 
@@ -48,20 +54,24 @@ class TxItemsCollapsingTaskItemTest {
         txItemsCollapsingTaskItem.run(transaction);
 
         assertThat(transaction.getItems()).hasSize(2);
-        assertThat(transaction.getItems()).extracting(TransactionItemEntity::getAccountEventCode).containsExactlyInAnyOrder(Optional.of("e12"), Optional.of("e1212"));
+        assertThat(transaction.getItems()).extracting(e -> e.getAccountEvent().map(AccountEvent::getCode)).containsExactlyInAnyOrder(Optional.of("e12"), Optional.of("e1212"));
     }
 
     @Test
     void shouldCollapseItems() {
         val txItem1 = new TransactionItemEntity();
         txItem1.setId("1:0");
-        txItem1.setAccountEventCode("e12");
+        txItem1.setAccountEvent(AccountEvent.builder()
+                .code("e12")
+                .build());
         txItem1.setAmountLcy(BigDecimal.ONE);
         txItem1.setAmountFcy(BigDecimal.TEN);
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId("1:1");
-        txItem2.setAccountEventCode("e12");
+        txItem2.setAccountEvent(AccountEvent.builder()
+                .code("e12")
+                .build());
         txItem2.setAmountLcy(BigDecimal.ONE);
         txItem2.setAmountFcy(BigDecimal.TEN);
 
@@ -78,7 +88,7 @@ class TxItemsCollapsingTaskItemTest {
         assertThat(transaction.getItems()).hasSize(1);
         assertThat(transaction.getItems()).extracting(TransactionItemEntity::getAmountLcy).containsExactly(BigDecimal.valueOf(2));
         assertThat(transaction.getItems()).extracting(TransactionItemEntity::getAmountFcy).containsExactly(BigDecimal.valueOf(20));
-        assertThat(transaction.getItems()).extracting(TransactionItemEntity::getAccountEventCode).containsExactly(Optional.of("e12"));
+        assertThat(transaction.getItems()).extracting(e -> e.getAccountEvent().map(AccountEvent::getCode)).containsExactly(Optional.of("e12"));
     }
 
     @Test
@@ -89,7 +99,11 @@ class TxItemsCollapsingTaskItemTest {
         Set<TransactionItemEntity> items1 = new HashSet<>();
         TransactionItemEntity txItem1 = new TransactionItemEntity();
         txItem1.setId("1:0");
-        txItem1.setAccountEventCode("e12");
+
+        txItem1.setAccountEvent(AccountEvent.builder()
+                .code("e12")
+                .build());
+
         txItem1.setAmountLcy(BigDecimal.ONE);
         txItem1.setAmountFcy(BigDecimal.TEN);
         items1.add(txItem1);
@@ -100,7 +114,11 @@ class TxItemsCollapsingTaskItemTest {
         Set<TransactionItemEntity> items2 = new HashSet<>();
         TransactionItemEntity txItem2 = new TransactionItemEntity();
         txItem2.setId("2:0");
-        txItem2.setAccountEventCode("e34");
+
+        txItem2.setAccountEvent(AccountEvent.builder()
+                .code("e34")
+                .build());
+
         txItem2.setAmountLcy(BigDecimal.ONE);
         txItem2.setAmountFcy(BigDecimal.TEN);
         items2.add(txItem2);
@@ -122,16 +140,24 @@ class TxItemsCollapsingTaskItemTest {
         val transaction = new TransactionEntity();
         transaction.setId("1");
         transaction.setValidationStatus(FAILED);
-        Set<TransactionItemEntity> items = new HashSet<>();
+        val items = new HashSet<TransactionItemEntity>();
         TransactionItemEntity txItem1 = new TransactionItemEntity();
         txItem1.setId("1:0");
-        txItem1.setAccountEventCode("e12");
+
+        txItem1.setAccountEvent(AccountEvent.builder()
+                .code("e12")
+                .build());
+
         txItem1.setAmountLcy(BigDecimal.ONE);
         txItem1.setAmountFcy(BigDecimal.TEN);
         items.add(txItem1);
         TransactionItemEntity txItem2 = new TransactionItemEntity();
         txItem2.setId("1:1");
-        txItem2.setAccountEventCode("e12");
+
+        txItem2.setAccountEvent(AccountEvent.builder()
+                .code("e12")
+                .build());
+
         txItem2.setAmountLcy(BigDecimal.ONE);
         txItem2.setAmountFcy(BigDecimal.TEN);
         items.add(txItem2);

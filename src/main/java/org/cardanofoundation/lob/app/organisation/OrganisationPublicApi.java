@@ -20,6 +20,7 @@ public class OrganisationPublicApi implements OrganisationPublicApiIF {
     private final CostCenterService costCenterService;
     private final ProjectCodeService projectCodeService;
     private final ChartOfAccountsService chartOfAccountsService;
+    private final AccountEventService accountEventService;
 
     public List<Organisation> listAll() {
         return organisationService.findAll();
@@ -48,6 +49,10 @@ public class OrganisationPublicApi implements OrganisationPublicApiIF {
 
     public Optional<OrganisationChartOfAccount> getChartOfAccounts(String organisationId, String customerCode) {
         return chartOfAccountsService.getChartAccount(organisationId, customerCode);
+    }
+
+    public Optional<AccountEvent> findEventCode(String organisationId, String customerCode) {
+        return accountEventService.findById(organisationId, customerCode);
     }
 
 }

@@ -13,8 +13,6 @@ CREATE TABLE blockchain_publisher_transaction (
    accounting_period CHAR(7) NOT NULL,
    entry_date DATE NOT NULL,
 
-   fx_rate DECIMAL NOT NULL,
-
    l1_assurance_level VARCHAR(255),
    l1_transaction_hash CHAR(64),
    l1_absolute_slot BIGINT,
@@ -36,20 +34,26 @@ CREATE TABLE blockchain_publisher_transaction_item (
 
    FOREIGN KEY (transaction_id) REFERENCES blockchain_publisher_transaction (transaction_id),
 
+   fx_rate DECIMAL NOT NULL,
+
    amount_fcy DECIMAL NOT NULL,
 
-   event_code VARCHAR(255),
+   account_event_code VARCHAR(255) NOT NULL,
+   account_event_name VARCHAR(255) NOT NULL,
 
    project_customer_code VARCHAR(255),
+   project_name VARCHAR(255),
 
    cost_center_customer_code VARCHAR(255),
    cost_center_name VARCHAR(255),
 
    document_num VARCHAR(255),
    document_currency_id VARCHAR(255) NOT NULL,
+   document_currency_customer_code VARCHAR(255),
    document_counterparty_customer_code VARCHAR(255),
    document_counterparty_type VARCHAR(255),
 
+   document_vat_customer_code VARCHAR(255),
    document_vat_rate DECIMAL,
 
    created_by VARCHAR(255),
