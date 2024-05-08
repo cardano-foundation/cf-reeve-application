@@ -4,9 +4,9 @@ import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.CoreCurrencyRepository;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.DefaultPipelineTask;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.DefaultBusinessRulesPipelineProcessor;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.DefaultPipelineTask;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.PipelineTask;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.items.*;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
@@ -29,17 +29,11 @@ public class BusinessRulesConfig {
         val pipelineTasks = new ArrayList<PipelineTask>();
 
         pipelineTasks.add(sanityCheckPipelineTask());
-
         pipelineTasks.add(preCleansingPipelineTask());
-
         pipelineTasks.add(preValidationPipelineTask());
-
         pipelineTasks.add(conversionPipelineTask());
-
         pipelineTasks.add(postCleansingPipelineTask());
-
         pipelineTasks.add(postValidationPipelineTask());
-
         pipelineTasks.add(sanityCheckPipelineTask());
 
         return new DefaultBusinessRulesPipelineProcessor(pipelineTasks);
@@ -93,4 +87,3 @@ public class BusinessRulesConfig {
     }
 
 }
-

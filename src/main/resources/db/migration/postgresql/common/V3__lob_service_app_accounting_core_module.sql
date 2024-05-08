@@ -40,7 +40,6 @@ CREATE TABLE accounting_core_transaction (
    entry_date DATE NOT NULL,
    accounting_period CHAR(7) NOT NULL,
    transaction_internal_number VARCHAR(255) NOT NULL,
-   fx_rate DECIMAL NOT NULL,
 
    organisation_id CHAR(64) NOT NULL,
    organisation_name VARCHAR(255),
@@ -111,14 +110,18 @@ CREATE TABLE accounting_core_transaction_item (
 
    FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
 
+   fx_rate DECIMAL NOT NULL,
+
    account_code_debit VARCHAR(255),
-   account_code_ref_credit VARCHAR(255),
+   account_ref_code_debit VARCHAR(255),
+   account_name_debit VARCHAR(255),
 
    account_code_credit VARCHAR(255),
-   account_code_ref_debit VARCHAR(255),
+   account_ref_code_credit VARCHAR(255),
+   account_name_credit VARCHAR(255),
 
-   account_name_debit VARCHAR(255),
    account_event_code VARCHAR(255),
+   account_event_name VARCHAR(255),
 
    amount_fcy DECIMAL NOT NULL,
    amount_lcy DECIMAL NOT NULL,

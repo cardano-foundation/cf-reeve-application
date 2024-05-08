@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.business
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Account;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,13 +29,25 @@ public class DebitAccountCheckTaskItemTest {
 
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(txId, "0"));
-        txItem1.setAccountCodeCredit("1");
-        txItem1.setAccountCodeDebit("2");
+
+        txItem1.setAccountCredit(Account.builder()
+                .code("1")
+                .build());
+
+        txItem1.setAccountDebit(Account.builder()
+                .code("2")
+                .build());
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId(TransactionItem.id(txId, "1"));
-        txItem2.setAccountCodeCredit("1");
-        txItem2.setAccountCodeDebit("2");
+
+        txItem2.setAccountCredit(Account.builder()
+                .code("1")
+                .build());
+
+        txItem2.setAccountDebit(Account.builder()
+                .code("2")
+                .build());
 
         val txItems = new LinkedHashSet<TransactionItemEntity>();
         txItems.add(txItem1);
@@ -46,8 +59,9 @@ public class DebitAccountCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getItems()).hasSize(2).allMatch(item ->
-                !item.getAccountCodeDebit().equals(item.getAccountCodeCredit()));
+        assertThat(tx.getItems()).hasSize(2).allMatch(item -> {
+            return !item.getAccountDebit().equals(item.getAccountCredit());
+        });
     }
 
     @Test
@@ -56,13 +70,25 @@ public class DebitAccountCheckTaskItemTest {
 
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(txId, "0"));
-        txItem1.setAccountCodeCredit("1");
-        txItem1.setAccountCodeDebit("1");
+
+        txItem1.setAccountCredit(Account.builder()
+                .code("1")
+                .build());
+
+        txItem1.setAccountDebit(Account.builder()
+                .code("1")
+                .build());
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId(TransactionItem.id(txId, "1"));
-        txItem2.setAccountCodeCredit("1");
-        txItem2.setAccountCodeDebit("2");
+
+        txItem2.setAccountCredit(Account.builder()
+                .code("1")
+                .build());
+
+        txItem2.setAccountDebit(Account.builder()
+                .code("2")
+                .build());
 
         val txItems = new LinkedHashSet<TransactionItemEntity>();
         txItems.add(txItem1);
@@ -84,13 +110,29 @@ public class DebitAccountCheckTaskItemTest {
 
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(txId, "0"));
-        txItem1.setAccountCodeCredit("1");
-        txItem1.setAccountCodeDebit("1");
+
+        txItem1.setAccountCredit(Account.builder()
+                .code("1")
+                .build()
+        );
+
+        txItem1.setAccountDebit(Account.builder()
+                .code("1")
+                .build()
+        );
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId(TransactionItem.id(txId, "1"));
-        txItem2.setAccountCodeCredit("1");
-        txItem2.setAccountCodeDebit("2");
+
+        txItem2.setAccountCredit(Account.builder()
+                .code("1")
+                .build()
+        );
+
+        txItem2.setAccountDebit(Account.builder()
+                .code("2")
+                .build()
+        );
 
         val txItems = new LinkedHashSet<TransactionItemEntity>();
         txItems.add(txItem1);
@@ -113,13 +155,28 @@ public class DebitAccountCheckTaskItemTest {
 
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(txId, "0"));
-        txItem1.setAccountCodeCredit("3");
-        txItem1.setAccountCodeDebit("3");
+
+        txItem1.setAccountCredit(Account.builder()
+                .code("3")
+                .build()
+        );
+
+        txItem1.setAccountDebit(Account.builder()
+                .code("3")
+                .build()
+        );
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId(TransactionItem.id(txId, "1"));
-        txItem2.setAccountCodeCredit("4");
-        txItem2.setAccountCodeDebit("5");
+        txItem2.setAccountCredit(Account.builder()
+                .code("4")
+                .build()
+        );
+
+        txItem2.setAccountDebit(Account.builder()
+                .code("5")
+                .build()
+        );
 
         val txItems = new LinkedHashSet<TransactionItemEntity>();
         txItems.add(txItem1);
@@ -132,8 +189,8 @@ public class DebitAccountCheckTaskItemTest {
         taskItem.run(tx);
 
         assertThat(tx.getItems()).hasSize(1);
-        assertThat(tx.getItems().stream().findFirst().orElseThrow().getAccountCodeDebit().orElseThrow()).isEqualTo("5");
-        assertThat(tx.getItems().stream().findFirst().orElseThrow().getAccountCodeCredit().orElseThrow()).isEqualTo("4");
+        assertThat(tx.getItems().stream().findFirst().orElseThrow().getAccountDebit().map(Account::getCode).orElseThrow()).isEqualTo("5");
+        assertThat(tx.getItems().stream().findFirst().orElseThrow().getAccountCredit().map(Account::getCode).orElseThrow()).isEqualTo("4");
     }
 
     @Test
@@ -143,11 +200,20 @@ public class DebitAccountCheckTaskItemTest {
         val txItem1 = new TransactionItemEntity();
         txItem1.setId(TransactionItem.id(txId, "0"));
         txItem1.clearAccountCodeCredit();
-        txItem1.setAccountCodeDebit("6");
+
+        txItem1.setAccountCredit(Account.builder()
+                .code("6")
+                .build()
+        );
 
         val txItem2 = new TransactionItemEntity();
         txItem2.setId(TransactionItem.id(txId, "1"));
-        txItem2.setAccountCodeCredit("7");
+
+        txItem2.setAccountCredit(Account.builder()
+                .code("7")
+                .build()
+        );
+
         txItem2.clearAccountCodeDebit();
 
         val txItems = new LinkedHashSet<TransactionItemEntity>();

@@ -11,6 +11,7 @@ import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.FinancialPerio
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TransactionsWithViolations;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.TxLine;
 import org.cardanofoundation.lob.app.netsuite_adapter.domain.core.Violation;
+import org.cardanofoundation.lob.app.support.collections.Optionals;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -120,6 +121,7 @@ public class TransactionConverter {
             if (accountCreditCodeE.isLeft()) {
                 return Either.left(accountCreditCodeE.getLeft());
             }
+            val accountCreditCodeM = accountCreditCodeE.get();
 
             val amountLcy = substractNullFriendly(txLine.amountDebit(), txLine.amountCredit());
             val amountFcy = substractNullFriendly(txLine.amountDebitForeignCurrency(), txLine.amountCreditForeignCurrency());
@@ -141,9 +143,20 @@ public class TransactionConverter {
 
             val txItem = TransactionItem.builder()
                     .id(TransactionItem.id(txId, txLine.lineID().toString()))
-                    .accountNameDebit(normaliseString(txLine.name()))
-                    .accountCodeDebit(normaliseString(txLine.number()))
-                    .accountCodeCredit(accountCreditCodeE.get())
+
+                    .accountDebit(Optionals.zip(normaliseString(txLine.name()), normaliseString(txLine.number()), (name, number) -> {
+                        return Account.builder()
+                                .name(Optional.of(name))
+                                .code(number)
+                                .build();
+                    }))
+
+                    .accountCredit(accountCreditCodeM.map(accountCreditCode -> {
+                                return Account.builder()
+                                        .code(accountCreditCode)
+                                        .build();
+                            })
+                    )
 
                     .project(projectCodeM.get().map(pc -> Project.builder()
                             .customerCode(pc)
@@ -155,6 +168,8 @@ public class TransactionConverter {
                             .build()
                     ))
                     .document(documentE.get())
+
+                    .fxRate(fxRate)
 
                     .amountLcy(amountLcy)
                     .amountFcy(amountFcy)
@@ -175,7 +190,6 @@ public class TransactionConverter {
                         .id(organisationId)
                         .build()
                 )
-                .fxRate(fxRate)
                 .items(txItems)
                 .build())
         );

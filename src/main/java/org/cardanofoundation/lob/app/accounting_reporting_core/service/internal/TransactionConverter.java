@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Account;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.AccountEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.CostCenter;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Counterparty;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Currency;
@@ -84,12 +86,29 @@ public class TransactionConverter {
                     txItemEntity.setAmountFcy(txItem.getAmountFcy());
                     txItemEntity.setCostCenter(convertCostCenter(txItem.getCostCenter()));
                     txItemEntity.setProject(convertProject(txItem.getProject()));
-                    txItemEntity.setAccountCodeDebit(txItem.getAccountCodeDebit().orElse(null));
-                    txItemEntity.setAccountCodeRefDebit(txItem.getAccountCodeEventRefDebit().orElse(null));
-                    txItemEntity.setAccountCodeCredit(txItem.getAccountCodeCredit().orElse(null));
-                    txItemEntity.setAccountCodeRefCredit(txItem.getAccountCodeEventRefCredit().orElse(null));
-                    txItemEntity.setAccountNameDebit(txItem.getAccountNameDebit().orElse(null));
-                    txItemEntity.setAccountEventCode(txItem.getAccountEventCode().orElse(null));
+                    txItemEntity.setFxRate(txItem.getFxRate());
+                    txItem.getAccountCredit().ifPresent(creditAccount -> {
+                        txItemEntity.setAccountCredit(Account.builder()
+                                .code(creditAccount.getCode())
+                                .refCode(creditAccount.getRefCode().orElse(null))
+                                .name(creditAccount.getName().orElse(null))
+                                .build());
+                    });
+
+                    txItem.getAccountDebit().ifPresent(debitAccount -> {
+                        txItemEntity.setAccountDebit(Account.builder()
+                                .code(debitAccount.getCode())
+                                .refCode(debitAccount.getRefCode().orElse(null))
+                                .name(debitAccount.getName().orElse(null))
+                                .build());
+                    });
+
+                    txItem.getAccountEvent().ifPresent(accountEvent -> {
+                        txItemEntity.setAccountEvent(AccountEvent.builder()
+                                .code(accountEvent.getCode())
+                                .name(accountEvent.getName())
+                                .build());
+                    });
 
                     return txItemEntity;
                 })
@@ -102,7 +121,6 @@ public class TransactionConverter {
         txEntity.setTransactionType(transaction.getTransactionType());
         txEntity.setEntryDate(transaction.getEntryDate());
         txEntity.setOrganisation(convertOrganisation(transaction));
-        txEntity.setFxRate(transaction.getFxRate());
         txEntity.setValidationStatus(transaction.getValidationStatus());
         txEntity.setLedgerDispatchStatus(transaction.getLedgerDispatchStatus());
         txEntity.setAccountingPeriod(transaction.getAccountingPeriod());
@@ -187,15 +205,22 @@ public class TransactionConverter {
                 .map(txItemEntity -> TransactionItem.builder()
                         .id(txItemEntity.getId())
 
-                        .accountCodeDebit(txItemEntity.getAccountCodeDebit())
-                        .accountCodeEventRefDebit(txItemEntity.getAccountCodeRefDebit())
+                        .accountDebit(txItemEntity.getAccountDebit().map(account -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Account.builder()
+                                .code(account.getCode())
+                                .refCode(account.getRefCode())
+                                .name(account.getName())
+                                .build()))
 
-                        .accountCodeCredit(txItemEntity.getAccountCodeCredit())
-                        .accountCodeEventRefCredit(txItemEntity.getAccountCodeRefCredit())
+                        .accountCredit(txItemEntity.getAccountCredit().map(account -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Account.builder()
+                                .code(account.getCode())
+                                .refCode(account.getRefCode())
+                                .name(account.getName())
+                                .build()))
 
-                        .accountNameDebit(txItemEntity.getAccountNameDebit())
-
-                        .accountEventCode(txItemEntity.getAccountEventCode())
+                        .accountEvent(txItemEntity.getAccountEvent().map(accountEvent -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.AccountEvent.builder()
+                                .code(accountEvent.getCode())
+                                .name(accountEvent.getName())
+                                .build()))
 
                         .project(txItemEntity.getProject().map(project -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project.builder()
                                 .customerCode(project.getCustomerCode())
@@ -208,6 +233,8 @@ public class TransactionConverter {
                                 .build()))
 
                         .document(txItemEntity.getDocument().flatMap(this::convertToDbDetached))
+
+                        .fxRate(txItemEntity.getFxRate())
 
                         .amountFcy(txItemEntity.getAmountFcy())
                         .amountLcy(txItemEntity.getAmountLcy())
@@ -229,7 +256,6 @@ public class TransactionConverter {
                 .validationStatus(transactionEntity.getValidationStatus())
                 .transactionType(transactionEntity.getTransactionType())
                 .internalTransactionNumber(transactionEntity.getTransactionInternalNumber())
-                .fxRate(transactionEntity.getFxRate())
 
                 .transactionApproved(transactionEntity.getTransactionApproved())
                 .ledgerDispatchStatus(transactionEntity.getLedgerDispatchStatus())
@@ -270,7 +296,6 @@ public class TransactionConverter {
         attached.setId(detached.getId());
         attached.setBatchId(detached.getBatchId());
         attached.setOrganisation(detached.getOrganisation());
-        attached.setFxRate(detached.getFxRate());
         attached.setLedgerDispatchApproved(detached.getLedgerDispatchApproved());
         attached.setTransactionApproved(detached.getTransactionApproved());
         attached.setTransactionType(detached.getTransactionType());

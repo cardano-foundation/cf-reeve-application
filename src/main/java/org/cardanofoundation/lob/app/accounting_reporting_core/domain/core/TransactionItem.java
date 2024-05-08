@@ -2,7 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -25,22 +25,13 @@ public class TransactionItem {
     @NotNull private BigDecimal amountLcy;
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> accountCodeDebit = Optional.empty();
+    private Optional<Account> accountDebit = Optional.empty();
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> accountCodeEventRefDebit = Optional.empty();
+    private Optional<Account> accountCredit = Optional.empty();
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> accountNameDebit = Optional.empty();
-
-    @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> accountCodeCredit = Optional.empty();
-
-    @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> accountCodeEventRefCredit = Optional.empty();
-
-    @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> accountEventCode = Optional.empty();
+    private Optional<AccountEvent> accountEvent = Optional.empty();
 
     @Builder.Default
     private Optional<Project> project = Optional.empty();
@@ -50,6 +41,10 @@ public class TransactionItem {
 
     @Builder.Default
     private Optional<Document> document = Optional.empty(); // initially we allow empty but later as part of business rules we check if document is present
+
+    @NotNull
+    @PositiveOrZero
+    private BigDecimal fxRate;
 
     public static String id(String transactionId,
                             String lineNo) {
