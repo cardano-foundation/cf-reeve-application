@@ -59,8 +59,8 @@ public class AccountingCoreService {
                 // reprocess only the ones that have not been approved to dispatch yet, actually it is just a sanity check because it should never happen
                 // and we should never allow approving failed transactions
                 .filter(tx -> !tx.allApprovalsPassedForTransactionDispatch())
-                // we are interested only in the ones that have LOB violations (conversion issues)
-                .filter(tx -> tx.getViolations().stream().anyMatch(v -> v.getSource() == LOB))
+                // we are interested only in the ones that have LOB violations (conversion issues) or rejection issues
+                .filter(tx -> tx.getViolations().stream().anyMatch(v -> v.getSource() == LOB) || tx.hasAnyRejection())
                 .collect(Collectors.toSet());
 
         if (txs.isEmpty()) {

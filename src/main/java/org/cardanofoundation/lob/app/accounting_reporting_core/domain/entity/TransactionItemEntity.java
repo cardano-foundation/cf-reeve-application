@@ -5,12 +5,16 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.Optional;
+
+import static jakarta.persistence.EnumType.STRING;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus.NOT_REJECTED;
 
 @Getter
 @Setter
@@ -60,6 +64,10 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
 
     @Column(name = "amount_lcy", nullable = false)
     private BigDecimal amountLcy;
+
+    @Column(name = "rejection_status", nullable = false)
+    @Enumerated(STRING)
+    private RejectionStatus rejectionStatus = NOT_REJECTED;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "transaction_id")

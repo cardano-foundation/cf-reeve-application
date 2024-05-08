@@ -48,7 +48,6 @@ CREATE TABLE accounting_core_transaction (
    organisation_currency_id VARCHAR(255),
 
    user_comment VARCHAR(255),
-   rejection_status VARCHAR(255) NOT NULL,
 
    validation_status VARCHAR(255) NOT NULL,
 
@@ -111,6 +110,8 @@ CREATE TABLE accounting_core_transaction_item (
    FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
 
    fx_rate DECIMAL NOT NULL,
+
+   rejection_status VARCHAR(255) NOT NULL,
 
    account_code_debit VARCHAR(255),
    account_ref_code_debit VARCHAR(255),

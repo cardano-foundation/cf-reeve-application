@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
@@ -14,12 +13,12 @@ import org.springframework.data.domain.Persistable;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus.NOT_REJECTED;
 
 @Getter
 @Setter
@@ -81,10 +80,6 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     @Column(name = "user_comment")
     private String userComment;
 
-    @Column(name = "rejection_status", nullable = false)
-    @Enumerated(STRING)
-    private RejectionStatus rejectionStatus = NOT_REJECTED;
-
     @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "accounting_core_transaction_violation", joinColumns = @JoinColumn(name = "transaction_id"))
     @AttributeOverrides({
@@ -111,6 +106,14 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     public void clearAllViolations() {
         violations.clear();
         recalcValidationStatus();
+    }
+
+    public boolean hasAnyRejection() {
+        return items.stream().anyMatch(item -> item.getRejectionStatus().isRejected());
+    }
+
+    public boolean isRejectionFree() {
+        return !hasAnyRejection();
     }
 
     private void recalcValidationStatus() {
@@ -144,9 +147,13 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
         return false;
     }
 
+    public Optional<TransactionItemEntity> findItemById(String txItemId) {
+        return items.stream().filter(item -> txItemId.equals(item.getId())).findFirst();
+    }
+
     public boolean isDispatchReady() {
         return allApprovalsPassedForTransactionDispatch()
-                && rejectionStatus == NOT_REJECTED
+                && isRejectionFree()
                 && validationStatus == ValidationStatus.VALIDATED
                 && ledgerDispatchStatus == NOT_DISPATCHED;
     }

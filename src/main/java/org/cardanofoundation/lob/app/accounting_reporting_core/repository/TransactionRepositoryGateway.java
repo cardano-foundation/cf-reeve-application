@@ -26,6 +26,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @Transactional(readOnly = true)
 public class TransactionRepositoryGateway {
 
+    private final TransactionItemRepository transactionItemRepository;
     private final TransactionRepository transactionRepository;
     private final LedgerService ledgerService;
 
@@ -163,7 +164,9 @@ public class TransactionRepositoryGateway {
         return Either.right(savedTx.getUserComment().equals(userComment));
     }
 
-    public Either<Problem, Boolean> changeTransactionRejectionStatus(String txId, RejectionStatus rejectionStatus) {
+    public Either<Problem, Boolean> changeTransactionItemRejectionStatus(String txId,
+                                                                         String txItemId,
+                                                                         RejectionStatus rejectionStatus) {
         val txM = transactionRepository.findById(txId);
 
         if (txM.isEmpty()) {
@@ -177,11 +180,23 @@ public class TransactionRepositoryGateway {
 
         val tx = txM.orElseThrow();
 
-        tx.setRejectionStatus(rejectionStatus);
+        val txItemM = tx.findItemById(txItemId);
 
-        val savedTx = transactionRepository.save(tx);
+        if (txItemM.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("TX_ITEM_NOT_FOUND")
+                    .withDetail(STR."Transaction item with id \{txItemId} not found")
+                    .with("txItemId", txItemId)
+                    .build()
+            );
+        }
 
-        return Either.right(savedTx.getRejectionStatus() == rejectionStatus);
+        val txItem= txItemM.orElseThrow();
+        txItem.setRejectionStatus(rejectionStatus);
+
+        val savedTxItem = transactionItemRepository.save(txItem);
+
+        return Either.right(savedTxItem.getRejectionStatus() == rejectionStatus);
     }
 
     public Optional<TransactionEntity> findById(String transactionId) {
