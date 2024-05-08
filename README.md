@@ -18,6 +18,7 @@ For the project adopters, it will provide the opportunity to advance the use of 
 The `lob` executable is an HTTP server that manages...:
 
 Prerequisties:
+- Java 21
 - 100GB of disk space
 - 10GB of RAM
 
