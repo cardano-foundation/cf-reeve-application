@@ -27,7 +27,7 @@ Prerequisties:
 ```
 git clone git@github.com:cardano-foundation/cf-lob.git
 cd cf-lob
-gradlew clean build
+./gradlew clean build
 ```
 
 ## How to run
@@ -35,7 +35,7 @@ gradlew clean build
 ```
 git clone git@github.com:cardano-foundation/cf-lob.git
 cd cf-lob
-gradlew clen bootRun
+./gradlew clean bootRun
 ```
 
 ## How to test
