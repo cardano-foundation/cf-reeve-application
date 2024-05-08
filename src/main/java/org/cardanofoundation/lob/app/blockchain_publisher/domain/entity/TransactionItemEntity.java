@@ -37,8 +37,14 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     private BigDecimal amountFcy;
 
     @Nullable
-    @Column(name = "event_code")
-    private String eventCode;
+    @AttributeOverrides({
+            @AttributeOverride(name = "code", column = @Column(name = "account_event_code", nullable = false)),
+            @AttributeOverride(name = "name", column = @Column(name = "account_event_name", nullable = false))
+    })
+    private AccountEvent accountEvent;
+
+    @Column(name = "fx_rate", nullable = false)
+    private BigDecimal fxRate;
 
     @Nullable
     @AttributeOverrides({
@@ -56,16 +62,18 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "num", column = @Column(name = "document_num")),
+            @AttributeOverride(name = "num", column = @Column(name = "document_num", nullable = false)),
+            @AttributeOverride(name = "vat.customerCode", column = @Column(name = "document_vat_customer_code")),
             @AttributeOverride(name = "vat.rate", column = @Column(name = "document_vat_rate")),
             @AttributeOverride(name = "currency.id", column = @Column(name = "document_currency_id")),
+            @AttributeOverride(name = "currency.customerCode", column = @Column(name = "document_currency_customer_code", nullable = false)),
             @AttributeOverride(name = "counterparty.customerCode", column = @Column(name = "document_counterparty_customer_code")),
             @AttributeOverride(name = "counterparty.type", column = @Column(name = "document_counterparty_type")),
     })
     private Document document;
 
-    public Optional<String> getEventCode() {
-        return Optional.ofNullable(eventCode);
+    public Optional<AccountEvent> getAccountEvent() {
+        return Optional.ofNullable(accountEvent);
     }
 
     public Optional<Project> getProject() {

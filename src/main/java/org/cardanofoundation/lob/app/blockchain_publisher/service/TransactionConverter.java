@@ -34,7 +34,6 @@ public class TransactionConverter {
         transactionEntity.setBatchId(tx.getBatchId());
         transactionEntity.setTransactionType(tx.getTransactionType());
         transactionEntity.setOrganisation(convertOrganisation(tx.getOrganisation()));
-        transactionEntity.setFxRate(tx.getFxRate());
         transactionEntity.setEntryDate(tx.getEntryDate());
         transactionEntity.setAccountingPeriod(tx.getAccountingPeriod());
 
@@ -71,9 +70,11 @@ public class TransactionConverter {
                 .num(doc.getNumber())
                 .currency(Currency.builder()
                         .id(doc.getCurrency().getCoreCurrency().orElseThrow().toExternalId())
+                        .customerCode(doc.getCurrency().getCustomerCode())
                         .build()
                 )
                 .vat(doc.getVat().map(vat -> Vat.builder()
+                        .customerCode(vat.getCustomerCode())
                         .rate(vat.getRate().orElseThrow())
                         .build()).orElse(null))
                 .counterparty(doc.getCounterparty().map(cp -> Counterparty.builder()
@@ -89,10 +90,18 @@ public class TransactionConverter {
         val txItemEntity = new TransactionItemEntity();
         txItemEntity.setId(txItem.getId());
         txItemEntity.setTransaction(parent);
-        txItemEntity.setEventCode(txItem.getAccountEventCode().orElse(null));
+
+        txItemEntity.setAccountEvent(txItem.getAccountEvent().map(e -> AccountEvent.builder()
+                .code(e.getCode())
+                .name(e.getName()).build())
+                .orElse(null));
+
+        txItemEntity.setFxRate(txItem.getFxRate());
+
         txItemEntity.setAmountFcy(txItem.getAmountFcy());
         txItemEntity.setProject(txItem.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null));
         txItemEntity.setDocument(convertDocument(txItem.getDocument().orElseThrow()));
+
         txItemEntity.setCostCenter(txItem.getCostCenter().map(cc -> {
             val ccBuilder = CostCenter.builder();
 

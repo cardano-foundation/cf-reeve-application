@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Currency {
 
+    private String customerCode;
+
     private String id;
 
 }

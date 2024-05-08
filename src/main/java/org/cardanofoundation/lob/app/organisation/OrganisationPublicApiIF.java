@@ -22,4 +22,6 @@ public interface OrganisationPublicApiIF {
 
     Optional<OrganisationChartOfAccount> getChartOfAccounts(String organisationId, String customerCode);
 
+    Optional<AccountEvent> findEventCode(String organisationId, String customerCode);
+
 }

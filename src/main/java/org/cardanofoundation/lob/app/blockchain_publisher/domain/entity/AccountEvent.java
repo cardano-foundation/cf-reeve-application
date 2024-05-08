@@ -3,17 +3,16 @@ package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Builder
 @Setter
-public class Vat {
+public class AccountEvent {
 
-    private String customerCode;
-    private BigDecimal rate;
+    private String code;
+
+    private String name;
 
 }

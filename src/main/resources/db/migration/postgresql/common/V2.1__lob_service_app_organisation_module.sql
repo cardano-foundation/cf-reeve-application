@@ -74,6 +74,7 @@ CREATE TABLE organisation_chart_of_account (
    customer_code VARCHAR(255) NOT NULL,
    ref_code VARCHAR(255) NOT NULL,
    event_ref_code VARCHAR(255) NOT NULL,
+   name VARCHAR(255) NOT NULL,
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
@@ -81,4 +82,17 @@ CREATE TABLE organisation_chart_of_account (
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
    CONSTRAINT pk_chart_of_account PRIMARY KEY (organisation_id, customer_code)
+);
+
+CREATE TABLE organisation_account_event (
+   organisation_id CHAR(64) NOT NULL,
+   customer_code VARCHAR(255) NOT NULL,
+   name VARCHAR(255) NOT NULL,
+
+   created_by VARCHAR(255),
+   updated_by VARCHAR(255),
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
+
+   CONSTRAINT pk_organisation_account_event PRIMARY KEY (organisation_id, customer_code)
 );
