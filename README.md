@@ -18,6 +18,7 @@ For the project adopters, it will provide the opportunity to advance the use of 
 The `lob` executable is an HTTP server that manages...:
 
 Prerequisties:
+- Java 21
 - 100GB of disk space
 - 10GB of RAM
 
@@ -26,7 +27,7 @@ Prerequisties:
 ```
 git clone git@github.com:cardano-foundation/cf-lob.git
 cd cf-lob
-gradlew clean build
+./gradlew clean build
 ```
 
 ## How to run
@@ -34,7 +35,7 @@ gradlew clean build
 ```
 git clone git@github.com:cardano-foundation/cf-lob.git
 cd cf-lob
-gradlew clen bootRun
+./gradlew clean bootRun
 ```
 
 ## How to test
