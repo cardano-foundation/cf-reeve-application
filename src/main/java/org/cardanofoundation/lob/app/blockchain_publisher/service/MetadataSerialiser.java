@@ -138,7 +138,7 @@ public class MetadataSerialiser {
         metadataMap.put("id", transactionItemEntity.getId());
         metadataMap.put("amount", transactionItemEntity.getAmountFcy().toEngineeringString());
 
-        transactionItemEntity.getAccountEvent().ifPresent(accountEvent -> metadataMap.put("event_code", serialise(accountEvent)));
+        transactionItemEntity.getAccountEvent().ifPresent(accountEvent -> metadataMap.put("event", serialise(accountEvent)));
         transactionItemEntity.getProject().ifPresent(project -> metadataMap.put("project", serialise(project)));
         transactionItemEntity.getCostCenter().ifPresent(costCenter -> metadataMap.put("cost_center", serialise(costCenter)));
 
