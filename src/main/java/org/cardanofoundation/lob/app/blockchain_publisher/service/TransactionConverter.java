@@ -99,7 +99,7 @@ public class TransactionConverter {
         txItemEntity.setFxRate(txItem.getFxRate());
 
         txItemEntity.setAmountFcy(txItem.getAmountFcy());
-        txItemEntity.setProject(txItem.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null));
+        txItemEntity.setProject(txItem.getProject().map(pc -> new Project(pc.getCustomerCode(), pc.getName())).orElse(null));
         txItemEntity.setDocument(convertDocument(txItem.getDocument().orElseThrow()));
 
         txItemEntity.setCostCenter(txItem.getCostCenter().map(cc -> {

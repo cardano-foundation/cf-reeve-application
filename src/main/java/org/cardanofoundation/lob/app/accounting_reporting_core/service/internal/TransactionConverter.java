@@ -224,6 +224,8 @@ public class TransactionConverter {
 
                         .project(txItemEntity.getProject().map(project -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project.builder()
                                 .customerCode(project.getCustomerCode())
+                                .externalCustomerCode(project.getExternalCustomerCode())
+                                .name(project.getName())
                                 .build()))
 
                         .costCenter(txItemEntity.getCostCenter().map(costCenter -> org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.CostCenter.builder()

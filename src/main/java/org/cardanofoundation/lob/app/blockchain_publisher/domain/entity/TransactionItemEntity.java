@@ -48,7 +48,8 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
 
     @Nullable
     @AttributeOverrides({
-            @AttributeOverride(name = "customerCode", column = @Column(name = "project_customer_code"))
+            @AttributeOverride(name = "customerCode", column = @Column(name = "project_customer_code")),
+            @AttributeOverride(name = "name", column = @Column(name = "project_name"))
     })
     private Project project;
 
