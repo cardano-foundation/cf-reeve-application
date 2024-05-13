@@ -60,6 +60,8 @@ CREATE TABLE organisation_cost_center (
 CREATE TABLE organisation_project (
    organisation_id CHAR(64) NOT NULL,
    customer_code VARCHAR(255) NOT NULL,
+   external_customer_code VARCHAR(255) NOT NULL,
+   name VARCHAR(255) NOT NULL,
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),

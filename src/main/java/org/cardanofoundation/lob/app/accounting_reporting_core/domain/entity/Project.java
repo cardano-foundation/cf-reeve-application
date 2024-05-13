@@ -4,6 +4,9 @@ import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import javax.annotation.Nullable;
+import java.util.Optional;
+
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +17,19 @@ public class Project {
 
     @NotBlank
     private String customerCode;
+
+    @Nullable
+    private String externalCustomerCode;
+
+    @Nullable
+    private String name;
+
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
+    }
+
+    public Optional<String> getExternalCustomerCode() {
+        return Optional.ofNullable(externalCustomerCode);
+    }
 
 }
