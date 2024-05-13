@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 
-public interface TransactionRepository extends JpaRepository<TransactionEntity, String> {
+public interface TransactionRepository extends JpaRepository<TransactionEntity, String>, CustomTransactionRepository {
 
     @Query("SELECT t FROM accounting_reporting_core.TransactionEntity t" +
             " WHERE t.organisation.id = :organisationId " +
