@@ -136,9 +136,11 @@ public class TransactionConverter {
         return txEntity;
     }
 
-    private Project convertProject(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project> project) {
-        return project.map(p -> Project.builder()
+    private Project convertProject(Optional<org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Project> projectM) {
+        return projectM.map(p -> Project.builder()
                         .customerCode(p.getCustomerCode())
+                        .externalCustomerCode(p.getExternalCustomerCode().orElse(null))
+                        .name(p.getName().orElse(null))
                         .build())
                 .orElse(null);
     }
@@ -234,7 +236,8 @@ public class TransactionConverter {
                                 .name(costCenter.getName())
                                 .build()))
 
-                        .document(txItemEntity.getDocument().flatMap(this::convertToDbDetached))
+                        .document(txItemEntity.getDocument()
+                                .flatMap(this::convertToDbDetached))
 
                         .fxRate(txItemEntity.getFxRate())
 

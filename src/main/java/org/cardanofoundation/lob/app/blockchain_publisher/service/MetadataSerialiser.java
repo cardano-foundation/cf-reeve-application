@@ -91,6 +91,7 @@ public class MetadataSerialiser {
     private static MetadataMap serialise(Project project) {
         val metadataMap = MetadataBuilder.createMap();
         metadataMap.put("cust_code", project.getCustomerCode());
+        metadataMap.put("name", project.getName());
 
         return metadataMap;
     }

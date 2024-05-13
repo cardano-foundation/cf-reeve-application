@@ -18,6 +18,12 @@ public class OrganisationProject {
     })
     private Id id;
 
+    @Column(name = "external_customer_code", nullable = false)
+    private String externalCustomerCode;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Embeddable
     @AllArgsConstructor
     @NoArgsConstructor
