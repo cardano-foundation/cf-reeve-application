@@ -5,12 +5,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -180,4 +184,31 @@ public class TransactionRepositoryGateway {
         return Either.right(savedTx.getRejectionStatus() == rejectionStatus);
     }
 
+    public Optional<TransactionEntity> findById(String transactionId) {
+
+        return transactionRepository.findById(transactionId);
+    }
+
+    public List<TransactionEntity> findByAllId(Set<String> transactionIds) {
+
+        return transactionRepository.findAllById(transactionIds);
+    }
+
+    private static Set<String> transactionIds(Set<TransactionEntity> transactions) {
+
+        return transactions
+                .stream()
+                .map(TransactionEntity::getId)
+                .collect(Collectors.toSet());
+    }
+
+    public List<TransactionEntity> findAllByStatus(String organisationId,
+                                                   List<ValidationStatus> validationStatuses,
+                                                   List<TransactionType> transactionType) {
+        return transactionRepository.findAllByStatus(organisationId, validationStatuses, transactionType);
+    }
+
+    public List<TransactionEntity> listAll() {
+        return transactionRepository.findAll();
+    }
 }

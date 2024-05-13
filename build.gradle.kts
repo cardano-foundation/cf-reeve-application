@@ -36,6 +36,7 @@ dependencies {
     //implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.json:json:20211205")
 
     implementation("org.springframework.data:spring-data-envers")
 
@@ -143,6 +144,6 @@ pitest {
     targetTests.set(setOf("org.cardanofoundation.lob.app.*"))
     exportLineCoverage = true
     timestampedReports = false
-    threads = 4
+    threads = 2
     // ...
 }

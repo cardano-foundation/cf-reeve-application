@@ -1,0 +1,224 @@
+package org.cardanofoundation.lob.app.accounting_reporting_core.resource;
+
+import io.restassured.response.ValidatableResponse;
+import org.cardanofoundation.lob.app.WebBaseIntegrationTest;
+import org.hamcrest.Matcher;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsEqual.equalTo;
+
+
+class AccountingCoreResourceTest extends WebBaseIntegrationTest {
+
+
+    @Test
+    void testListAllTransactions() throws Exception {
+        String myJson = "{\n" +
+                "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
+                "  \"transactionType\": [\n" +
+                "    \"CardCharge\",\n" +
+                "    \"VendorBill\",\n" +
+                "    \"CardRefund\",\n" +
+                "    \"Journal\",\n" +
+                "    \"FxRevaluation\",\n" +
+                "    \"Transfer\",\n" +
+                "    \"CustomerPayment\",\n" +
+                "    \"ExpenseReport\",\n" +
+                "    \"VendorPayment\",\n" +
+                "    \"BillCredit\"\n" +
+                "  ],\n" +
+                "    \"status\": [\"VALIDATED\",\"FAILED\"]\n" +
+                "}";
+
+        given()
+                .contentType("application/json")
+                .body(myJson)
+                .when()
+                .post("/api/transactions")
+                .then()
+                .statusCode(200)
+                .body(equalTo("[]"))
+        ;
+
+    }
+
+    @Test
+    void testListAllTransactionsNoOrgnanisationId() throws Exception {
+        String myJson = "{\n" +
+                "  \"organisationId\": \"\",\n" +
+                "  \"transactionType\": [\n" +
+                "    \"CardCharge\",\n" +
+                "    \"VendorBill\",\n" +
+                "    \"CardRefund\",\n" +
+                "    \"Journal\",\n" +
+                "    \"FxRevaluation\",\n" +
+                "    \"Transfer\",\n" +
+                "    \"CustomerPayment\",\n" +
+                "    \"ExpenseReport\",\n" +
+                "    \"VendorPayment\",\n" +
+                "    \"BillCredit\"\n" +
+                "  ],\n" +
+                "    \"status\": [\"VALIDATED\",\"FAILED\"]\n" +
+                "}";
+
+        given()
+                .contentType("application/json")
+                .body(myJson)
+                .when()
+                .post("/api/transactions")
+                .then()
+                .statusCode(400)
+                .body(equalTo("{\"violations\":[{\"field\":\"organisationId\",\"message\":\"must not be blank\"}],\"type\":\"https://zalando.github.io/problem/constraint-violation\",\"status\":400,\"title\":\"Constraint Violation\"}".toString()))
+        ;
+
+    }
+
+    @Test
+    void testListAllAction() throws Exception {
+        String myJson = "{\n" +
+                "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
+                "  \"dateFrom\": \"2010-01-01\",\n" +
+                "  \"dateTo\": \"2024-05-01\",\n" +
+                "  \"transactionType\": [\n" +
+                "    \"CardCharge\",\n" +
+                "    \"VendorBill\",\n" +
+                "    \"CardRefund\",\n" +
+                "    \"Journal\",\n" +
+                "    \"FxRevaluation\",\n" +
+                "    \"Transfer\",\n" +
+                "    \"CustomerPayment\",\n" +
+                "    \"ExpenseReport\",\n" +
+                "    \"VendorPayment\",\n" +
+                "    \"BillCredit\"\n" +
+                "  ],\n" +
+                "  \"transactionNumbers\": [\n" +
+                "    \"CARDCH565\",\n" +
+                "    \"CARDHY777\",\n" +
+                "    \"CARDCHRG159\",\n" +
+                "    \"VENDBIL119\"\n" +
+                "  ]\n" +
+                "}";
+
+        given()
+                .contentType("application/json")
+                .body(myJson)
+                .when()
+                .post("/api/extraction")
+                .then()
+                .statusCode(202)
+                .body("event",equalTo("EXTRACTION"))
+                .body("message",equalTo("We have received your extraction request now. Please review imported transactions from the batch list."))
+                ;
+
+    }
+
+    @Test
+    void testExtractionTrigger() throws Exception {
+        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\"status\": [\"VALIDATED\"]}";
+
+        given()
+                .contentType("application/json")
+                .body(myJson)
+                .when()
+                .post("/api/transactions")
+                .then()
+                .statusCode(200)
+                .body(equalTo("[]"))
+        ;
+
+    }
+
+    @Test
+    void testTransactionType() throws Exception {
+
+        ValidatableResponse este = given()
+                .contentType("application/json")
+                .when()
+                .get("/api/transaction-types")
+                .then()
+                .statusCode(200)
+                .body("find { it.title == 'Card Refund' }.id", equalTo("CardRefund"))
+                .body("find { it.title == 'Card Charge' }.id", equalTo("CardCharge"))
+                .body("find { it.title == 'Vendor Bill' }.id", equalTo("VendorBill"))
+                .body("find { it.title == 'Customer Payment' }.id", equalTo("CustomerPayment"))
+                .body("find { it.title == 'Transfer' }.id", equalTo("Transfer"))
+                .body("find { it.title == 'Vendor Payment' }.id", equalTo("VendorPayment"))
+                .body("find { it.title == 'Journal' }.id", equalTo("Journal"))
+                .body("find { it.title == 'Fx Revaluation' }.id", equalTo("FxRevaluation"))
+                .body("find { it.title == 'Bill Credit' }.id", equalTo("BillCredit"))
+                .body("find { it.title == 'Expense Report' }.id", equalTo("ExpenseReport"))
+                ;
+
+    }
+
+    @Test
+    void testListAllBatch() {
+        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"}";
+        String expectedCreatedAt = LocalDate.now().toString();
+        String expectedUpdatedAt = LocalDate.now().toString();
+        String expectedResponseBody = "[{\"id\":\"eb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04\",\"organisationId\":\"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"}]";
+
+        given()
+                .contentType("application/json")
+                .body(myJson)
+                .when()
+                .post("/api/batchs")
+                .then()
+                .statusCode(200)
+                .body("id", contains("eb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
+                .body("createdAt[0]", containsString(expectedCreatedAt))
+                .body("updatedAt[0]", containsString(expectedUpdatedAt))
+                .body("organisationId", contains("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"));
+
+        ;
+    }
+
+    @Test
+    void testListAllBatchNull() {
+        String myJson = "{\"organisationId\": \"65f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"}";
+
+        given()
+                .contentType("application/json")
+                .body(myJson)
+                .when()
+                .post("/api/batchs")
+                .then()
+                .statusCode(404)
+                .body("title", equalTo("BATCH_ORGANISATION_NOT_FOUND"))
+                .body("detail", equalTo("Batch with organization id: {65f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94} could not be found"))
+        ;
+    }
+
+    @Test
+    void testListAllBatchDetail() {
+
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/api/batchs/eb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04")
+                .then()
+                .statusCode(200)
+                .body("id", equalTo("eb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
+                .body("organisationId", equalTo("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
+
+        ;
+    }
+    @Test
+    void testListAllBatchDetailNull() {
+
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/api/batchs/fb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04")
+                .then()
+                .statusCode(404)
+                .body("title", equalTo("BATCH_NOT_FOUND"))
+                .body("detail", equalTo("Batch with id: {fb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04} could not be found"))
+        ;
+    }
+}
