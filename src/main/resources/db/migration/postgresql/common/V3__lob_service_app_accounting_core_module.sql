@@ -138,6 +138,8 @@ CREATE TABLE accounting_core_transaction_item (
    document_counterparty_name VARCHAR(255),
 
    project_customer_code VARCHAR(255),
+   project_external_customer_code VARCHAR(255),
+   project_name VARCHAR(255),
 
    cost_center_customer_code VARCHAR(255),
    cost_center_external_customer_code VARCHAR(255),

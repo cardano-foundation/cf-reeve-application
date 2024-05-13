@@ -92,14 +92,15 @@ public class TransactionConverter {
         txItemEntity.setTransaction(parent);
 
         txItemEntity.setAccountEvent(txItem.getAccountEvent().map(e -> AccountEvent.builder()
-                .code(e.getCode())
-                .name(e.getName()).build())
-                .orElse(null));
+                        .code(e.getCode())
+                        .name(e.getName()).build())
+                .orElse(null)
+        );
 
         txItemEntity.setFxRate(txItem.getFxRate());
 
         txItemEntity.setAmountFcy(txItem.getAmountFcy());
-        txItemEntity.setProject(txItem.getProject().map(pc -> new Project(pc.getCustomerCode())).orElse(null));
+
         txItemEntity.setDocument(convertDocument(txItem.getDocument().orElseThrow()));
 
         txItemEntity.setCostCenter(txItem.getCostCenter().map(cc -> {
@@ -111,6 +112,11 @@ public class TransactionConverter {
             return ccBuilder.build();
         }).orElse(null));
 
+        txItemEntity.setProject(txItem.getProject().map(pc -> Project.builder()
+                .customerCode(pc.getExternalCustomerCode().orElseThrow())
+                .name(pc.getName().orElseThrow())
+                .build()).orElse(null)
+        );
 
         return txItemEntity;
     }

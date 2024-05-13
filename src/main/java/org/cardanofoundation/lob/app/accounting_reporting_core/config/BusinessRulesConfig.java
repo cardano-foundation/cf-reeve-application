@@ -66,6 +66,7 @@ public class BusinessRulesConfig {
                 new OrganisationConversionTaskItem(organisationPublicApi, currencyRepository),
                 new DocumentConversionTaskItem(organisationPublicApi, currencyRepository),
                 new CostCenterConversionTaskItem(organisationPublicApi),
+                new ProjectConversionTaskItem(organisationPublicApi),
                 new AccountEventCodesConversionTaskItem(organisationPublicApi)
         ));
     }

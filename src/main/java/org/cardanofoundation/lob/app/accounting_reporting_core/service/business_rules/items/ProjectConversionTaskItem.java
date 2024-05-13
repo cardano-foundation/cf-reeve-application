@@ -8,9 +8,9 @@ import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 
 import java.util.Map;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.PROJECT_DATA_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.PROJECT_DATA_NOT_FOUND;
 
 @RequiredArgsConstructor
 public class ProjectConversionTaskItem implements PipelineTaskItem {
@@ -54,10 +54,13 @@ public class ProjectConversionTaskItem implements PipelineTaskItem {
 
             val projectMapping = projectMappingM.orElseThrow();
 
-            txItem.setProject(project.toBuilder()
+            val p = project.toBuilder()
                     .customerCode(projectMapping.getId().getCustomerCode())
-                    .build()
-            );
+                    .externalCustomerCode(projectMapping.getExternalCustomerCode())
+                    .name(projectMapping.getName())
+                    .build();
+
+            txItem.setProject(p);
         }
     }
 
