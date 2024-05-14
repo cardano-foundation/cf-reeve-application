@@ -7,21 +7,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepositoryGateway;
-import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
-import org.cardanofoundation.lob.app.accounting_reporting_core.resource.model.AccountingCoreModel;
+import org.cardanofoundation.lob.app.accounting_reporting_core.resource.model.AccountingCorePresentationViewService;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.ExtractionRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.SearchRequest;
-import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.*;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.AccountingCoreService;
+import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.TransactionView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,44 +25,30 @@ import org.springframework.web.bind.annotation.*;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.cardanofoundation.lob.app.accounting_reporting_core.resource.model.AccountingCoreModel.getTransaction;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.resource.model.AccountingCoreModel.getTransactionView;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@Log4j2
-
+@Slf4j
 public class AccountingCoreResource {
 
-    private final TransactionRepositoryGateway transactionRepositoryGateway;
-    private final AccountingCoreService accountingCoreService;
-    private final TransactionBatchRepositoryGateway transactionBatchRepositoryGateway;
-
+    private final AccountingCorePresentationViewService accountingCorePresentationService;
 
     @Tag(name = "Transactions", description = "Transactions API")
     @PostMapping(value = "/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> listAllAction(@Valid @RequestBody SearchRequest body) {
-        log.info(body);
-        List<TransactionEntity> transactions = transactionRepositoryGateway.findAllByStatus(body.getOrganisationId(), body.getStatus(), body.getTransactionType());
+        List<TransactionView> transactions = accountingCorePresentationService.allTransactions(body);
 
-        return ResponseEntity.ok().body(
-                transactions.stream().map(transaction -> getTransactionView(transaction))
-        );
+        return ResponseEntity.ok().body(transactions);
     }
 
     @Tag(name = "Transactions", description = "Transactions API")
     @GetMapping(value = "/transactions/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> transactionDetailSpecific(@Valid @PathVariable("transactionId") String transactionId) {
 
-        Optional<TransactionEntity> transactionEntity = transactionRepositoryGateway.findById(transactionId);
+        val transactionEntity = accountingCorePresentationService.transactionDetailSpecific(transactionId);
         if (transactionEntity.isEmpty()) {
             val issue = Problem.builder()
                     .withTitle("TX_NOT_FOUND")
@@ -80,7 +59,7 @@ public class AccountingCoreResource {
             return ResponseEntity.status(issue.getStatus().getStatusCode()).body(issue);
         }
 
-        return ResponseEntity.ok().body(transactionEntity.map(transaction -> getTransactionView(transaction)));
+        return ResponseEntity.ok().body(transactionEntity);
     }
 
     @Tag(name = "Transactions", description = "Transactions API")
@@ -116,16 +95,7 @@ public class AccountingCoreResource {
     })
     public ResponseEntity<?> extractionTrigger(@Valid @RequestBody ExtractionRequest body) {
 
-        val fp = UserExtractionParameters.builder()
-                .from(LocalDate.parse(body.getDateFrom()))
-                .to(LocalDate.parse(body.getDateTo()))
-                .organisationId(body.getOrganisationId())
-                .transactionTypes(body.getTransactionType())
-                .transactionNumbers(body.getTransactionNumbers())
-                .build();
-
-        accountingCoreService.scheduleIngestion(fp);
-        log.info(fp);
+        accountingCorePresentationService.extractionTrigger(body);
         JSONObject response = new JSONObject()
                 .put("event", "EXTRACTION")
                 .put("message", "We have received your extraction request now. Please review imported transactions from the batch list.");
@@ -147,15 +117,8 @@ public class AccountingCoreResource {
             }
     )
     public ResponseEntity<?> listAllBatch(@Valid @RequestBody BatchSearchRequest body) {
-        log.info(body);
-        val batchs = transactionBatchRepositoryGateway.findByOrganisationId(body.getOrganisationId()).stream().map(
-                transactionBatchEntity -> new BatchsListView(
-                        transactionBatchEntity.getId(),
-                        transactionBatchEntity.getCreatedAt().toString(),
-                        transactionBatchEntity.getUpdatedAt().toString(),
-                        transactionBatchEntity.getOrganisationId()
-                )
-        ).toList();
+
+        val batchs = accountingCorePresentationService.listAllBatch(body);
 
         if (batchs.isEmpty()) {
             val issue = Problem.builder()
@@ -180,22 +143,10 @@ public class AccountingCoreResource {
                             "}"))})
             }
     )
+
     public ResponseEntity<?> batchDetail(@Valid @PathVariable("batchId") String batchId) {
-        val txBatchM = transactionBatchRepositoryGateway.findById(batchId).map(transactionBatchEntity -> {
 
-                    val transactions = getTransaction(transactionBatchEntity);
-
-                    return new BatchView(
-                            transactionBatchEntity.getId(),
-                            transactionBatchEntity.getCreatedAt().toString(),
-                            transactionBatchEntity.getUpdatedAt().toString(),
-                            transactionBatchEntity.getOrganisationId(),
-                            transactionBatchEntity.getBatchStatistics(),
-                            transactions
-                    );
-                }
-        );
-
+        val txBatchM = accountingCorePresentationService.batchDetail(batchId);
         if (txBatchM.isEmpty()) {
             val issue = Problem.builder()
                     .withTitle("BATCH_NOT_FOUND")
@@ -210,6 +161,5 @@ public class AccountingCoreResource {
 
                 body(txBatchM.orElseThrow());
     }
-
 
 }
