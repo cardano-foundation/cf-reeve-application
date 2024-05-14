@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -96,7 +97,7 @@ class AccountingCorePresentationConverterTest {
         transactionEntity2.setAutomatedValidationStatus(ValidationStatus.FAILED);
         transactionEntity2.setTransactionApproved(Boolean.FALSE);
         transactionEntity2.setLedgerDispatchApproved(Boolean.TRUE);
-        transactionEntity2.setStatus(TransactionStatus.SUCCESS);
+        transactionEntity2.setStatus(TransactionStatus.OK);
 
         when(transactionRepositoryGateway.findAllByStatus(any(), any(), any())).thenReturn(List.of(transactionEntity, transactionEntity2));
 
@@ -186,7 +187,7 @@ class AccountingCorePresentationConverterTest {
         BatchSearchRequest batchSearchRequest = new BatchSearchRequest();
         batchSearchRequest.setOrganisationId("org-id");
 
-        FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("asasas"));
+        FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("batch"));
         TransactionBatchEntity transactionBatchEntity = new TransactionBatchEntity();
         transactionBatchEntity.setId("batch-id");
         transactionBatchEntity.setCreatedAt(LocalDateTime.now());
@@ -217,7 +218,7 @@ class AccountingCorePresentationConverterTest {
 
 
         accountingCorePresentationConverter.extractionTrigger(extractionRequest);
-
+        Mockito.verify(accountingCoreService,Mockito.times(1)).scheduleIngestion(Mockito.any(UserExtractionParameters.class));
 
     }
 }
