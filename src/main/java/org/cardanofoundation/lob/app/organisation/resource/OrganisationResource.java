@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
@@ -30,6 +31,7 @@ import java.util.Optional;
 public class OrganisationResource {
 
     private final OrganisationService organisationService;
+
     @Operation(description = "Transaction types", responses = {
             @ApiResponse(content =
                     {@Content(mediaType = "application/json", schema = @Schema(example = "[\n" +
@@ -38,29 +40,45 @@ public class OrganisationResource {
                             "        \"name\": \"Cardano Foundation\",\n" +
                             "        \"description\": \"CHE-184477354\",\n" +
                             "        \"currencyId\": \"ISO_4217:CHF\",\n" +
-                            "        \"accountPeriodMonths\": 36\n" +
+                            "        \"accountPeriodFrom\": \"2021-05-14\",\n" +
+                            "        \"accountPeriodTo\": \"2024-05-13\"\n" +
                             "    }\n" +
                             "]"))}
             ),
     })
     @GetMapping(value = "/organisation", produces = "application/json")
     public ResponseEntity<?> organisationList() {
+
         return ResponseEntity.ok().body(
-                organisationService.findAll().stream().map(organisation -> new OrganisationView(organisation.getId(), organisation.getName(),organisation.getTaxIdNumber(),organisation.getCurrencyId(), organisation.getAccountPeriodMonths()))
+                organisationService.findAll().stream().map(organisation -> {
+                    LocalDate today = LocalDate.now();
+                    LocalDate monthsAgo = today.minusMonths(organisation.getAccountPeriodMonths());
+                    LocalDate yesterday = today.minusDays(1);
+
+                    return new OrganisationView(
+                            organisation.getId(),
+                            organisation.getName(),
+                            organisation.getTaxIdNumber(),
+                            organisation.getCurrencyId(),
+                            monthsAgo,
+                            yesterday
+                    );
+                })
         );
     }
 
     @Operation(description = "Transaction types", responses = {
             @ApiResponse(content =
                     {@Content(mediaType = "application/json", schema = @Schema(example = "{\n" +
-                            "    \"id\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
-                            "    \"name\": \"Cardano Foundation\",\n" +
-                            "    \"description\": \"CHE-184477354\",\n" +
-                            "    \"currencyId\": \"ISO_4217:CHF\",\n" +
-                            "    \"accountPeriodMonths\": 36\n" +
-                            "}"))}
+                            "        \"id\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
+                            "        \"name\": \"Cardano Foundation\",\n" +
+                            "        \"description\": \"CHE-184477354\",\n" +
+                            "        \"currencyId\": \"ISO_4217:CHF\",\n" +
+                            "        \"accountPeriodFrom\": \"2021-05-14\",\n" +
+                            "        \"accountPeriodTo\": \"2024-05-13\"\n" +
+                            "    }"))}
             ),
-            @ApiResponse(responseCode = "404",description = "Error: response status is 404", content = {@Content(mediaType = "application/json", schema = @Schema(example = "{\n" +
+            @ApiResponse(responseCode = "404", description = "Error: response status is 404", content = {@Content(mediaType = "application/json", schema = @Schema(example = "{\n" +
                     "    \"title\": \"Organisation not found\",\n" +
                     "    \"status\": 404,\n" +
                     "    \"detail\": \"Unable to get the organisation\"\n" +
@@ -68,7 +86,19 @@ public class OrganisationResource {
     })
     @GetMapping(value = "/organisation/{orgId}", produces = "application/json")
     public ResponseEntity<?> organisationDetailSpecific(@PathVariable("orgId") @Parameter(example = "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94") String orgId) {
-        Optional<OrganisationView> organisation = organisationService.findById(orgId).map(organisation1 -> new OrganisationView(organisation1.getId(),organisation1.getName(),organisation1.getTaxIdNumber(),organisation1.getCurrencyId(),organisation1.getAccountPeriodMonths()));
+        Optional<OrganisationView> organisation = organisationService.findById(orgId).map(organisation1 -> {
+            LocalDate today = LocalDate.now();
+            LocalDate monthsAgo = today.minusMonths(organisation1.getAccountPeriodMonths());
+            LocalDate yesterday = today.minusDays(1);
+            return new OrganisationView(
+                    organisation1.getId(),
+                    organisation1.getName(),
+                    organisation1.getTaxIdNumber(),
+                    organisation1.getCurrencyId(),
+                    monthsAgo,
+                    yesterday
+            );
+        });
         if (organisation.isEmpty()) {
             val issue = Problem.builder()
                     .withTitle("ORGANISATION_NOT_FOUND")

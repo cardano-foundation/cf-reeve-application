@@ -1,9 +1,13 @@
 package org.cardanofoundation.lob.app.organisation.domain.view;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Builder
@@ -17,6 +21,14 @@ public class OrganisationView {
     String description;
     @Schema(example = "Currency Id")
     String currencyId;
-    @Schema(example = "Accounting Period")
-    Integer accountPeriodMonths;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @Schema(example = "2021-02-05")
+    LocalDate accountPeriodFrom;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @Schema(example = "2024-02-05")
+    LocalDate accountPeriodTo;
+
+
 }
