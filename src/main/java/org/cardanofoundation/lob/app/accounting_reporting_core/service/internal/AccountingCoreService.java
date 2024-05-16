@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
 import static org.zalando.problem.Status.NOT_FOUND;
 
 @Service
@@ -55,7 +55,7 @@ public class AccountingCoreService {
         val txBatch = txBatchM.get();
 
         val txs =  txBatch.getTransactions().stream()
-                .filter(tx -> tx.getValidationStatus() == FAILED)
+                .filter(tx -> tx.getAutomatedValidationStatus() == FAILED)
                 // reprocess only the ones that have not been approved to dispatch yet, actually it is just a sanity check because it should never happen
                 // and we should never allow approving failed transactions
                 .filter(tx -> !tx.allApprovalsPassedForTransactionDispatch())

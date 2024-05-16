@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 
@@ -31,5 +32,6 @@ public class TransactionView {
     private boolean ledgerDispatchApproved = false;
     private Set<TransactionItemView> items = new LinkedHashSet<>();
     private Set<ViolationView> violations = new LinkedHashSet<>();
+    private TransactionStatus status = TransactionStatus.SUCCESS;
 
 }

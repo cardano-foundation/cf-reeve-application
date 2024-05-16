@@ -69,7 +69,7 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).isNotEmpty();
         assertThat(tx.getViolations().size()).isEqualTo(1);
         assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(LCY_BALANCE_MUST_BE_ZERO);
@@ -110,7 +110,7 @@ class AmountLcyBalanceZerosOutCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).isNotEmpty();
         assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(LCY_BALANCE_MUST_BE_ZERO);
     }

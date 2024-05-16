@@ -73,7 +73,7 @@ class AmountFcyBalanceZerosOutCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).isNotEmpty();
         assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(FCY_BALANCE_MUST_BE_ZERO);
     }

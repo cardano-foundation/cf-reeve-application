@@ -121,7 +121,7 @@ public class TransactionConverter {
         txEntity.setTransactionType(transaction.getTransactionType());
         txEntity.setEntryDate(transaction.getEntryDate());
         txEntity.setOrganisation(convertOrganisation(transaction));
-        txEntity.setValidationStatus(transaction.getValidationStatus());
+        txEntity.setAutomatedValidationStatus(transaction.getValidationStatus());
         txEntity.setLedgerDispatchStatus(transaction.getLedgerDispatchStatus());
         txEntity.setAccountingPeriod(transaction.getAccountingPeriod());
         txEntity.setTransactionApproved(transaction.isTransactionApproved());
@@ -258,7 +258,7 @@ public class TransactionConverter {
                         .currencyId(transactionEntity.getOrganisation().getCurrencyId())
                         .build())
                 .entryDate(transactionEntity.getEntryDate())
-                .validationStatus(transactionEntity.getValidationStatus())
+                .validationStatus(transactionEntity.getAutomatedValidationStatus())
                 .transactionType(transactionEntity.getTransactionType())
                 .internalTransactionNumber(transactionEntity.getTransactionInternalNumber())
 
@@ -305,7 +305,7 @@ public class TransactionConverter {
         attached.setTransactionApproved(detached.getTransactionApproved());
         attached.setTransactionType(detached.getTransactionType());
         attached.setEntryDate(detached.getEntryDate());
-        attached.setValidationStatus(detached.getValidationStatus());
+        attached.setAutomatedValidationStatus(detached.getAutomatedValidationStatus());
         attached.setLedgerDispatchStatus(detached.getLedgerDispatchStatus());
         attached.setAccountingPeriod(detached.getAccountingPeriod());
         attached.setTransactionInternalNumber(detached.getTransactionInternalNumber());

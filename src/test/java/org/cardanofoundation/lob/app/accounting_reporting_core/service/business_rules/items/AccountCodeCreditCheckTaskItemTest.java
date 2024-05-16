@@ -45,7 +45,7 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(VALIDATED);
         assertThat(tx.getViolations()).isEmpty();
     }
 
@@ -66,7 +66,7 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).hasSize(1);
         assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(ACCOUNT_CODE_CREDIT_IS_EMPTY);
     }
@@ -88,7 +88,7 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(VALIDATED);
         assertThat(tx.getViolations()).isEmpty();
     }
 
@@ -114,7 +114,7 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).hasSize(1);
     }
 
@@ -138,7 +138,7 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).hasSize(2);
     }
 
@@ -160,7 +160,7 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).hasSize(1);
     }
 
@@ -199,7 +199,7 @@ public class AccountCodeCreditCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(VALIDATED);
         assertThat(tx.getViolations()).isEmpty();
     }
 

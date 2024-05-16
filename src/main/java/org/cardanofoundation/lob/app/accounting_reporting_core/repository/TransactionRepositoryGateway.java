@@ -4,9 +4,9 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Rejection;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService;
 import org.springframework.stereotype.Service;
@@ -47,7 +47,7 @@ public class TransactionRepositoryGateway {
 
         val tx = txM.orElseThrow();
 
-        if (tx.getValidationStatus() == FAILED) {
+        if (tx.getAutomatedValidationStatus() == FAILED) {
             return Either.left(Problem.builder()
                     .withTitle("CANNOT_APPROVE_FAILED_TX")
                     .withDetail(STR."Cannot approve a failed transaction, transactionId: \{transactionId}")
@@ -76,7 +76,7 @@ public class TransactionRepositoryGateway {
 
         val transactions = transactionRepository.findAllById(transactionIds)
                 .stream()
-                .filter(tx -> tx.getValidationStatus() != FAILED)
+                .filter(tx -> tx.getAutomatedValidationStatus() != FAILED)
                 .peek(tx -> tx.setTransactionApproved(true))
                 .collect(Collectors.toSet());
 
@@ -93,7 +93,7 @@ public class TransactionRepositoryGateway {
 
         val transactions = transactionRepository.findAllById(transactionIds)
                 .stream()
-                .filter(tx -> tx.getValidationStatus() != FAILED)
+                .filter(tx -> tx.getAutomatedValidationStatus() != FAILED)
                 .peek(tx -> tx.setLedgerDispatchApproved(true))
                 .collect(Collectors.toSet());
 
@@ -121,7 +121,7 @@ public class TransactionRepositoryGateway {
 
         val tx = txM.orElseThrow();
 
-        if (tx.getValidationStatus() == FAILED) {
+        if (tx.getAutomatedValidationStatus() == FAILED) {
             return Either.left(Problem.builder()
                     .withTitle("CANNOT_APPROVE_FAILED_TX")
                     .withDetail(STR."Cannot approve dispatch for a failed transaction, transactionId: \{transactionId}")
@@ -164,9 +164,9 @@ public class TransactionRepositoryGateway {
         return Either.right(savedTx.getUserComment().equals(userComment));
     }
 
-    public Either<Problem, Boolean> changeTransactionItemRejectionStatus(String txId,
-                                                                         String txItemId,
-                                                                         RejectionStatus rejectionStatus) {
+    public Either<Problem, Boolean> changeTransactionItemRejection(String txId,
+                                                                   String txItemId,
+                                                                   Optional<Rejection> rejectionM) {
         val txM = transactionRepository.findById(txId);
 
         if (txM.isEmpty()) {
@@ -192,11 +192,11 @@ public class TransactionRepositoryGateway {
         }
 
         val txItem= txItemM.orElseThrow();
-        txItem.setRejectionStatus(rejectionStatus);
+        txItem.setRejection(rejectionM.orElse(null));
 
         val savedTxItem = transactionItemRepository.save(txItem);
 
-        return Either.right(savedTxItem.getRejectionStatus() == rejectionStatus);
+        return Either.right(savedTxItem.getRejection().equals(rejectionM));
     }
 
     public Optional<TransactionEntity> findById(String transactionId) {

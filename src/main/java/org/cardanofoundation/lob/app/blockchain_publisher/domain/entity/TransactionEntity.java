@@ -51,7 +51,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     })
     private Organisation organisation;
 
-    @Column(name = "transaction_type", nullable = false)
+    @Column(name = "type", nullable = false)
     @Enumerated(STRING)
     private TransactionType transactionType;
 

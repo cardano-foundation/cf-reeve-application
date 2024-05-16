@@ -140,13 +140,13 @@ public class DebitAccountCheckTaskItemTest {
 
         val tx = new TransactionEntity();
         tx.setId(txId);
-        tx.setValidationStatus(FAILED);
+        tx.setAutomatedValidationStatus(FAILED);
         tx.setItems(txItems);
 
         taskItem.run(tx);
 
         assertThat(tx.getItems()).hasSize(2);
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
     }
 
     @Test

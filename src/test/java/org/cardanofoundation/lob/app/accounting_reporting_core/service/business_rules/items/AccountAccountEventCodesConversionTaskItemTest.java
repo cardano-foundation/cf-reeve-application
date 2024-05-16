@@ -78,7 +78,7 @@ class AccountAccountEventCodesConversionTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(VALIDATED);
         assertThat(tx.getViolations()).isEmpty();
 
         assertThat(tx.getItems().iterator().next().getAccountDebit().map(Account::getRefCode).orElseThrow()).isEqualTo(Optional.of(accountDebitRefCode));
@@ -112,7 +112,7 @@ class AccountAccountEventCodesConversionTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).hasSize(1);
         assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(CHART_OF_ACCOUNT_NOT_FOUND);
     }
@@ -143,7 +143,7 @@ class AccountAccountEventCodesConversionTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).hasSize(1);
         assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(CHART_OF_ACCOUNT_NOT_FOUND);
     }
@@ -166,7 +166,7 @@ class AccountAccountEventCodesConversionTaskItemTest {
         taskItem.run(tx);
 
         assertThat(tx.getViolations()).isEmpty();
-        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(VALIDATED);
     }
 
 }
