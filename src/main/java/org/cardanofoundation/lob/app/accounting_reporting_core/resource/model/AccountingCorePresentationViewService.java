@@ -74,7 +74,7 @@ public class AccountingCorePresentationViewService {
                 )
         ).toList();
     }
-
+    @Transactional
     public void extractionTrigger(ExtractionRequest body) {
         val fp = UserExtractionParameters.builder()
                 .from(LocalDate.parse(body.getDateFrom()))
