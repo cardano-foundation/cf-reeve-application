@@ -195,7 +195,6 @@ public class TransactionRepositoryGateway {
     }
 
     private static Set<String> transactionIds(Set<TransactionEntity> transactions) {
-
         return transactions
                 .stream()
                 .map(TransactionEntity::getId)
