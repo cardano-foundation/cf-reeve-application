@@ -150,6 +150,19 @@ class AccountingCorePresentationConverterTest {
     @Test
     void testBatchDetail() {
 
+        String transactionId = "tx-id";
+        TransactionEntity transactionEntity = new TransactionEntity();
+        transactionEntity.setId(transactionId);
+
+        TransactionItemEntity transactionItem = new TransactionItemEntity();
+        transactionItem.setId("txItemId");
+        transactionItem.setTransaction(transactionEntity);
+
+        Violation violation = new Violation();
+        violation.setTxItemId(Optional.of("txItemId"));
+
+        transactionEntity.setItems(Set.of(transactionItem));
+        transactionEntity.setViolations(Set.of(violation));
         FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("asasas"));
 
         String batchId = "batch-id";
@@ -165,6 +178,7 @@ class AccountingCorePresentationConverterTest {
         transactionBatchEntity.setId(batchId);
         transactionBatchEntity.setCreatedAt(LocalDateTime.now());
         transactionBatchEntity.setUpdatedAt(LocalDateTime.now());
+        transactionBatchEntity.setTransactions(Set.of(transactionEntity));
         transactionBatchEntity.setFilteringParameters(filteringParameters);
         transactionBatchEntity.setTransactions(Set.of(transaction, transaction2));
 
@@ -179,6 +193,9 @@ class AccountingCorePresentationConverterTest {
         assertEquals(Optional.of(10), result.get().getBatchStatistics().get().getTotalTransactionsCount());
         assertEquals(2, result.get().getTransactions().stream().count());
 
+        assertEquals(transactionId, result.get().getTransactions().stream().findFirst().get().getId());
+        assertEquals("txItemId", result.get().getTransactions().stream().findFirst().get().getItems().stream().findFirst().get().getId());
+        assertEquals("txItemId",result.get().getTransactions().stream().findFirst().get().getViolations().stream().findFirst().get().getTransactionItemId().get());
     }
 
     @Test

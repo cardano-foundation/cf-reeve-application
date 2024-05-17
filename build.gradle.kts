@@ -142,6 +142,6 @@ pitest {
     targetTests.set(setOf("org.cardanofoundation.lob.app.*"))
     exportLineCoverage = true
     timestampedReports = false
-    threads = 2
+    threads = 4
     // ...
 }
