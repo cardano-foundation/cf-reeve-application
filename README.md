@@ -30,6 +30,13 @@ cd cf-lob
 ./gradlew clean build
 ```
 
+#### Docker:
+```shell
+# start the containers and run the command
+docker compose up --build -d
+docker exec -it app ./gradlew clean build
+```
+
 ## How to run
 
 ```
@@ -38,6 +45,11 @@ cd cf-lob
 ./gradlew clean bootRun
 ```
 
+#### Docker:
+```shell
+docker compose up --build -d
+docker exec -it app ./gradlew bootRun
+```
 ## How to test
 
 Test instructions for individual modules are provided in the corresponding sub folder README files.
