@@ -32,7 +32,7 @@ CREATE TABLE accounting_core_transaction_batch (
 
 CREATE TABLE accounting_core_transaction (
    transaction_id CHAR(64) NOT NULL,
-   transaction_type VARCHAR(255) NOT NULL,
+   type VARCHAR(255) NOT NULL,
    batch_id CHAR(64) NOT NULL,
 
    FOREIGN KEY (batch_id) REFERENCES accounting_core_transaction_batch (transaction_batch_id),
@@ -48,13 +48,14 @@ CREATE TABLE accounting_core_transaction (
    organisation_currency_id VARCHAR(255),
 
    user_comment VARCHAR(255),
-   rejection_status VARCHAR(255) NOT NULL,
 
-   validation_status VARCHAR(255) NOT NULL,
+   automated_validation_status VARCHAR(255) NOT NULL,
 
    transaction_approved BOOLEAN NOT NULL,
    ledger_dispatch_approved BOOLEAN NOT NULL,
    ledger_dispatch_status VARCHAR(255) NOT NULL,
+
+   status VARCHAR(255) NOT NULL,
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
@@ -111,6 +112,8 @@ CREATE TABLE accounting_core_transaction_item (
    FOREIGN KEY (transaction_id) REFERENCES accounting_core_transaction (transaction_id),
 
    fx_rate DECIMAL NOT NULL,
+
+   rejection_code VARCHAR(255),
 
    account_code_debit VARCHAR(255),
    account_ref_code_debit VARCHAR(255),

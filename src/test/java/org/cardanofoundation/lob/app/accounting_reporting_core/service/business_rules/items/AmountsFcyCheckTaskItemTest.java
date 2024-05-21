@@ -45,7 +45,7 @@ class AmountsFcyCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(tx.getViolations()).isNotEmpty();
         assertThat(tx.getViolations().iterator().next().getCode()).isEqualTo(AMOUNT_FCY_IS_ZERO);
     }
@@ -68,7 +68,7 @@ class AmountsFcyCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(VALIDATED);
         assertThat(tx.getViolations()).isEmpty();
     }
 
@@ -90,7 +90,7 @@ class AmountsFcyCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(VALIDATED);
         assertThat(tx.getViolations()).isEmpty();
     }
 
@@ -112,7 +112,7 @@ class AmountsFcyCheckTaskItemTest {
 
         taskItem.run(tx);
 
-        assertThat(tx.getValidationStatus()).isEqualTo(VALIDATED);
+        assertThat(tx.getAutomatedValidationStatus()).isEqualTo(VALIDATED);
         assertThat(tx.getViolations()).isEmpty();
     }
 

@@ -42,7 +42,7 @@ class DocumentMustBePresentTaskItemTest {
         taskItem.run(transaction);
 
         assertThat(transaction.getViolations()).isEmpty();
-        assertThat(transaction.getValidationStatus()).isNotEqualTo(FAILED);
+        assertThat(transaction.getAutomatedValidationStatus()).isNotEqualTo(FAILED);
     }
 
     @Test
@@ -62,7 +62,7 @@ class DocumentMustBePresentTaskItemTest {
         taskItem.run(transaction);
 
         assertThat(transaction.getViolations()).isNotEmpty();
-        assertThat(transaction.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(transaction.getAutomatedValidationStatus()).isEqualTo(FAILED);
     }
 
     @Test
@@ -89,7 +89,7 @@ class DocumentMustBePresentTaskItemTest {
         taskItem.run(transaction);
 
         assertThat(transaction.getViolations()).hasSize(1);
-        assertThat(transaction.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(transaction.getAutomatedValidationStatus()).isEqualTo(FAILED);
     }
 
     @Test
@@ -102,7 +102,7 @@ class DocumentMustBePresentTaskItemTest {
         taskItem.run(transaction);
 
         assertThat(transaction.getViolations()).isEmpty();
-        assertThat(transaction.getValidationStatus()).isNotEqualTo(FAILED);
+        assertThat(transaction.getAutomatedValidationStatus()).isNotEqualTo(FAILED);
     }
 
 }

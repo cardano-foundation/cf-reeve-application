@@ -35,7 +35,7 @@ class DefaultBusinessRulesPipelineProcessorTest {
     @BeforeEach
     void setUp() {
         TransactionEntity transactionEntity = new TransactionEntity();
-        transactionEntity.setValidationStatus(ValidationStatus.VALIDATED);
+        transactionEntity.setAutomatedValidationStatus(ValidationStatus.VALIDATED);
         initialOrgTransactions = new OrganisationTransactions("org1", new HashSet<>(Set.of(transactionEntity)));
         initialIgnoredTransactions = new OrganisationTransactions("org1", new HashSet<>());
     }
@@ -53,7 +53,7 @@ class DefaultBusinessRulesPipelineProcessorTest {
     @Test
     void run_SingleTask_ShouldTransformTransactions() {
         TransactionEntity transformedTransaction = new TransactionEntity();
-        transformedTransaction.setValidationStatus(ValidationStatus.VALIDATED);
+        transformedTransaction.setAutomatedValidationStatus(ValidationStatus.VALIDATED);
         OrganisationTransactions transformedOrgTransactions = new OrganisationTransactions("org1", Set.of(transformedTransaction));
         OrganisationTransactions ignoredTransactions = new OrganisationTransactions("org1", Set.of());
 
@@ -70,11 +70,11 @@ class DefaultBusinessRulesPipelineProcessorTest {
     @Test
     void run_MultipleTasks_ShouldAccumulateTransformations() {
         TransactionEntity firstTransformedTransaction = new TransactionEntity();
-        firstTransformedTransaction.setValidationStatus(ValidationStatus.VALIDATED);
+        firstTransformedTransaction.setAutomatedValidationStatus(ValidationStatus.VALIDATED);
         OrganisationTransactions firstTransformedOrgTransactions = new OrganisationTransactions("org1", Set.of(firstTransformedTransaction));
 
         TransactionEntity secondTransformedTransaction = new TransactionEntity();
-        secondTransformedTransaction.setValidationStatus(ValidationStatus.VALIDATED);
+        secondTransformedTransaction.setAutomatedValidationStatus(ValidationStatus.VALIDATED);
         OrganisationTransactions secondTransformedOrgTransactions = new OrganisationTransactions("org1", Set.of(secondTransformedTransaction));
 
         OrganisationTransactions firstIgnoredTransactions = new OrganisationTransactions("org1", Set.of());

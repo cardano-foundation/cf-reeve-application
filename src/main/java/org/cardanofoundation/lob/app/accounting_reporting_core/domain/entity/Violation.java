@@ -5,6 +5,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode;
 import org.hibernate.annotations.Type;
 
@@ -40,7 +41,7 @@ public class Violation {
 
     @NotNull
     @Enumerated(STRING)
-    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source source;
+    private Source source;
 
     @NotBlank
     private String processorModule;

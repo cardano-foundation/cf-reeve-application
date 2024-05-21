@@ -100,11 +100,12 @@ public class AccountingCorePresentationViewService {
                 transactionEntity.getTransactionInternalNumber(),
                 transactionEntity.getEntryDate(),
                 transactionEntity.getTransactionType(),
-                transactionEntity.getValidationStatus(),
+                transactionEntity.getAutomatedValidationStatus(),
                 transactionEntity.getTransactionApproved(),
                 transactionEntity.getLedgerDispatchApproved(),
                 getTransactionItemView(transactionEntity),
-                getViolation(transactionEntity)
+                getViolation(transactionEntity),
+                transactionEntity.getStatus()
         );
     }
 

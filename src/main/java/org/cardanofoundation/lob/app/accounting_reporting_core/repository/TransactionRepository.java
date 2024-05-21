@@ -11,13 +11,10 @@ import java.util.Set;
 public interface TransactionRepository extends JpaRepository<TransactionEntity, String>, CustomTransactionRepository {
 
     @Query("SELECT t FROM accounting_reporting_core.TransactionEntity t" +
-            " WHERE t.organisation.id = :organisationId " +
-            " AND t.validationStatus = 'VALIDATED' " +
+            " WHERE t.organisation.id = :organisationId" +
+            " AND t.status = 'OK'" +
             " AND t.ledgerDispatchStatus = 'NOT_DISPATCHED'" +
-            " AND t.ledgerDispatchApproved" +
-            " AND t.transactionApproved" +
-            " AND t.rejectionStatus = 'NOT_REJECTED'" +
             " ORDER BY t.createdAt ASC, t.id ASC")
-    Set<TransactionEntity> findDispatchTransactions(@Param("organisationId") String organisationId, Limit limit);
+    Set<TransactionEntity> findDispatchableTransactions(@Param("organisationId") String organisationId, Limit limit);
 
 }

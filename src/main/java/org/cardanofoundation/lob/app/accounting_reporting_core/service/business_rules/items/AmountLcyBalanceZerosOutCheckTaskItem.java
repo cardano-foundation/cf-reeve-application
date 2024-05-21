@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static java.math.BigDecimal.ZERO;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.LCY_BALANCE_MUST_BE_ZERO;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor

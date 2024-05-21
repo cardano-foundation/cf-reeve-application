@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType.CREDIT;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.Journal;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
@@ -26,6 +26,10 @@ public class JournalAccountCreditEnrichmentTaskItem implements PipelineTaskItem 
 
     @Override
     public void run(TransactionEntity tx) {
+        if (tx.getTransactionType() != Journal) {
+            return;
+        }
+
         val dummyAccountM = organisationPublicApiIF.findByOrganisationId(tx.getOrganisation().getId())
                 .flatMap(Organisation::getDummyAccount);
 
