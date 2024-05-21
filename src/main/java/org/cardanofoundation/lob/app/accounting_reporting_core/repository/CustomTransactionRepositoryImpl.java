@@ -21,18 +21,19 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
 
     @Override
     public List<TransactionEntity> findAllByStatus(String organisationId,
-                                                   List<ValidationStatus> validationStatuses, List<TransactionType> transactionTypes) {
+                                                   List<ValidationStatus> validationStatuses,
+                                                   List<TransactionType> transactionTypes) {
         // TODO what about order by entry date or transaction internal number, etc?
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<TransactionEntity> criteriaQuery = builder.createQuery(TransactionEntity.class);
 
         Root<TransactionEntity> rootEntry = criteriaQuery.from(TransactionEntity.class);
-        Predicate PValidationStatuses = builder.isTrue(builder.literal(true));
+        Predicate pValidationStatuses = builder.isTrue(builder.literal(true));
         Predicate pOrganisationId = builder.equal(rootEntry.get("organisation").get("id"), organisationId);
         Predicate pTransactionType = builder.isTrue(builder.literal(true));
 
         if (!validationStatuses.isEmpty()) {
-            PValidationStatuses = builder.in(rootEntry.get("validationStatus")).value(validationStatuses);
+            pValidationStatuses = builder.in(rootEntry.get("automatedValidationStatus")).value(validationStatuses);
         }
 
         if (!transactionTypes.isEmpty()) {
@@ -40,8 +41,9 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
         }
 
         criteriaQuery.select(rootEntry);
-        criteriaQuery.where(PValidationStatuses, pOrganisationId, pTransactionType);
-        return em.createQuery(criteriaQuery).getResultList();
+        criteriaQuery.where(pValidationStatuses, pOrganisationId, pTransactionType);
 
+        return em.createQuery(criteriaQuery).getResultList();
     }
+
 }

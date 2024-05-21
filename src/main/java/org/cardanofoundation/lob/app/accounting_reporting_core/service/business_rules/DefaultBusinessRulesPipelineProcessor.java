@@ -20,7 +20,7 @@ public class DefaultBusinessRulesPipelineProcessor implements BusinessRulesPipel
     public TransformationResult run(final OrganisationTransactions initialOrganisationTransactions,
                                     final OrganisationTransactions initialIgnoredTransactions) {
         for (val transactionEntity : initialOrganisationTransactions.transactions()) {
-            transactionEntity.setValidationStatus(VALIDATED);
+            transactionEntity.setAutomatedValidationStatus(VALIDATED);
             transactionEntity.clearAllViolations();
         }
 

@@ -11,8 +11,8 @@ import java.util.Optional;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.*;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.ERP;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.ERP;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
 
 @Service
 @Slf4j
@@ -32,14 +32,14 @@ public class TxBatchStatsCalculator {
                 .completedTransactionsCount(Long.valueOf(transactions.stream().filter(tx -> tx.getLedgerDispatchStatus() == COMPLETED).count()).intValue())
                 .finalizedTransactionsCount(Long.valueOf(transactions.stream().filter(tx -> tx.getLedgerDispatchStatus() == FINALIZED).count()).intValue())
 
-                .failedTransactionsCount(Long.valueOf(transactions.stream().filter(tx -> tx.getValidationStatus() == FAILED).count()).intValue())
+                .failedTransactionsCount(Long.valueOf(transactions.stream().filter(tx -> tx.getAutomatedValidationStatus() == FAILED).count()).intValue())
 
                 .failedSourceLOBTransactionsCount(Long.valueOf(txBatch.getTransactions().stream()
-                        .filter(tx -> tx.getValidationStatus() == FAILED)
+                        .filter(tx -> tx.getAutomatedValidationStatus() == FAILED)
                         .map(tx -> tx.getViolations().stream().anyMatch(v -> v.getSource() == LOB)).count()).intValue())
 
                 .failedSourceERPTransactionsCount(Long.valueOf(txBatch.getTransactions().stream()
-                        .filter(tx -> tx.getValidationStatus() == FAILED)
+                        .filter(tx -> tx.getAutomatedValidationStatus() == FAILED)
                         .map(tx -> tx.getViolations().stream().anyMatch(v -> v.getSource() == ERP)).count()).intValue())
 
                 .build();

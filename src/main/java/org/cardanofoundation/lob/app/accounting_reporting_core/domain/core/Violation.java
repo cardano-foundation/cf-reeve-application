@@ -47,9 +47,4 @@ public record Violation(Type type,
         ERROR
     }
 
-    public enum Source {
-        ERP,
-        LOB
-    }
-
 }

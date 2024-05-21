@@ -64,7 +64,7 @@ public class LedgerService {
         log.info("dispatchTransactionToBlockchainPublisher, txIds: {}", txIds);
 
         val dispatchPendingTransactions = transactions.stream()
-                .filter(TransactionEntity::isDispatchReady)
+                .filter(TransactionEntity::isDispatchable)
                 .collect(Collectors.toSet());
 
         dispatchTransactions(organisationId, dispatchPendingTransactions);
@@ -73,7 +73,7 @@ public class LedgerService {
     @Transactional(propagation = REQUIRES_NEW)
     public void dispatchPending(int limit) {
         for (val organisation : organisationPublicApi.listAll()) {
-            val dispatchTransactions = transactionRepository.findDispatchTransactions(organisation.getId(), Limit.of(limit));
+            val dispatchTransactions = transactionRepository.findDispatchableTransactions(organisation.getId(), Limit.of(limit));
 
             log.info("dispatchPending, organisationId: {}, total tx count: {}", organisation.getId(), dispatchTransactions.size());
 

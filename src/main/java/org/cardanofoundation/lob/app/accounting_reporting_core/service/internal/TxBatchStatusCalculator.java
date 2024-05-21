@@ -21,7 +21,7 @@ public class TxBatchStatusCalculator {
 
         val validTransactionsCount = allBatchTransactions
                 .stream()
-                .filter(transactionEntity -> transactionEntity.getValidationStatus() == VALIDATED)
+                .filter(transactionEntity -> transactionEntity.getAutomatedValidationStatus() == VALIDATED)
                 .count();
 
         val dispatchedTransactionsCount = allBatchTransactions

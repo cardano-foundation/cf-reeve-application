@@ -12,7 +12,7 @@ public class DebitAccountCheckTaskItem implements PipelineTaskItem {
 
     @Override
     public void run(TransactionEntity tx) {
-        if (tx.getValidationStatus() == FAILED) {
+        if (tx.getAutomatedValidationStatus() == FAILED) {
             return;
         }
 

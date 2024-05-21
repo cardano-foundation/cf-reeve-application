@@ -139,7 +139,7 @@ class TxItemsCollapsingTaskItemTest {
     void mustNotCollapseTxItemsForFailedTransactions() {
         val transaction = new TransactionEntity();
         transaction.setId("1");
-        transaction.setValidationStatus(FAILED);
+        transaction.setAutomatedValidationStatus(FAILED);
         val items = new HashSet<TransactionItemEntity>();
         TransactionItemEntity txItem1 = new TransactionItemEntity();
         txItem1.setId("1:0");
@@ -165,7 +165,7 @@ class TxItemsCollapsingTaskItemTest {
 
         txItemsCollapsingTaskItem.run(transaction);
 
-        assertThat(transaction.getValidationStatus()).isEqualTo(FAILED);
+        assertThat(transaction.getAutomatedValidationStatus()).isEqualTo(FAILED);
         assertThat(transaction.getItems()).hasSize(2);
     }
 

@@ -61,6 +61,13 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     @Column(name = "amount_lcy", nullable = false)
     private BigDecimal amountLcy;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "rejectionCode", column = @Column(name = "rejection_code")),
+    })
+    @Nullable
+    private Rejection rejection;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "transaction_id")
     private TransactionEntity transaction;
@@ -135,6 +142,9 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
         return Optional.ofNullable(document);
     }
 
+    public Optional<Rejection> getRejection() {
+        return Optional.ofNullable(rejection);
+    }
 
     public Optional<OperationType> getOperationType() {
         val amountLcy = this.amountLcy.intValue();
@@ -148,7 +158,7 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TransactionItemEntity that = (TransactionItemEntity) o;
+        val that = (TransactionItemEntity) o;
 
         return Objects.equal(id, that.id);
     }

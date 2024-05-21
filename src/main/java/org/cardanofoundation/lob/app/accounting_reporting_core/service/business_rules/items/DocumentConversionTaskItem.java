@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.*;
 

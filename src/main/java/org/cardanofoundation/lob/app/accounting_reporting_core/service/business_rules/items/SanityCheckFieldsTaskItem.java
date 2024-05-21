@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.TX_TECHNICAL_FAILURE;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Source.LOB;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
 
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class SanityCheckFieldsTaskItem implements PipelineTaskItem {
     public void run(TransactionEntity tx) {
         val errors = validator.validate(tx);
 
-        if (tx.getValidationStatus() == FAILED) {
+        if (tx.getAutomatedValidationStatus() == FAILED) {
             return;
         }
 

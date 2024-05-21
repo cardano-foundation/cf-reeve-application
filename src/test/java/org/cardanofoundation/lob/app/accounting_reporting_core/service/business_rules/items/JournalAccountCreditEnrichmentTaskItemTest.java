@@ -56,9 +56,6 @@ public class JournalAccountCreditEnrichmentTaskItemTest {
 
         transaction.setItems(items);
 
-        when(organisationPublicApiIF.findByOrganisationId(eq(organisationId))).thenReturn(Optional.of(organisation));
-        when(organisation.getDummyAccount()).thenReturn(Optional.empty());
-
         taskItem.run(transaction);
 
         // check that account credit was not manipulated

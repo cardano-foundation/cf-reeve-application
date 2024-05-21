@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
@@ -14,12 +14,14 @@ import org.springframework.data.domain.Persistable;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.RejectionStatus.NOT_REJECTED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus.SUCCESS;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
 @Getter
 @Setter
@@ -29,6 +31,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 @AllArgsConstructor
 //@Audited
 //@EntityListeners({AuditingEntityListener.class})
+@EntityListeners({ TransactionEntityListener.class })
 public class TransactionEntity extends AuditEntity implements Persistable<String> {
 
     @Id
@@ -44,7 +47,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     @Column(name = "accounting_period", nullable = false)
     private YearMonth accountingPeriod;
 
-    @Column(name = "transaction_type", nullable = false)
+    @Column(name = "type", nullable = false)
     @Enumerated(STRING)
     private TransactionType transactionType;
 
@@ -65,9 +68,9 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     })
     private Organisation organisation;
 
-    @Column(name = "validation_status", nullable = false)
+    @Column(name = "automated_validation_status", nullable = false)
     @Enumerated(STRING)
-    private ValidationStatus validationStatus = ValidationStatus.VALIDATED;
+    private ValidationStatus automatedValidationStatus = ValidationStatus.VALIDATED;
 
     @Column(name = "transaction_approved", nullable = false)
     private Boolean transactionApproved = false;
@@ -81,9 +84,9 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     @Column(name = "user_comment")
     private String userComment;
 
-    @Column(name = "rejection_status", nullable = false)
+    @Column(name = "status", nullable = false)
     @Enumerated(STRING)
-    private RejectionStatus rejectionStatus = NOT_REJECTED;
+    private TransactionStatus status;
 
     @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "accounting_core_transaction_violation", joinColumns = @JoinColumn(name = "transaction_id"))
@@ -113,8 +116,16 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
         recalcValidationStatus();
     }
 
+    public boolean hasAnyRejection() {
+        return items.stream().anyMatch(item -> item.getRejection().isPresent());
+    }
+
+    public boolean isRejectionFree() {
+        return !hasAnyRejection();
+    }
+
     private void recalcValidationStatus() {
-        validationStatus = violations.isEmpty() ? ValidationStatus.VALIDATED : ValidationStatus.FAILED;
+        automatedValidationStatus = violations.isEmpty() ? ValidationStatus.VALIDATED : FAILED;
     }
 
     public boolean isTheSameBusinessWise(TransactionEntity other) {
@@ -125,7 +136,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
         equalsBuilder.append(this.organisation, other.organisation);
         equalsBuilder.append(this.accountingPeriod, other.accountingPeriod);
         equalsBuilder.append(this.transactionInternalNumber, other.transactionInternalNumber);
-        equalsBuilder.append(this.validationStatus, other.validationStatus);
+        equalsBuilder.append(this.automatedValidationStatus, other.automatedValidationStatus);
 
         val rootMatch = equalsBuilder.isEquals();
 
@@ -144,10 +155,12 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
         return false;
     }
 
-    public boolean isDispatchReady() {
-        return allApprovalsPassedForTransactionDispatch()
-                && rejectionStatus == NOT_REJECTED
-                && validationStatus == ValidationStatus.VALIDATED
+    public Optional<TransactionItemEntity> findItemById(String txItemId) {
+        return items.stream().filter(item -> txItemId.equals(item.getId())).findFirst();
+    }
+
+    public boolean isDispatchable() {
+        return status == SUCCESS
                 && ledgerDispatchStatus == NOT_DISPATCHED;
     }
 

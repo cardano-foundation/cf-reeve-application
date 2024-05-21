@@ -52,13 +52,13 @@ class CustomTransactionRepositoryImplTestView {
         Path<Object> transactionType = Mockito.mock(Path.class);
         CriteriaBuilder.In inResult = Mockito.mock(CriteriaBuilder.In.class);
 
-        Mockito.when(rootEntry.get("validationStatus")).thenReturn(validationStatus);
+        Mockito.when(rootEntry.get("automatedValidationStatus")).thenReturn(validationStatus);
         Mockito.when(rootEntry.get("organisation")).thenReturn(organisation);
         Mockito.when(rootEntry.get("transactionType")).thenReturn(transactionType);
         Mockito.when(organisation.get("id")).thenReturn(organisationId);
 
         Mockito.when(builder.in(rootEntry.get("transactionType"))).thenReturn(inResult);
-        Mockito.when(builder.in(rootEntry.get("validationStatus"))).thenReturn(inResult);
+        Mockito.when(builder.in(rootEntry.get("automatedValidationStatus"))).thenReturn(inResult);
         //Mockito.when(inResult.value(transactionType)).thenReturn();
 
         Mockito.when(em.createQuery(criteriaQuery)).thenReturn(transactionEntityTypedQuery);
