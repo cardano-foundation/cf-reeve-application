@@ -57,6 +57,7 @@ public class AccountingCorePresentationViewService {
                             transactionBatchEntity.getCreatedAt().toString(),
                             transactionBatchEntity.getUpdatedAt().toString(),
                             transactionBatchEntity.getOrganisationId(),
+                            transactionBatchEntity.getStatus(),
                             transactionBatchEntity.getBatchStatistics(),
                             transactions
                     );
@@ -64,13 +65,16 @@ public class AccountingCorePresentationViewService {
         );
     }
 
-    public List<BatchsListView> listAllBatch(BatchSearchRequest body) {
+    public List<BatchView> listAllBatch(BatchSearchRequest body) {
         return transactionBatchRepositoryGateway.findByOrganisationId(body.getOrganisationId()).stream().map(
-                transactionBatchEntity -> new BatchsListView(
+                transactionBatchEntity -> new BatchView(
                         transactionBatchEntity.getId(),
                         transactionBatchEntity.getCreatedAt().toString(),
                         transactionBatchEntity.getUpdatedAt().toString(),
-                        transactionBatchEntity.getOrganisationId()
+                        transactionBatchEntity.getOrganisationId(),
+                        transactionBatchEntity.getStatus(),
+                        transactionBatchEntity.getBatchStatistics(),
+                        Set.of()
                 )
         ).toList();
     }
