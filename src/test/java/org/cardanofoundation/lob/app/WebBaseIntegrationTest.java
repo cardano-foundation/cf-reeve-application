@@ -3,9 +3,11 @@ package org.cardanofoundation.lob.app;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -41,6 +43,12 @@ public class WebBaseIntegrationTest {
 
         RestAssured.port = serverPort;
         RestAssured.baseURI = "http://localhost";
+
+    }
+    @BeforeAll
+    public void clearDatabase(@Autowired Flyway flyway){
+        flyway.clean();
+        flyway.migrate();
     }
 
     @AfterAll

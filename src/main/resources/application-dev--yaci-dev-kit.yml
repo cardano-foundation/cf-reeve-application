@@ -8,7 +8,7 @@ spring:
 
   flyway:
     out-of-order: false
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
+    url: ${DB_URL:jdbc:postgresql://postgres:5432/postgres}
     user: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     schemas: ${DB_SCHEMA:lob_service}

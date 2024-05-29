@@ -3,9 +3,7 @@ server:
 
 
 spring:
-  docker:
-    compose:
-      lifecycle-management: start-and-stop
+
 
   task:
     execution:
@@ -35,7 +33,7 @@ spring:
 
   datasource:
     name: ${DB_NAME:lob_service}
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres?currentSchema=lob_service}
+    url: ${DB_URL:jdbc:postgresql://postgres:5432/postgres?currentSchema=lob_service}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: ${DB_DRIVER_CLASS_NAME:org.postgresql.Driver}

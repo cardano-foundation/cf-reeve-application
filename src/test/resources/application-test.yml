@@ -1,6 +1,7 @@
 spring:
   datasource:
-    url: jdbc:tc:postgresql:localhost:5432:///postgres
+    name: ${DB_NAME:lob_service}
+    url: jdbc:tc:postgresql:postgres:5432:///postgres
     username: postgres
     password: postgres
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
@@ -10,7 +11,7 @@ spring:
 
   flyway:
     out-of-order: false
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
+    url: ${DB_URL:jdbc:postgresql://postgres:5432/postgres}
     user: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     schemas: ${DB_SCHEMA:lob_service}
@@ -18,6 +19,7 @@ spring:
     baselineOnMigrate: true
     enabled: true
     validateMigrationNaming: true
+    cleanDisabled: false
     locations:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
