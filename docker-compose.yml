@@ -2,8 +2,6 @@ version: "3.9"
 services:
 
   postgres:
-    hostname: postgres
-    container_name: postgres
     image: postgres:15.5
     environment:
       - POSTGRES_USER=postgres
@@ -13,7 +11,22 @@ services:
 #      - /tmp/lob-postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - lob
 
+  app:
+    build:
+      context: .
+    environment:
+      SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
+      SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
+    entrypoint: ${ENTRYPOINT:-java -jar app.jar}
+    networks:
+      - lob
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./:/app/
 #  rabbitmq:
 #    image: rabbitmq:3-management-alpine
 #    container_name: 'rabbitmq'
@@ -30,3 +43,6 @@ services:
 
 #volumes:
 #    postgres-data:
+
+networks:
+  lob:
