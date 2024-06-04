@@ -51,14 +51,20 @@ export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
 ```
 
 ## Architecture
+
+<img src="https://github.com/cardano-foundation/cf-lob/blob/main/LOB_-_Arch.jpg" />
+
 #### Docker:
 ```shell
 docker compose up --build -d
 docker exec -it app ./gradlew bootRun
 ```
-## How to test
 
-<img src="https://github.com/cardano-foundation/cf-lob/blob/main/LOB_-_Arch.jpg" />
+## How to run automated tests
+
+```bash
+./gradlew clean test
+```
 
 ## Documentation
 
