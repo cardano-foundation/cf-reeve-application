@@ -58,7 +58,7 @@ docker exec -it app ./gradlew bootRun
 ```
 ## How to test
 
-<img src="[https://github.com/cardano-foundation/cf-lob/LOB_-_Arch.jpg](https://github.com/cardano-foundation/cf-lob/blob/main/LOB_-_Arch.jpg)" />
+<img src="https://github.com/cardano-foundation/cf-lob/blob/main/LOB_-_Arch.jpg" />
 
 ## Documentation
 
