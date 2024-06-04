@@ -4,7 +4,7 @@ import info.solidsoft.gradle.pitest.PitestTask
 plugins {
     java
     id("org.springframework.boot") version "3.2.5"
-    id("io.spring.dependency-management") version "1.1.4"
+    id("io.spring.dependency-management") version "1.1.5"
     id("com.github.ben-manes.versions") version "0.51.0"
     id("info.solidsoft.pitest") version "1.15.0"
 }
@@ -27,7 +27,7 @@ repositories {
 }
 
 extra["springCloudVersion"] = "2023.0.0"
-extra["springModulithVersion"] = "1.1.3"
+extra["springModulithVersion"] = "1.1.4"
 extra["jMoleculesVersion"] = "2023.1.0"
 
 dependencies {
@@ -49,7 +49,7 @@ dependencies {
     implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
 
     // needed to store json via JPA in PostgreSQL
-    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.4")
+    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.5")
 
     implementation("org.springframework.boot:spring-boot-starter-amqp")
 
@@ -91,7 +91,7 @@ dependencies {
     implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.1")
     implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.1")
 
-    implementation("com.google.guava:guava:33.1.0-jre")
+    implementation("com.google.guava:guava:33.2.0-jre")
 
     implementation("org.apache.commons:commons-collections4:4.4")
 
