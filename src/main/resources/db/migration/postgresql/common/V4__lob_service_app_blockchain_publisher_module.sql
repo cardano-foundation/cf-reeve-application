@@ -21,6 +21,7 @@ CREATE TABLE blockchain_publisher_transaction (
 
    created_by VARCHAR(255),
    updated_by VARCHAR(255),
+
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
