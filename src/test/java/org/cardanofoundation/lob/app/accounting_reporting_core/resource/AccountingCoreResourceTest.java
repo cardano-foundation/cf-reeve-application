@@ -47,6 +47,16 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     }
 
+    // TODO this fails for me since localisation should not be part of the answer:
+//    ```
+//    java.lang.AssertionError: 1 expectation failed.
+//    Response body doesn't match expectation.
+//    Expected: "{\"violations\":[{\"field\":\"organisationId\",\"message\":\"must not be blank\"}],\"type\":\"https://zalando.github.io/problem/constraint-violation\",\"status\":400,\"title\":\"Constraint Violation\"}"
+//    Actual: {"violations":[{"field":"organisationId","message":"nie może być odstępem"}],"type":"https://zalando.github.io/problem/constraint-violation","status":400,"title":"Constraint Violation"}
+//
+//    at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:62)
+//    ```
+
     @Test
     void testListAllTransactionsNoOrgnanisationId() throws Exception {
         String myJson = "{\n" +
@@ -73,9 +83,8 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/transactions")
                 .then()
                 .statusCode(400)
-                .body(equalTo("{\"violations\":[{\"field\":\"organisationId\",\"message\":\"must not be blank\"}],\"type\":\"https://zalando.github.io/problem/constraint-violation\",\"status\":400,\"title\":\"Constraint Violation\"}".toString()))
+                .body(equalTo("{\"violations\":[{\"field\":\"organisationId\",\"message\":\"must not be blank\"}],\"type\":\"https://zalando.github.io/problem/constraint-violation\",\"status\":400,\"title\":\"Constraint Violation\"}"))
         ;
-
     }
 
     @Test

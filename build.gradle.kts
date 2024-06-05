@@ -1,4 +1,3 @@
-import info.solidsoft.gradle.pitest.PitestPlugin
 import info.solidsoft.gradle.pitest.PitestTask
 
 plugins {
@@ -36,7 +35,7 @@ dependencies {
     //implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.json:json:20211205")
+    implementation("org.json:json:20211205") // TODO check if this is needed at all
 
     implementation("org.springframework.data:spring-data-envers")
 
@@ -69,7 +68,7 @@ dependencies {
 
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.testcontainers:rabbitmq")
+    //testImplementation("org.testcontainers:rabbitmq")
 
     runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
     implementation("org.zalando:problem-spring-web-starter:0.29.1")

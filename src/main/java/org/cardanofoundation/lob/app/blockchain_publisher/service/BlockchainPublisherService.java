@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service("blockchainPublisherService")
+@Service("blockchain_publisher.blockchainPublisherService")
 @RequiredArgsConstructor
 @Slf4j
 public class BlockchainPublisherService {
