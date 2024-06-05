@@ -2,17 +2,24 @@ package org.cardanofoundation.lob.app.blockchain_publisher.service;
 
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.metadata.MetadataMap;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class MetadataSerialiser {
 
     public static final String VERSION = "1.0";
+
+    private final Clock clock;
 
     public MetadataMap serialiseToMetadataMap(String organisationId,
                                               Set<TransactionEntity> transactions,
@@ -39,10 +46,13 @@ public class MetadataSerialiser {
                 .allMatch(tx -> tx.getOrganisation().getId().equals(organisationId));
     }
 
-    private static MetadataMap createMetadataSection(long creationSlot) {
+    private MetadataMap createMetadataSection(long creationSlot) {
         val metadataMap = MetadataBuilder.createMap();
 
+        val now = LocalDateTime.now(clock);
+
         metadataMap.put("creation_slot", BigInteger.valueOf(creationSlot));
+        metadataMap.put("timestamp", DateTimeFormatter.ISO_INSTANT.format(now));
         metadataMap.put("version", VERSION);
 
         return metadataMap;
