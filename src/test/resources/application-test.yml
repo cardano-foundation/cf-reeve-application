@@ -1,7 +1,7 @@
 spring:
   datasource:
     name: ${DB_NAME:lob_service}
-    url: jdbc:tc:postgresql:postgres:5432:///postgres
+    url: jdbc:tc:postgresql:localhost:5432:///postgres
     username: postgres
     password: postgres
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver

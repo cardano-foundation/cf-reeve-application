@@ -32,7 +32,6 @@ cd cf-lob
 ./gradlew clean build
 ```
 
-## How to run locally
 #### Docker:
 ```shell
 # start the containers and run the command
@@ -40,7 +39,8 @@ docker compose up --build -d
 docker exec -it app ./gradlew clean build
 ```
 
-## How to run
+## How to run locally
+
 
 ```
 git clone git@github.com:cardano-foundation/cf-lob.git
@@ -48,6 +48,13 @@ cd cf-lob
 export SPRING_CONFIG_LOCATIONS=classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
 export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
 ./gradlew clean bootRun
+```
+
+#### Docker:
+```shell
+# start the containers and run the command
+docker compose up --build -d
+docker exec -it app ./gradlew clean bootRun
 ```
 
 ## Architecture
