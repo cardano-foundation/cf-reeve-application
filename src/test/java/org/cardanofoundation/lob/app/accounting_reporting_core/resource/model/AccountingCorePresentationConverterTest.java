@@ -150,35 +150,34 @@ class AccountingCorePresentationConverterTest {
     @Test
     void testBatchDetail() {
 
-        String transactionId = "tx-id";
-        TransactionEntity transactionEntity = new TransactionEntity();
-        transactionEntity.setId(transactionId);
+        String transactionId = "tx-id1";
+        TransactionEntity transaction = new TransactionEntity();
+        transaction.setId(transactionId);
 
         TransactionItemEntity transactionItem = new TransactionItemEntity();
         transactionItem.setId("txItemId");
-        transactionItem.setTransaction(transactionEntity);
+        transactionItem.setTransaction(transaction);
 
         Violation violation = new Violation();
         violation.setTxItemId(Optional.of("txItemId"));
 
-        transactionEntity.setItems(Set.of(transactionItem));
-        transactionEntity.setViolations(Set.of(violation));
-        FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("asasas"));
+        transaction.setItems(Set.of(transactionItem));
+        transaction.setViolations(Set.of(violation));
+        FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("somestring"));
 
         String batchId = "batch-id";
 
         TransactionBatchEntity transactionBatchEntity = new TransactionBatchEntity();
         BatchStatistics batchStatistics = BatchStatistics.builder().totalTransactionsCount(10).build();
-        TransactionEntity transaction = new TransactionEntity();
+
         TransactionEntity transaction2 = new TransactionEntity();
-        transaction.setId("tx-id1");
+
         transaction2.setId("tx-id2");
 
         transactionBatchEntity.setBatchStatistics(batchStatistics);
         transactionBatchEntity.setId(batchId);
         transactionBatchEntity.setCreatedAt(LocalDateTime.now());
         transactionBatchEntity.setUpdatedAt(LocalDateTime.now());
-        transactionBatchEntity.setTransactions(Set.of(transactionEntity));
         transactionBatchEntity.setFilteringParameters(filteringParameters);
         transactionBatchEntity.setTransactions(Set.of(transaction, transaction2));
 
