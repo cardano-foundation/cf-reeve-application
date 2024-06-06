@@ -150,15 +150,28 @@ class AccountingCorePresentationConverterTest {
     @Test
     void testBatchDetail() {
 
-        FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("asasas"));
+        String transactionId = "tx-id1";
+        TransactionEntity transaction = new TransactionEntity();
+        transaction.setId(transactionId);
+
+        TransactionItemEntity transactionItem = new TransactionItemEntity();
+        transactionItem.setId("txItemId");
+        transactionItem.setTransaction(transaction);
+
+        Violation violation = new Violation();
+        violation.setTxItemId(Optional.of("txItemId"));
+
+        transaction.setItems(Set.of(transactionItem));
+        transaction.setViolations(Set.of(violation));
+        FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("somestring"));
 
         String batchId = "batch-id";
 
         TransactionBatchEntity transactionBatchEntity = new TransactionBatchEntity();
         BatchStatistics batchStatistics = BatchStatistics.builder().totalTransactionsCount(10).build();
-        TransactionEntity transaction = new TransactionEntity();
+
         TransactionEntity transaction2 = new TransactionEntity();
-        transaction.setId("tx-id1");
+
         transaction2.setId("tx-id2");
 
         transactionBatchEntity.setBatchStatistics(batchStatistics);
@@ -179,6 +192,9 @@ class AccountingCorePresentationConverterTest {
         assertEquals(Optional.of(10), result.get().getBatchStatistics().get().getTotalTransactionsCount());
         assertEquals(2, result.get().getTransactions().stream().count());
 
+        assertEquals(transactionId, result.get().getTransactions().stream().findFirst().get().getId());
+        assertEquals("txItemId", result.get().getTransactions().stream().findFirst().get().getItems().stream().findFirst().get().getId());
+        assertEquals("txItemId", result.get().getTransactions().stream().findFirst().get().getViolations().stream().findFirst().get().getTransactionItemId().get());
     }
 
     @Test
@@ -218,7 +234,7 @@ class AccountingCorePresentationConverterTest {
 
 
         accountingCorePresentationConverter.extractionTrigger(extractionRequest);
-        Mockito.verify(accountingCoreService,Mockito.times(1)).scheduleIngestion(Mockito.any(UserExtractionParameters.class));
+        Mockito.verify(accountingCoreService, Mockito.times(1)).scheduleIngestion(Mockito.any(UserExtractionParameters.class));
 
     }
 }
