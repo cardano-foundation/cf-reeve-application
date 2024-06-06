@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus.FAIL;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus.SUCCESS;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus.OK;
 import static org.mockito.Mockito.*;
 
 public class TransactionEntityListenerTest {
@@ -30,7 +30,7 @@ public class TransactionEntityListenerTest {
 
         TransactionStatus status = listener.calcStatus(transactionEntity);
 
-        assertThat(status).isEqualTo(SUCCESS);
+        assertThat(status).isEqualTo(OK);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class TransactionEntityListenerTest {
 
         listener.update(transactionEntity);
 
-        verify(transactionEntity).setStatus(SUCCESS);
+        verify(transactionEntity).setStatus(OK);
     }
 
     @Test

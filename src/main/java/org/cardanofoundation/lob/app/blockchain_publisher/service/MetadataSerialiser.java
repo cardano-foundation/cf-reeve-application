@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
@@ -49,7 +49,7 @@ public class MetadataSerialiser {
     private MetadataMap createMetadataSection(long creationSlot) {
         val metadataMap = MetadataBuilder.createMap();
 
-        val now = LocalDateTime.now(clock);
+        val now = Instant.now(clock);
 
         metadataMap.put("creation_slot", BigInteger.valueOf(creationSlot));
         metadataMap.put("timestamp", DateTimeFormatter.ISO_INSTANT.format(now));

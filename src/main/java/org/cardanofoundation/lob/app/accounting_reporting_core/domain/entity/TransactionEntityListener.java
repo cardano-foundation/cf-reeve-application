@@ -5,7 +5,7 @@ import jakarta.persistence.PreUpdate;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus.FAIL;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus.SUCCESS;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus.OK;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.VALIDATED;
 
 public class TransactionEntityListener {
@@ -15,7 +15,7 @@ public class TransactionEntityListener {
                 && transactionEntity.isRejectionFree()
                 && transactionEntity.getAutomatedValidationStatus() == VALIDATED
         ) {
-            return SUCCESS;
+            return OK;
         }
 
         return FAIL;
