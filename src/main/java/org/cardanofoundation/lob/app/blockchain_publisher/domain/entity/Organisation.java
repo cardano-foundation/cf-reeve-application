@@ -1,15 +1,13 @@
 package org.cardanofoundation.lob.app.blockchain_publisher.domain.entity;
 
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Embeddable
 @AllArgsConstructor
 @Getter
 @NoArgsConstructor
+@Setter
 @Builder
 public class Organisation {
 
