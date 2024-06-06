@@ -20,7 +20,7 @@ import java.util.Set;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus.NOT_DISPATCHED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus.SUCCESS;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus.OK;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 
 @Getter
@@ -160,7 +160,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
     }
 
     public boolean isDispatchable() {
-        return status == SUCCESS
+        return status == OK
                 && ledgerDispatchStatus == NOT_DISPATCHED;
     }
 
