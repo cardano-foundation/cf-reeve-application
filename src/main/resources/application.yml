@@ -91,6 +91,9 @@ spring:
     republish-outstanding-events-on-restart: true
 
 lob:
+  cors:
+    allowed-origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}
+
   dispatching:
     strategy:
       type: ${LOB_DISPATCHING_STRATEGY:DELAYED}

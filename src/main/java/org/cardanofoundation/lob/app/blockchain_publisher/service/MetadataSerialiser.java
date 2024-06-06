@@ -58,7 +58,8 @@ public class MetadataSerialiser {
         return metadataMap;
     }
 
-    private static MetadataMap serialise(TransactionEntity transaction, boolean isCollapsableOrganisation) {
+    private static MetadataMap serialise(TransactionEntity transaction,
+                                         boolean isCollapsableOrganisation) {
         val metadataMap = MetadataBuilder.createMap();
 
         val id = transaction.getId();
