@@ -8,7 +8,6 @@ import org.zalando.problem.Problem;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-@Component
 public class AccountNumberConvertor implements Function<String, Either<Problem, String>> {
 
     private static final Pattern pattern = Pattern.compile("^(\\d+)");
