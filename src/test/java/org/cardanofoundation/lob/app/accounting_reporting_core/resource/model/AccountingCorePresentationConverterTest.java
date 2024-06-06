@@ -194,7 +194,7 @@ class AccountingCorePresentationConverterTest {
 
         assertEquals(transactionId, result.get().getTransactions().stream().findFirst().get().getId());
         assertEquals("txItemId", result.get().getTransactions().stream().findFirst().get().getItems().stream().findFirst().get().getId());
-        assertEquals("txItemId",result.get().getTransactions().stream().findFirst().get().getViolations().stream().findFirst().get().getTransactionItemId().get());
+        assertEquals("txItemId", result.get().getTransactions().stream().findFirst().get().getViolations().stream().findFirst().get().getTransactionItemId().get());
     }
 
     @Test
@@ -234,7 +234,7 @@ class AccountingCorePresentationConverterTest {
 
 
         accountingCorePresentationConverter.extractionTrigger(extractionRequest);
-        Mockito.verify(accountingCoreService,Mockito.times(1)).scheduleIngestion(Mockito.any(UserExtractionParameters.class));
+        Mockito.verify(accountingCoreService, Mockito.times(1)).scheduleIngestion(Mockito.any(UserExtractionParameters.class));
 
     }
 }
