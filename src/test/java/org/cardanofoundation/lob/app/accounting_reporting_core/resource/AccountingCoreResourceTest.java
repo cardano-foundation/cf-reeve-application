@@ -204,6 +204,20 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     }
 
     @Test
+    void testListAllBatchNoBody() {
+
+
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/api/batchs")
+                .then()
+                .statusCode(400)
+                .body("title", equalTo("Bad Request"))
+        ;
+    }
+
+    @Test
     void testListAllBatchDetail() {
 
         given()
