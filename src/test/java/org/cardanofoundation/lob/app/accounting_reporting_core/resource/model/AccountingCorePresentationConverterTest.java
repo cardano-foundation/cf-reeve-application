@@ -1,18 +1,15 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.resource.model;
 
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.FilteringParameters;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Account;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepositoryGateway;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.ExtractionRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.SearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchView;
-import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchsListView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.TransactionView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.AccountingCoreService;
 import org.junit.jupiter.api.Test;
@@ -21,9 +18,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -54,21 +53,80 @@ class AccountingCorePresentationConverterTest {
         SearchRequest searchRequest = new SearchRequest();
         TransactionItemEntity transactionItem = new TransactionItemEntity();
         TransactionEntity transactionEntity = new TransactionEntity();
+        TransactionEntity transactionEntity2 = new TransactionEntity();
+        Violation violation = new Violation();
+        Account accountDebit = Account.builder().name("debit").code("debit-code").refCode("dcod").build();
+        Account accountCredit = new Account().toBuilder().name("credit").code("credit-code").refCode("ccod").build();
+
 
         searchRequest.setOrganisationId("org-id");
         searchRequest.setStatus(List.of(ValidationStatus.VALIDATED));
         searchRequest.setTransactionType(List.of(TransactionType.CardCharge));
 
         transactionEntity.setId("tx-id");
-        transactionEntity.setItems(Set.of(transactionItem));
-        transactionItem.setTransaction(transactionEntity);
+        transactionEntity.setTransactionType(TransactionType.CardCharge);
+        transactionEntity.setAutomatedValidationStatus(ValidationStatus.VALIDATED);
+        transactionEntity.setTransactionApproved(Boolean.TRUE);
+        transactionEntity.setLedgerDispatchApproved(Boolean.FALSE);
+        transactionEntity.setStatus(TransactionStatus.FAIL);
 
-        when(transactionRepositoryGateway.findAllByStatus(any(), any(), any())).thenReturn(List.of(transactionEntity));
+        transactionItem.setId("tx-item-id");
+
+        violation.setTxItemId(Optional.of(transactionItem.getId().toString()));
+        violation.setSource(Source.ERP);
+        violation.setType(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.WARN);
+        violation.setCode(ViolationCode.CORE_CURRENCY_NOT_FOUND);
+
+
+        transactionEntity.setItems(Set.of(transactionItem));
+        transactionEntity.setViolations(Set.of(violation));
+
+
+        transactionItem.setAccountDebit(accountDebit);
+        transactionItem.setAccountCredit(accountCredit);
+        transactionItem.setTransaction(transactionEntity);
+        transactionItem.setAmountFcy(BigDecimal.valueOf(1000));
+        transactionItem.setAmountLcy(BigDecimal.valueOf(1000));
+
+        transactionEntity2.setId("tx-id2");
+        transactionEntity2.setTransactionInternalNumber("tx-id2-internal");
+        LocalDate localDate = LocalDate.now();
+        transactionEntity2.setEntryDate(localDate);
+        transactionEntity2.setTransactionType(TransactionType.CardCharge);
+        transactionEntity2.setAutomatedValidationStatus(ValidationStatus.FAILED);
+        transactionEntity2.setTransactionApproved(Boolean.FALSE);
+        transactionEntity2.setLedgerDispatchApproved(Boolean.TRUE);
+        transactionEntity2.setStatus(TransactionStatus.SUCCESS);
+
+        when(transactionRepositoryGateway.findAllByStatus(any(), any(), any())).thenReturn(List.of(transactionEntity, transactionEntity2));
 
         List<TransactionView> result = accountingCorePresentationConverter.allTransactions(searchRequest);
 
-        assertEquals(1, result.size());
+        assertEquals(2, result.size());
         assertEquals("tx-id", result.get(0).getId());
+        assertEquals(TransactionType.CardCharge, result.get(0).getTransactionType());
+        assertEquals(Boolean.TRUE, result.get(0).isTransactionApproved());
+        assertEquals(Boolean.FALSE, result.get(0).isLedgerDispatchApproved());
+        assertEquals(TransactionStatus.FAIL, result.get(0).getStatus());
+        assertEquals(Boolean.FALSE, result.get(1).isTransactionApproved());
+        assertEquals(Boolean.TRUE, result.get(1).isLedgerDispatchApproved());
+        assertEquals(ValidationStatus.FAILED, result.get(1).getValidationStatus());
+        assertEquals("tx-id2-internal", result.get(1).getInternalTransactionNumber());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        assertEquals(localDate.format(formatter).toString(), result.get(1).getEntryDate().toString());
+        assertEquals("tx-item-id", result.get(0).getItems().stream().findFirst().get().getId());
+
+        assertEquals(BigDecimal.valueOf(1000), result.get(0).getItems().stream().findFirst().get().getAmountFcy());
+        assertEquals(BigDecimal.valueOf(1000), result.get(0).getItems().stream().findFirst().get().getAmountLcy());
+        assertEquals("debit-code", result.get(0).getItems().stream().findFirst().get().getAccountDebit().get().getCode());
+        assertEquals("credit-code", result.get(0).getItems().stream().findFirst().get().getAccountCredit().get().getCode());
+
+        assertEquals(Optional.of("tx-item-id"), result.get(0).getViolations().stream().findFirst().get().getTransactionItemId());
+
+
+        assertEquals(Source.ERP, result.get(0).getViolations().stream().findFirst().get().getSource());
+        assertEquals(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.WARN, result.get(0).getViolations().stream().findFirst().get().getType());
+        assertEquals(ViolationCode.CORE_CURRENCY_NOT_FOUND, result.get(0).getViolations().stream().findFirst().get().getCode());
     }
 
     @Test
@@ -77,7 +135,6 @@ class AccountingCorePresentationConverterTest {
         String transactionId = "tx-id";
         TransactionEntity transactionEntity = new TransactionEntity();
         transactionEntity.setId(transactionId);
-        // Set other properties of transactionEntity
 
         when(transactionRepositoryGateway.findById(transactionId)).thenReturn(Optional.of(transactionEntity));
 
@@ -95,13 +152,20 @@ class AccountingCorePresentationConverterTest {
         FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("asasas"));
 
         String batchId = "batch-id";
+
         TransactionBatchEntity transactionBatchEntity = new TransactionBatchEntity();
+        BatchStatistics batchStatistics = BatchStatistics.builder().totalTransactionsCount(10).build();
+        TransactionEntity transaction = new TransactionEntity();
+        TransactionEntity transaction2 = new TransactionEntity();
+        transaction.setId("tx-id1");
+        transaction2.setId("tx-id2");
+
+        transactionBatchEntity.setBatchStatistics(batchStatistics);
         transactionBatchEntity.setId(batchId);
         transactionBatchEntity.setCreatedAt(LocalDateTime.now());
         transactionBatchEntity.setUpdatedAt(LocalDateTime.now());
         transactionBatchEntity.setFilteringParameters(filteringParameters);
-
-        // Set other properties of transactionBatchEntity
+        transactionBatchEntity.setTransactions(Set.of(transaction, transaction2));
 
         when(transactionBatchRepositoryGateway.findById(batchId)).thenReturn(Optional.of(transactionBatchEntity));
 
@@ -111,6 +175,9 @@ class AccountingCorePresentationConverterTest {
 
         assertEquals(true, result.isPresent());
         assertEquals(batchId, result.get().getId());
+        assertEquals(Optional.of(10), result.get().getBatchStatistics().get().getTotalTransactionsCount());
+        assertEquals(2, result.get().getTransactions().stream().count());
+
     }
 
     @Test
@@ -125,16 +192,17 @@ class AccountingCorePresentationConverterTest {
         transactionBatchEntity.setCreatedAt(LocalDateTime.now());
         transactionBatchEntity.setUpdatedAt(LocalDateTime.now());
         transactionBatchEntity.setFilteringParameters(filteringParameters);
-        // Set other properties of transactionBatchEntity
 
         when(transactionBatchRepositoryGateway.findByOrganisationId(any())).thenReturn(List.of(transactionBatchEntity));
 
 
-        List<BatchsListView> result = accountingCorePresentationConverter.listAllBatch(batchSearchRequest);
+        List<BatchView> result = accountingCorePresentationConverter.listAllBatch(batchSearchRequest);
 
 
         assertEquals(1, result.size());
         assertEquals("batch-id", result.get(0).getId());
+        assertEquals(TransactionBatchStatus.CREATED, result.get(0).getStatus());
+
     }
 
     @Test
@@ -151,7 +219,5 @@ class AccountingCorePresentationConverterTest {
         accountingCorePresentationConverter.extractionTrigger(extractionRequest);
 
 
-        // Verify if scheduleIngestion method is called with expected UserExtractionParameters
-        // This verification is omitted here as it requires further mock setup
     }
 }
