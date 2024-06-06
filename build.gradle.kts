@@ -2,7 +2,7 @@ import info.solidsoft.gradle.pitest.PitestTask
 
 plugins {
     java
-    id("org.springframework.boot") version "3.2.5"
+    id("org.springframework.boot") version "3.3.0"
     id("io.spring.dependency-management") version "1.1.5"
     id("com.github.ben-manes.versions") version "0.51.0"
     id("info.solidsoft.pitest") version "1.15.0"
@@ -26,7 +26,7 @@ repositories {
 }
 
 extra["springCloudVersion"] = "2023.0.0"
-extra["springModulithVersion"] = "1.1.4"
+extra["springModulithVersion"] = "1.2.0"
 extra["jMoleculesVersion"] = "2023.1.0"
 
 dependencies {
@@ -40,6 +40,7 @@ dependencies {
     implementation("org.springframework.data:spring-data-envers")
 
     implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
 
     implementation("org.springframework.modulith:spring-modulith-starter-core")
     implementation("org.springframework.modulith:spring-modulith-starter-jdbc")
@@ -48,7 +49,7 @@ dependencies {
     implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
 
     // needed to store json via JPA in PostgreSQL
-    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.5")
+    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.6")
 
     implementation("org.springframework.boot:spring-boot-starter-amqp")
 
@@ -90,21 +91,20 @@ dependencies {
     implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.1")
     implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.1")
 
-    implementation("com.google.guava:guava:33.2.0-jre")
+    implementation("com.google.guava:guava:33.2.1-jre")
 
     implementation("org.apache.commons:commons-collections4:4.4")
 
     compileOnly("org.projectlombok:lombok:1.18.32")
     annotationProcessor("org.projectlombok:lombok:1.18.32")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-    testCompileOnly("org.projectlombok:lombok:1.18.30")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+    testCompileOnly("org.projectlombok:lombok:1.18.32")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
     testImplementation("io.rest-assured:rest-assured:5.4.0")
-    testImplementation("org.wiremock:wiremock-standalone:3.3.1")
-    testImplementation("net.jqwik:jqwik:1.8.4") // Jqwik for property-based testing
-    testImplementation("org.assertj:assertj-core:3.25.3")
+    testImplementation("org.wiremock:wiremock-standalone:3.6.0")
+    testImplementation("net.jqwik:jqwik:1.8.5") // Jqwik for property-based testing
+    testImplementation("org.assertj:assertj-core:3.26.0")
     testImplementation("org.pitest:pitest-junit5-plugin:1.2.1")
-
 }
 
 dependencyManagement {

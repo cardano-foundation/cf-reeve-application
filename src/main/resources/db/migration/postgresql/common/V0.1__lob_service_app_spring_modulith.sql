@@ -10,16 +10,18 @@ CREATE TABLE IF NOT EXISTS event_publication
   PRIMARY KEY (id)
 );
 
--- Create a GIN index on just the tsvector column
+    --- Create a GIN index on just the tsvector column
 CREATE INDEX IF NOT EXISTS serialized_event_tsvector_idx
 ON event_publication
 USING gin (to_tsvector('simple', serialized_event));
 
--- Create a separate index for listener_id if needed
+--- Create a separate index for listener_id if needed
 CREATE INDEX IF NOT EXISTS listener_id_idx
 ON event_publication
 (listener_id);
 
 CREATE INDEX IF NOT EXISTS event_publication_completion_date_idx ON event_publication (completion_date);
 
--- CREATE INDEX idx_text_search ON your_table USING gin (to_tsvector('english', text_column));
+--CREATE INDEX IF NOT EXISTS event_publication_by_listener_id_and_serialized_event_idx ON event_publication (listener_id, serialized_event);
+--CREATE INDEX IF NOT EXISTS event_publication_serialized_event_hash_idx ON event_publication USING hash(serialized_event);
+--CREATE INDEX IF NOT EXISTS event_publication_by_completion_date_idx ON event_publication (completion_date);
