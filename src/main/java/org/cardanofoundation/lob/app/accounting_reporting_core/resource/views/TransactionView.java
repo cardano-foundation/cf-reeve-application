@@ -32,6 +32,6 @@ public class TransactionView {
     private boolean ledgerDispatchApproved = false;
     private Set<TransactionItemView> items = new LinkedHashSet<>();
     private Set<ViolationView> violations = new LinkedHashSet<>();
-    private TransactionStatus status = TransactionStatus.SUCCESS;
+    private TransactionStatus status = TransactionStatus.OK;
 
 }
