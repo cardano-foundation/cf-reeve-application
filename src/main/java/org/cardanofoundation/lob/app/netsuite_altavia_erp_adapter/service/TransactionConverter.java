@@ -236,6 +236,8 @@ public class TransactionConverter {
                             "taxItem", taxItemM.orElseThrow()
                     )));
                 }
+
+                vatCodeM = Optional.of(vatCodeE.get());
             }
 
             return Either.right(Optional.of(Document.builder()

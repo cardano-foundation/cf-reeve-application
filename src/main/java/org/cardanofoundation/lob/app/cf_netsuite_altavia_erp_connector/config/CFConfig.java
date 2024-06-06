@@ -7,6 +7,7 @@ import lombok.val;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.AccountNumberConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.CostCenterConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.ProjectConvertor;
+import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.VatConvertor;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.NetSuite10Api;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.NetSuiteClient;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType;
@@ -148,7 +149,7 @@ public class CFConfig {
         fieldProcessors.put(FieldType.COST_CENTER, new CostCenterConvertor());
         fieldProcessors.put(FieldType.PROJECT, new ProjectConvertor());
         fieldProcessors.put(FieldType.CHART_OF_ACCOUNT, new AccountNumberConvertor());
-        fieldProcessors.put(FieldType.VAT, s -> Either.right(s));
+        fieldProcessors.put(FieldType.VAT, new VatConvertor());
 
         return new PreprocessorService(fieldProcessors);
     }

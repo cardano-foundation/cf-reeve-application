@@ -8,7 +8,6 @@ import org.zalando.problem.Problem;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-@Component
 public class ProjectConvertor implements Function<String, Either<Problem, String>> {
 
     private static final Pattern pattern = Pattern.compile("^([A-Z]{2}) (\\d{6}) (\\d{4}) (.+)$");
