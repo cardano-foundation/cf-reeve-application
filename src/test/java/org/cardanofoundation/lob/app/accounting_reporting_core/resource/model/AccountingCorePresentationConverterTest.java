@@ -24,10 +24,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,7 +57,6 @@ class AccountingCorePresentationConverterTest {
         Account accountDebit = Account.builder().name("debit").code("debit-code").refCode("dcod").build();
         Account accountCredit = new Account().toBuilder().name("credit").code("credit-code").refCode("ccod").build();
 
-
         searchRequest.setOrganisationId("org-id");
         searchRequest.setStatus(List.of(ValidationStatus.VALIDATED));
         searchRequest.setTransactionType(List.of(TransactionType.CardCharge));
@@ -78,10 +75,8 @@ class AccountingCorePresentationConverterTest {
         violation.setType(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.WARN);
         violation.setCode(ViolationCode.CORE_CURRENCY_NOT_FOUND);
 
-
         transactionEntity.setItems(Set.of(transactionItem));
         transactionEntity.setViolations(Set.of(violation));
-
 
         transactionItem.setAccountDebit(accountDebit);
         transactionItem.setAccountCredit(accountCredit);
@@ -124,7 +119,6 @@ class AccountingCorePresentationConverterTest {
 
         assertEquals(Optional.of("tx-item-id"), result.get(0).getViolations().stream().findFirst().get().getTransactionItemId());
 
-
         assertEquals(Source.ERP, result.get(0).getViolations().stream().findFirst().get().getSource());
         assertEquals(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.WARN, result.get(0).getViolations().stream().findFirst().get().getType());
         assertEquals(ViolationCode.CORE_CURRENCY_NOT_FOUND, result.get(0).getViolations().stream().findFirst().get().getCode());
@@ -139,9 +133,7 @@ class AccountingCorePresentationConverterTest {
 
         when(transactionRepositoryGateway.findById(transactionId)).thenReturn(Optional.of(transactionEntity));
 
-
         Optional<TransactionView> result = accountingCorePresentationConverter.transactionDetailSpecific(transactionId);
-
 
         assertEquals(true, result.isPresent());
         assertEquals(transactionId, result.get().getId());
@@ -150,51 +142,64 @@ class AccountingCorePresentationConverterTest {
     @Test
     void testBatchDetail() {
 
-        String transactionId = "tx-id1";
-        TransactionEntity transaction = new TransactionEntity();
-        transaction.setId(transactionId);
-
         TransactionItemEntity transactionItem = new TransactionItemEntity();
         transactionItem.setId("txItemId");
-        transactionItem.setTransaction(transaction);
-
         Violation violation = new Violation();
         violation.setTxItemId(Optional.of("txItemId"));
-
-        transaction.setItems(Set.of(transactionItem));
-        transaction.setViolations(Set.of(violation));
-        FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("somestring"));
+        LocalDate from = LocalDate.now();
+        LocalDate to = LocalDate.now();
+        FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), from, to, YearMonth.now(), YearMonth.now(), Collections.singletonList("somestring"));
 
         String batchId = "batch-id";
-
         TransactionBatchEntity transactionBatchEntity = new TransactionBatchEntity();
         BatchStatistics batchStatistics = BatchStatistics.builder().totalTransactionsCount(10).build();
 
+        TransactionEntity transaction1 = new TransactionEntity();
+        transaction1.setId("tx-id1");
         TransactionEntity transaction2 = new TransactionEntity();
-
         transaction2.setId("tx-id2");
+
+        transaction1.setItems(Set.of(transactionItem));
+        transaction1.setViolations(Set.of(violation));
+        transactionItem.setTransaction(transaction1);
 
         transactionBatchEntity.setBatchStatistics(batchStatistics);
         transactionBatchEntity.setId(batchId);
         transactionBatchEntity.setCreatedAt(LocalDateTime.now());
         transactionBatchEntity.setUpdatedAt(LocalDateTime.now());
         transactionBatchEntity.setFilteringParameters(filteringParameters);
-        transactionBatchEntity.setTransactions(Set.of(transaction, transaction2));
+        Set<TransactionEntity> transactions = new LinkedHashSet<>();
+        transactions.add(transaction1);
+        transactions.add(transaction2);
+        transactionBatchEntity.setTransactions(transactions);
+        transactionBatchEntity.setStatus(TransactionBatchStatus.CREATED);
+
+        transaction1.setBatchId(batchId);
+        transaction2.setBatchId(batchId);
 
         when(transactionBatchRepositoryGateway.findById(batchId)).thenReturn(Optional.of(transactionBatchEntity));
 
-
         Optional<BatchView> result = accountingCorePresentationConverter.batchDetail(batchId);
-
 
         assertEquals(true, result.isPresent());
         assertEquals(batchId, result.get().getId());
         assertEquals(Optional.of(10), result.get().getBatchStatistics().get().getTotalTransactionsCount());
         assertEquals(2, result.get().getTransactions().stream().count());
 
-        assertEquals(transactionId, result.get().getTransactions().stream().findFirst().get().getId());
-        assertEquals("txItemId", result.get().getTransactions().stream().findFirst().get().getItems().stream().findFirst().get().getId());
-        assertEquals("txItemId", result.get().getTransactions().stream().findFirst().get().getViolations().stream().findFirst().get().getTransactionItemId().get());
+        TransactionView resultTx1 = result.get().getTransactions().stream().filter(
+                transactionView -> transactionView.getId() == "tx-id1"
+        ).findFirst().get();
+        assertEquals("tx-id1", resultTx1.getId());
+        YearMonth today = YearMonth.now();
+
+        assertEquals(today, result.get().getFilteringParameters().getAccountingPeriodFrom());
+        assertEquals(today, result.get().getFilteringParameters().getAccountingPeriodTo());
+        assertEquals(from, result.get().getFilteringParameters().getFrom());
+        assertEquals(to, result.get().getFilteringParameters().getTo());
+        assertEquals(List.of(TransactionType.CardCharge),result.get().getFilteringParameters().getTransactionTypes());
+        assertEquals(List.of("somestring"),result.get().getFilteringParameters().getTransactionNumbers());
+        assertEquals("txItemId", resultTx1.getItems().stream().findFirst().get().getId());
+        assertEquals("txItemId", resultTx1.getViolations().stream().findFirst().get().getTransactionItemId().get());
     }
 
     @Test
@@ -210,11 +215,9 @@ class AccountingCorePresentationConverterTest {
         transactionBatchEntity.setUpdatedAt(LocalDateTime.now());
         transactionBatchEntity.setFilteringParameters(filteringParameters);
 
-        when(transactionBatchRepositoryGateway.findByOrganisationId(any())).thenReturn(List.of(transactionBatchEntity));
-
+        when(transactionBatchRepositoryGateway.findByFilter(any())).thenReturn(List.of(transactionBatchEntity));
 
         List<BatchView> result = accountingCorePresentationConverter.listAllBatch(batchSearchRequest);
-
 
         assertEquals(1, result.size());
         assertEquals("batch-id", result.get(0).getId());
@@ -231,7 +234,6 @@ class AccountingCorePresentationConverterTest {
         extractionRequest.setOrganisationId("org-id");
         extractionRequest.setTransactionType(List.of(TransactionType.CardCharge));
         extractionRequest.setTransactionNumbers(List.of("num1", "num2"));
-
 
         accountingCorePresentationConverter.extractionTrigger(extractionRequest);
         Mockito.verify(accountingCoreService, Mockito.times(1)).scheduleIngestion(Mockito.any(UserExtractionParameters.class));

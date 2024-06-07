@@ -10,7 +10,8 @@ class BatchSearchRequestTest {
 
     @Test
     void getOrganisationId() {
-        BatchSearchRequest searchRequest = new BatchSearchRequest("someId");
+        BatchSearchRequest searchRequest = new BatchSearchRequest();
+        searchRequest.setOrganisationId("someId");
         Assertions.assertEquals(searchRequest.getOrganisationId(), "someId");
         searchRequest.setOrganisationId("anotherId");
         Assertions.assertEquals(searchRequest.getOrganisationId(), "anotherId");

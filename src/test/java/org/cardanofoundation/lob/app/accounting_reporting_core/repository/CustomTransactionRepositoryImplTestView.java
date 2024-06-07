@@ -49,17 +49,13 @@ class CustomTransactionRepositoryImplTestView {
         Path<Object> validationStatus = Mockito.mock(Path.class);
         Path<Object> organisation = Mockito.mock(Path.class);
         Path<Object> organisationId = Mockito.mock(Path.class);
-        Path<Object> transactionType = Mockito.mock(Path.class);
+
         CriteriaBuilder.In inResult = Mockito.mock(CriteriaBuilder.In.class);
 
         Mockito.when(rootEntry.get("automatedValidationStatus")).thenReturn(validationStatus);
         Mockito.when(rootEntry.get("organisation")).thenReturn(organisation);
-        Mockito.when(rootEntry.get("transactionType")).thenReturn(transactionType);
         Mockito.when(organisation.get("id")).thenReturn(organisationId);
-
-        Mockito.when(builder.in(rootEntry.get("transactionType"))).thenReturn(inResult);
         Mockito.when(builder.in(rootEntry.get("automatedValidationStatus"))).thenReturn(inResult);
-        //Mockito.when(inResult.value(transactionType)).thenReturn();
 
         Mockito.when(em.createQuery(criteriaQuery)).thenReturn(transactionEntityTypedQuery);
         CustomTransactionRepositoryImpl customTransactionRepository = new CustomTransactionRepositoryImpl(em);
@@ -69,8 +65,6 @@ class CustomTransactionRepositoryImplTestView {
         //Mockito.verify(builder,Mockito.times(4)).isTrue(builder.literal(true));
         Mockito.verify(builder, Mockito.times(1)).in(validationStatus);
         Mockito.verify(builder, Mockito.times(1)).equal(organisationId, "OrgId");
-        Mockito.verify(builder, Mockito.times(1)).in(transactionType);
-        Mockito.verify(inResult, Mockito.times(1)).value(List.of(TransactionType.valueOf(String.valueOf(VendorBill))));
         Mockito.verify(inResult, Mockito.times(1)).value(List.of(ValidationStatus.valueOf(String.valueOf(VALIDATED))));
         Mockito.verify(rootEntry, Mockito.times(1)).get("organisation");
         Mockito.verify(organisation, Mockito.times(1)).get("id");

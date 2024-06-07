@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.FilteringParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepositoryGateway;
@@ -38,7 +39,7 @@ public class AccountingCorePresentationViewService {
 
         return
                 transactions.stream().map(this::getTransactionView).toList()
-        ;
+                ;
     }
 
     public Optional<TransactionView> transactionDetailSpecific(String transactionId) {
@@ -51,7 +52,7 @@ public class AccountingCorePresentationViewService {
         return transactionBatchRepositoryGateway.findById(batchId).map(transactionBatchEntity -> {
 
                     val transactions = this.getTransaction(transactionBatchEntity);
-
+                    val filteringParameters = this.getFilteringParameters(transactionBatchEntity.getFilteringParameters());
                     return new BatchView(
                             transactionBatchEntity.getId(),
                             transactionBatchEntity.getCreatedAt().toString(),
@@ -59,14 +60,29 @@ public class AccountingCorePresentationViewService {
                             transactionBatchEntity.getOrganisationId(),
                             transactionBatchEntity.getStatus(),
                             transactionBatchEntity.getBatchStatistics(),
+                            filteringParameters,
                             transactions
+
                     );
                 }
         );
     }
 
+    private FilteringParametersView getFilteringParameters(FilteringParameters filteringParameters) {
+        return new FilteringParametersView(
+                filteringParameters.getTransactionTypes(),
+                filteringParameters.getFrom(),
+                filteringParameters.getTo(),
+                filteringParameters.getAccountingPeriodFrom(),
+                filteringParameters.getAccountingPeriodTo(),
+                filteringParameters.getTransactionNumbers()
+        );
+    }
+
     public List<BatchView> listAllBatch(BatchSearchRequest body) {
-        return transactionBatchRepositoryGateway.findByOrganisationId(body.getOrganisationId()).stream().map(
+
+        return transactionBatchRepositoryGateway.findByFilter(body).stream().map(
+
                 transactionBatchEntity -> new BatchView(
                         transactionBatchEntity.getId(),
                         transactionBatchEntity.getCreatedAt().toString(),
@@ -74,10 +90,12 @@ public class AccountingCorePresentationViewService {
                         transactionBatchEntity.getOrganisationId(),
                         transactionBatchEntity.getStatus(),
                         transactionBatchEntity.getBatchStatistics(),
+                        this.getFilteringParameters(transactionBatchEntity.getFilteringParameters()),
                         Set.of()
                 )
         ).toList();
     }
+
     @Transactional
     public void extractionTrigger(ExtractionRequest body) {
         val fp = UserExtractionParameters.builder()

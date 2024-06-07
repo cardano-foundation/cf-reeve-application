@@ -36,10 +36,6 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
             pValidationStatuses = builder.in(rootEntry.get("automatedValidationStatus")).value(validationStatuses);
         }
 
-        if (!transactionTypes.isEmpty()) {
-            pTransactionType = builder.in(rootEntry.get("transactionType")).value(transactionTypes);
-        }
-
         criteriaQuery.select(rootEntry);
         criteriaQuery.where(pValidationStatuses, pOrganisationId, pTransactionType);
 
