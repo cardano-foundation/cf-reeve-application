@@ -7,15 +7,12 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Syste
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
 
-import java.time.Clock;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ExtractionParametersFilteringService {
-
-    private final Clock clock;
 
     public Set<Transaction> applyExtractionParameters(UserExtractionParameters userExtractionParameters,
                                                       SystemExtractionParameters systemExtractionParameters,

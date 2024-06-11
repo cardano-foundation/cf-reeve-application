@@ -12,4 +12,6 @@ public enum TransactionBatchStatus {
 
     FINALIZED, // all transactions are settled and the transactions are finalized on the blockchain(s)
 
+    FAILED // job failed due to e.g. fatal error in the adapter layer
+
 }
