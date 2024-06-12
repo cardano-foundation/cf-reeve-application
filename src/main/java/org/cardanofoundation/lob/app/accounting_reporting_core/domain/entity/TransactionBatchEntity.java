@@ -62,6 +62,13 @@ public class TransactionBatchEntity extends AuditEntity implements Persistable<S
     @Nullable
     private BatchStatistics batchStatistics = new BatchStatistics();
 
+    @Nullable
+    @AttributeOverrides({
+            @AttributeOverride(name = "code", column = @Column(name = "detail_code")),
+            @AttributeOverride(name = "bag", column = @Column(name = "detail_bag"))
+    })
+    private BatchDetails batchDetails;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private TransactionBatchStatus status = TransactionBatchStatus.CREATED;
@@ -96,6 +103,10 @@ public class TransactionBatchEntity extends AuditEntity implements Persistable<S
     @Override
     public String getId() {
         return id;
+    }
+
+    public Optional<BatchDetails> getBatchDetails() {
+        return Optional.ofNullable(batchDetails);
     }
 
 }

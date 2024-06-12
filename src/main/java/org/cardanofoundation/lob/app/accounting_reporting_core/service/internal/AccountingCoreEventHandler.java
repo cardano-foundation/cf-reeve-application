@@ -31,13 +31,23 @@ public class AccountingCoreEventHandler {
 
     @ApplicationModuleListener
     public void handleERPTransactionChunk(TransactionBatchChunkEvent transactionBatchChunkEvent) {
-        log.info("Received handleERPTransactionChunk event...., event, batch_id: {}, chunk_size:{}", transactionBatchChunkEvent.getBatchId(), transactionBatchChunkEvent.getTransactions().size());
+        String batchId = transactionBatchChunkEvent.getBatchId();
 
-        val detachedDbTxs = transactionConverter.convertToDbDetached(transactionBatchChunkEvent.getTransactions());
+        log.info("Received handleERPTransactionChunk event...., event, batch_id: {}, chunk_size:{}", batchId, transactionBatchChunkEvent.getTransactions().size());
+
+        if (transactionBatchChunkEvent.getFatalError().isPresent()) {
+            val fatalError = transactionBatchChunkEvent.getFatalError().get();
+
+            transactionBatchService.failTransactionBatch(batchId, fatalError);
+            return;
+        }
+
+        val txs = transactionBatchChunkEvent.getTransactions();
+        val detachedDbTxs = transactionConverter.convertToDbDetached(txs);
 
         erpIncomingDataProcessor.continueIngestion(
                 transactionBatchChunkEvent.getOrganisationId(),
-                transactionBatchChunkEvent.getBatchId(),
+                batchId,
                 transactionBatchChunkEvent.getTotalTransactionsCount(),
                 detachedDbTxs,
                 ProcessorFlags.builder()
@@ -45,7 +55,7 @@ public class AccountingCoreEventHandler {
                         .build()
         );
 
-        log.info("Finished processing handleERPTransactionChunk event...., event, batch_id: {}", transactionBatchChunkEvent.getBatchId());
+        log.info("Finished processing handleERPTransactionChunk event...., event, batch_id: {}", batchId);
     }
 
     @ApplicationModuleListener

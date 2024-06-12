@@ -17,9 +17,10 @@ public class NetSuiteEventHandler {
         log.info("Handling ScheduledIngestionEvent...");
 
         netSuiteService.startNewERPExtraction(
+                event.getOrganisationId(),
                 event.getInitiator(),
                 event.getUserExtractionParameters()
-                );
+        );
 
         log.info("Handled ScheduledIngestionEvent.");
     }
@@ -30,6 +31,7 @@ public class NetSuiteEventHandler {
 
         netSuiteService.continueERPExtraction(
                 transactionBatchCreatedEvent.getBatchId(),
+                transactionBatchCreatedEvent.getOrganisationId(),
                 transactionBatchCreatedEvent.getInstanceId(),
                 transactionBatchCreatedEvent.getUserExtractionParameters(),
                 transactionBatchCreatedEvent.getSystemExtractionParameters()

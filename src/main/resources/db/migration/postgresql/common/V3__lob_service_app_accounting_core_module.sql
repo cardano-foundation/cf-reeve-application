@@ -14,6 +14,9 @@ CREATE TABLE accounting_core_transaction_batch (
    stats_failed_source_erp_transactions_count INT,
    stats_failed_source_lob_transactions_count INT,
 
+   detail_code VARCHAR(255),
+   detail_bag jsonb,
+
    filtering_parameters_organisation_id VARCHAR(255) NOT NULL,
    filtering_parameters_transaction_types SMALLINT,
    filtering_parameters_from_date DATE NOT NULL,

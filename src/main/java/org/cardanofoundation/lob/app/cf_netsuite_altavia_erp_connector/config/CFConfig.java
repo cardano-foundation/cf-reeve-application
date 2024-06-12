@@ -70,13 +70,8 @@ public class CFConfig {
     }
 
     @Bean
-    public ViolationsSenderService violationsSenderService(ApplicationEventPublisher applicationEventPublisher) {
-        return new ViolationsSenderService(applicationEventPublisher);
-    }
-
-    @Bean
-    public ExtractionParametersFilteringService extractionParametersFilteringService(Clock clock) {
-        return new ExtractionParametersFilteringService(clock);
+    public ExtractionParametersFilteringService extractionParametersFilteringService() {
+        return new ExtractionParametersFilteringService();
     }
 
     @Bean
@@ -104,7 +99,6 @@ public class CFConfig {
     @Bean
     public NetSuiteService netSuiteService(IngestionRepository ingestionRepository,
                                            NetSuiteClient netSuiteClient,
-                                           ViolationsSenderService violationsSenderService,
                                            TransactionConverter transactionConverter,
                                            ApplicationEventPublisher eventPublisher,
                                            SystemExtractionParametersFactory extractionParametersFactory,
@@ -116,7 +110,6 @@ public class CFConfig {
         return new NetSuiteService(
                 ingestionRepository,
                 netSuiteClient,
-                violationsSenderService,
                 transactionConverter,
                 eventPublisher,
                 extractionParametersFactory,
