@@ -3,9 +3,11 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FatalError;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.SystemExtractionParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxStatusUpdate;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.BatchDetails;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.BatchStatistics;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchCreatedEvent;
@@ -26,8 +28,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus.CREATED;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus.FINALIZED;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus.*;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 import static org.springframework.transaction.annotation.Propagation.SUPPORTS;
 
@@ -50,6 +51,7 @@ public class TransactionBatchService {
 
     @Transactional
     public void createTransactionBatch(String batchId,
+                                       String organisationId,
                                        String instanceId,
                                        String initiator,
                                        UserExtractionParameters userExtractionParameters,
@@ -72,6 +74,7 @@ public class TransactionBatchService {
 
         applicationEventPublisher.publishEvent(TransactionBatchCreatedEvent.builder()
                 .batchId(batchId)
+                .organisationId(organisationId)
                 .instanceId(instanceId)
                 .userExtractionParameters(userExtractionParameters)
                 .systemExtractionParameters(systemExtractionParameters)
@@ -92,6 +95,28 @@ public class TransactionBatchService {
 
             invokeUpdateTransactionBatchStatusAndStats(batchId, totalTransactionsCount);
         }
+    }
+
+    @Transactional(propagation = SUPPORTS)
+    public void failTransactionBatch(String batchId, FatalError ex) {
+        val txBatchM = transactionBatchRepositoryGateway.findById(batchId);
+
+        if (txBatchM.isEmpty()) {
+            log.warn("Transaction batch not found for id: {}", batchId);
+            return;
+        }
+
+        val txBatch = txBatchM.orElseThrow();
+        txBatch.setStatus(FAILED);
+        txBatch.setBatchDetails(BatchDetails.builder()
+                .code(ex.getCode().name())
+                .bag(ex.getBag())
+                .build()
+        );
+
+        transactionBatchRepository.save(txBatch);
+
+        log.info("Transaction batch status updated, batchId: {}", batchId);
     }
 
     @Transactional(propagation = SUPPORTS)

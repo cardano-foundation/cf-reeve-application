@@ -14,8 +14,11 @@ import org.jmolecules.event.annotation.DomainEvent;
 @DomainEvent
 public class ScheduledIngestionEvent {
 
-    private UserExtractionParameters userExtractionParameters;
+    private String organisationId;
 
     private String initiator;
+
+    private UserExtractionParameters userExtractionParameters;
+
 
 }

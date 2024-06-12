@@ -16,6 +16,7 @@ import org.jmolecules.event.annotation.DomainEvent;
 public class TransactionBatchCreatedEvent {
 
     private String batchId;
+    private String organisationId;
     private String instanceId;
     private UserExtractionParameters userExtractionParameters;
     private SystemExtractionParameters systemExtractionParameters;

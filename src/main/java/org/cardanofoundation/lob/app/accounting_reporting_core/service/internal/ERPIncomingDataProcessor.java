@@ -27,8 +27,19 @@ public class ERPIncomingDataProcessor {
     public void initiateIngestion(ERPIngestionStored ingestionStored) {
         log.info("Processing ERPIngestionStored event, event: {}", ingestionStored);
 
+
+        if (ingestionStored.getFatalError().isPresent()) {
+            val fatalError = ingestionStored.getFatalError().get();
+
+            log.error("Adapter error detected, error: {}", fatalError);
+
+            transactionBatchService.failTransactionBatch(ingestionStored.getBatchId(), fatalError);
+            return;
+        }
+
         transactionBatchService.createTransactionBatch(
                 ingestionStored.getBatchId(),
+                ingestionStored.getOrganisationId(),
                 ingestionStored.getInstanceId(),
                 ingestionStored.getInitiator(),
                 ingestionStored.getUserExtractionParameters(),

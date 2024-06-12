@@ -18,8 +18,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus.FAILED;
 import static org.zalando.problem.Status.NOT_FOUND;
 
 @Service
@@ -36,7 +36,11 @@ public class AccountingCoreService {
     public void scheduleIngestion(UserExtractionParameters userExtractionParameters) {
         log.info("scheduleIngestion, parameters: {}", userExtractionParameters);
 
-        applicationEventPublisher.publishEvent(new ScheduledIngestionEvent(userExtractionParameters, "system"));
+        applicationEventPublisher.publishEvent(new ScheduledIngestionEvent(
+                userExtractionParameters.getOrganisationId(),
+                "system",
+                userExtractionParameters)
+        );
     }
 
     @Transactional

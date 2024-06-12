@@ -20,12 +20,7 @@ public class PreprocessorService {
         val fieldProcessorFun = fieldProcessors.get(fieldType);
 
         if (fieldProcessorFun == null) {
-            return Either.left(Problem.builder()
-                    .withTitle("FIELD_PROCESSOR_NOT_FOUND")
-                    .withDetail("Field processor not found")
-                    .with("field_type", fieldType)
-                    .build()
-            );
+            throw new RuntimeException(STR."Field processor not found for field type: \{fieldType}");
         }
 
         return fieldProcessorFun.apply(data);
