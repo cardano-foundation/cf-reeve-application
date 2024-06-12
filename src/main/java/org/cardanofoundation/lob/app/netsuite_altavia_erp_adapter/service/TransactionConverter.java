@@ -115,7 +115,7 @@ public class TransactionConverter {
 
                 log.error("Validation failed for transaction: {}", bag);
 
-                return Either.left(new FatalError(INTERNAL, bag));
+                return Either.left(new FatalError(ADAPTER_ERROR, bag));
             }
 
             val accountCreditCodeM = accountCreditCode(organisationId, txLine, txLine.accountMain());

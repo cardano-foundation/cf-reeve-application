@@ -14,7 +14,7 @@ public class FatalError {
     private final Map<String, Object> bag;
 
     public enum ErrorCode {
-        INTERNAL,
+        ADAPTER_ERROR,
         ORGANISATION_NOT_IMPORTED,
         TRANSACTION_TYPE_NOT_YET_KNOWN,
     }
