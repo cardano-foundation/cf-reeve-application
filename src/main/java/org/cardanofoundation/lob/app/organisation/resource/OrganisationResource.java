@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.organisation.resource;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,16 +35,7 @@ public class OrganisationResource {
 
     @Operation(description = "Transaction types", responses = {
             @ApiResponse(content =
-                    {@Content(mediaType = "application/json", schema = @Schema(example = "[\n" +
-                            "    {\n" +
-                            "        \"id\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
-                            "        \"name\": \"Cardano Foundation\",\n" +
-                            "        \"description\": \"CHE-184477354\",\n" +
-                            "        \"currencyId\": \"ISO_4217:CHF\",\n" +
-                            "        \"accountPeriodFrom\": \"2021-05-14\",\n" +
-                            "        \"accountPeriodTo\": \"2024-05-13\"\n" +
-                            "    }\n" +
-                            "]"))}
+                    {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrganisationView.class)))}
             ),
     })
     @GetMapping(value = "/organisation", produces = "application/json")
@@ -63,20 +55,13 @@ public class OrganisationResource {
                             monthsAgo,
                             yesterday
                     );
-                })
+                }).toList()
         );
     }
 
     @Operation(description = "Transaction types", responses = {
             @ApiResponse(content =
-                    {@Content(mediaType = "application/json", schema = @Schema(example = "{\n" +
-                            "        \"id\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
-                            "        \"name\": \"Cardano Foundation\",\n" +
-                            "        \"description\": \"CHE-184477354\",\n" +
-                            "        \"currencyId\": \"ISO_4217:CHF\",\n" +
-                            "        \"accountPeriodFrom\": \"2021-05-14\",\n" +
-                            "        \"accountPeriodTo\": \"2024-05-13\"\n" +
-                            "    }"))}
+                    {@Content(mediaType = "application/json", schema = @Schema(implementation = OrganisationView.class))}
             ),
             @ApiResponse(responseCode = "404", description = "Error: response status is 404", content = {@Content(mediaType = "application/json", schema = @Schema(example = "{\n" +
                     "    \"title\": \"Organisation not found\",\n" +

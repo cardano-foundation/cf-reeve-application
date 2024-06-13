@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
@@ -25,10 +26,10 @@ public class ExtractionRequest {
     @Schema(example = "2024-05-01")
     private String dateTo = "";
 
-    @Schema(example = "[\"CardCharge\",\"VendorBill\",\"CardRefund\",\"Journal\",\"FxRevaluation\",\"Transfer\",\"CustomerPayment\",\"ExpenseReport\",\"VendorPayment\",\"BillCredit\"]")
+    @ArraySchema(arraySchema = @Schema(example = "[\"FxRevaluation\",\"Journal\",\"CustomerPayment\"] ", implementation = TransactionType.class))
     private List<TransactionType> transactionType = List.of();
 
-    @Schema(example = "[\"CARDCH565\",\"CARDHY777\",\"CARDCHRG159\",\"VENDBIL119\"] ")
+    @ArraySchema(arraySchema = @Schema(example = "[\"CARDCH565\",\"CARDHY777\",\"CARDCHRG159\",\"VENDBIL119\"] "))
     private List<String> transactionNumbers = List.of();
 
 }

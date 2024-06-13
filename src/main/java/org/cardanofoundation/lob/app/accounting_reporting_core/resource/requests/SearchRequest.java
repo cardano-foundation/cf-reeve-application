@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -21,10 +22,10 @@ public class SearchRequest {
     @NotBlank
     private String organisationId;
 
-    @Schema(example = "[\"VALIDATED\"]")
+    @ArraySchema(arraySchema = @Schema(example = "[\"FAILED\",\"VALIDATED\"]", implementation = ValidationStatus.class))
     private List<ValidationStatus> status = List.of();
 
-    @Schema(example = "[\"CardCharge\",\"VendorBill\",\"CardRefund\",\"Journal\",\"FxRevaluation\",\"Transfer\",\"CustomerPayment\",\"ExpenseReport\",\"VendorPayment\",\"BillCredit\"]")
+    @ArraySchema(arraySchema = @Schema(example = "[\"CardRefund\",\"Journal\",\"ExpenseReport\"]", implementation = TransactionType.class))
     private List<TransactionType> transactionType = List.of();
 
 }
