@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.BatchFailedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.LedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchChunkEvent;
@@ -21,6 +22,17 @@ public class AccountingCoreEventHandler {
     private final TransactionBatchService transactionBatchService;
 
     @ApplicationModuleListener
+    public void handleBatchFailed(BatchFailedEvent event) {
+        log.info("Received batchFailedEvent event, event: {}", event);
+
+        val error = event.getError();
+
+        transactionBatchService.failTransactionBatch(event.getBatchId(), error);
+
+        log.info("Finished processing batchFailedEvent event, event: {}", event);
+    }
+
+    @ApplicationModuleListener
     public void handleERPIngestionStored(ERPIngestionStored event) {
         log.info("Received handleERPIngestionStored event, event: {}", event);
 
@@ -34,13 +46,6 @@ public class AccountingCoreEventHandler {
         String batchId = transactionBatchChunkEvent.getBatchId();
 
         log.info("Received handleERPTransactionChunk event...., event, batch_id: {}, chunk_size:{}", batchId, transactionBatchChunkEvent.getTransactions().size());
-
-        if (transactionBatchChunkEvent.getFatalError().isPresent()) {
-            val fatalError = transactionBatchChunkEvent.getFatalError().get();
-
-            transactionBatchService.failTransactionBatch(batchId, fatalError);
-            return;
-        }
 
         val txs = transactionBatchChunkEvent.getTransactions();
         val detachedDbTxs = transactionConverter.convertToDbDetached(txs);

@@ -65,6 +65,7 @@ public class TransactionBatchEntity extends AuditEntity implements Persistable<S
     @Nullable
     @AttributeOverrides({
             @AttributeOverride(name = "code", column = @Column(name = "detail_code")),
+            @AttributeOverride(name = "subCode", column = @Column(name = "detail_subcode")),
             @AttributeOverride(name = "bag", column = @Column(name = "detail_bag"))
     })
     private BatchDetails batchDetails;

@@ -25,7 +25,7 @@ public class SystemExtractionParametersFactory {
             log.error("Organisation not found for id: {}", organisationId);
 
             val issue = Problem.builder()
-                    .withTitle("NETSUITE_ADAPTER::ORGANISATION_NOT_FOUND")
+                    .withTitle("ORGANISATION_NOT_FOUND")
                     .withDetail(STR."Organisation not found for id: \{organisationId}")
                     .build();
 
