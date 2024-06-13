@@ -15,6 +15,7 @@ CREATE TABLE accounting_core_transaction_batch (
    stats_failed_source_lob_transactions_count INT,
 
    detail_code VARCHAR(255),
+   detail_subcode VARCHAR(255),
    detail_bag jsonb,
 
    filtering_parameters_organisation_id VARCHAR(255) NOT NULL,

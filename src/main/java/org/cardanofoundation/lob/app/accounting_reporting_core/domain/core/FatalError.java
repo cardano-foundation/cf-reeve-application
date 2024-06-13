@@ -9,14 +9,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FatalError {
 
-    private final ErrorCode code;
+    private final FatalError.Code code;
+    private final String subCode;
 
     private final Map<String, Object> bag;
 
-    public enum ErrorCode {
-        INTERNAL,
-        ORGANISATION_NOT_IMPORTED,
-        TRANSACTION_TYPE_NOT_YET_KNOWN,
+    public enum Code {
+        ADAPTER_ERROR
     }
 
 }

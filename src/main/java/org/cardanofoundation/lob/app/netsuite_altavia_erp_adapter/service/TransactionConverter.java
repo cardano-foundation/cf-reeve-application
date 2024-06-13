@@ -20,7 +20,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Counterparty.Type.VENDOR;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FatalError.ErrorCode.*;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FatalError.Code.ADAPTER_ERROR;
 import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType.*;
 import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.util.MoreString.normaliseString;
 
@@ -115,7 +115,7 @@ public class TransactionConverter {
 
                 log.error("Validation failed for transaction: {}", bag);
 
-                return Either.left(new FatalError(INTERNAL, bag));
+                return Either.left(new FatalError(ADAPTER_ERROR, "TRANSACTIONS_VALIDATION_ERROR", bag));
             }
 
             val accountCreditCodeM = accountCreditCode(organisationId, txLine, txLine.accountMain());
@@ -200,7 +200,7 @@ public class TransactionConverter {
                     "type", txLine.type()
             );
 
-            return Either.left(new FatalError(TRANSACTION_TYPE_NOT_YET_KNOWN, bag));
+            return Either.left(new FatalError(ADAPTER_ERROR, "TRANSACTION_TYPE_NOT_YET_KNOWN", bag));
         }
 
         return Either.right(transactionTypeM.orElseThrow());
@@ -307,7 +307,7 @@ public class TransactionConverter {
                     "subsidiary", txLine.subsidiary()
             );
 
-            return Either.left(new FatalError(ORGANISATION_NOT_IMPORTED, bag));
+            return Either.left(new FatalError(ADAPTER_ERROR, "ORGANISATION_NOT_IMPORTED", bag));
         }
 
         return Either.right(organisationIdM.orElseThrow());

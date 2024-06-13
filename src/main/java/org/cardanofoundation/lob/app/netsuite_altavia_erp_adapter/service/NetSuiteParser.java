@@ -28,7 +28,7 @@ public class NetSuiteParser {
                 log.warn("More data available in the search result, pagination not implemented yet!");
 
                 return Either.left(Problem.builder()
-                        .withTitle("NETSUITE_ADAPTER::PAGINATION_NOT_IMPLEMENTED")
+                        .withTitle("PAGINATION_NOT_IMPLEMENTED")
                         .withDetail("More data available in the search result, pagination not implemented yet!")
                         .build()
                 );
@@ -39,7 +39,7 @@ public class NetSuiteParser {
             log.error("Error parsing NetSuite search result: {}", e.getMessage(), e);
 
             return Either.left(Problem.builder()
-                    .withTitle("NETSUITE_ADAPTER::JSON_PARSE_ERROR")
+                    .withTitle("JSON_PARSE_ERROR")
                     .withDetail(STR."JSON rrror parsing NetSuite search error: \{e.getMessage()}")
                     .build());
         }
