@@ -16,6 +16,7 @@ import java.util.Map;
 public class BatchDetails {
 
     private String code;
+    private String subCode;
 
     @Builder.Default
     @Type(value = io.hypersistence.utils.hibernate.type.json.JsonType.class)

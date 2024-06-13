@@ -98,7 +98,7 @@ public class TransactionBatchService {
     }
 
     @Transactional(propagation = SUPPORTS)
-    public void failTransactionBatch(String batchId, FatalError ex) {
+    public void failTransactionBatch(String batchId, FatalError error) {
         val txBatchM = transactionBatchRepositoryGateway.findById(batchId);
 
         if (txBatchM.isEmpty()) {
@@ -109,8 +109,9 @@ public class TransactionBatchService {
         val txBatch = txBatchM.orElseThrow();
         txBatch.setStatus(FAILED);
         txBatch.setBatchDetails(BatchDetails.builder()
-                .code(ex.getCode().name())
-                .bag(ex.getBag())
+                .code(error.getCode().name())
+                .subCode(error.getSubCode())
+                .bag(error.getBag())
                 .build()
         );
 
@@ -145,6 +146,7 @@ public class TransactionBatchService {
         txBatch.setStatus(txBatchStatusCalculator.reCalcStatus(txBatch, totalTxCount));
 
         transactionBatchRepository.save(txBatch);
+
         log.info("EXPENSIVE::Transaction batch status and statistics updated, batchId: {}", batchId);
     }
 

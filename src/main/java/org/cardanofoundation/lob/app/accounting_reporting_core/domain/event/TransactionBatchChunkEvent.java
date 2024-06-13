@@ -3,7 +3,6 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.event;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FatalError;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.SystemExtractionParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Transaction;
 import org.jmolecules.event.annotation.DomainEvent;
@@ -28,9 +27,6 @@ public class TransactionBatchChunkEvent {
     private Set<Transaction> transactions = Set.of();
 
     private SystemExtractionParameters systemExtractionParameters;
-
-    @Builder.Default
-    private Optional<FatalError> fatalError = Optional.empty();
 
     @Builder.Default
     private Status status = Status.STARTED;
