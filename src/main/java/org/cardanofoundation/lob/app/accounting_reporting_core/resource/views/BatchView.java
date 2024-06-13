@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionBatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.BatchStatistics;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.FilteringParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 
 import java.util.LinkedHashSet;
@@ -25,6 +26,6 @@ public class BatchView {
     private String organisationId;
     private TransactionBatchStatus status;
     private Optional<BatchStatistics> batchStatistics;
+    private FilteringParametersView filteringParameters ;
     private Set<TransactionView> transactions = new LinkedHashSet<>();
-
 }
