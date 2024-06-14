@@ -6,8 +6,8 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FatalError;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.SystemExtractionParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.BatchFailedEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchFailedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchStartedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchChunkEvent;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.NetSuiteClient;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.entity.NetSuiteIngestionEntity;
@@ -81,7 +81,7 @@ public class NetSuiteService {
                         "technicalErrorDetail", problem.getDetail()
                 );
 
-                val batchFailedEvent = BatchFailedEvent.builder()
+                val batchFailedEvent = TransactionBatchFailedEvent.builder()
                         .batchId(batchId)
                         .organisationId(organisationId)
                         .userExtractionParameters(userExtractionParameters)
@@ -105,7 +105,7 @@ public class NetSuiteService {
                         "technicalErrorDetail", problem.getDetail()
                 );
 
-                val batchFailedEvent = BatchFailedEvent.builder()
+                val batchFailedEvent = TransactionBatchFailedEvent.builder()
                         .batchId(batchId)
                         .organisationId(organisationId)
                         .userExtractionParameters(userExtractionParameters)
@@ -143,7 +143,7 @@ public class NetSuiteService {
                         "technicalErrorDetail", problem.getDetail()
                 );
 
-                val batchFailedEvent = BatchFailedEvent.builder()
+                val batchFailedEvent = TransactionBatchFailedEvent.builder()
                         .batchId(batchId)
                         .organisationId(organisationId)
                         .userExtractionParameters(userExtractionParameters)
@@ -156,7 +156,7 @@ public class NetSuiteService {
 
             val systemExtractionParameters = systemExtractionParametersE.get();
 
-            applicationEventPublisher.publishEvent(ERPIngestionStored.builder()
+            applicationEventPublisher.publishEvent(TransactionBatchStartedEvent.builder()
                     .batchId(storedNetsuiteIngestion.getId())
                     .organisationId(userExtractionParameters.getOrganisationId())
                     .instanceId(netsuiteInstanceId)
@@ -173,7 +173,7 @@ public class NetSuiteService {
                     "technicalErrorMessage", e.getMessage()
             );
 
-            val batchFailedEvent = BatchFailedEvent.builder()
+            val batchFailedEvent = TransactionBatchFailedEvent.builder()
                     .batchId(batchId)
                     .organisationId(organisationId)
                     .userExtractionParameters(userExtractionParameters)
@@ -204,7 +204,7 @@ public class NetSuiteService {
                         "instanceId", instanceId
                 );
 
-                val batchFailedEvent = BatchFailedEvent.builder()
+                val batchFailedEvent = TransactionBatchFailedEvent.builder()
                         .batchId(batchId)
                         .organisationId(organisationId)
                         .userExtractionParameters(userExtractionParameters)
@@ -222,7 +222,7 @@ public class NetSuiteService {
                         "instanceId", instanceId
                 );
 
-                val batchFailedEvent = BatchFailedEvent.builder()
+                val batchFailedEvent = TransactionBatchFailedEvent.builder()
                         .batchId(batchId)
                         .organisationId(organisationId)
                         .userExtractionParameters(userExtractionParameters)
@@ -246,7 +246,7 @@ public class NetSuiteService {
                         "technicalErrorTitle", problem.getTitle(),
                         "technicalErrorDetail", problem.getDetail()
                 );
-                val batchFailedEvent = BatchFailedEvent.builder()
+                val batchFailedEvent = TransactionBatchFailedEvent.builder()
                         .batchId(batchId)
                         .organisationId(organisationId)
                         .userExtractionParameters(userExtractionParameters)
@@ -262,7 +262,7 @@ public class NetSuiteService {
             val transactionsE = transactionConverter.convert(organisationId, batchId, transactionDataSearchResult);
 
             if (transactionsE.isLeft()) {
-                val batchFailedEvent = BatchFailedEvent.builder()
+                val batchFailedEvent = TransactionBatchFailedEvent.builder()
                         .batchId(batchId)
                         .organisationId(organisationId)
                         .instanceId(instanceId)
@@ -305,7 +305,7 @@ public class NetSuiteService {
                     "technicalErrorMessage", e.getMessage()
             );
 
-            val batchFailedEvent = BatchFailedEvent.builder()
+            val batchFailedEvent = TransactionBatchFailedEvent.builder()
                     .batchId(batchId)
                     .organisationId(organisationId)
                     .userExtractionParameters(userExtractionParameters)

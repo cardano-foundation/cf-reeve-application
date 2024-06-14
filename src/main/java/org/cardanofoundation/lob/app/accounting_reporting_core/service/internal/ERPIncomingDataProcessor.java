@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ERPIngestionStored;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.TransactionBatchStartedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.BusinessRulesPipelineProcessor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class ERPIncomingDataProcessor {
     private final DbSynchronisationService dbSynchronisationService;
 
     @Transactional
-    public void initiateIngestion(ERPIngestionStored ingestionStored) {
+    public void initiateIngestion(TransactionBatchStartedEvent ingestionStored) {
         log.info("Processing ERPIngestionStored event, event: {}", ingestionStored);
 
         transactionBatchService.createTransactionBatch(
