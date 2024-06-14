@@ -20,5 +20,4 @@ public class ScheduledIngestionEvent {
 
     private UserExtractionParameters userExtractionParameters;
 
-
 }

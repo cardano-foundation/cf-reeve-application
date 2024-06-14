@@ -14,7 +14,7 @@ public class NetSuiteEventHandler {
 
     @ApplicationModuleListener
     public void handleScheduledIngestionEvent(ScheduledIngestionEvent event) {
-        log.info("Handling ScheduledIngestionEvent...");
+        log.info("Handling handleScheduledIngestionEvent...");
 
         netSuiteService.startNewERPExtraction(
                 event.getOrganisationId(),
@@ -22,12 +22,12 @@ public class NetSuiteEventHandler {
                 event.getUserExtractionParameters()
         );
 
-        log.info("Handled ScheduledIngestionEvent.");
+        log.info("Handled handleScheduledIngestionEvent.");
     }
 
     @ApplicationModuleListener
     public void handleTransactionBatchCreatedEvent(TransactionBatchCreatedEvent transactionBatchCreatedEvent) {
-        log.info("Handling TransactionBatchCreatedEvent...");
+        log.info("Handling handleTransactionBatchCreatedEvent...");
 
         netSuiteService.continueERPExtraction(
                 transactionBatchCreatedEvent.getBatchId(),
@@ -37,7 +37,7 @@ public class NetSuiteEventHandler {
                 transactionBatchCreatedEvent.getSystemExtractionParameters()
         );
 
-        log.info("Handled ScheduledIngestionEvent.");
+        log.info("Handled handleTransactionBatchCreatedEvent.");
     }
 
 }
