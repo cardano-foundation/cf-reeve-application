@@ -13,7 +13,7 @@ import org.jmolecules.event.annotation.DomainEvent;
 @Builder
 @DomainEvent
 @Getter
-public class BatchFailedEvent {
+public class TransactionBatchFailedEvent {
 
     @NotBlank
     private String batchId;

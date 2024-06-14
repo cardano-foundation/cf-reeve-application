@@ -13,7 +13,7 @@ import org.jmolecules.event.annotation.DomainEvent;
 @Builder
 @DomainEvent
 @Getter
-public class ERPIngestionStored {
+public class TransactionBatchStartedEvent {
 
     @NotBlank
     private String batchId;
