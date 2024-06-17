@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.repository;
 
 import io.hypersistence.utils.hibernate.query.SQLExtractor;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +60,17 @@ public class CustomTransactionBatchRepositoryImpl implements CustomTransactionBa
         criteriaQuery.select(rootEntry);
         criteriaQuery.where(pOrganisationId, pStatus, pTransactionType, pAccountingPeriodFrom, pAccountingPeriodTo, pTransactionStatus);
 
-        return em.createQuery(criteriaQuery).getResultList();
+
+        TypedQuery<TransactionBatchEntity> theQuery = em.createQuery(criteriaQuery);
+
+        theQuery.setMaxResults(body.getLimit());
+
+        if (null != body.getPage() && 0 < body.getPage()) {
+            body.setPage(body.getPage() - 1);
+            theQuery.setFirstResult(body.getPage() * body.getLimit());
+        }
+
+        return theQuery.getResultList();
 
     }
 
