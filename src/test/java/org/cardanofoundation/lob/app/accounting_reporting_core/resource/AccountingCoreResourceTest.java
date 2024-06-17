@@ -181,10 +181,10 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/batchs")
                 .then()
                 .statusCode(200)
-                .body("id", contains("TESTd12027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
-                .body("createdAt[0]", containsString(expectedCreatedAt))
-                .body("updatedAt[0]", containsString(expectedUpdatedAt))
-                .body("organisationId", contains("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"));
+                .body("batchs.id", contains("TESTd12027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
+                .body("batchs.createdAt[0]", containsString(expectedCreatedAt))
+                .body("batchs.updatedAt[0]", containsString(expectedUpdatedAt))
+                .body("batchs.organisationId", contains("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"));
 
         ;
     }
