@@ -42,7 +42,9 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/transactions")
                 .then()
                 .statusCode(200)
-                .body(equalTo("[]"))
+                //.body("id", containsString(expectedUpdatedAt))
+                .body("id[0]", equalTo("7e9e8bcbb38a283b41eab57add98278561ab51d23a16f3e3baf3daa461b84ab4"))
+
         ;
 
     }
@@ -170,7 +172,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
         String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"}";
         String expectedCreatedAt = LocalDate.now().toString();
         String expectedUpdatedAt = LocalDate.now().toString();
-        String expectedResponseBody = "[{\"id\":\"eb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04\",\"organisationId\":\"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"}]";
+        String expectedResponseBody = "[{\"id\":\"TESTd12027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04\",\"organisationId\":\"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"}]";
 
         given()
                 .contentType("application/json")
@@ -179,10 +181,10 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/batchs")
                 .then()
                 .statusCode(200)
-                .body("id", contains("eb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
-                .body("createdAt[0]", containsString(expectedCreatedAt))
-                .body("updatedAt[0]", containsString(expectedUpdatedAt))
-                .body("organisationId", contains("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"));
+                .body("batchs.id", contains("TESTd12027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
+                .body("batchs.createdAt[0]", containsString(expectedCreatedAt))
+                .body("batchs.updatedAt[0]", containsString(expectedUpdatedAt))
+                .body("batchs.organisationId", contains("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"));
 
         ;
     }
@@ -223,10 +225,10 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
         given()
                 .contentType("application/json")
                 .when()
-                .get("/api/batchs/eb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04")
+                .get("/api/batchs/TESTd12027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04")
                 .then()
                 .statusCode(200)
-                .body("id", equalTo("eb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
+                .body("id", equalTo("TESTd12027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
                 .body("organisationId", equalTo("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
 
         ;

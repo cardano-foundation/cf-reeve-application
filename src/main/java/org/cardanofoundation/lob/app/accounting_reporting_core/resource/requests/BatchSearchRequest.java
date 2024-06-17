@@ -1,5 +1,7 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.annotation.Nullable;
@@ -29,13 +31,13 @@ public class BatchSearchRequest {
     @Schema(example = "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
     private String organisationId;
 
-    @Schema(example = "[\"CREATED\",\"PROCESSING\"]")
+    @ArraySchema(arraySchema = @Schema(example = "[\"CREATED\",\"PROCESSING\"]", implementation = TransactionBatchStatus.class))
     private Set<TransactionBatchStatus> status = Set.of();
 
-    @Schema(example = "[\"OK\",\"FAIL\"]")
+    @ArraySchema(arraySchema = @Schema(example = "[\"OK\",\"FAIL\"]", implementation = TransactionStatus.class))
     private Set<TransactionStatus> txStatus = Set.of();
 
-    @Schema(example = "[\"CardCharge\",\"VendorBill\",\"CardRefund\",\"Journal\",\"FxRevaluation\",\"Transfer\",\"CustomerPayment\",\"ExpenseReport\",\"VendorPayment\",\"BillCredit\"]")
+    @ArraySchema(arraySchema = @Schema(example = "[\"VendorPayment\",\"BillCredit\"]", implementation = TransactionType.class))
     private Set<TransactionType> transactionTypes = Set.of();
 
     @Schema(example = "2014-01")
@@ -45,5 +47,11 @@ public class BatchSearchRequest {
     @Nullable
     @Schema(example = "2024-01")
     private YearMonth accountingPeriodTo;
+
+    @JsonIgnore
+    private Integer limit;
+
+    @JsonIgnore
+    private Integer page;
 
 }
