@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.service.internal
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionItem;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchAssocRepository;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
+import java.time.YearMonth;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,7 @@ class DbSynchronisationServiceTest {
 
     @Mock
     private TransactionRepository transactionRepository;
+
     @Mock
     private TransactionItemRepository transactionItemRepository;
 
@@ -61,6 +64,7 @@ class DbSynchronisationServiceTest {
 
         val tx1 = new TransactionEntity();
         tx1.setId(txId);
+        tx1.setAccountingPeriod(YearMonth.of(2021, 1));
         tx1.setTransactionInternalNumber("txn123");
         tx1.setTransactionApproved(true);
         tx1.setLedgerDispatchApproved(true);
@@ -84,10 +88,19 @@ class DbSynchronisationServiceTest {
 
         val tx1 = new TransactionEntity();
         tx1.setId(txId);
+        tx1.setAccountingPeriod(YearMonth.of(2021, 1));
         tx1.setTransactionInternalNumber("txn123");
         tx1.setTransactionApproved(true);
         tx1.setLedgerDispatchApproved(true);
         tx1.setLedgerDispatchStatus(DISPATCHED);
+        tx1.setOrganisation(Organisation
+                .builder()
+                .id(orgId)
+                .name("organisation 1")
+                .countryCode("CHF")
+                .currencyId("ISO_4217:CHF")
+                .build()
+        );
 
         val txs = Set.of(tx1);
         val transactions = new OrganisationTransactions(orgId, txs);
@@ -117,6 +130,7 @@ class DbSynchronisationServiceTest {
         val tx1 = new TransactionEntity();
         tx1.setId(tx1Id);
         tx1.setItems(items);
+        tx1.setAccountingPeriod(YearMonth.of(2021, 1));
 
         val txs = Set.of(tx1);
         val transactions = new OrganisationTransactions(orgId, txs);
@@ -139,12 +153,28 @@ class DbSynchronisationServiceTest {
 
         val dispatchedTx = new TransactionEntity();
         dispatchedTx.setId(tx1Id);
+        dispatchedTx.setAccountingPeriod(YearMonth.of(2021, 1));
+        dispatchedTx.setOrganisation(Organisation
+                .builder()
+                .id(orgId)
+                .name("organisation 1")
+                .countryCode("ISO_4217:CHF")
+                .build()
+        );
         dispatchedTx.setTransactionApproved(true);
         dispatchedTx.setLedgerDispatchApproved(true);
         dispatchedTx.setLedgerDispatchStatus(DISPATCHED);
 
         val notDispatchedTx = new TransactionEntity();
+        notDispatchedTx.setOrganisation(Organisation
+                .builder()
+                .id(orgId)
+                .name("organisation 1")
+                .countryCode("ISO_4217:CHF")
+                .build()
+        );
         notDispatchedTx.setId(tx2Id);
+        notDispatchedTx.setAccountingPeriod(YearMonth.of(2021, 1));
         dispatchedTx.setTransactionApproved(true);
         notDispatchedTx.setLedgerDispatchApproved(false);
         notDispatchedTx.setLedgerDispatchStatus(NOT_DISPATCHED);

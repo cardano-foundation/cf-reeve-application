@@ -2,7 +2,6 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.Optional;
 
@@ -51,15 +50,6 @@ public class CoreCurrency {
     public enum IsoStandard {
         ISO_4217,
         ISO_24165
-    }
-
-    public boolean isTheSameBusinessWise() {
-        val equalsBuilder = new EqualsBuilder();
-        equalsBuilder.append(this.currencyISOStandard, this.currencyISOStandard);
-        equalsBuilder.append(this.currencyISOCode, this.currencyISOCode);
-        equalsBuilder.append(this.isoUniqueId, this.isoUniqueId);
-
-        return equalsBuilder.isEquals();
     }
 
 }

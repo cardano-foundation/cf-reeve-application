@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionVersionAlgo.ERP;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -71,7 +73,7 @@ public class DbSynchronisationService {
 
             val isDispatchMarked = txM.map(TransactionEntity::allApprovalsPassedForTransactionDispatch).orElse(false);
             val notStoredYet = txM.isEmpty();
-            val isChanged = notStoredYet || (txM.map(tx -> !tx.isTheSameBusinessWise(incomingTx)).orElse(false));
+            val isChanged = notStoredYet || (txM.map(tx -> !areAnyChangesToIncomingTransaction(tx, incomingTx)).orElse(false));
 
             if (isDispatchMarked && isChanged) {
                 log.warn("Transaction cannot be altered, it is already marked as dispatched, transactionNumber: {}", incomingTx.getTransactionInternalNumber());
@@ -117,6 +119,16 @@ public class DbSynchronisationService {
                 .collect(Collectors.toSet());
 
         transactionBatchAssocRepository.saveAll(transactionBatchAssocEntities);
+    }
+
+    private boolean areAnyChangesToIncomingTransaction(TransactionEntity existingTx,
+                                                       TransactionEntity incomingTx) {
+        val existingTxVersion = TransactionVersionCalculator.compute(ERP, existingTx);
+        val incomingTxVersion = TransactionVersionCalculator.compute(ERP, incomingTx);
+
+        log.info("Existing transaction version: {}, incomingTx:{}", existingTxVersion, incomingTxVersion);
+
+        return !existingTxVersion.equals(incomingTxVersion);
     }
 
 }

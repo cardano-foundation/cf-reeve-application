@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPVersionRelevant;
 
 import java.util.Optional;
 
@@ -12,12 +13,14 @@ import java.util.Optional;
 @ToString
 public class Account {
 
+    @LOB_ERPVersionRelevant
     private String code;
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> refCode = Optional.empty();
+    @LOB_ERPVersionRelevant
+    private Optional<@Size(min = 1, max =  255) String> name = Optional.empty();
 
     @Builder.Default
-    private Optional<@Size(min = 1, max =  255) String> name = Optional.empty();
+    private Optional<@Size(min = 1, max =  255) String> refCode = Optional.empty();
 
 }

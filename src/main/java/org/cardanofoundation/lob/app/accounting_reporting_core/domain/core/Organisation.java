@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPVersionRelevant;
 
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 @EqualsAndHashCode
 public class Organisation {
 
+    @LOB_ERPVersionRelevant
     @Size(min = 1, max =  255) @NotBlank  private String id;
 
     @Builder.Default
