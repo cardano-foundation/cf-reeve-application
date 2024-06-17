@@ -81,9 +81,10 @@ public class AccountingCorePresentationViewService {
         );
     }
 
-    public List<BatchView> listAllBatch(BatchSearchRequest body) {
+    public BatchsDetailView listAllBatch(BatchSearchRequest body) {
 
-        return transactionBatchRepositoryGateway.findByFilter(body).stream().map(
+        BatchsDetailView batchDetail = new BatchsDetailView();
+        Set<BatchView> batches = transactionBatchRepositoryGateway.findByFilter(body).stream().map(
 
                 transactionBatchEntity -> new BatchView(
                         transactionBatchEntity.getId(),
@@ -97,7 +98,10 @@ public class AccountingCorePresentationViewService {
                         this.getFilteringParameters(transactionBatchEntity.getFilteringParameters()),
                         Set.of()
                 )
-        ).toList();
+        ).collect(Collectors.toSet());
+        batchDetail.setBatchs(batches);
+        batchDetail.setTotal(batchDetail.getBatchs().stream().count());
+         return batchDetail;
     }
 
     @Transactional

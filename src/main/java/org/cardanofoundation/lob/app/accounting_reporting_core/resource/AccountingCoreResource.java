@@ -17,6 +17,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.ExtractionRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.SearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchView;
+import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchsDetailView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.TransactionView;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,7 +124,7 @@ public class AccountingCoreResource {
     @Operation(description = "Batch list",
             responses = {
                     @ApiResponse(content = {
-                            @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(schema = @Schema(implementation = BatchView.class)))
+                            @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(schema = @Schema(implementation = BatchsDetailView.class)))
                     }),
                     @ApiResponse(responseCode = "404", description = "Error: response status is 404", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(example = "{\"title\": \"BATCH_ORGANISATION_NOT_FOUND\",\"status\": 404,\"detail\": \"Batch with organization id: {organisationId} could not be found\"" +
                             "}"))})
@@ -135,7 +136,7 @@ public class AccountingCoreResource {
         body.setPage(page);
         val batchs = accountingCorePresentationService.listAllBatch(body);
 
-        if (batchs.isEmpty()) {
+        if (batchs.getBatchs().isEmpty()) {
             val issue = Problem.builder()
                     .withTitle("BATCH_ORGANISATION_NOT_FOUND")
                     .withDetail("Batch with organization id: {" + body.getOrganisationId() + "} could not be found")

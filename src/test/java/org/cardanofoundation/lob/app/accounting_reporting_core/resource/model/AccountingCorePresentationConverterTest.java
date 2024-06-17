@@ -216,11 +216,11 @@ class AccountingCorePresentationConverterTest {
 
         when(transactionBatchRepositoryGateway.findByFilter(any())).thenReturn(List.of(transactionBatchEntity));
 
-        List<BatchView> result = accountingCorePresentationConverter.listAllBatch(batchSearchRequest);
+        Set<BatchView> result = accountingCorePresentationConverter.listAllBatch(batchSearchRequest).getBatchs();
 
         assertEquals(1, result.size());
-        assertEquals("batch-id", result.get(0).getId());
-        assertEquals(TransactionBatchStatus.CREATED, result.get(0).getStatus());
+        assertEquals("batch-id", result.iterator().next().getId());
+        assertEquals(TransactionBatchStatus.CREATED, result.iterator().next().getStatus());
 
     }
 
