@@ -3,7 +3,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPVersionRelevant;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPSourceVersionRelevant;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @ToString
 public class Vat {
 
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     @Size(min = 1, max =  255) @NotBlank private String customerCode;
 
     @Builder.Default

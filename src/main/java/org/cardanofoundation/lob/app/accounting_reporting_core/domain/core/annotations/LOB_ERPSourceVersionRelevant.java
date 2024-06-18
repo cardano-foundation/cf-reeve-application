@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface LOB_ERPVersionRelevant {
+public @interface LOB_ERPSourceVersionRelevant {
 
     String key() default "";
 

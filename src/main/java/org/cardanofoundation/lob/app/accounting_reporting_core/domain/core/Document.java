@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPVersionRelevant;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPSourceVersionRelevant;
 
 import java.util.Optional;
 
@@ -17,21 +17,21 @@ import java.util.Optional;
 @EqualsAndHashCode
 public class Document {
 
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     @Size(min = 1, max =  255) @NotBlank private String number;
 
     @NotNull
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private Currency currency;
 
     @Builder.Default
     @NotNull
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private Optional<Vat> vat = Optional.empty();
 
     @Builder.Default
     @NotNull
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private Optional<Counterparty> counterparty = Optional.empty();
 
 }

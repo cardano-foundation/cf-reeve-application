@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPVersionRelevant;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPSourceVersionRelevant;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -23,25 +23,25 @@ import static org.cardanofoundation.lob.app.support.crypto.SHA3.digestAsHex;
 public class Transaction {
 
     @NotBlank
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private String id;
 
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     @Size(min = 1, max =  255) @NotBlank String internalTransactionNumber;
 
     @NotBlank
     private String batchId;
 
     @NotNull
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private LocalDate entryDate;
 
     @NotNull
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private TransactionType transactionType;
 
     @NotNull
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private Organisation organisation;
 
     @NotNull
@@ -59,7 +59,6 @@ public class Transaction {
     private boolean ledgerDispatchApproved = false;
 
     @NotNull
-    @LOB_ERPVersionRelevant
     private YearMonth accountingPeriod;
 
     @Builder.Default

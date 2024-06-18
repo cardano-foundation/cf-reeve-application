@@ -1,9 +1,11 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.Size;
-import lombok.*;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPVersionRelevant;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPSourceVersionRelevant;
 
 import java.util.Optional;
 
@@ -13,7 +15,7 @@ import java.util.Optional;
 @EqualsAndHashCode
 public class Project {
 
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private @Size(min = 1, max =  255) String customerCode;
 
     @Builder.Default

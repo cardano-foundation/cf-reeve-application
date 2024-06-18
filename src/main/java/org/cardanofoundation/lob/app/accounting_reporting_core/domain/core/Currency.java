@@ -2,7 +2,7 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPVersionRelevant;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPSourceVersionRelevant;
 
 import java.util.Optional;
 
@@ -14,7 +14,7 @@ import java.util.Optional;
 public class Currency {
 
     @NotBlank
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private String customerCode;
 
     @Builder.Default

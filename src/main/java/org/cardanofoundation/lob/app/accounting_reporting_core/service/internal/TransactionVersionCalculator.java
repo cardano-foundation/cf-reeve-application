@@ -6,20 +6,28 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.*;
 import org.cardanofoundation.lob.app.support.crypto.SHA3;
 
+import java.util.Comparator;
+
 @Slf4j
 public class TransactionVersionCalculator {
 
-    public static String compute(TransactionVersionAlgo algo, TransactionEntity transactionEntity) {
+    public static String compute(TransactionVersionAlgo algo,
+                                 TransactionEntity transactionEntity) {
         val b = new StringBuilder();
 
         b.append(transactionEntity.getId());
         b.append(transactionEntity.getTransactionInternalNumber());
         b.append(compute(algo, transactionEntity.getOrganisation()));
-        b.append(STR."\{transactionEntity.getAccountingPeriod().getMonth().getValue()}-\{transactionEntity.getAccountingPeriod().getYear()}");
         b.append(transactionEntity.getTransactionType());
         b.append(transactionEntity.getEntryDate());
 
-        for (val item : transactionEntity.getItems()) {
+        // to be on the safe side lets sort this in hash calculation logic
+        val predicatblySortedTxItems = transactionEntity.getItems()
+                .stream()
+                .sorted(Comparator.comparing(TransactionItemEntity::getId))
+                .toList();
+
+        for (val item : predicatblySortedTxItems) {
             b.append(compute(algo, item));
         }
 
@@ -34,14 +42,14 @@ public class TransactionVersionCalculator {
         item.getAccountCredit().ifPresent(acc -> b.append(compute(algo, acc)));
         item.getAccountDebit().ifPresent(acc -> b.append(compute(algo, acc)));
 
+        b.append(item.getFxRate());
+
         b.append(item.getAmountFcy());
         b.append(item.getAmountLcy());
 
-        b.append(item.getFxRate());
-
         item.getCostCenter().ifPresent(cc -> b.append(compute(algo, cc)));
-        item.getDocument().ifPresent(d -> b.append(compute(algo, d)));
         item.getProject().ifPresent(p -> b.append(compute(algo, p)));
+        item.getDocument().ifPresent(d -> b.append(compute(algo, d)));
 
         return SHA3.digestAsHex(b.toString());
     }
@@ -50,6 +58,7 @@ public class TransactionVersionCalculator {
         val b = new StringBuilder();
 
         b.append(document.getNum());
+
         document.getCounterparty().ifPresent(cp -> b.append(compute(algo, cp)));
         document.getVat().ifPresent(v -> b.append(compute(algo, v)));
         b.append(document.getCurrency().getCustomerCode());
@@ -69,8 +78,6 @@ public class TransactionVersionCalculator {
         val b = new StringBuilder();
 
         b.append(counterparty.getCustomerCode());
-        b.append(counterparty.getType());
-        counterparty.getName().ifPresent(b::append);
 
         return SHA3.digestAsHex(b.toString());
     }
@@ -103,7 +110,6 @@ public class TransactionVersionCalculator {
         val b = new StringBuilder();
 
         b.append(acc.getCode());
-        b.append(acc.getName());
 
         return SHA3.digestAsHex(b.toString());
     }

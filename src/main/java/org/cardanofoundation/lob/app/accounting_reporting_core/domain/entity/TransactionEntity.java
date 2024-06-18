@@ -7,7 +7,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Ledge
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPVersionRelevant;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPSourceVersionRelevant;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
@@ -36,27 +36,26 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
 
     @Id
     @Column(name = "transaction_id", nullable = false)
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private String id;
 
     @Column(name = "transaction_internal_number", nullable = false)
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private String transactionInternalNumber;
 
     @Column(name = "batch_id", nullable = false)
     private String batchId;
 
     @Column(name = "accounting_period", nullable = false)
-    @LOB_ERPVersionRelevant
     private YearMonth accountingPeriod;
 
     @Column(name = "type", nullable = false)
     @Enumerated(STRING)
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private TransactionType transactionType;
 
     @Column(name = "entry_date", nullable = false)
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private LocalDate entryDate;
 
     @Column(name = "ledger_dispatch_status", nullable = false)
@@ -71,7 +70,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
             @AttributeOverride(name = "taxIdNumber", column = @Column(name = "organisation_tax_id_number")),
             @AttributeOverride(name = "currencyId", column = @Column(name = "organisation_currency_id")),
     })
-    @LOB_ERPVersionRelevant
+    @LOB_ERPSourceVersionRelevant
     private Organisation organisation;
 
     @Column(name = "automated_validation_status", nullable = false)
