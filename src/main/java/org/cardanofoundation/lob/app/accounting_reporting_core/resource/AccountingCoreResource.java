@@ -125,9 +125,7 @@ public class AccountingCoreResource {
             responses = {
                     @ApiResponse(content = {
                             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(schema = @Schema(implementation = BatchsDetailView.class)))
-                    }),
-                    @ApiResponse(responseCode = "404", description = "Error: response status is 404", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(example = "{\"title\": \"BATCH_ORGANISATION_NOT_FOUND\",\"status\": 404,\"detail\": \"Batch with organization id: {organisationId} could not be found\"" +
-                            "}"))})
+                    })
             }
     )
     public ResponseEntity<?> listAllBatch(@Valid @RequestBody BatchSearchRequest body, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int limit) {
@@ -136,15 +134,7 @@ public class AccountingCoreResource {
         body.setPage(page);
         val batchs = accountingCorePresentationService.listAllBatch(body);
 
-        if (batchs.getBatchs().isEmpty()) {
-            val issue = Problem.builder()
-                    .withTitle("BATCH_ORGANISATION_NOT_FOUND")
-                    .withDetail("Batch with organization id: {" + body.getOrganisationId() + "} could not be found")
-                    .withStatus(Status.NOT_FOUND)
-                    .build();
 
-            return ResponseEntity.status(issue.getStatus().getStatusCode()).body(issue);
-        }
         return ResponseEntity.ok().body(batchs);
     }
 
