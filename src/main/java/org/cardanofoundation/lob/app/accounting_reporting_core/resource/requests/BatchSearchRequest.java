@@ -18,6 +18,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Trans
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Set;
@@ -40,13 +41,13 @@ public class BatchSearchRequest {
     @ArraySchema(arraySchema = @Schema(example = "[\"VendorPayment\",\"BillCredit\"]", implementation = TransactionType.class))
     private Set<TransactionType> transactionTypes = Set.of();
 
-    @Schema(example = "2014-01")
+    @Schema(example = "2014-01-01")
     @Nullable
-    private YearMonth accountingPeriodFrom;
+    private LocalDate from;
 
     @Nullable
-    @Schema(example = "2024-01")
-    private YearMonth accountingPeriodTo;
+    @Schema(example = "2024-12-31")
+    private LocalDate To;
 
     @JsonIgnore
     private Integer limit;

@@ -44,12 +44,12 @@ public class CustomTransactionBatchRepositoryImpl implements CustomTransactionBa
             pTransactionType = builder.notEqual(bitwiseAnd, 0);
         }
 
-        if (null != body.getAccountingPeriodFrom()) {
-            pAccountingPeriodFrom = builder.greaterThanOrEqualTo(rootEntry.get("filteringParameters").get("accountingPeriodFrom"), body.getAccountingPeriodFrom());
+        if (null != body.getFrom()) {
+            pAccountingPeriodFrom = builder.greaterThanOrEqualTo(rootEntry.get("filteringParameters").get("from"), body.getFrom());
         }
 
-        if (null != body.getAccountingPeriodFrom()) {
-            pAccountingPeriodTo = builder.lessThanOrEqualTo(rootEntry.get("filteringParameters").get("accountingPeriodTo"), body.getAccountingPeriodTo());
+        if (null != body.getTo()) {
+            pAccountingPeriodTo = builder.lessThanOrEqualTo(rootEntry.get("filteringParameters").get("to"), body.getTo());
         }
 
         if (!body.getTxStatus().isEmpty()) {

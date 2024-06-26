@@ -44,12 +44,12 @@ public class BatchView {
     @Schema(implementation = TransactionBatchStatus.class)
     private TransactionBatchStatus status;
 
-    @Schema(implementation = BatchStatistics.class)
-    private Optional<BatchStatistics> batchStatistics;
+    @Schema(implementation = BatchStatisticsView.class)
+    private BatchStatisticsView batchStatistics;
 
-    @Schema(implementation = FilteringParameters.class)
-    private FilteringParametersView filteringParameters ;
+    @Schema(implementation = FilteringParametersView.class)
+    private FilteringParametersView filteringParameters;
 
-    @ArraySchema(arraySchema = @Schema(implementation =  TransactionView.class))
+    @ArraySchema(arraySchema = @Schema(implementation = TransactionView.class))
     private Set<TransactionView> transactions = new LinkedHashSet<>();
 }
