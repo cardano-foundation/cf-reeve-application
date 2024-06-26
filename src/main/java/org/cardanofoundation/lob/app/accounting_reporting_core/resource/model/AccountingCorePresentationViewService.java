@@ -102,7 +102,7 @@ public class AccountingCorePresentationViewService {
 
         BatchsDetailView batchDetail = new BatchsDetailView();
 
-        Set<BatchView> batches = transactionBatchRepositoryGateway.findByFilter(body).stream().map(
+        List<BatchView> batches = transactionBatchRepositoryGateway.findByFilter(body).stream().map(
 
                 transactionBatchEntity -> new BatchView(
                         transactionBatchEntity.getId(),
@@ -116,7 +116,7 @@ public class AccountingCorePresentationViewService {
                         this.getFilteringParameters(transactionBatchEntity.getFilteringParameters()),
                         Set.of()
                 )
-        ).collect(Collectors.toSet());
+        ).toList();
         batchDetail.setBatchs(batches);
         batchDetail.setTotal(batchDetail.getBatchs().stream().count());
         return batchDetail;
