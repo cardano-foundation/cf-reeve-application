@@ -9,6 +9,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.repository.Transa
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.ExtractionRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.SearchRequest;
+import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchStatisticsView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchsDetailView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.TransactionView;
@@ -152,7 +153,7 @@ class AccountingCorePresentationConverterTest {
 
         String batchId = "batch-id";
         TransactionBatchEntity transactionBatchEntity = new TransactionBatchEntity();
-        BatchStatistics batchStatistics = BatchStatistics.builder().totalTransactionsCount(10).build();
+        BatchStatistics batchStatistics = BatchStatistics.builder().totalTransactionsCount(10).failedTransactionsCount(1).approvedTransactionsCount(9).finalizedTransactionsCount(6).processedTransactionsCount(8).build();
 
         TransactionEntity transaction1 = new TransactionEntity();
         transaction1.setId("tx-id1");
@@ -183,7 +184,12 @@ class AccountingCorePresentationConverterTest {
 
         assertEquals(true, result.isPresent());
         assertEquals(batchId, result.get().getId());
-        assertEquals(Optional.of(10), result.get().getBatchStatistics().get().getTotalTransactionsCount());
+        assertEquals(10, result.get().getBatchStatistics().getTotal());
+        assertEquals(1, result.get().getBatchStatistics().getInvalid());
+        assertEquals(9, result.get().getBatchStatistics().getPublish());
+        assertEquals(1, result.get().getBatchStatistics().getPending());
+        assertEquals(6, result.get().getBatchStatistics().getPublished());
+        assertEquals(8, result.get().getBatchStatistics().getApprove());
         assertEquals(2, result.get().getTransactions().stream().count());
 
         TransactionView resultTx1 = result.get().getTransactions().stream().filter(
@@ -203,25 +209,29 @@ class AccountingCorePresentationConverterTest {
     }
 
     @Test
-    void testListAllBatch() {
+    void testListAllBatchModel() {
 
         BatchSearchRequest batchSearchRequest = new BatchSearchRequest();
         batchSearchRequest.setOrganisationId("org-id");
-
+        batchSearchRequest.setFrom(LocalDate.now());
+        batchSearchRequest.setTransactionTypes(Set.of(TransactionType.CardCharge));
         FilteringParameters filteringParameters = new FilteringParameters("pros", List.of(TransactionType.CardCharge), LocalDate.now(), LocalDate.now(), YearMonth.now(), YearMonth.now(), Collections.singletonList("batch"));
         TransactionBatchEntity transactionBatchEntity = new TransactionBatchEntity();
+        BatchStatistics batchStatistics = BatchStatistics.builder().totalTransactionsCount(10).failedTransactionsCount(1).approvedTransactionsCount(9).finalizedTransactionsCount(10).build();
         transactionBatchEntity.setId("batch-id");
         transactionBatchEntity.setCreatedAt(LocalDateTime.now());
         transactionBatchEntity.setUpdatedAt(LocalDateTime.now());
         transactionBatchEntity.setFilteringParameters(filteringParameters);
+        transactionBatchEntity.setBatchStatistics(batchStatistics);
 
-        when(transactionBatchRepositoryGateway.findByFilter(any())).thenReturn(List.of(transactionBatchEntity));
+        when(transactionBatchRepositoryGateway.findByFilter(batchSearchRequest)).thenReturn(List.of(transactionBatchEntity));
 
         BatchsDetailView batchsDetailView = accountingCorePresentationConverter.listAllBatch(batchSearchRequest);
         Set<BatchView> result = batchsDetailView.getBatchs();
 
         assertEquals(1, result.size());
         assertEquals(1, batchsDetailView.getTotal());
+        assertEquals(1, batchsDetailView.getBatchs().stream().count());
         assertEquals("batch-id", result.iterator().next().getId());
         assertEquals(TransactionBatchStatus.CREATED, result.iterator().next().getStatus());
 

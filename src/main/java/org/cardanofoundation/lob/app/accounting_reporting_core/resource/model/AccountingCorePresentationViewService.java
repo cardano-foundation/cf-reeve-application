@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.BatchStatistics;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.FilteringParameters;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
@@ -18,6 +19,7 @@ import org.jmolecules.ddd.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -52,6 +54,7 @@ public class AccountingCorePresentationViewService {
         return transactionBatchRepositoryGateway.findById(batchId).map(transactionBatchEntity -> {
 
                     val transactions = this.getTransaction(transactionBatchEntity);
+                    val statistic = this.getStatisticts(transactionBatchEntity.getBatchStatistics());
                     val filteringParameters = this.getFilteringParameters(transactionBatchEntity.getFilteringParameters());
                     return new BatchView(
                             transactionBatchEntity.getId(),
@@ -61,13 +64,28 @@ public class AccountingCorePresentationViewService {
                             transactionBatchEntity.getUpdatedBy(),
                             transactionBatchEntity.getOrganisationId(),
                             transactionBatchEntity.getStatus(),
-                            transactionBatchEntity.getBatchStatistics(),
+                            statistic,
                             filteringParameters,
                             transactions
 
                     );
                 }
         );
+    }
+
+    private BatchStatisticsView getStatisticts(Optional<BatchStatistics> batchStatistics) {
+
+        Optional<BatchStatistics> statistics = batchStatistics.stream().findFirst();
+
+        return new BatchStatisticsView(
+                statistics.flatMap(BatchStatistics::getProcessedTransactionsCount).orElse(0),
+                (statistics.flatMap(BatchStatistics::getTotalTransactionsCount).orElse(0) - statistics.flatMap(BatchStatistics::getApprovedTransactionsCount).orElse(0)),
+                statistics.flatMap(BatchStatistics::getFailedTransactionsCount).orElse(0),
+                statistics.flatMap(BatchStatistics::getApprovedTransactionsCount).orElse(0),
+                statistics.flatMap(BatchStatistics::getFinalizedTransactionsCount).orElse(0),
+                statistics.flatMap(BatchStatistics::getTotalTransactionsCount).orElse(0)
+        );
+
     }
 
     private FilteringParametersView getFilteringParameters(FilteringParameters filteringParameters) {
@@ -84,6 +102,7 @@ public class AccountingCorePresentationViewService {
     public BatchsDetailView listAllBatch(BatchSearchRequest body) {
 
         BatchsDetailView batchDetail = new BatchsDetailView();
+
         Set<BatchView> batches = transactionBatchRepositoryGateway.findByFilter(body).stream().map(
 
                 transactionBatchEntity -> new BatchView(
@@ -94,14 +113,14 @@ public class AccountingCorePresentationViewService {
                         transactionBatchEntity.getUpdatedBy(),
                         transactionBatchEntity.getOrganisationId(),
                         transactionBatchEntity.getStatus(),
-                        transactionBatchEntity.getBatchStatistics(),
+                        this.getStatisticts(transactionBatchEntity.getBatchStatistics()),
                         this.getFilteringParameters(transactionBatchEntity.getFilteringParameters()),
                         Set.of()
                 )
         ).collect(Collectors.toSet());
         batchDetail.setBatchs(batches);
         batchDetail.setTotal(batchDetail.getBatchs().stream().count());
-         return batchDetail;
+        return batchDetail;
     }
 
     @Transactional
