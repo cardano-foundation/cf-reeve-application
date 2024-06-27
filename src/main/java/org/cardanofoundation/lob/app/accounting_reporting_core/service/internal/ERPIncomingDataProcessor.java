@@ -21,7 +21,7 @@ public class ERPIncomingDataProcessor {
 
     private final BusinessRulesPipelineProcessor businessRulesPipelineProcessor;
     private final TransactionBatchService transactionBatchService;
-    private final DbSynchronisationService dbSynchronisationService;
+    private final DbSynchronisationUseCaseService dbSynchronisationUseCaseService;
 
     @Transactional
     public void initiateIngestion(TransactionBatchStartedEvent ingestionStored) {
@@ -47,19 +47,18 @@ public class ERPIncomingDataProcessor {
                                   ProcessorFlags processorFlags) {
         log.info("Processing ERPTransactionChunk event, batchId: {}, transactions: {}", batchId, transactions.size());
 
+        val allOrgTransactions = new OrganisationTransactions(organisationId, transactions);
+
         // run or re-run business rules
-        val finalTransformationResult = businessRulesPipelineProcessor.run(
-                new OrganisationTransactions(organisationId, transactions),
-                OrganisationTransactions.empty(organisationId)
-        );
+        businessRulesPipelineProcessor.run(allOrgTransactions);
 
-        log.info("PASSING transactions: {}", transactions.size());
-
-        dbSynchronisationService.synchronise(batchId,
-                finalTransformationResult.passedTransactions(),
+        dbSynchronisationUseCaseService.execute(batchId,
+                allOrgTransactions,
                 totalTransactionsCount,
                 processorFlags
         );
+
+        log.info("PASSING transactions: {}", transactions.size());
     }
 
 }

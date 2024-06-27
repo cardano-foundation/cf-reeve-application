@@ -98,15 +98,21 @@ public class TransactionBatchService {
     }
 
     @Transactional(propagation = SUPPORTS)
-    public void failTransactionBatch(String batchId, FatalError error) {
+    public void failTransactionBatch(String batchId,
+                                     UserExtractionParameters userExtractionParameters,
+                                     Optional<SystemExtractionParameters> systemExtractionParameters,
+                                     FatalError error) {
         val txBatchM = transactionBatchRepositoryGateway.findById(batchId);
 
-        if (txBatchM.isEmpty()) {
-            log.warn("Transaction batch not found for id: {}", batchId);
-            return;
+        var txBatch = new TransactionBatchEntity();
+        if (txBatchM.isPresent()) {
+            txBatch = txBatchM.orElseThrow();
+        } else {
+            val filteringParameters = transactionConverter.convertToDbDetached(userExtractionParameters, systemExtractionParameters);
+            txBatch.setId(batchId);
+            txBatch.setFilteringParameters(filteringParameters);
         }
 
-        val txBatch = txBatchM.orElseThrow();
         txBatch.setStatus(FAILED);
         txBatch.setBatchDetails(BatchDetails.builder()
                 .code(error.getCode().name())

@@ -27,7 +27,11 @@ public class AccountingCoreEventHandler {
 
         val error = event.getError();
 
-        transactionBatchService.failTransactionBatch(event.getBatchId(), error);
+        transactionBatchService.failTransactionBatch(
+                event.getBatchId(),
+                event.getUserExtractionParameters(),
+                event.getSystemExtractionParameters(),
+                error);
 
         log.info("Finished processing handleTransactionBatchFailedEvent event, event: {}", event);
     }

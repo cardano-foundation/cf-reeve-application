@@ -29,15 +29,10 @@ import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.util.Mo
 public class TransactionConverter {
 
     private final Validator validator;
-
     private final CodesMappingService codesMappingService;
-
     private final PreprocessorService preprocessorService;
-
     private final TransactionTypeMapper transactionTypeMapper;
-
     private final String netsuiteInstanceId;
-
     private final FinancialPeriodSource financialPeriodSource;
 
     public Either<FatalError, Transactions> convert(String organisationId,
@@ -118,7 +113,7 @@ public class TransactionConverter {
                 return Either.left(new FatalError(ADAPTER_ERROR, "TRANSACTIONS_VALIDATION_ERROR", bag));
             }
 
-            val accountCreditCodeM = accountCreditCode(organisationId, txLine, txLine.accountMain());
+            val accountCreditCodeM = accountCreditCode(organisationId, txLine.accountMain());
 
             val amountLcy = MoreBigDecimal.substractNullFriendly(txLine.amountDebit(), txLine.amountCredit());
             val amountFcy = MoreBigDecimal.substractNullFriendly(txLine.amountDebitForeignCurrency(), txLine.amountCreditForeignCurrency());
@@ -130,10 +125,10 @@ public class TransactionConverter {
 
             val txItem = TransactionItem.builder()
                     .id(TransactionItem.id(txId, txLine.lineID().toString()))
-                    .accountDebit(Optionals.zip(normaliseString(txLine.name()), normaliseString(txLine.number()), (name, number) -> {
+                    .accountDebit(Optionals.zip(normaliseString(txLine.name()), normaliseString(txLine.number()), (accountDebitName, accountDebitCode) -> {
                         return Account.builder()
-                                .name(Optional.of(name))
-                                .code(number)
+                                .name(Optional.of(accountDebitName))
+                                .code(accountDebitCode)
                                 .build();
                     }))
                     .accountCredit(accountCreditCodeM.map(accountCreditCode -> {
@@ -253,7 +248,6 @@ public class TransactionConverter {
     }
 
     private Optional<String> accountCreditCode(String organisationId,
-                                               TxLine txLine,
                                                String accountMain) {
         val accountCodeCreditM = normaliseString(accountMain);
 
