@@ -9,7 +9,7 @@ CREATE TABLE blockchain_publisher_transaction (
    organisation_country_code VARCHAR(2) NOT NULL,
    organisation_currency_id VARCHAR(255) NOT NULL,
 
-   type VARCHAR(255) NOT NULL,
+   severity VARCHAR(255) NOT NULL,
    accounting_period CHAR(7) NOT NULL,
    entry_date DATE NOT NULL,
 

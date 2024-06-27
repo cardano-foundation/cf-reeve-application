@@ -19,7 +19,7 @@ import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.cor
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType.DEBIT;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.ERP;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.CHART_OF_ACCOUNT_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.EVENT_DATA_NOT_FOUND;
 
@@ -87,7 +87,7 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
                 .txItemId(item.getId())
                 .code(CHART_OF_ACCOUNT_NOT_FOUND)
                 .subCode(type.name())
-                .type(ERROR)
+                .severity(ERROR)
                 .source(source)
                 .processorModule(this.getClass().getSimpleName())
                 .bag(Map.of(
@@ -106,7 +106,7 @@ public class AccountEventCodesConversionTaskItem implements PipelineTaskItem {
         val violation = org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Violation.builder()
                 .txItemId(item.getId())
                 .code(EVENT_DATA_NOT_FOUND)
-                .type(ERROR)
+                .severity(ERROR)
                 .source(LOB)
                 .processorModule(this.getClass().getSimpleName())
                 .bag(Map.of(

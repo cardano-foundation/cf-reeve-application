@@ -10,7 +10,7 @@ import java.util.Map;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.FxRevaluation;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.AMOUNT_FCY_IS_ZERO;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.ERP;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 
 @RequiredArgsConstructor
 public class AmountsFcyCheckTaskItem implements PipelineTaskItem {
@@ -23,7 +23,7 @@ public class AmountsFcyCheckTaskItem implements PipelineTaskItem {
                     val v = Violation.builder()
                             .code(AMOUNT_FCY_IS_ZERO)
                             .txItemId(txItem.getId())
-                            .type(ERROR)
+                            .severity(ERROR)
                             .source(ERP)
                             .processorModule(this.getClass().getSimpleName())
                             .bag(

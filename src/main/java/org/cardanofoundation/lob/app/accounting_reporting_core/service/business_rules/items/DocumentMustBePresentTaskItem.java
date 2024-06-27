@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.DOCUMENT_MUST_BE_PRESENT;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.ERP;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 
 @RequiredArgsConstructor
 public class DocumentMustBePresentTaskItem implements PipelineTaskItem {
@@ -21,7 +21,7 @@ public class DocumentMustBePresentTaskItem implements PipelineTaskItem {
                 val v = Violation.builder()
                         .txItemId(txItem.getId())
                         .code(DOCUMENT_MUST_BE_PRESENT)
-                        .type(ERROR)
+                        .severity(ERROR)
                         .source(ERP)
                         .processorModule(this.getClass().getSimpleName())
                         .bag(

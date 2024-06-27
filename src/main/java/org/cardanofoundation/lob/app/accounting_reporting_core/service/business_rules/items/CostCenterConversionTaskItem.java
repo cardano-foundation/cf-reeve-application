@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.COST_CENTER_DATA_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 
 @RequiredArgsConstructor
 public class CostCenterConversionTaskItem implements PipelineTaskItem {
@@ -37,7 +37,7 @@ public class CostCenterConversionTaskItem implements PipelineTaskItem {
                 val v = Violation.builder()
                         .code(COST_CENTER_DATA_NOT_FOUND)
                         .txItemId(txItem.getId())
-                        .type(ERROR)
+                        .severity(ERROR)
                         .source(LOB)
                         .processorModule(this.getClass().getSimpleName())
                         .bag(

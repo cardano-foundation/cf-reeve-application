@@ -34,7 +34,7 @@ public class Violation {
 
     @NotNull
     @Enumerated(STRING)
-    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type type;
+    private org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity severity;
 
     @Builder.Default
     private String subCode = "";
