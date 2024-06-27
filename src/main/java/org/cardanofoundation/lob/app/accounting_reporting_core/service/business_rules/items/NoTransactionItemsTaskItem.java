@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.TRANSACTION_ITEMS_EMPTY;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.ERP;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 
 @RequiredArgsConstructor
 public class NoTransactionItemsTaskItem implements PipelineTaskItem {
@@ -19,7 +19,7 @@ public class NoTransactionItemsTaskItem implements PipelineTaskItem {
         if (tx.getItems().isEmpty()) {
             val v = Violation.builder()
                     .code(TRANSACTION_ITEMS_EMPTY)
-                    .type(ERROR)
+                    .severity(ERROR)
                     .source(ERP)
                     .processorModule(this.getClass().getSimpleName())
                     .bag(

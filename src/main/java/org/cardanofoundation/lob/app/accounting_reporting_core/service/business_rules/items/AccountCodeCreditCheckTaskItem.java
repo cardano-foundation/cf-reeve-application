@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.Journal;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.ERP;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.ACCOUNT_CODE_CREDIT_IS_EMPTY;
 
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class AccountCodeCreditCheckTaskItem implements PipelineTaskItem {
                 val v = Violation.builder()
                         .code(ACCOUNT_CODE_CREDIT_IS_EMPTY)
                         .txItemId(txItem.getId())
-                        .type(ERROR)
+                        .severity(ERROR)
                         .source(ERP)
                         .processorModule(this.getClass().getSimpleName())
                         .bag(Map.of("transactionNumber", tx.getTransactionInternalNumber()))

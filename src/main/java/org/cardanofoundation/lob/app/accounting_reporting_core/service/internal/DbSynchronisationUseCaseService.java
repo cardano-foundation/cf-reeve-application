@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionVersionAlgo.ERP_SOURCE;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.WARN;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.TX_VERSION_CONFLICT_TX_NOT_MODIFIABLE;
 
 @Service
@@ -158,7 +158,7 @@ public class DbSynchronisationUseCaseService {
 
             val v = Violation.builder()
                     .code(TX_VERSION_CONFLICT_TX_NOT_MODIFIABLE)
-                    .type(ERROR)
+                    .severity(WARN)
                     .source(Source.ERP)
                     .processorModule(this.getClass().getSimpleName())
                     .bag(

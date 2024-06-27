@@ -13,9 +13,9 @@ import org.cardanofoundation.lob.app.organisation.domain.entity.Organisation;
 import java.util.Optional;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType.CREDIT;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.Journal;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType.Journal;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -39,7 +39,7 @@ public class JournalAccountCreditEnrichmentTaskItem implements PipelineTaskItem 
                         .code(ViolationCode.JOURNAL_DUMMY_ACCOUNT_MISSING)
                         .processorModule(this.getClass().getSimpleName())
                         .source(LOB)
-                        .type(ERROR)
+                        .severity(ERROR)
                         .build();
                 tx.addViolation(v);
             }

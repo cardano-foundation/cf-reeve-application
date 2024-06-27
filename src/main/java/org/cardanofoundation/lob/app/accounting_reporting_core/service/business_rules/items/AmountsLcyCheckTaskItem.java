@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.AMOUNT_LCY_IS_ZERO;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.ERP;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 
 @RequiredArgsConstructor
 public class AmountsLcyCheckTaskItem implements PipelineTaskItem {
@@ -22,7 +22,7 @@ public class AmountsLcyCheckTaskItem implements PipelineTaskItem {
                 val v = Violation.builder()
                         .txItemId(txItem.getId())
                         .code(AMOUNT_LCY_IS_ZERO)
-                        .type(ERROR)
+                        .severity(ERROR)
                         .source(ERP)
                         .processorModule(this.getClass().getSimpleName())
                         .bag(

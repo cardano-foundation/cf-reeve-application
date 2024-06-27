@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.*;
 
 @RequiredArgsConstructor
@@ -131,7 +131,7 @@ public class DocumentConversionTaskItem implements PipelineTaskItem {
         val violation = Violation.builder()
                 .txItemId(txItem.getId())
                 .code(code)
-                .type(ERROR)
+                .severity(ERROR)
                 .source(LOB)
                 .processorModule(getClass().getSimpleName())
                 .bag(bag)
