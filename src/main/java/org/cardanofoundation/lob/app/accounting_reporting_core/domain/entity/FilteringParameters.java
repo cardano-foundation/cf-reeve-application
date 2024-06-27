@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 
+import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -32,10 +33,10 @@ public class FilteringParameters {
     @NotNull
     private LocalDate to;
 
-    @NotNull
+    @Nullable // nullable since when batch fails we don't always have this info (it is resolved from the org)
     private YearMonth accountingPeriodFrom;
 
-    @NotNull
+    @Nullable // nullable since when batch fails we don't always have this info (it is resolved from the org)
     private YearMonth accountingPeriodTo;
 
     @Builder.Default

@@ -45,6 +45,23 @@ public class TransactionConverter {
                 .build();
     }
 
+    public FilteringParameters convertToDbDetached(UserExtractionParameters userExtractionParameters,
+                                                   Optional<SystemExtractionParameters> systemExtractionParameters) {
+        return systemExtractionParameters.map(se -> {
+            return convertToDbDetached(se, userExtractionParameters);
+        }).orElseGet(() -> convertToDbDetached(userExtractionParameters));
+    }
+
+    public FilteringParameters convertToDbDetached(UserExtractionParameters userExtractionParameters) {
+        return FilteringParameters.builder()
+                .organisationId(userExtractionParameters.getOrganisationId())
+                .transactionTypes(userExtractionParameters.getTransactionTypes())
+                .from(userExtractionParameters.getFrom())
+                .to(userExtractionParameters.getTo())
+                .transactionNumbers(userExtractionParameters.getTransactionNumbers())
+                .build();
+    }
+
     public Set<TransactionEntity> convertToDbDetached(Set<Transaction> transactions) {
         return transactions.stream()
                 .map(this::convertToDbDetached)

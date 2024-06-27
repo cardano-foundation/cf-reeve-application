@@ -3,11 +3,11 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 import com.google.common.base.Objects;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPSourceVersionRelevant;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
@@ -36,9 +36,11 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
 
     @Id
     @Column(name = "transaction_id", nullable = false)
+    @LOB_ERPSourceVersionRelevant
     private String id;
 
     @Column(name = "transaction_internal_number", nullable = false)
+    @LOB_ERPSourceVersionRelevant
     private String transactionInternalNumber;
 
     @Column(name = "batch_id", nullable = false)
@@ -49,9 +51,11 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
 
     @Column(name = "type", nullable = false)
     @Enumerated(STRING)
+    @LOB_ERPSourceVersionRelevant
     private TransactionType transactionType;
 
     @Column(name = "entry_date", nullable = false)
+    @LOB_ERPSourceVersionRelevant
     private LocalDate entryDate;
 
     @Column(name = "ledger_dispatch_status", nullable = false)
@@ -66,6 +70,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
             @AttributeOverride(name = "taxIdNumber", column = @Column(name = "organisation_tax_id_number")),
             @AttributeOverride(name = "currencyId", column = @Column(name = "organisation_currency_id")),
     })
+    @LOB_ERPSourceVersionRelevant
     private Organisation organisation;
 
     @Column(name = "automated_validation_status", nullable = false)
@@ -126,33 +131,6 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
 
     private void recalcValidationStatus() {
         automatedValidationStatus = violations.isEmpty() ? ValidationStatus.VALIDATED : FAILED;
-    }
-
-    public boolean isTheSameBusinessWise(TransactionEntity other) {
-        val equalsBuilder = new EqualsBuilder();
-        equalsBuilder.append(this.id, other.getId());
-        equalsBuilder.append(this.entryDate, other.entryDate);
-        equalsBuilder.append(this.transactionType, other.transactionType);
-        equalsBuilder.append(this.organisation, other.organisation);
-        equalsBuilder.append(this.accountingPeriod, other.accountingPeriod);
-        equalsBuilder.append(this.transactionInternalNumber, other.transactionInternalNumber);
-        equalsBuilder.append(this.automatedValidationStatus, other.automatedValidationStatus);
-
-        val rootMatch = equalsBuilder.isEquals();
-
-        // Compare items only if all other fields are equal
-        if (rootMatch) {
-            // Ensure both sets are of the same size
-            if (this.items.size() != other.items.size()) {
-                return false;
-            }
-
-            return this.items.stream()
-                    .allMatch(thisItem -> other.items.stream()
-                            .anyMatch(thisItem::isTheSameBusinessWise));
-        }
-
-        return false;
     }
 
     public Optional<TransactionItemEntity> findItemById(String txItemId) {

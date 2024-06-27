@@ -1,8 +1,11 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.domain.core;
 
 import jakarta.validation.constraints.Size;
-import lombok.*;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPSourceVersionRelevant;
 
 import java.util.Optional;
 
@@ -12,6 +15,7 @@ import java.util.Optional;
 @EqualsAndHashCode
 public class Project {
 
+    @LOB_ERPSourceVersionRelevant
     private @Size(min = 1, max =  255) String customerCode;
 
     @Builder.Default
@@ -19,14 +23,5 @@ public class Project {
 
     @Builder.Default
     private Optional<@Size(min = 1, max =  255) String> name = Optional.empty();
-
-    public boolean isTheSameBusinessWise() {
-        val equalsBuilder = new EqualsBuilder();
-        equalsBuilder.append(this.customerCode, this.customerCode);
-        equalsBuilder.append(this.externalCustomerCode, this.externalCustomerCode);
-        equalsBuilder.append(this.name, this.name);
-
-        return equalsBuilder.isEquals();
-    }
 
 }

@@ -1,97 +1,74 @@
 package org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules;
 
-import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransformationResult;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ValidationStatus;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class DefaultBusinessRulesPipelineProcessorTest {
 
-    @Mock
-    private PipelineTask pipelineTask;
-
-    @InjectMocks
+    private List<PipelineTask> pipelineTasks;
     private DefaultBusinessRulesPipelineProcessor processor;
-
-    private OrganisationTransactions initialOrgTransactions;
-    private OrganisationTransactions initialIgnoredTransactions;
 
     @BeforeEach
     void setUp() {
-        TransactionEntity transactionEntity = new TransactionEntity();
-        transactionEntity.setAutomatedValidationStatus(ValidationStatus.VALIDATED);
-        initialOrgTransactions = new OrganisationTransactions("org1", new HashSet<>(Set.of(transactionEntity)));
-        initialIgnoredTransactions = new OrganisationTransactions("org1", new HashSet<>());
+        pipelineTasks = List.of(mock(PipelineTask.class), mock(PipelineTask.class));
+        processor = new DefaultBusinessRulesPipelineProcessor(pipelineTasks);
     }
 
     @Test
-    void run_NoTasks_ShouldReturnInitialTransactionsUnchanged() {
-        processor = new DefaultBusinessRulesPipelineProcessor(Collections.emptyList());
+    void run_shouldValidateAndClearViolationsForAllTransactions() {
+        // Arrange
+        TransactionEntity transaction1 = mock(TransactionEntity.class);
+        TransactionEntity transaction2 = mock(TransactionEntity.class);
+        OrganisationTransactions allOrgTransactions = mock(OrganisationTransactions.class);
 
-        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions);
+        when(allOrgTransactions.transactions()).thenReturn(Set.of(transaction1, transaction2));
 
-        assertThat(result.passedTransactions()).isEqualTo(initialOrgTransactions);
-        assertThat(result.ignoredTransactions()).isEqualTo(initialIgnoredTransactions);
+        // Act
+        processor.run(allOrgTransactions);
+
+        // Assert
+        verify(transaction1).setAutomatedValidationStatus(ValidationStatus.VALIDATED);
+        verify(transaction1).clearAllViolations();
+        verify(transaction2).setAutomatedValidationStatus(ValidationStatus.VALIDATED);
+        verify(transaction2).clearAllViolations();
     }
 
     @Test
-    void run_SingleTask_ShouldTransformTransactions() {
-        TransactionEntity transformedTransaction = new TransactionEntity();
-        transformedTransaction.setAutomatedValidationStatus(ValidationStatus.VALIDATED);
-        OrganisationTransactions transformedOrgTransactions = new OrganisationTransactions("org1", Set.of(transformedTransaction));
-        OrganisationTransactions ignoredTransactions = new OrganisationTransactions("org1", Set.of());
+    void run_shouldExecuteAllPipelineTasks() {
+        // Arrange
+        TransactionEntity transaction = mock(TransactionEntity.class);
+        OrganisationTransactions allOrgTransactions = mock(OrganisationTransactions.class);
 
-        when(pipelineTask.run(any(), any())).thenReturn(new TransformationResult(transformedOrgTransactions, ignoredTransactions));
+        when(allOrgTransactions.transactions()).thenReturn(Set.of(transaction));
 
-        processor = new DefaultBusinessRulesPipelineProcessor(List.of(pipelineTask));
+        // Act
+        processor.run(allOrgTransactions);
 
-        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions);
-
-        assertThat(result.passedTransactions()).isEqualTo(transformedOrgTransactions);
-        assertThat(result.ignoredTransactions()).isEqualTo(ignoredTransactions);
+        // Assert
+        for (PipelineTask pipelineTask : pipelineTasks) {
+            verify(pipelineTask).run(allOrgTransactions);
+        }
     }
 
     @Test
-    void run_MultipleTasks_ShouldAccumulateTransformations() {
-        TransactionEntity firstTransformedTransaction = new TransactionEntity();
-        firstTransformedTransaction.setAutomatedValidationStatus(ValidationStatus.VALIDATED);
-        OrganisationTransactions firstTransformedOrgTransactions = new OrganisationTransactions("org1", Set.of(firstTransformedTransaction));
+    void run_shouldNotThrowExceptionWhenNoTransactions() {
+        // Arrange
+        OrganisationTransactions allOrgTransactions = mock(OrganisationTransactions.class);
 
-        TransactionEntity secondTransformedTransaction = new TransactionEntity();
-        secondTransformedTransaction.setAutomatedValidationStatus(ValidationStatus.VALIDATED);
-        OrganisationTransactions secondTransformedOrgTransactions = new OrganisationTransactions("org1", Set.of(secondTransformedTransaction));
+        when(allOrgTransactions.transactions()).thenReturn(Set.of());
 
-        OrganisationTransactions firstIgnoredTransactions = new OrganisationTransactions("org1", Set.of());
-        OrganisationTransactions secondIgnoredTransactions = new OrganisationTransactions("org1", Set.of());
-
-        val firstTask = mock(PipelineTask.class);
-        val secondTask = mock(PipelineTask.class);
-
-        when(firstTask.run(any(), any())).thenReturn(new TransformationResult(firstTransformedOrgTransactions, firstIgnoredTransactions));
-        when(secondTask.run(any(), any())).thenReturn(new TransformationResult(secondTransformedOrgTransactions, secondIgnoredTransactions));
-
-        processor = new DefaultBusinessRulesPipelineProcessor(List.of(firstTask, secondTask));
-
-        val result = processor.run(initialOrgTransactions, initialIgnoredTransactions);
-
-        assertThat(result.passedTransactions()).isEqualTo(secondTransformedOrgTransactions);
-        assertThat(result.ignoredTransactions()).isEqualTo(secondIgnoredTransactions);
+        // Act & Assert
+        assertThatCode(() -> processor.run(allOrgTransactions))
+                .doesNotThrowAnyException();
     }
 
 }

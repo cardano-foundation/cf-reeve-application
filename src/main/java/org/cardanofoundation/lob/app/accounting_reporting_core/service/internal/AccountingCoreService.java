@@ -75,7 +75,10 @@ public class AccountingCoreService {
                 .reprocess(true)
                 .build();
 
-        erpIncomingDataProcessor.continueIngestion(txBatch.getOrganisationId(), batchId, Optional.of(txs.size()), txs, processorFlags);
+        val organisationId = txBatch.getOrganisationId();
+        val size = Optional.of(txs.size());
+
+        erpIncomingDataProcessor.continueIngestion(organisationId, batchId, size, txs, processorFlags);
 
         return Either.right(true);
     }

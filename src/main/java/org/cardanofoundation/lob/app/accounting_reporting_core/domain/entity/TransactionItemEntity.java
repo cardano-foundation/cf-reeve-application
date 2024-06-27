@@ -3,8 +3,8 @@ package org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity;
 import com.google.common.base.Objects;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OperationType;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.annotations.LOB_ERPSourceVersionRelevant;
 import org.cardanofoundation.lob.app.support.audit.AuditEntity;
 import org.springframework.data.domain.Persistable;
 
@@ -25,6 +25,7 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
 
     @Id
     @Column(name = "transaction_item_id", nullable = false)
+    @LOB_ERPSourceVersionRelevant
     private String id;
 
     @Override
@@ -38,6 +39,7 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
             @AttributeOverride(name = "name", column = @Column(name = "account_name_debit"))
     })
     @Nullable
+    @LOB_ERPSourceVersionRelevant
     private Account accountDebit;
 
     @AttributeOverrides({
@@ -46,6 +48,7 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
             @AttributeOverride(name = "name", column = @Column(name = "account_name_credit"))
     })
     @Nullable
+    @LOB_ERPSourceVersionRelevant
     private Account accountCredit;
 
     @Nullable
@@ -56,9 +59,11 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     private AccountEvent accountEvent;
 
     @Column(name = "amount_fcy", nullable = false)
+    @LOB_ERPSourceVersionRelevant
     private BigDecimal amountFcy;
 
     @Column(name = "amount_lcy", nullable = false)
+    @LOB_ERPSourceVersionRelevant
     private BigDecimal amountLcy;
 
     @Embedded
@@ -73,6 +78,7 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     private TransactionEntity transaction;
 
     @Column(name = "fx_rate", nullable = false)
+    @LOB_ERPSourceVersionRelevant
     private BigDecimal fxRate;
 
     @Embedded
@@ -82,6 +88,7 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
             @AttributeOverride(name = "name", column = @Column(name = "project_name"))
     })
     @Nullable
+    @LOB_ERPSourceVersionRelevant
     private Project project;
 
     @Embedded
@@ -91,6 +98,7 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
             @AttributeOverride(name = "name", column = @Column(name = "cost_center_name"))
     })
     @Nullable
+    @LOB_ERPSourceVersionRelevant
     private CostCenter costCenter;
 
     @Embedded
@@ -108,6 +116,7 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
             @AttributeOverride(name = "counterparty.name", column = @Column(name = "document_counterparty_name")),
     })
     @Nullable
+    @LOB_ERPSourceVersionRelevant
     private Document document;
 
     public void clearAccountCodeCredit() {
@@ -166,25 +175,6 @@ public class TransactionItemEntity extends AuditEntity implements Persistable<St
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
-    }
-
-    public boolean isTheSameBusinessWise(TransactionItemEntity other) {
-        val equalsBuilder = new EqualsBuilder();
-        equalsBuilder.append(this.id, other.id);
-        equalsBuilder.append(this.amountFcy, other.amountFcy);
-        equalsBuilder.append(this.amountLcy, other.amountLcy);
-
-        equalsBuilder.append(this.accountDebit, other.accountDebit);
-        equalsBuilder.append(this.accountCredit, other.accountCredit);
-        equalsBuilder.append(this.accountEvent, other.accountEvent);
-
-        equalsBuilder.append(this.costCenter, other.costCenter);
-        equalsBuilder.append(this.document, other.document);
-        equalsBuilder.append(this.project, other.project);
-
-        equalsBuilder.append(this.fxRate, other.fxRate);
-
-        return equalsBuilder.isEquals();
     }
 
 }
