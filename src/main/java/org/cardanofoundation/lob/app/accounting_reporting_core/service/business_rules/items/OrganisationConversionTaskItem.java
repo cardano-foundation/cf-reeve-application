@@ -12,7 +12,7 @@ import java.util.Map;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.CORE_CURRENCY_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.ORGANISATION_DATA_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
 
 @RequiredArgsConstructor
 public class OrganisationConversionTaskItem implements PipelineTaskItem {
@@ -29,7 +29,7 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
             val v = Violation.builder()
                     .code(ORGANISATION_DATA_NOT_FOUND)
                     .txItemId(tx.getId())
-                    .type(ERROR)
+                    .severity(ERROR)
                     .source(LOB)
                     .processorModule(this.getClass().getSimpleName())
                     .bag(
@@ -50,7 +50,7 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
             val v = Violation.builder()
                     .code(CORE_CURRENCY_NOT_FOUND)
                     .txItemId(tx.getId())
-                    .type(ERROR)
+                    .severity(ERROR)
                     .source(LOB)
                     .processorModule(this.getClass().getSimpleName())
                     .bag(

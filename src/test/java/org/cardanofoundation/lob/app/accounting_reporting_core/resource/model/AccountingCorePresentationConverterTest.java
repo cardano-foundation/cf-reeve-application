@@ -9,7 +9,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.repository.Transa
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.ExtractionRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.SearchRequest;
-import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchStatisticsView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchsDetailView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.TransactionView;
@@ -73,7 +72,7 @@ class AccountingCorePresentationConverterTest {
 
         violation.setTxItemId(Optional.of(transactionItem.getId().toString()));
         violation.setSource(Source.ERP);
-        violation.setType(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.WARN);
+        violation.setSeverity(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.WARN);
         violation.setCode(ViolationCode.CORE_CURRENCY_NOT_FOUND);
 
         transactionEntity.setItems(Set.of(transactionItem));
@@ -121,7 +120,7 @@ class AccountingCorePresentationConverterTest {
         assertEquals(Optional.of("tx-item-id"), result.get(0).getViolations().stream().findFirst().get().getTransactionItemId());
 
         assertEquals(Source.ERP, result.get(0).getViolations().stream().findFirst().get().getSource());
-        assertEquals(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Type.WARN, result.get(0).getViolations().stream().findFirst().get().getType());
+        assertEquals(org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.WARN, result.get(0).getViolations().stream().findFirst().get().getSeverity());
         assertEquals(ViolationCode.CORE_CURRENCY_NOT_FOUND, result.get(0).getViolations().stream().findFirst().get().getCode());
     }
 

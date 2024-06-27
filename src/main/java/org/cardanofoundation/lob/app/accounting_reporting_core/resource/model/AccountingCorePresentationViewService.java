@@ -19,7 +19,6 @@ import org.jmolecules.ddd.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -171,7 +170,7 @@ public class AccountingCorePresentationViewService {
     private Set<ViolationView> getViolation(TransactionEntity transaction) {
 
         return transaction.getViolations().stream().map(violation -> new ViolationView(
-                violation.getType(),
+                violation.getSeverity(),
                 violation.getSource(),
                 violation.getTxItemId(),
                 violation.getCode(),

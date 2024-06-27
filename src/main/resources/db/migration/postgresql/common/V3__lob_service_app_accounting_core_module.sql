@@ -36,7 +36,7 @@ CREATE TABLE accounting_core_transaction_batch (
 
 CREATE TABLE accounting_core_transaction (
    transaction_id CHAR(64) NOT NULL,
-   type VARCHAR(255) NOT NULL,
+   severity VARCHAR(255) NOT NULL,
    batch_id CHAR(64) NOT NULL,
 
    FOREIGN KEY (batch_id) REFERENCES accounting_core_transaction_batch (transaction_batch_id),
@@ -74,7 +74,7 @@ CREATE TABLE accounting_core_transaction_violation (
    tx_item_id CHAR(64) NOT NULL,
    code VARCHAR(255) NOT NULL,
 
-   type VARCHAR(255) NOT NULL,
+   severity VARCHAR(255) NOT NULL,
    sub_code VARCHAR(255) NOT NULL,
    source VARCHAR(255) NOT NULL,
    processor_module VARCHAR(255) NOT NULL,

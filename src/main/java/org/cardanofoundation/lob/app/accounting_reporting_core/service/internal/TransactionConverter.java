@@ -81,7 +81,7 @@ public class TransactionConverter {
                     val violationEntity = new Violation();
                     violationEntity.setCode(violation.code());
                     violationEntity.setTxItemId(violation.txItemId());
-                    violationEntity.setType(violation.type());
+                    violationEntity.setSeverity(violation.severity());
                     violationEntity.setSource(violation.source());
                     violationEntity.setProcessorModule(violation.processorModule());
                     violationEntity.setBag(violation.bag());
@@ -209,7 +209,7 @@ public class TransactionConverter {
                 .stream()
                 .map(violationEntity -> {
                     return new org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation(
-                            violationEntity.getType(),
+                            violationEntity.getSeverity(),
                             violationEntity.getSource(),
                             violationEntity.getTxItemId(),
                             violationEntity.getCode(),
