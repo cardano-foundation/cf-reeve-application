@@ -226,7 +226,7 @@ class AccountingCorePresentationConverterTest {
         when(transactionBatchRepositoryGateway.findByFilter(batchSearchRequest)).thenReturn(List.of(transactionBatchEntity));
 
         BatchsDetailView batchsDetailView = accountingCorePresentationConverter.listAllBatch(batchSearchRequest);
-        Set<BatchView> result = batchsDetailView.getBatchs();
+        List<BatchView> result = batchsDetailView.getBatchs();
 
         assertEquals(1, result.size());
         assertEquals(1, batchsDetailView.getTotal());
