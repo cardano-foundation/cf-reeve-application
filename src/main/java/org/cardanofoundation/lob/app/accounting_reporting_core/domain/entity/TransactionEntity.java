@@ -68,7 +68,7 @@ public class TransactionEntity extends AuditEntity implements Persistable<String
             @AttributeOverride(name = "name", column = @Column(name = "organisation_name")),
             @AttributeOverride(name = "countryCode", column = @Column(name = "organisation_country_code")),
             @AttributeOverride(name = "taxIdNumber", column = @Column(name = "organisation_tax_id_number")),
-            @AttributeOverride(name = "currencyId", column = @Column(name = "organisation_currency_id")),
+            @AttributeOverride(name = "currencyId", column = @Column(name = "organisation_currency_id"))
     })
     @LOB_ERPSourceVersionRelevant
     private Organisation organisation;

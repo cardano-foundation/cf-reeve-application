@@ -45,6 +45,9 @@ public class Organisation {
     @Column(name = "currency_id", nullable = false)
     private String currencyId;
 
+    @Column(name = "admin_email", nullable = false)
+    private String adminEmail;
+
     public static String id(String countryCode, String taxIdNumber) {
         return digestAsHex(STR."\{countryCode}::\{taxIdNumber}");
     }

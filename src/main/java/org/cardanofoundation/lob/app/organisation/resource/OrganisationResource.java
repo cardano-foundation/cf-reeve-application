@@ -1,6 +1,5 @@
 package org.cardanofoundation.lob.app.organisation.resource;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -10,9 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.cardanofoundation.lob.app.organisation.domain.entity.Organisation;
 import org.cardanofoundation.lob.app.organisation.domain.view.OrganisationView;
-import org.cardanofoundation.lob.app.organisation.repository.OrganisationRepository;
 import org.cardanofoundation.lob.app.organisation.service.OrganisationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +37,6 @@ public class OrganisationResource {
     })
     @GetMapping(value = "/organisation", produces = "application/json")
     public ResponseEntity<?> organisationList() {
-
         return ResponseEntity.ok().body(
                 organisationService.findAll().stream().map(organisation -> {
                     LocalDate today = LocalDate.now();
@@ -53,7 +49,8 @@ public class OrganisationResource {
                             organisation.getTaxIdNumber(),
                             organisation.getCurrencyId(),
                             monthsAgo,
-                            yesterday
+                            yesterday,
+                            organisation.getAdminEmail()
                     );
                 }).toList()
         );
@@ -75,24 +72,28 @@ public class OrganisationResource {
             LocalDate today = LocalDate.now();
             LocalDate monthsAgo = today.minusMonths(organisation1.getAccountPeriodMonths());
             LocalDate yesterday = today.minusDays(1);
+
             return new OrganisationView(
                     organisation1.getId(),
                     organisation1.getName(),
                     organisation1.getTaxIdNumber(),
                     organisation1.getCurrencyId(),
                     monthsAgo,
-                    yesterday
+                    yesterday,
+                    organisation1.getAdminEmail()
             );
         });
         if (organisation.isEmpty()) {
             val issue = Problem.builder()
                     .withTitle("ORGANISATION_NOT_FOUND")
-                    .withDetail("Unable to find Organisation by Id: " + orgId)
+                    .withDetail(STR."Unable to find Organisation by Id: \{orgId}")
                     .withStatus(Status.NOT_FOUND)
                     .build();
 
             return ResponseEntity.status(issue.getStatus().getStatusCode()).body(issue);
         }
+
         return ResponseEntity.ok().body(organisation);
     }
+
 }
