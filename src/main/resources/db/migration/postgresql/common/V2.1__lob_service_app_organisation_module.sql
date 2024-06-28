@@ -6,6 +6,7 @@ CREATE TABLE organisation (
    dummy_account VARCHAR(255),
    accounting_period_months INT NOT NULL,
    currency_id VARCHAR(255) NOT NULL,
+   admin_email VARCHAR(255) NOT NULL,
    pre_approve_transactions BOOLEAN,
    pre_approve_transactions_dispatch BOOLEAN,
 

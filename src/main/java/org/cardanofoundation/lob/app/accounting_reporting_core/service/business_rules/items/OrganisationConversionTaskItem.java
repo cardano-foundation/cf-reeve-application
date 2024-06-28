@@ -9,10 +9,10 @@ import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 
 import java.util.Map;
 
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.CORE_CURRENCY_NOT_FOUND;
-import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.ORGANISATION_DATA_NOT_FOUND;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Source.LOB;
 import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.Violation.Severity.ERROR;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.CORE_CURRENCY_NOT_FOUND;
+import static org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ViolationCode.ORGANISATION_DATA_NOT_FOUND;
 
 @RequiredArgsConstructor
 public class OrganisationConversionTaskItem implements PipelineTaskItem {
@@ -71,6 +71,7 @@ public class OrganisationConversionTaskItem implements PipelineTaskItem {
                 .taxIdNumber(organisation.getTaxIdNumber())
                 .countryCode(organisation.getCountryCode())
                 .currencyId(organisation.getCurrencyId())
+                .adminEmail(organisation.getAdminEmail())
                 .build()
         );
     }
