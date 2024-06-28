@@ -29,7 +29,11 @@ public class Organisation {
     // ISO 3166-1 alpha-2
     private Optional<@Size(min = 2, max =  2) String> countryCode = Optional.empty();
 
-    @Size(min = 1, max =  255) @NotBlank
+    @Size(min = 1, max =  255)
+    @NotBlank
     private String currencyId;
+
+    @Builder.Default
+    private Optional<String> adminEmail = Optional.empty();
 
 }

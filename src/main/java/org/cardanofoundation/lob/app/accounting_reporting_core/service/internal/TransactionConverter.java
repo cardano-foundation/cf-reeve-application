@@ -178,6 +178,7 @@ public class TransactionConverter {
                 .taxIdNumber(transaction.getOrganisation().getTaxIdNumber().orElse(null))
                 .countryCode(transaction.getOrganisation().getCountryCode().orElse(null))
                 .currencyId(transaction.getOrganisation().getCurrencyId())
+                .adminEmail(transaction.getOrganisation().getAdminEmail().orElse(null))
                 .build();
     }
 
@@ -189,6 +190,7 @@ public class TransactionConverter {
                                 .customerCode(doc.getCurrency().getCustomerCode())
                                 .id(doc.getCurrency().getCoreCurrency().map(CoreCurrency::toExternalId).orElse(null))
                                 .build())
+
                         .vat(doc.getVat().map(vat -> Vat.builder()
                                 .customerCode(vat.getCustomerCode())
                                 .rate(vat.getRate().orElse(null))
@@ -272,8 +274,10 @@ public class TransactionConverter {
                         .name(transactionEntity.getOrganisation().getName())
                         .countryCode(transactionEntity.getOrganisation().getCountryCode())
                         .taxIdNumber(transactionEntity.getOrganisation().getTaxIdNumber())
+                        .adminEmail(transactionEntity.getOrganisation().getAdminEmail())
                         .currencyId(transactionEntity.getOrganisation().getCurrencyId())
                         .build())
+
                 .entryDate(transactionEntity.getEntryDate())
                 .validationStatus(transactionEntity.getAutomatedValidationStatus())
                 .transactionType(transactionEntity.getTransactionType())
