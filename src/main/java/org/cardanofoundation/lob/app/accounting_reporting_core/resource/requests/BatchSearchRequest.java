@@ -34,7 +34,7 @@ public class BatchSearchRequest {
     private String organisationId;
 
     @ArraySchema(arraySchema = @Schema(example = "[\"APPROVE\", \"PENDING\", \"INVALID\", \"PUBLISH\", \"PUBLISHED\"]", implementation = LedgerDispatchStatusView.class))
-    private Set<LedgerDispatchStatusView> status = Set.of();
+    private Set<LedgerDispatchStatusView> batchStatistics = Set.of();
 
     @ArraySchema(arraySchema = @Schema(example = "[\"OK\",\"FAIL\"]", implementation = TransactionStatus.class))
     private Set<TransactionStatus> txStatus = Set.of();
