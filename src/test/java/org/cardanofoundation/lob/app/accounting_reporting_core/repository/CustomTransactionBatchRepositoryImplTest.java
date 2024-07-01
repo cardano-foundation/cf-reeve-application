@@ -42,7 +42,7 @@ class CustomTransactionBatchRepositoryImplTest {
         body.setLimit(10);
         body.setPage(2);
         body.setOrganisationId("TestOrgId");
-        body.setStatus(Set.of(LedgerDispatchStatusView.APPROVE, LedgerDispatchStatusView.PENDING, LedgerDispatchStatusView.INVALID, LedgerDispatchStatusView.PUBLISH, LedgerDispatchStatusView.PUBLISHED));
+        body.setBatchStatistics(Set.of(LedgerDispatchStatusView.APPROVE, LedgerDispatchStatusView.PENDING, LedgerDispatchStatusView.INVALID, LedgerDispatchStatusView.PUBLISH, LedgerDispatchStatusView.PUBLISHED));
         body.setTxStatus(Set.of(TransactionStatus.OK));
         body.setTransactionTypes(Set.of(TransactionType.CardCharge, TransactionType.FxRevaluation));
         body.setFrom(LocalDate.now());
