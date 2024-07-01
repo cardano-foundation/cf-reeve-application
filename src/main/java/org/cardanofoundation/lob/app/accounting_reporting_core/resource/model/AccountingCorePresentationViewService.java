@@ -78,7 +78,7 @@ public class AccountingCorePresentationViewService {
 
         return new BatchStatisticsView(
                 statistics.flatMap(BatchStatistics::getProcessedTransactionsCount).orElse(0),
-                (statistics.flatMap(BatchStatistics::getTotalTransactionsCount).orElse(0) - statistics.flatMap(BatchStatistics::getApprovedTransactionsCount).orElse(0)),
+                Math.abs(statistics.flatMap(BatchStatistics::getFailedTransactionsCount).orElse(0) - statistics.flatMap(BatchStatistics::getApprovedTransactionsCount).orElse(0)),
                 statistics.flatMap(BatchStatistics::getFailedTransactionsCount).orElse(0),
                 statistics.flatMap(BatchStatistics::getApprovedTransactionsCount).orElse(0),
                 statistics.flatMap(BatchStatistics::getFinalizedTransactionsCount).orElse(0),
