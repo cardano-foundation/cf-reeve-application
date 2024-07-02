@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set extra environment and metadata
-        #id: metadata
+        id: metadata
         run: |
           GIT_SHORT_COMMIT=$(git rev-parse --short "$GITHUB_SHA")
           CURRENT_VERSION=$(grep ^version build.gradle.kts | sed 's|^version.*=.*"\(.*\)"$|\1|')
@@ -73,7 +73,6 @@ jobs:
       #  with:
       #    username: ${{ secrets.HUB_DOCKER_COM_USER }}
       #    password: ${{ secrets.HUB_DOCKER_COM_PASS }}
-
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
