@@ -41,7 +41,7 @@ jobs:
         #id: metadata
         run: |
           GIT_SHORT_COMMIT=$(git rev-parse --short "$GITHUB_SHA")
-          CURRENT_VERSION=$(grep ^version build.gradle.kts | sed 's|^\(version.*\)=.*"\(.*\)"$|\2|')
+          CURRENT_VERSION=$(grep ^version build.gradle.kts | sed 's|^version.*=.*"\(.*\)"$|\1|')
 
           if [ ${{github.event_name}} == "pull_request" ]
           then
