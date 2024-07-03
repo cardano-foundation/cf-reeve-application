@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.model.AccountingCorePresentationViewService;
+import org.cardanofoundation.lob.app.accounting_reporting_core.resource.model.AccountingCoreResourceService;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.ExtractionRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.SearchRequest;
@@ -39,6 +40,7 @@ import java.util.List;
 public class AccountingCoreResource {
 
     private final AccountingCorePresentationViewService accountingCorePresentationService;
+    private final AccountingCoreResourceService accountingCoreResourceService;
 
     @Tag(name = "Transactions", description = "Transactions API")
     @Operation(description = "Transaction list", responses = {
@@ -109,6 +111,24 @@ public class AccountingCoreResource {
     })
     public ResponseEntity<?> extractionTrigger(@Valid @RequestBody ExtractionRequest body) {
 
+        if (!accountingCoreResourceService.findOrganizationById(body.getOrganisationId())) {
+            val issue = Problem.builder()
+                    .withTitle("ORGANISATION_NOT_FOUND")
+                    .withDetail(STR."Unable to find Organisation by Id: \{body.getOrganisationId()}")
+                    .withStatus(Status.NOT_FOUND)
+                    .build();
+
+            return ResponseEntity.status(issue.getStatus().getStatusCode()).body(issue);
+        }
+        if (!accountingCoreResourceService.checkFromToDates(body.getDateFrom(), body.getDateTo())) {
+            val issue = Problem.builder()
+                    .withTitle("ORGANISATION_DATE_MISMATCH")
+                    .withDetail(STR."the requested data is outside of accounting period for organisationId")
+                    .withStatus(Status.NOT_FOUND)
+                    .build();
+
+            return ResponseEntity.status(issue.getStatus().getStatusCode()).body(issue);
+        }
         accountingCorePresentationService.extractionTrigger(body);
         JSONObject response = new JSONObject()
                 .put("event", "EXTRACTION")
