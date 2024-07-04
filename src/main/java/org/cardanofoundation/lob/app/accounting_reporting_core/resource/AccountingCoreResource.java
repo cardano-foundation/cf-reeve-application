@@ -123,7 +123,7 @@ public class AccountingCoreResource {
         if (!accountingCoreResourceService.checkFromToDates(body.getDateFrom(), body.getDateTo())) {
             val issue = Problem.builder()
                     .withTitle("ORGANISATION_DATE_MISMATCH")
-                    .withDetail(STR."the requested data is outside of accounting period for organisationId")
+                    .withDetail(STR."the requested data is outside of accounting period for \{body.getOrganisationId()}")
                     .withStatus(Status.NOT_FOUND)
                     .build();
 
