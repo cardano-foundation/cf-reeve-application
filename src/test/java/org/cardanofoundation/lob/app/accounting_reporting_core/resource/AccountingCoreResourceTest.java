@@ -162,7 +162,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(404)
                 .body("title", equalTo("ORGANISATION_DATE_MISMATCH"))
-                .body("detail", equalTo("the requested data is outside of accounting period for organisationId"))
+                .body("detail", equalTo("the requested data is outside of accounting period for 75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
         ;
 
     }
