@@ -1,3 +1,5 @@
+package org.cardanofoundation.lob.app;
+
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +41,7 @@ import java.time.Clock;
 @Modulith
 @EnableTransactionManagement
 @EnableAsync
-//@ImportRuntimeHints(LobServiceApp.Hints.class)
+//@ImportRuntimeHints(org.cardanofoundation.lob.app.LobServiceApp.Hints.class)
 @EnableAutoConfiguration
 @Slf4j
 public class LobServiceApp {
