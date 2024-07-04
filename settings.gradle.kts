@@ -7,7 +7,7 @@ pluginManagement {
 
 rootProject.name = "cf-lob"
 include (
- ":application",
+ ":cf-application",
  ":support",
  ":accounting_reporting_core",
  ":blockchain_publisher",

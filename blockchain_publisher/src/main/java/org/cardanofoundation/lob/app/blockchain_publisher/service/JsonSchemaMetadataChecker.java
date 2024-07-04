@@ -6,6 +6,7 @@ import com.bloxbean.cardano.client.metadata.MetadataMap;
 import com.bloxbean.cardano.client.metadata.helper.MetadataToJsonNoSchemaConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonSchemaFactory;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -22,13 +23,18 @@ import static com.networknt.schema.SpecVersion.VersionFlag.V7;
 @RequiredArgsConstructor
 public class JsonSchemaMetadataChecker implements MetadataChecker {
 
-    @Value("classpath:modules/blockchain_publisher/blockchain_transaction_metadata_schema.json")
+    @Value("classpath:blockchain_transaction_metadata_schema.json")
     private Resource metatdataSchemaResource;
 
     @Value("${lob.l1.transaction.metadata.validation.enable:true}")
     private boolean enableChecker;
 
     private final ObjectMapper objectMapper;
+
+    @PostConstruct
+    public void init() {
+        log.info("JsonSchemaMetadataChecker, metadata validation enabled: {}, schema found:{}", enableChecker, metatdataSchemaResource.exists());
+    }
 
     @Override
     public boolean checkTransactionMetadata(MetadataMap metadata) {

@@ -28,4 +28,5 @@ dependencies {
     implementation(project(":cf_netsuite_altavia_erp_connector"))
     implementation(project(":netsuite_altavia_erp_adapter"))
     implementation(project(":notification_gateway"))
+
 }
