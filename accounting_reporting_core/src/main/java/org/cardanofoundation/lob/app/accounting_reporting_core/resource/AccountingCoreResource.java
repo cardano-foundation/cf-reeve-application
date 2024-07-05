@@ -13,12 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.model.AccountingCorePresentationViewService;
+import org.cardanofoundation.lob.app.accounting_reporting_core.resource.model.AccountingCoreResourceService;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.ExtractionRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.SearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchsDetailView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.TransactionView;
+import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +41,8 @@ import java.util.List;
 public class AccountingCoreResource {
 
     private final AccountingCorePresentationViewService accountingCorePresentationService;
+    private final AccountingCoreResourceService accountingCoreResourceService;
+    private final OrganisationPublicApi organisationPublicApi;
 
     @Tag(name = "Transactions", description = "Transactions API")
     @Operation(description = "Transaction list", responses = {
@@ -108,6 +112,29 @@ public class AccountingCoreResource {
             )
     })
     public ResponseEntity<?> extractionTrigger(@Valid @RequestBody ExtractionRequest body) {
+        val orgM = organisationPublicApi.findByOrganisationId(body.getOrganisationId());
+
+        if (orgM.isEmpty()) {
+            val issue = Problem.builder()
+                    .withTitle("ORGANISATION_NOT_FOUND")
+                    .withDetail(STR."Unable to find Organisation by Id: \{body.getOrganisationId()}")
+                    .withStatus(Status.NOT_FOUND)
+                    .build();
+
+            return ResponseEntity.status(issue.getStatus().getStatusCode()).body(issue);
+        }
+
+        val org = orgM.orElseThrow();
+
+        if (!accountingCoreResourceService.checkFromToDates(org, body.getDateFrom(), body.getDateTo())) {
+            val issue = Problem.builder()
+                    .withTitle("ORGANISATION_DATE_MISMATCH")
+                    .withDetail(STR."the requested data is outside of accounting period for \{body.getOrganisationId()}")
+                    .withStatus(Status.NOT_FOUND)
+                    .build();
+
+            return ResponseEntity.status(issue.getStatus().getStatusCode()).body(issue);
+        }
         accountingCorePresentationService.extractionTrigger(body);
 
         JSONObject response = new JSONObject()
@@ -128,7 +155,6 @@ public class AccountingCoreResource {
                     })
             }
     )
-
     public ResponseEntity<?> listAllBatch(@Valid @RequestBody BatchSearchRequest body,
                                           @RequestParam(name = "page", defaultValue = "1") int page,
                                           @RequestParam(name = "limit", defaultValue = "10") int limit) {

@@ -90,7 +90,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllAction() throws Exception {
         String myJson = "{\n" +
                 "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
-                "  \"dateFrom\": \"2010-01-01\",\n" +
+                "  \"dateFrom\": \"2023-01-01\",\n" +
                 "  \"dateTo\": \"2024-05-01\",\n" +
                 "  \"transactionType\": [\n" +
                 "    \"CardCharge\",\n" +
@@ -122,6 +122,45 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("event",equalTo("EXTRACTION"))
                 .body("message",equalTo("We have received your extraction request now. Please review imported transactions from the batch list."))
                 ;
+
+    }
+
+    @Test
+    void testListAllActionWrongDate() throws Exception {
+        String myJson = "{\n" +
+                "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
+                "  \"dateFrom\": \"2013-01-01\",\n" +
+                "  \"dateTo\": \"2024-05-01\",\n" +
+                "  \"transactionType\": [\n" +
+                "    \"CardCharge\",\n" +
+                "    \"VendorBill\",\n" +
+                "    \"CardRefund\",\n" +
+                "    \"Journal\",\n" +
+                "    \"FxRevaluation\",\n" +
+                "    \"Transfer\",\n" +
+                "    \"CustomerPayment\",\n" +
+                "    \"ExpenseReport\",\n" +
+                "    \"VendorPayment\",\n" +
+                "    \"BillCredit\"\n" +
+                "  ],\n" +
+                "  \"transactionNumbers\": [\n" +
+                "    \"CARDCH565\",\n" +
+                "    \"CARDHY777\",\n" +
+                "    \"CARDCHRG159\",\n" +
+                "    \"VENDBIL119\"\n" +
+                "  ]\n" +
+                "}";
+
+        given()
+                .contentType("application/json")
+                .body(myJson)
+                .when()
+                .post("/api/extraction")
+                .then()
+                .statusCode(404)
+                .body("title", equalTo("ORGANISATION_DATE_MISMATCH"))
+                .body("detail", equalTo("the requested data is outside of accounting period for 75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
+        ;
 
     }
 

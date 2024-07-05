@@ -43,6 +43,9 @@ class AccountingCorePresentationConverterTest {
     @Mock
     private TransactionBatchRepositoryGateway transactionBatchRepositoryGateway;
 
+    @Mock
+    private AccountingCoreResourceService accountingCoreResourceService;
+
     @InjectMocks
     private AccountingCorePresentationViewService accountingCorePresentationConverter;
 
