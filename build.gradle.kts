@@ -1,17 +1,10 @@
 import info.solidsoft.gradle.pitest.PitestTask
-//import org.ajoberstar.grgit.Grgit
 
 plugins {
     java
     id("io.spring.dependency-management") version "1.1.5"
     id("com.github.ben-manes.versions") version "0.51.0"
     id("info.solidsoft.pitest") version "1.15.0"
-    //id("org.ajoberstar.grgit") version "5.2.0"
-}
-
-// workaround, it should take this from settings,gradle
-repositories {
-    mavenCentral()
 }
 
 subprojects {
@@ -20,7 +13,6 @@ subprojects {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "com.github.ben-manes.versions")
     apply(plugin = "info.solidsoft.pitest")
-    //apply(plugin = "org.ajoberstar.grgit")
 
     group = "de.cardanofoundation"
     version = "0.0.1-SNAPSHOT"
@@ -57,11 +49,6 @@ subprojects {
     extra["jMoleculesVersion"] = "2023.1.0"
 
     dependencies {
-//        implementation("org.springframework.boot:spring-boot-starter-actuator")
-//        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-//        //implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-//        implementation("org.springframework.boot:spring-boot-starter-validation")
-//        implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.json:json:20211205") // TODO check if this is needed at all
 
         implementation("org.springframework.data:spring-data-envers")
@@ -74,14 +61,11 @@ subprojects {
         // needed to store json via JPA in PostgreSQL
         implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.6")
 
-//        implementation("org.springframework.boot:spring-boot-starter-amqp")
-
         runtimeOnly("io.micrometer:micrometer-registry-prometheus")
         runtimeOnly("org.postgresql:postgresql")
 
         runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
 
-        //  runtimeOnly("org.springframework.modulith:spring-modulith-observability")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.springframework.boot:spring-boot-testcontainers")
