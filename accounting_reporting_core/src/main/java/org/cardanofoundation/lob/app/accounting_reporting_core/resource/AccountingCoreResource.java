@@ -108,8 +108,8 @@ public class AccountingCoreResource {
             )
     })
     public ResponseEntity<?> extractionTrigger(@Valid @RequestBody ExtractionRequest body) {
-
         accountingCorePresentationService.extractionTrigger(body);
+
         JSONObject response = new JSONObject()
                 .put("event", "EXTRACTION")
                 .put("message", "We have received your extraction request now. Please review imported transactions from the batch list.");
@@ -128,12 +128,14 @@ public class AccountingCoreResource {
                     })
             }
     )
-    public ResponseEntity<?> listAllBatch(@Valid @RequestBody BatchSearchRequest body, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int limit) {
 
+    public ResponseEntity<?> listAllBatch(@Valid @RequestBody BatchSearchRequest body,
+                                          @RequestParam(name = "page", defaultValue = "1") int page,
+                                          @RequestParam(name = "limit", defaultValue = "10") int limit) {
         body.setLimit(limit);
         body.setPage(page);
-        val batchs = accountingCorePresentationService.listAllBatch(body);
 
+        val batchs = accountingCorePresentationService.listAllBatch(body);
 
         return ResponseEntity.ok().body(batchs);
     }

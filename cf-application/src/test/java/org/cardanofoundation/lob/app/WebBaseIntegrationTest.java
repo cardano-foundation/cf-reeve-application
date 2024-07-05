@@ -16,11 +16,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 @ComponentScan
 @EnableJpaRepositories
 @EntityScan
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(PER_CLASS)
 @SpringJUnitConfig(classes = { LobServiceApp.class, LobServiceApplicationTest.class } )
 @Slf4j
 @ActiveProfiles("test")
@@ -43,8 +46,8 @@ public class WebBaseIntegrationTest {
 
         RestAssured.port = serverPort;
         RestAssured.baseURI = "http://localhost";
-
     }
+
     @BeforeAll
     public void clearDatabase(@Autowired Flyway flyway){
         flyway.clean();

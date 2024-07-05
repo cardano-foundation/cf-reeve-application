@@ -71,12 +71,6 @@ subprojects {
 
         implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.1")
 
-//        implementation("org.springframework.modulith:spring-modulith-starter-core")
-//        implementation("org.springframework.modulith:spring-modulith-starter-jdbc")
-//        implementation("org.springframework.modulith:spring-modulith-events-amqp")
-//
-//        implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
-
         // needed to store json via JPA in PostgreSQL
         implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.6")
 
@@ -96,16 +90,12 @@ subprojects {
 
         testImplementation("org.testcontainers:junit-jupiter")
         testImplementation("org.testcontainers:postgresql")
-        //testImplementation("org.testcontainers:rabbitmq")
 
         runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
         implementation("org.zalando:problem-spring-web-starter:0.29.1")
         implementation("io.vavr:vavr:0.10.4")
         implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
-        //implementation("org.javers:javers-spring-boot-starter-sql:7.3.7")
-        //implementation("org.javers:javers-spring:7.3.7")
 
-        //implementation("com.github.scribejava:scribejava-core:8.3.3")
         implementation("org.scribe:scribe:1.3.7") // needed for OAuth 1.0 for NetSuite Module
 
         implementation("javax.xml.bind", "jaxb-api", "2.3.0")
@@ -154,16 +144,13 @@ subprojects {
         withType<PitestTask>() {
             jvmArgs(ENABLE_PREVIEW)
         }
+
         withType<JavaExec>() {
             jvmArgs(ENABLE_PREVIEW)
         }
 
-//        withType<Jar>("sourceJar") {
-//            from(sourceSets["main"].allSource)
-//            archiveClassifier.set("sources")
-//        }
-
     }
+
     pitest {
         //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
         jvmArgs.add("--enable-preview")
