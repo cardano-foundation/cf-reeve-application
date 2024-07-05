@@ -2,146 +2,147 @@ import info.solidsoft.gradle.pitest.PitestTask
 
 plugins {
     java
-    id("org.springframework.boot") version "3.3.0"
     id("io.spring.dependency-management") version "1.1.5"
     id("com.github.ben-manes.versions") version "0.51.0"
     id("info.solidsoft.pitest") version "1.15.0"
 }
 
-group = "de.cardanofoundation"
-version = "0.0.1-SNAPSHOT"
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "java-library")
+    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "com.github.ben-manes.versions")
+    apply(plugin = "info.solidsoft.pitest")
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-}
+    group = "de.cardanofoundation"
+    version = "0.0.1-SNAPSHOT"
 
-configurations {
-    compileOnly {
-       extendsFrom(configurations.annotationProcessor.get())
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-extra["springCloudVersion"] = "2023.0.0"
-extra["springModulithVersion"] = "1.2.0"
-extra["jMoleculesVersion"] = "2023.1.0"
-
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    //implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.json:json:20211205") // TODO check if this is needed at all
-
-    implementation("org.springframework.data:spring-data-envers")
-
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
-
-    implementation("org.springframework.modulith:spring-modulith-starter-core")
-    implementation("org.springframework.modulith:spring-modulith-starter-jdbc")
-    implementation("org.springframework.modulith:spring-modulith-events-amqp")
-
-    implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
-
-    // needed to store json via JPA in PostgreSQL
-    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.6")
-
-    implementation("org.springframework.boot:spring-boot-starter-amqp")
-
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-    runtimeOnly("org.postgresql:postgresql")
-
-    runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
-
-
-//  runtimeOnly("org.springframework.modulith:spring-modulith-observability")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
-
-    testImplementation("org.springframework.modulith:spring-modulith-starter-test")
-
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:postgresql")
-    //testImplementation("org.testcontainers:rabbitmq")
-
-    runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
-    implementation("org.zalando:problem-spring-web-starter:0.29.1")
-    implementation("io.vavr:vavr:0.10.4")
-    implementation("me.paulschwarz:spring-dotenv:4.0.0")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
-    //implementation("org.javers:javers-spring-boot-starter-sql:7.3.7")
-    //implementation("org.javers:javers-spring:7.3.7")
-
-    //implementation("com.github.scribejava:scribejava-core:8.3.3")
-    implementation("org.scribe:scribe:1.3.7") // needed for OAuth 1.0 for NetSuite Module
-
-    implementation("javax.xml.bind", "jaxb-api", "2.3.0")
-    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2") // needed for OAuth 1.0 for NetSuite Module
-
-    implementation("com.networknt:json-schema-validator:1.4.0")
-
-    implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.1")
-    implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.1")
-    implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.1")
-
-    implementation("com.google.guava:guava:33.2.1-jre")
-
-    implementation("org.apache.commons:commons-collections4:4.4")
-
-    compileOnly("org.projectlombok:lombok:1.18.32")
-    annotationProcessor("org.projectlombok:lombok:1.18.32")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-    testCompileOnly("org.projectlombok:lombok:1.18.32")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
-    testImplementation("io.rest-assured:rest-assured:5.4.0")
-    testImplementation("org.wiremock:wiremock-standalone:3.6.0")
-    testImplementation("net.jqwik:jqwik:1.8.5") // Jqwik for property-based testing
-    testImplementation("org.assertj:assertj-core:3.26.0")
-    testImplementation("org.pitest:pitest-junit5-plugin:1.2.1")
-}
-
-dependencyManagement {
-    imports {
-       mavenBom("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
-       mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-       mavenBom("org.jmolecules:jmolecules-bom:${property("jMoleculesVersion")}")
-    }
-}
-
-tasks {
-    val ENABLE_PREVIEW = "--enable-preview"
-
-    withType<JavaCompile>() {
-        options.compilerArgs.add(ENABLE_PREVIEW)
-        //options.compilerArgs.add("-Xlint:preview")
+    sourceSets {
+        named("main") {
+            java {
+                setSrcDirs(listOf("src/main/java"))
+            }
+        }
     }
 
-    withType<Test>() {
-        useJUnitPlatform()
-        jvmArgs(ENABLE_PREVIEW)
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+        }
     }
 
-    withType<PitestTask>() {
-        jvmArgs(ENABLE_PREVIEW)
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
     }
-    withType<JavaExec>() {
-        jvmArgs(ENABLE_PREVIEW)
+
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
     }
-}
-pitest {
-    //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
-    jvmArgs.add("--enable-preview")
-    targetClasses.set(setOf("org.cardanofoundation.lob.app.*"))
-    targetTests.set(setOf("org.cardanofoundation.lob.app.*"))
-    exportLineCoverage = true
-    timestampedReports = false
-    threads = 2
-    // ...
+
+    extra["springBootVersion"] = "3.3.1"
+    extra["springCloudVersion"] = "2023.0.0"
+    extra["springModulithVersion"] = "1.2.0"
+    extra["jMoleculesVersion"] = "2023.1.0"
+
+    dependencies {
+        implementation("org.json:json:20211205") // TODO check if this is needed at all
+
+        implementation("org.springframework.data:spring-data-envers")
+
+        implementation("org.flywaydb:flyway-core")
+        implementation("org.flywaydb:flyway-database-postgresql")
+
+        implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.1")
+
+        // needed to store json via JPA in PostgreSQL
+        implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.6")
+
+        runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+        runtimeOnly("org.postgresql:postgresql")
+
+        runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
+
+        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("org.springframework.boot:spring-boot-testcontainers")
+
+        testImplementation("org.springframework.modulith:spring-modulith-starter-test")
+
+        testImplementation("org.testcontainers:junit-jupiter")
+        testImplementation("org.testcontainers:postgresql")
+
+        runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
+        implementation("org.zalando:problem-spring-web-starter:0.29.1")
+        implementation("io.vavr:vavr:0.10.4")
+        implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+
+        implementation("org.scribe:scribe:1.3.7") // needed for OAuth 1.0 for NetSuite Module
+
+        implementation("javax.xml.bind", "jaxb-api", "2.3.0")
+        implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2") // needed for OAuth 1.0 for NetSuite Module
+
+        implementation("com.networknt:json-schema-validator:1.4.0")
+
+        implementation("com.google.guava:guava:33.2.1-jre")
+
+        implementation("org.apache.commons:commons-collections4:4.4")
+
+        compileOnly("org.projectlombok:lombok:1.18.32")
+        annotationProcessor("org.projectlombok:lombok:1.18.32")
+        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+        testCompileOnly("org.projectlombok:lombok:1.18.32")
+        testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
+        testImplementation("io.rest-assured:rest-assured:5.4.0")
+        testImplementation("org.wiremock:wiremock-standalone:3.6.0")
+        testImplementation("net.jqwik:jqwik:1.8.5") // Jqwik for property-based testing
+        testImplementation("org.assertj:assertj-core:3.26.0")
+        testImplementation("org.pitest:pitest-junit5-plugin:1.2.1")
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${property("springBootVersion")}")
+            mavenBom("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+            mavenBom("org.jmolecules:jmolecules-bom:${property("jMoleculesVersion")}")
+        }
+    }
+
+    tasks {
+        val ENABLE_PREVIEW = "--enable-preview"
+
+        withType<JavaCompile>() {
+            options.compilerArgs.add(ENABLE_PREVIEW)
+            //options.compilerArgs.add("-Xlint:preview")
+        }
+
+        withType<Test>() {
+            useJUnitPlatform()
+            jvmArgs(ENABLE_PREVIEW)
+        }
+
+        withType<PitestTask>() {
+            jvmArgs(ENABLE_PREVIEW)
+        }
+
+        withType<JavaExec>() {
+            jvmArgs(ENABLE_PREVIEW)
+        }
+
+    }
+
+    pitest {
+        //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
+        jvmArgs.add("--enable-preview")
+        targetClasses.set(setOf("org.cardanofoundation.lob.app.*"))
+        targetTests.set(setOf("org.cardanofoundation.lob.app.*"))
+        exportLineCoverage = true
+        timestampedReports = false
+        threads = 2
+    }
+
 }
