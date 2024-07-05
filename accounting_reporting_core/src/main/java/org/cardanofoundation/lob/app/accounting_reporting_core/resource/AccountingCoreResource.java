@@ -20,7 +20,6 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.BatchsDetailView;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.TransactionView;
-import org.cardanofoundation.lob.app.organisation.OrganisationPublicApi;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +41,6 @@ public class AccountingCoreResource {
 
     private final AccountingCorePresentationViewService accountingCorePresentationService;
     private final AccountingCoreResourceService accountingCoreResourceService;
-    private final OrganisationPublicApi organisationPublicApi;
 
     @Tag(name = "Transactions", description = "Transactions API")
     @Operation(description = "Transaction list", responses = {
@@ -112,7 +110,7 @@ public class AccountingCoreResource {
             )
     })
     public ResponseEntity<?> extractionTrigger(@Valid @RequestBody ExtractionRequest body) {
-        val orgM = organisationPublicApi.findByOrganisationId(body.getOrganisationId());
+        val orgM = accountingCoreResourceService.findOrganisationById(body.getOrganisationId());
 
         if (orgM.isEmpty()) {
             val issue = Problem.builder()
