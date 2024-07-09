@@ -29,6 +29,7 @@ Prerequisties:
 ```
 git clone git@github.com:cardano-foundation/cf-lob.git
 cd cf-lob
+cp cf-application/.env.template cf-application/.env
 ./gradlew clean build
 ```
 
@@ -36,6 +37,7 @@ cd cf-lob
 ```shell
 # start the containers and run the command
 docker compose up --build -d
+cp cf-application/.env.template cf-application/.env
 docker exec -it app ./gradlew clean build
 ```
 
@@ -47,6 +49,7 @@ git clone git@github.com:cardano-foundation/cf-lob.git
 cd cf-lob
 export SPRING_CONFIG_LOCATIONS=classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
 export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
+cp cf-application/.env.template cf-application/.env
 ./gradlew clean bootRun
 ```
 
@@ -54,18 +57,13 @@ export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
 ```shell
 # start the containers and run the command
 docker compose up --build -d
+cp cf-application/.env.template cf-application/.env
 docker exec -it app ./gradlew clean bootRun
 ```
 
 ## Architecture
 
 <img src="https://github.com/cardano-foundation/cf-lob/blob/main/LOB_-_Arch.jpg" />
-
-#### Docker:
-```shell
-docker compose up --build -d
-docker exec -it app ./gradlew bootRun
-```
 
 ## How to run automated tests
 
