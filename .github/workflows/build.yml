@@ -1,8 +1,10 @@
 name: Build
 
 on:
+  pull_request:
+    types: [ opened, synchronize ]
   push:
-    branches-ignore:
+    branches:
       - main
   workflow_dispatch:
 
@@ -49,10 +51,12 @@ jobs:
             ARTIFACT_VERSION="${CURRENT_VERSION}-PR${PR_NUMBER}"
             echo "ARTIFACT_VERSION=${ARTIFACT_VERSION}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
           else
-            BRANCH=${GITHUB_REF##*/}
-            echo "BRANCH=${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
+            BRANCH=${GITHUB_REF_NAME}
+            SANITIZED_BRANCH=$(echo $BRANCH | sed 's|/|-|g')
+            echo "BRANCH=${BRANCH}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+            echo "SANITIZED_BRANCH=${SANITIZED_BRANCH}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
 
-            ARTIFACT_VERSION=${CURRENT_VERSION}-${BRANCH}
+            ARTIFACT_VERSION=${CURRENT_VERSION}-${SANITIZED_BRANCH}
             echo "ARTIFACT_VERSION=${ARTIFACT_VERSION}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
           fi
 
