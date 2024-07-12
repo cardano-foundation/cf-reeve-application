@@ -16,6 +16,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Tra
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest;
 import org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.LedgerDispatchStatusView;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,11 +73,14 @@ public class CustomTransactionBatchRepositoryImpl implements CustomTransactionBa
         }
 
         if (null != body.getFrom()) {
-            andPredicates.add(builder.greaterThanOrEqualTo(rootEntry.get("filteringParameters").get("from"), body.getFrom()));
+            LocalDateTime localDateTime1 = body.getFrom().atStartOfDay();
+            andPredicates.add(builder.greaterThanOrEqualTo(rootEntry.get("createdAt"), localDateTime1));
+
         }
 
         if (null != body.getTo()) {
-            andPredicates.add(builder.lessThanOrEqualTo(rootEntry.get("filteringParameters").get("to"), body.getTo()));
+            LocalDateTime localDateTime2 = body.getTo().atTime(23,59, 59);
+            andPredicates.add(builder.lessThanOrEqualTo(rootEntry.get("createdAt"), localDateTime2));
         }
 
         if (!body.getTxStatus().isEmpty()) {
