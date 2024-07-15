@@ -227,13 +227,13 @@ class AccountingCorePresentationConverterTest {
         transactionBatchEntity.setBatchStatistics(batchStatistics);
 
         when(transactionBatchRepositoryGateway.findByFilter(batchSearchRequest)).thenReturn(List.of(transactionBatchEntity));
+        when(transactionBatchRepositoryGateway.findByFilterCount(batchSearchRequest)).thenReturn(Long.valueOf(1));
 
         BatchsDetailView batchsDetailView = accountingCorePresentationConverter.listAllBatch(batchSearchRequest);
         List<BatchView> result = batchsDetailView.getBatchs();
 
         assertEquals(1, result.size());
         assertEquals(1, batchsDetailView.getTotal());
-        assertEquals(1, batchsDetailView.getBatchs().stream().count());
         assertEquals("batch-id", result.iterator().next().getId());
         assertEquals(TransactionBatchStatus.CREATED, result.iterator().next().getStatus());
 
