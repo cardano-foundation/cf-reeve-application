@@ -90,4 +90,4 @@ jobs:
         env:
           EARTHLY_BUILD_ARGS: ${{ steps.metadata.outputs.EARTHLY_BUILD_ARGS }},DOCKER_REGISTRIES=${{ secrets.DOCKER_REGISTRIES }}
         run: |
-          earthly +docker-publish
+          earthly +docker-publish --PUSH=true
