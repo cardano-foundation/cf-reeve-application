@@ -2,7 +2,6 @@ package org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.converto
 
 import io.vavr.control.Either;
 import lombok.val;
-import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
 import java.util.function.Function;

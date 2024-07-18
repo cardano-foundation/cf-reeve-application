@@ -29,6 +29,7 @@ import java.time.Clock;
 import java.util.HashMap;
 import java.util.function.Function;
 
+import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType.*;
 import static org.scribe.model.SignatureType.Header;
 
 @Configuration
@@ -139,10 +140,10 @@ public class CFConfig {
     @Bean
     public PreprocessorService preprocessorService() {
         val fieldProcessors = new HashMap<FieldType, Function<String, Either<Problem, String>>>();
-        fieldProcessors.put(FieldType.COST_CENTER, new CostCenterConvertor());
-        fieldProcessors.put(FieldType.PROJECT, new ProjectConvertor());
-        fieldProcessors.put(FieldType.CHART_OF_ACCOUNT, new AccountNumberConvertor());
-        fieldProcessors.put(FieldType.VAT, new VatConvertor());
+        fieldProcessors.put(COST_CENTER, new CostCenterConvertor());
+        fieldProcessors.put(PROJECT, new ProjectConvertor());
+        fieldProcessors.put(CHART_OF_ACCOUNT, new AccountNumberConvertor());
+        fieldProcessors.put(VAT, new VatConvertor());
 
         return new PreprocessorService(fieldProcessors);
     }
