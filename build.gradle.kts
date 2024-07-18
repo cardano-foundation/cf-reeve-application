@@ -1,4 +1,5 @@
 import info.solidsoft.gradle.pitest.PitestTask
+import org.gradle.api.JavaVersion.VERSION_21
 
 plugins {
     java
@@ -13,9 +14,6 @@ subprojects {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "com.github.ben-manes.versions")
     apply(plugin = "info.solidsoft.pitest")
-
-    group = "de.cardanofoundation"
-    version = "0.0.1-SNAPSHOT"
 
     sourceSets {
         named("main") {
@@ -34,7 +32,7 @@ subprojects {
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = VERSION_21
     }
 
     configurations {
@@ -47,6 +45,9 @@ subprojects {
     extra["springCloudVersion"] = "2023.0.0"
     extra["springModulithVersion"] = "1.2.0"
     extra["jMoleculesVersion"] = "2023.1.0"
+    extra["cfLobPlatformVersion"] = "0.0.1-SNAPSHOT"
+
+    // "org.springframework.boot:spring-boot-dependencies:${property("springBootVersion")}
 
     dependencies {
         implementation("org.json:json:20211205") // TODO check if this is needed at all
@@ -115,21 +116,21 @@ subprojects {
     tasks {
         val ENABLE_PREVIEW = "--enable-preview"
 
-        withType<JavaCompile>() {
+        withType<JavaCompile> {
             options.compilerArgs.add(ENABLE_PREVIEW)
             //options.compilerArgs.add("-Xlint:preview")
         }
 
-        withType<Test>() {
+        withType<Test> {
             useJUnitPlatform()
             jvmArgs(ENABLE_PREVIEW)
         }
 
-        withType<PitestTask>() {
+        withType<PitestTask> {
             jvmArgs(ENABLE_PREVIEW)
         }
 
-        withType<JavaExec>() {
+        withType<JavaExec> {
             jvmArgs(ENABLE_PREVIEW)
         }
 

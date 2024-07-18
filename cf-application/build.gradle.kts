@@ -21,12 +21,11 @@ dependencies {
 
     implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
 
-    implementation(project(":accounting_reporting_core"))
-    implementation(project(":organisation"))
-    implementation(project(":support"))
-    implementation(project(":blockchain_publisher"))
     implementation(project(":cf_netsuite_altavia_erp_connector"))
-    implementation(project(":netsuite_altavia_erp_adapter"))
-    implementation(project(":notification_gateway"))
-
+    implementation("org.cardanofoundation:cf-lob-platform-organisation:${property("cfLobPlatformVersion")}")
+    implementation("org.cardanofoundation:cf-lob-platform-support:${property("cfLobPlatformVersion")}")
+    implementation("org.cardanofoundation:cf-lob-platform-notification_gateway:${property("cfLobPlatformVersion")}")
+    implementation("org.cardanofoundation:cf-lob-platform-netsuite_altavia_erp_adapter:${property("cfLobPlatformVersion")}")
+    implementation("org.cardanofoundation:cf-lob-platform-blockchain_publisher:${property("cfLobPlatformVersion")}")
+    implementation("org.cardanofoundation:cf-lob-platform-accounting_reporting_core:${property("cfLobPlatformVersion")}")
 }
