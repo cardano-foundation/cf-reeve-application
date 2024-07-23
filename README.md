@@ -14,6 +14,7 @@ BUILD SUCCESSFUL in 13s
 
 Starting postgres DB locally
 ```bash
+git clone https://github.com/cardano-foundation/cf-lob
 docker compose up
 ```
 
