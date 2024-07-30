@@ -16,6 +16,7 @@ services:
   app:
     build:
       context: .
+    env_file: cf-application/.env
     environment:
       SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
