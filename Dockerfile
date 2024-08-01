@@ -1,4 +1,4 @@
-ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-platform-library-m2-cache:0.0.1-SNAPSHOT-PR1-2a7d6e8
+ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-platform-library-m2-cache:0.0.1-main-7a218de-GHRUN10201398015
 
 FROM ${LIB_DOCKER_IMAGE} AS m2-cache
 
