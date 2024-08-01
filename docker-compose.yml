@@ -31,8 +31,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backendhttp.entrypoints=web"
-      - "traefik.http.routers.backendhttp.rule=Host(`${APP_HOSTNAME:-dev.api.cf-lob.metadata.dev.cf-deployments.org}`)"
-      - "traefik.http.routers.backend.rule=Host(`${APP_HOSTNAME:-dev.api.cf-lob.metadata.dev.cf-deployments.org}`)"
+      - "traefik.http.routers.backendhttp.rule=Host(`${APP_BACK_HOSTNAME:-dev.api.cf-lob.metadata.dev.cf-deployments.org}`)"
+      - "traefik.http.routers.backend.rule=Host(`${APP_BACK_HOSTNAME:-dev.api.cf-lob.metadata.dev.cf-deployments.org}`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
