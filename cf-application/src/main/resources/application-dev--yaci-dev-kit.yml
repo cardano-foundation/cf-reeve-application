@@ -46,4 +46,4 @@ lob:
     transaction:
       metadata:
         validation:
-          enable: false
+          enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLE:true}

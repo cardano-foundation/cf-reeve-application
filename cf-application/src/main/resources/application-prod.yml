@@ -15,3 +15,10 @@ spring:
 
   env:
     active: prod
+
+lob:
+  l1:
+    transaction:
+      metadata:
+        validation:
+          enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLE:true}
