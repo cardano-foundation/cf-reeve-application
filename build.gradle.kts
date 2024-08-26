@@ -44,7 +44,7 @@ subprojects {
         }
     }
 
-    extra["springBootVersion"] = "3.3.1"
+    extra["springBootVersion"] = "3.3.3"
     extra["springCloudVersion"] = "2023.0.0"
     extra["springModulithVersion"] = "1.2.0"
     extra["jMoleculesVersion"] = "2023.1.0"
@@ -58,10 +58,10 @@ subprojects {
         implementation("org.flywaydb:flyway-core")
         implementation("org.flywaydb:flyway-database-postgresql")
 
-        implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.1")
+        implementation("com.bloxbean.cardano:cardano-client-crypto:0.6.0-preview2")
 
         // needed to store json via JPA in PostgreSQL
-        implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.6")
+        implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.8.2")
 
         runtimeOnly("io.micrometer:micrometer-registry-prometheus")
         runtimeOnly("org.postgresql:postgresql")
@@ -87,9 +87,9 @@ subprojects {
         implementation("javax.xml.bind", "jaxb-api", "2.3.0")
         implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2") // needed for OAuth 1.0 for NetSuite Module
 
-        implementation("com.networknt:json-schema-validator:1.4.0")
+        implementation("com.networknt:json-schema-validator:1.5.1")
 
-        implementation("com.google.guava:guava:33.2.1-jre")
+        implementation("com.google.guava:guava:33.3.0-jre")
 
         implementation("org.apache.commons:commons-collections4:4.4")
 
@@ -97,10 +97,10 @@ subprojects {
         annotationProcessor("org.projectlombok:lombok:1.18.32")
         implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
         testCompileOnly("org.projectlombok:lombok:1.18.32")
-        testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
-        testImplementation("io.rest-assured:rest-assured:5.4.0")
-        testImplementation("org.wiremock:wiremock-standalone:3.6.0")
-        testImplementation("net.jqwik:jqwik:1.8.5") // Jqwik for property-based testing
+        testAnnotationProcessor("org.projectlombok:lombok:1.18.3`2")
+        testImplementation("io.rest-assured:rest-assured:5.5.0")
+        testImplementation("org.wiremock:wiremock-standalone:3.9.1")
+        testImplementation("net.jqwik:jqwik:1.9.0") // Jqwik for property-based testing
         testImplementation("org.assertj:assertj-core:3.26.0")
         testImplementation("org.pitest:pitest-junit5-plugin:1.2.1")
     }
