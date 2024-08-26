@@ -20,13 +20,19 @@ spring:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
 
+
 lob:
   blockchain:
     publisher:
-      enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:false}
+      dispatcher:
+        enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:false}
+
+      watchdog:
+        enabled: ${LOB_BLOCKCHAIN_WATCHDOG_ENABLED_CARDANO:false}
 
   cardano:
     network: "DEV"
+
   dispatching:
     strategy:
       type: "IMMEDIATE"
