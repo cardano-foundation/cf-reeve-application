@@ -1,10 +1,7 @@
 server:
   port: 9000
 
-
 spring:
-
-
   task:
     execution:
       thread-name-prefix: lob-service-task-executor-
