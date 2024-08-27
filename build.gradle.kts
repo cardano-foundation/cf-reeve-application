@@ -58,7 +58,7 @@ subprojects {
         implementation("org.flywaydb:flyway-core")
         implementation("org.flywaydb:flyway-database-postgresql")
 
-        implementation("com.bloxbean.cardano:cardano-client-crypto:0.6.0-preview2")
+        implementation("com.bloxbean.cardano:cardano-client-crypto:0.6.0-beta1")
 
         // needed to store json via JPA in PostgreSQL
         implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.8.2")
