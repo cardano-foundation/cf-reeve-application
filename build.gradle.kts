@@ -97,7 +97,7 @@ subprojects {
         annotationProcessor("org.projectlombok:lombok:1.18.32")
         implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
         testCompileOnly("org.projectlombok:lombok:1.18.32")
-        testAnnotationProcessor("org.projectlombok:lombok:1.18.3`2")
+        testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
         testImplementation("io.rest-assured:rest-assured:5.5.0")
         testImplementation("org.wiremock:wiremock-standalone:3.9.1")
         testImplementation("net.jqwik:jqwik:1.9.0") // Jqwik for property-based testing
