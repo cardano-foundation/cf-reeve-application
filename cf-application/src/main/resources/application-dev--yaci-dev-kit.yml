@@ -20,7 +20,6 @@ spring:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
 
-
 lob:
   blockchain:
     publisher:
@@ -35,7 +34,7 @@ lob:
 
   dispatching:
     strategy:
-      type: "IMMEDIATE"
+      type: ${LOB_DISPATCHING_STRATEGY_TYPE:IMMEDIATE}
 
   blockfrost:
     url: "http://localhost:8080/api/v1/"
@@ -48,8 +47,13 @@ lob:
       period:
         source: IMPLICIT
 
-  l1:
-    transaction:
-      metadata:
-        validation:
-          enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLE:true}
+l1:
+  transaction:
+    debug:
+      store:
+        output:
+          tx: ${LOB_L1_TRANSACTION_DEBUG_STORE_OUTPUT_TX:true}
+
+    metadata:
+      validation:
+        enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLE:true}
