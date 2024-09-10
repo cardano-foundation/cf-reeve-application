@@ -25,7 +25,6 @@ lob:
     publisher:
       dispatcher:
         enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:false}
-
       watchdog:
         enabled: ${LOB_BLOCKCHAIN_WATCHDOG_ENABLED_CARDANO:false}
 

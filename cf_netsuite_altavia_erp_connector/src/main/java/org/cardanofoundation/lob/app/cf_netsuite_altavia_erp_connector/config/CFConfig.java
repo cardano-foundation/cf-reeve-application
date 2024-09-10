@@ -15,6 +15,7 @@ import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.Fi
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.CodesMappingRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.*;
+import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.oauth.OAuthService;
@@ -98,7 +99,7 @@ public class CFConfig {
     }
 
     @Bean
-    public NetSuiteService netSuiteService(IngestionRepository ingestionRepository,
+    public NetSuiteExtractionService netSuiteExtractionService(IngestionRepository ingestionRepository,
                                            NetSuiteClient netSuiteClient,
                                            TransactionConverter transactionConverter,
                                            ApplicationEventPublisher eventPublisher,
@@ -108,7 +109,7 @@ public class CFConfig {
                                            @Value("${lob.events.netsuite.to.core.send.batch.size:100}") int sendBatchSize,
                                            @Value("${lob.events.netsuite.to.core.netsuite.instance.debug.mode:true}") boolean isDebugMode
     ) {
-        return new NetSuiteService(
+        return new NetSuiteExtractionService(
                 ingestionRepository,
                 netSuiteClient,
                 transactionConverter,
@@ -123,8 +124,33 @@ public class CFConfig {
     }
 
     @Bean
-    public NetSuiteEventHandler netSuiteEventHandler(NetSuiteService netSuiteService) {
-        return new NetSuiteEventHandler(netSuiteService);
+    public NetSuiteReconcilationService netsuiteReconcilationService(IngestionRepository ingestionRepository,
+                                                                     NetSuiteClient netSuiteClient,
+                                                                     TransactionConverter transactionConverter,
+                                                                     ApplicationEventPublisher eventPublisher,
+                                                                     SystemExtractionParametersFactory extractionParametersFactory,
+                                                                     ExtractionParametersFilteringService parametersFilteringService,
+                                                                     NetSuiteParser netSuiteParser,
+                                                                     @Value("${lob.events.netsuite.to.core.send.batch.size:100}") int sendBatchSize,
+                                                                     @Value("${lob.events.netsuite.to.core.netsuite.instance.debug.mode:true}") boolean isDebugMode
+    ) {
+        return new NetSuiteReconcilationService(
+                ingestionRepository,
+                netSuiteClient,
+                transactionConverter,
+                parametersFilteringService,
+                netSuiteParser,
+                eventPublisher,
+                sendBatchSize,
+                NETSUITE_CONNECTOR_ID,
+                isDebugMode
+        );
+    }
+
+    @Bean
+    public NetSuiteEventHandler netSuiteEventHandler(NetSuiteExtractionService netSuiteExtractionService,
+                                                     NetSuiteReconcilationService netSuiteReconcilationService) {
+        return new NetSuiteEventHandler(netSuiteExtractionService, netSuiteReconcilationService);
     }
 
     @Bean
