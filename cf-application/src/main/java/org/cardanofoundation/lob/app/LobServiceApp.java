@@ -4,6 +4,13 @@ import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.AccountEvent;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
+import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionItemEntity;
+import org.cardanofoundation.lob.app.support.javers.LOBBigDecimalComparator;
+import org.javers.core.Javers;
+import org.javers.core.JaversBuilder;
+import org.javers.core.diff.custom.CustomBigDecimalComparator;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -16,6 +23,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.modulith.Modulith;
 import org.springframework.scheduling.TaskScheduler;
@@ -26,6 +34,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
@@ -44,6 +53,7 @@ import java.time.Clock;
 //@ImportRuntimeHints(org.cardanofoundation.lob.app.LobServiceApp.Hints.class)
 @EnableAutoConfiguration
 @Slf4j
+@Import({ LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class })
 public class LobServiceApp {
 
     public static void main(String[] args) {
@@ -67,6 +77,7 @@ public class LobServiceApp {
         @Bean
         public ShallowEtagHeaderFilter shallowEtagHeaderFilter() {
             log.info("Registering ShallowEtagHeaderFilter...");
+
             return new ShallowEtagHeaderFilter();
         }
 
@@ -116,6 +127,21 @@ public class LobServiceApp {
         public Clock clock() {
             log.info("Registering Clock...");
             return Clock.systemDefaultZone();
+        }
+
+    }
+
+    @Configuration
+    public class JaversConfig {
+
+        @Bean
+        public Javers javers() {
+            log.info("Creating Javers diff instance...");
+
+            return JaversBuilder.javers()
+                    .withPrettyPrint(true)
+                    .registerValue(BigDecimal.class, new LOBBigDecimalComparator())
+                    .build();
         }
 
     }
