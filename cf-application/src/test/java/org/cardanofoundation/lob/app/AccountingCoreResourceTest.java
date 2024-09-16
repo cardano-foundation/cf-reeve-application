@@ -40,7 +40,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
-                .body("id[0]", equalTo("ReadyToPublish_2_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa630"))
+                .body("id[0]", equalTo("All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4"))
 
         ;
 
@@ -87,7 +87,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     }
 
     @Test
-    void testListAllAction() throws Exception {
+    void testExtractionTrigger() throws Exception {
         String myJson = "{\n" +
                 "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
                 "  \"dateFrom\": \"2023-01-01\",\n" +
@@ -165,7 +165,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     }
 
     @Test
-    void testExtractionTrigger() throws Exception {
+    void testListAllAction() throws Exception {
         String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\"status\": [\"VALIDATED\"]}";
 
         given()
@@ -175,7 +175,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/transactions")
                 .then()
                 .statusCode(200)
-                .body("id[0]", equalTo("ReadyToPublish_2_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa630"))
+                .body("id[0]", equalTo("All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4"))
 
         ;
 
@@ -200,6 +200,26 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("find { it.title == 'Fx Revaluation' }.id", equalTo("FxRevaluation"))
                 .body("find { it.title == 'Bill Credit' }.id", equalTo("BillCredit"))
                 .body("find { it.title == 'Expense Report' }.id", equalTo("ExpenseReport"));
+
+    }
+
+    @Test
+    void testRejectionReasons() throws Exception {
+
+        ValidatableResponse este = given()
+                .contentType("application/json")
+                .when()
+                .get("/api/rejection-reasons")
+                .then()
+                .statusCode(200)
+                .body(containsString("INCORRECT_AMOUNT"))
+                .body(containsString("INCORRECT_COST_CENTER"))
+                .body(containsString("INCORRECT_PROJECT"))
+                .body(containsString("INCORRECT_CURRENCY"))
+                .body(containsString("INCORRECT_VAT_CODE"))
+                .body(containsString("REVIEW_PARENT_COST_CENTER"))
+                .body(containsString("REVIEW_PARENT_PROJECT_CODE"))
+                ;
 
     }
 
@@ -432,5 +452,33 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
         ;
     }
 
+    @Test
+    void testListAllBatchReprocess() {
+
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/api/batches/reprocess/TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e")
+                .then()
+                .statusCode(200)
+                .body("batchId", equalTo("TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e"))
+                .body("success", equalTo(true))
+
+        ;
+    }
+
+    @Test
+    void testListAllBatchReprocessNoExist() {
+
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/api/batches/reprocess/fake")
+                .then()
+                .statusCode(200)
+                .body("batchId", equalTo("fake"))
+                .body("success", equalTo(false))
+        ;
+    }
 
 }
