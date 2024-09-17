@@ -15,8 +15,8 @@ import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.Fi
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FinancialPeriodSource;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.CodesMappingRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.IngestionRepository;
-import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.*;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler;
+import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.*;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.oauth.OAuthService;
