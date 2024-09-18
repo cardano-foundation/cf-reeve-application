@@ -38,7 +38,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
-                .body("id[0]", equalTo("All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4"));
+                .body("id[0]", equalTo("ReadyToPublish_18_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa63"));
     }
 
     // TODO this fails for me since localisation should not be part of the answer:
@@ -310,7 +310,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/transactions")
                 .then()
                 .statusCode(200)
-                .body("id[0]", equalTo("All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4"));
+                .body("id[0]", equalTo("ReadyToPublish_18_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa63"));
     }
 
     @Test
@@ -365,11 +365,11 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/batches")
                 .then()
                 .statusCode(200)
-                .body("batchs.id[0]", containsString("TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e"))
-                .body("batchs.createdAt[0]", containsString("2024-08-15"))
-                .body("batchs.updatedAt[0]", containsString("2024-08-15"))
+                .body("batchs.id[0]", containsString("TEST_ReadyToPublish2_816d14723a4ab4a67636a7d63dc6f7adf61aba32c04"))
+                .body("batchs.createdAt[0]", containsString("2024-08-18"))
+                .body("batchs.updatedAt[0]", containsString("2024-08-18"))
                 .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
-                .body("total", equalTo(6));
+                .body("total", equalTo(12));
     }
 
     @Test
@@ -390,9 +390,9 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/batches")
                 .then()
                 .statusCode(200)
-                .body("batchs.id[0]", containsString("TEST_Pending_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
-                .body("batchs.createdAt[0]", containsString("2024-02-15"))
-                .body("batchs.updatedAt[0]", containsString("2024-02-15"))
+                .body("batchs.id[0]", containsString("TEST_Rejection_b6x90wedd2d9e814b96436029a8ca22440f65c64ef236459e"))
+                .body("batchs.createdAt[0]", containsString("2024-07-17"))
+                .body("batchs.updatedAt[0]", containsString("2024-08-16"))
                 .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
                 .body("batchs.batchStatistics[0].invalid", equalTo(0))
                 .body("batchs.batchStatistics[0].pending", equalTo(1))
@@ -400,7 +400,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(1))
-                .body("total", equalTo(2));
+                .body("total", equalTo(4));
 
     }
 
@@ -455,8 +455,8 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("batchs.id[0]", containsString("TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e"))
-                .body("batchs.createdAt[0]", containsString("2024-08-15"))
-                .body("batchs.updatedAt[0]", containsString("2024-08-15"))
+                .body("batchs.createdAt[0]", containsString("2024-08-16"))
+                .body("batchs.updatedAt[0]", containsString("2024-08-16"))
                 .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
                 .body("batchs.batchStatistics[0].invalid", equalTo(0))
                 .body("batchs.batchStatistics[0].pending", equalTo(0))
@@ -464,7 +464,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(3))
-                .body("total", equalTo(2));
+                .body("total", equalTo(4));
 
     }
 
@@ -486,17 +486,17 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/batches")
                 .then()
                 .statusCode(200)
-                .body("batchs.id[0]", containsString("TEST_ReadyToPublish_816d14723a4ab4a67636a7d63dc6f7adf61aba32c041"))
-                .body("batchs.createdAt[0]", containsString("2024-06-13"))
-                .body("batchs.updatedAt[0]", containsString("2024-06-13"))
+                .body("batchs.id[0]", containsString("TEST_ReadyToPublish2_816d14723a4ab4a67636a7d63dc6f7adf61aba32c04"))
+                .body("batchs.createdAt[0]", containsString("2024-08-18"))
+                .body("batchs.updatedAt[0]", containsString("2024-08-18"))
                 .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
                 .body("batchs.batchStatistics[0].invalid", equalTo(0))
                 .body("batchs.batchStatistics[0].pending", equalTo(0))
                 .body("batchs.batchStatistics[0].approve", equalTo(0))
-                .body("batchs.batchStatistics[0].publish", equalTo(2))
+                .body("batchs.batchStatistics[0].publish", equalTo(3))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
-                .body("batchs.batchStatistics[0].total", equalTo(2))
-                .body("total", equalTo(2));
+                .body("batchs.batchStatistics[0].total", equalTo(3))
+                .body("total", equalTo(5));
     }
 
     @Test
@@ -524,10 +524,10 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].invalid", equalTo(0))
                 .body("batchs.batchStatistics[0].pending", equalTo(0))
                 .body("batchs.batchStatistics[0].approve", equalTo(0))
-                .body("batchs.batchStatistics[0].publish", equalTo(0))
-                .body("batchs.batchStatistics[0].published", equalTo(3))
+                .body("batchs.batchStatistics[0].publish", equalTo(2))
+                .body("batchs.batchStatistics[0].published", equalTo(1))
                 .body("batchs.batchStatistics[0].total", equalTo(3))
-                .body("total", equalTo(2));
+                .body("total", equalTo(1));
 
     }
 
