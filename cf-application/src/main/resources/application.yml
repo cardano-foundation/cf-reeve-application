@@ -85,7 +85,7 @@ spring:
       schema-initialization:
         enabled: true
 
-    republish-outstanding-events-on-restart: true
+    republish-outstanding-events-on-restart: false
 
 lob:
   cors:
@@ -116,5 +116,31 @@ lob:
 
   blockfrost:
     url: ""
-    api:
-      key: ""
+    api_key: ""
+
+# yaci store
+store:
+  cardano:
+    host: ${CARDANO_NODE_HOST:preprod-node.world.dev.cardano.org}
+    port: ${CARDANO_NODE_PORT:30000}
+    # protocol magic 1 = Cardano PreProd network
+    protocol-magic: ${CARDANO_NODE_PROTOCOL_MAGIC:1}
+
+  sync-start-blockhash: ${YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH:274218b4101de63d02dd38fa0ff9be75a1c146667f4aa67fe8a04e462c8c55b1}
+  sync-start-slot: ${YACI_STORE_CARDANO_SYNC_START_SLOT:67868386}
+
+  blocks.epoch-calculation-interval: 86400
+  blocks.epoch-calculation-enabled: false
+
+apiPrefix: ${API_PREFIX:/yaci-api}
+  
+endpoints:
+  health:
+    enabled: ${HEALTH_ENABLED:true}
+  management:
+  endpoints:
+    web:
+      exposure:
+        include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,scheduledtasks,flyway}
+    health:
+      show-details: ${MANAGEMENT_ENDPOINT_SHOW_DETAILS:always}

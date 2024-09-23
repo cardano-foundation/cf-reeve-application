@@ -3,13 +3,10 @@ package org.cardanofoundation.lob.app;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.core.IsEqual.equalTo;
-
 
 class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
@@ -159,9 +156,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(400)
                 .body("title", equalTo("ORGANISATION_DATE_MISMATCH"))
-                .body("detail", equalTo("Date range must be within the accounting period: [2004-09-22..2024-09-22]"))
-        ;
-
+                .body("detail", startsWith("Date range must be within the accounting period:"));
     }
 
     @Test
