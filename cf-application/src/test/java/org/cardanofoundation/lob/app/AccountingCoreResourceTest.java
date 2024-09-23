@@ -129,7 +129,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllActionWrongDate() throws Exception {
         String myJson = "{\n" +
                 "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
-                "  \"dateFrom\": \"2013-01-01\",\n" +
+                "  \"dateFrom\": \"2003-01-01\",\n" +
                 "  \"dateTo\": \"2024-05-01\",\n" +
                 "  \"transactionType\": [\n" +
                 "    \"CardCharge\",\n" +
@@ -157,9 +157,9 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .when()
                 .post("/api/extraction")
                 .then()
-                .statusCode(404)
+                .statusCode(400)
                 .body("title", equalTo("ORGANISATION_DATE_MISMATCH"))
-                .body("detail", equalTo("the requested data is outside of accounting period for 75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
+                .body("detail", equalTo("Date range must be within the accounting period: [2004-09-22..2024-09-22]"))
         ;
 
     }
@@ -270,7 +270,6 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     @Test
     void testListAllBatchInvalid() {
         String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",  \"batchStatistics\": [\n\"INVALID\"\n]}";
-
 
         given()
                 .contentType("application/json")
