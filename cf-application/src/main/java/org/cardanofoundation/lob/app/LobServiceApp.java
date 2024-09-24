@@ -8,6 +8,7 @@ import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.AccountE
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionEntity;
 import org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.TransactionItemEntity;
 import org.cardanofoundation.lob.app.support.javers.LOBBigDecimalComparator;
+import org.cardanofoundation.lob.app.support.web.internal.SpringWebConfig;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.custom.CustomBigDecimalComparator;
@@ -53,7 +54,7 @@ import java.time.Clock;
 //@ImportRuntimeHints(org.cardanofoundation.lob.app.LobServiceApp.Hints.class)
 @EnableAutoConfiguration
 @Slf4j
-@Import({ LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class })
+@Import({ LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class, SpringWebConfig.class })
 public class LobServiceApp {
 
     public static void main(String[] args) {
