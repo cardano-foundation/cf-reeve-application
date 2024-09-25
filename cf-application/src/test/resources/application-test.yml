@@ -10,7 +10,7 @@ spring:
     ddl-auto: create
 
   flyway:
-    out-of-order: false
+    out-of-order: true
     url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
     user: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
@@ -21,17 +21,19 @@ spring:
     validateMigrationNaming: true
     cleanDisabled: false
     locations:
+      - classpath:db/store/{vendor}
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
+
 lob:
   cardano:
     network: "DEV"
+  dispatching_strategy:
+    type: "IMMEDIATE"
 
   blockfrost:
     url: "http://localhost:8080/api/v1/"
     # locally YaciDevKit runs on port 8080
-    api:
-      key: ""
-
+    api_key: ""
 
 #spring.profiles.active=dev--yaci-dev-kit
