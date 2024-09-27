@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
 import jakarta.validation.Validator;
 import lombok.val;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.AccountingPeriodCalculator;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.assistance.AccountingPeriodCalculator;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.AccountNumberConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.CostCenterConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.ProjectConvertor;
