@@ -63,11 +63,11 @@ store:
     port: 3001
     # 42 is protocol magic for Yaci-Dev-Kit
     protocol-magic: 42
-    # for devnet we must specify the genesis files
-    byron-genesis-file: ../devel/config/devkit/byron-genesis.json
-    shelley-genesis-file: ../devel/config/devkit/shelley-genesis.json
-    alonzo-genesis-file: ../devel/config/devkit/alonzo-genesis.json
-    conway-genesis-file: ../devel/config/devkit/conway-genesis.json
+    # for devnet we must specify the genesis files for Yaci-Store
+    byron-genesis-file: classpath:/devel/config/devkit/byron-genesis.json
+    shelley-genesis-file: classpath:/devel/config/devkit/shelley-genesis.json
+    alonzo-genesis-file: classpath:/devel/config/devkit/alonzo-genesis.json
+    conway-genesis-file: classpath:/devel/config/devkit/conway-genesis.json
 
   sync-start-blockhash:
   sync-start-slot: 0
