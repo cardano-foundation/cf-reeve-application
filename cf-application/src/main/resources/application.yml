@@ -88,6 +88,9 @@ spring:
     republish-outstanding-events-on-restart: false
 
 lob:
+  blockchain_reader:
+    enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
+
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}
