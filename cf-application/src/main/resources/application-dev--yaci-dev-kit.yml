@@ -56,7 +56,7 @@ l1:
 # yaci-store properties
 
 store:
-  sync-auto-start: false
+  sync-auto-start: true
 
   cardano:
     host: localhost
