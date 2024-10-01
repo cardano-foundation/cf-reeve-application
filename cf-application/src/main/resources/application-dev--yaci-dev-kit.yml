@@ -59,8 +59,8 @@ store:
   sync-auto-start: true
 
   cardano:
-    host: localhost
-    port: 3001
+    host: ${LOB_STORE_HOST:localhost}
+    port: ${LOB_STORE_PORT:3001}
     # 42 is protocol magic for Yaci-Dev-Kit
     protocol-magic: 42
     # for devnet we must specify the genesis files for Yaci-Store
