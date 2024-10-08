@@ -25,9 +25,6 @@ lob:
   cardano:
     network: ${LOB_CARDANO_NETWORK:DEV}
 
-  blockchain_reader:
-    enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
-
   blockchain_publisher:
     dispatcher:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:true}
@@ -54,10 +51,6 @@ l1:
       enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLE:true}
 
 # yaci-store properties
-
-store:
-  sync-auto-start: true
-
   cardano:
     host: ${LOB_STORE_HOST:localhost}
     port: ${LOB_STORE_PORT:3001}
