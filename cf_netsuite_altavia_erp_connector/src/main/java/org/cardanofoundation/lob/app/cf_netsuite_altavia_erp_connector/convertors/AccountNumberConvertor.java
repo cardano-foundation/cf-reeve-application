@@ -23,7 +23,8 @@ public class AccountNumberConvertor implements Function<String, Either<Problem, 
                 .withTitle("INVALID_ACCOUNT_NUMBER")
                 .withDetail("Invalid account number")
                 .with("account_number", s)
-                .build());
+                .build()
+        );
     }
 
 }

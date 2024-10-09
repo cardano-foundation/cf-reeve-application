@@ -136,7 +136,7 @@ store:
   blocks.epoch-calculation-enabled: false
 
 apiPrefix: ${API_PREFIX:/yaci-api}
-  
+
 endpoints:
   health:
     enabled: ${HEALTH_ENABLED:true}
@@ -147,3 +147,4 @@ endpoints:
         include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,scheduledtasks,flyway}
     health:
       show-details: ${MANAGEMENT_ENDPOINT_SHOW_DETAILS:always}
+
