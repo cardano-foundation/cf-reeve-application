@@ -19,7 +19,9 @@ spring:
       org:
         hibernate:
           envers:
-            audit_table_suffix: _AUD
+            embeddable_set_ordinal_field_name: "ord"
+            audit_table_suffix: _aud
+            store_data_at_delete: true
     open-in-view: false
 #    show-sql: true
 
