@@ -1,6 +1,6 @@
 package org.cardanofoundation.lob.app;
 
-import io.restassured.response.ValidatableResponse;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -11,36 +11,34 @@ import static org.hamcrest.core.IsEqual.equalTo;
 class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     @Test
-    void testListAllTransactions() throws Exception {
-        String myJson = "{\n" +
-                "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
-                "  \"transactionType\": [\n" +
-                "    \"CardCharge\",\n" +
-                "    \"VendorBill\",\n" +
-                "    \"CardRefund\",\n" +
-                "    \"Journal\",\n" +
-                "    \"FxRevaluation\",\n" +
-                "    \"Transfer\",\n" +
-                "    \"CustomerPayment\",\n" +
-                "    \"ExpenseReport\",\n" +
-                "    \"VendorPayment\",\n" +
-                "    \"BillCredit\"\n" +
-                "  ],\n" +
-                "    \"status\": [\"VALIDATED\",\"FAILED\"]\n" +
-                "}";
+    void testListAllTransactions() {
+        val inputRequestJson = """
+                {
+                  "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                  "transactionType": [
+                    "CardCharge",
+                    "VendorBill",
+                    "CardRefund",
+                    "Journal",
+                    "FxRevaluation",
+                    "Transfer",
+                    "CustomerPayment",
+                    "ExpenseReport",
+                    "VendorPayment",
+                    "BillCredit"
+                  ],
+                    "status": ["VALIDATED","FAILED"]
+                }""";
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/transactions")
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
-                .body("id[0]", equalTo("All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4"))
-
-        ;
-
+                .body("id[0]", equalTo("All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4"));
     }
 
     // TODO this fails for me since localisation should not be part of the answer:
@@ -54,103 +52,237 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 //    ```
 
     @Test
-    void testListAllTransactionsNoOrgnanisationId() throws Exception {
-        String myJson = "{\n" +
-                "  \"organisationId\": \"\",\n" +
-                "  \"transactionType\": [\n" +
-                "    \"CardCharge\",\n" +
-                "    \"VendorBill\",\n" +
-                "    \"CardRefund\",\n" +
-                "    \"Journal\",\n" +
-                "    \"FxRevaluation\",\n" +
-                "    \"Transfer\",\n" +
-                "    \"CustomerPayment\",\n" +
-                "    \"ExpenseReport\",\n" +
-                "    \"VendorPayment\",\n" +
-                "    \"BillCredit\"\n" +
-                "  ],\n" +
-                "    \"status\": [\"VALIDATED\",\"FAILED\"]\n" +
-                "}";
+    void testListAllTransactionsNoOrgnanisationId() {
+        String inputRequestJson = """
+                {
+                  "organisationId": "",
+                  "transactionType": [
+                    "CardCharge",
+                    "VendorBill",
+                    "CardRefund",
+                    "Journal",
+                    "FxRevaluation",
+                    "Transfer",
+                    "CustomerPayment",
+                    "ExpenseReport",
+                    "VendorPayment",
+                    "BillCredit"
+                  ],
+                    "status": ["VALIDATED","FAILED"]
+                }""";
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/transactions")
                 .then()
                 .statusCode(400)
-                .body(equalTo("{\"violations\":[{\"field\":\"organisationId\",\"message\":\"must not be blank\"}],\"type\":\"https://zalando.github.io/problem/constraint-violation\",\"status\":400,\"title\":\"Constraint Violation\"}"))
-        ;
+                .body(equalTo("{\"violations\":[{\"field\":\"organisationId\",\"message\":\"must not be blank\"}],\"type\":\"https://zalando.github.io/problem/constraint-violation\",\"status\":400,\"title\":\"Constraint Violation\"}"));
     }
 
     @Test
-    void testExtractionTrigger() throws Exception {
-        String myJson = "{\n" +
-                "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
-                "  \"dateFrom\": \"2023-01-01\",\n" +
-                "  \"dateTo\": \"2024-05-01\",\n" +
-                "  \"transactionType\": [\n" +
-                "    \"CardCharge\",\n" +
-                "    \"VendorBill\",\n" +
-                "    \"CardRefund\",\n" +
-                "    \"Journal\",\n" +
-                "    \"FxRevaluation\",\n" +
-                "    \"Transfer\",\n" +
-                "    \"CustomerPayment\",\n" +
-                "    \"ExpenseReport\",\n" +
-                "    \"VendorPayment\",\n" +
-                "    \"BillCredit\"\n" +
-                "  ],\n" +
-                "  \"transactionNumbers\": [\n" +
-                "    \"CARDCH565\",\n" +
-                "    \"CARDHY777\",\n" +
-                "    \"CARDCHRG159\",\n" +
-                "    \"VENDBIL119\"\n" +
-                "  ]\n" +
-                "}";
+    void testExtractionTrigger() {
+        val inputRequestJson = """
+                {
+                  "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                  "dateFrom": "2023-01-01",
+                  "dateTo": "2024-05-01",
+                  "transactionType": [
+                    "CardCharge",
+                    "VendorBill",
+                    "CardRefund",
+                    "Journal",
+                    "FxRevaluation",
+                    "Transfer",
+                    "CustomerPayment",
+                    "ExpenseReport",
+                    "VendorPayment",
+                    "BillCredit"
+                  ],
+                  "transactionNumbers": [
+                    "CARDCH565",
+                    "CARDHY777",
+                    "CARDCHRG159",
+                    "VENDBIL119"
+                  ]
+                }""";
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/extraction")
                 .then()
                 .statusCode(202)
                 .body("event", equalTo("EXTRACTION"))
-                .body("message", equalTo("We have received your extraction request now. Please review imported transactions from the batch list."))
-        ;
-
+                .body("message", equalTo("We have received your extraction request now. Please review imported transactions from the batch list."));
     }
 
     @Test
-    void testListAllActionWrongDate() throws Exception {
-        String myJson = "{\n" +
-                "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
-                "  \"dateFrom\": \"2003-01-01\",\n" +
-                "  \"dateTo\": \"2024-05-01\",\n" +
-                "  \"transactionType\": [\n" +
-                "    \"CardCharge\",\n" +
-                "    \"VendorBill\",\n" +
-                "    \"CardRefund\",\n" +
-                "    \"Journal\",\n" +
-                "    \"FxRevaluation\",\n" +
-                "    \"Transfer\",\n" +
-                "    \"CustomerPayment\",\n" +
-                "    \"ExpenseReport\",\n" +
-                "    \"VendorPayment\",\n" +
-                "    \"BillCredit\"\n" +
-                "  ],\n" +
-                "  \"transactionNumbers\": [\n" +
-                "    \"CARDCH565\",\n" +
-                "    \"CARDHY777\",\n" +
-                "    \"CARDCHRG159\",\n" +
-                "    \"VENDBIL119\"\n" +
-                "  ]\n" +
-                "}";
+    void testExtractionTriggerFailDueToToManyTransactionNumbers() {
+        val inputRequestJson = """
+                                    {
+                                      "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                                      "dateFrom": "2023-01-01",
+                                      "dateTo": "2024-05-01",
+                                      "transactionType": [
+                                        "CardCharge",
+                                        "VendorBill",
+                                        "CardRefund",
+                                        "Journal",
+                                        "FxRevaluation",
+                                        "Transfer",
+                                        "CustomerPayment",
+                                        "ExpenseReport",
+                                        "VendorPayment",
+                                        "BillCredit"
+                                      ],
+                                      "transactionNumbers": [
+                        "CARDCH100",
+                        "CARDHY101",
+                        "CARDCHRG102",
+                        "VENDBIL103",
+                        "TXNBANK104",
+                        "PAYOFF105",
+                        "BILLTX106",
+                        "CARDCH107",
+                        "CARDHY108",
+                        "CARDCHRG109",
+                        "VENDBIL110",
+                        "TXNBANK111",
+                        "PAYOFF112",
+                        "BILLTX113",
+                        "CARDCH114",
+                        "CARDHY115",
+                        "CARDCHRG116",
+                        "VENDBIL117",
+                        "TXNBANK118",
+                        "PAYOFF119",
+                        "BILLTX120",
+                        "CARDCH121",
+                        "CARDHY122",
+                        "CARDCHRG123",
+                        "VENDBIL124",
+                        "TXNBANK125",
+                        "PAYOFF126",
+                        "BILLTX127",
+                        "CARDCH128",
+                        "CARDHY129",
+                        "CARDCHRG130",
+                        "VENDBIL131",
+                        "TXNBANK132",
+                        "PAYOFF133",
+                        "BILLTX134",
+                        "CARDCH135",
+                        "CARDHY136",
+                        "CARDCHRG137",
+                        "VENDBIL138",
+                        "TXNBANK139",
+                        "PAYOFF140",
+                        "BILLTX141",
+                        "CARDCH142",
+                        "CARDHY143",
+                        "CARDCHRG144",
+                        "VENDBIL145",
+                        "TXNBANK146",
+                        "PAYOFF147",
+                        "BILLTX148",
+                        "CARDCH149",
+                        "CARDHY150",
+                        "CARDCHRG151",
+                        "VENDBIL152",
+                        "TXNBANK153",
+                        "PAYOFF154",
+                        "BILLTX155",
+                        "CARDCH156",
+                        "CARDHY157",
+                        "CARDCHRG158",
+                        "VENDBIL159",
+                        "TXNBANK160",
+                        "PAYOFF161",
+                        "BILLTX162",
+                        "CARDCH163",
+                        "CARDHY164",
+                        "CARDCHRG165",
+                        "VENDBIL166",
+                        "TXNBANK167",
+                        "PAYOFF168",
+                        "BILLTX169",
+                        "CARDCH170",
+                        "CARDHY171",
+                        "CARDCHRG172",
+                        "VENDBIL173",
+                        "TXNBANK174",
+                        "PAYOFF175",
+                        "BILLTX176",
+                        "CARDCH177",
+                        "CARDHY178",
+                        "CARDCHRG179",
+                        "VENDBIL180",
+                        "TXNBANK181",
+                        "PAYOFF182",
+                        "BILLTX183",
+                        "CARDCH184",
+                        "CARDHY185",
+                        "CARDCHRG186",
+                        "VENDBIL187",
+                        "TXNBANK188",
+                        "PAYOFF189",
+                        "BILLTX190",
+                        "CARDCH191",
+                        "CARDHY192",
+                        "CARDCHRG193",
+                        "VENDBIL194",
+                        "TXNBANK195",
+                        "PAYOFF196",
+                        "BILLTX197",
+                        "CARDCH198",
+                        "CARDHY199"
+                    ]
+                }""";
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
+                .when()
+                .post("/api/extraction")
+                .then()
+                .statusCode(202)
+                .body("event", equalTo("EXTRACTION"))
+                .body("message", equalTo("We have received your extraction request now. Please review imported transactions from the batch list."));
+    }
+
+    @Test
+    void testListAllActionWrongDate() {
+        val inputRequestJson = """
+                {
+                  "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                  "dateFrom": "2003-01-01",
+                  "dateTo": "2024-05-01",
+                  "transactionType": [
+                    "CardCharge",
+                    "VendorBill",
+                    "CardRefund",
+                    "Journal",
+                    "FxRevaluation",
+                    "Transfer",
+                    "CustomerPayment",
+                    "ExpenseReport",
+                    "VendorPayment",
+                    "BillCredit"
+                  ],
+                  "transactionNumbers": [
+                    "CARDCH565",
+                    "CARDHY777",
+                    "CARDCHRG159",
+                    "VENDBIL119"
+                  ]
+                }""";
+
+        given()
+                .contentType("application/json")
+                .body(inputRequestJson)
                 .when()
                 .post("/api/extraction")
                 .then()
@@ -160,26 +292,29 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     }
 
     @Test
-    void testListAllAction() throws Exception {
-        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\"status\": [\"VALIDATED\"]}";
+    void testListAllAction() {
+        val inputRequestJson = """
+    {
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+        "status": [
+            "VALIDATED"
+        ]
+    }
+    """;
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/transactions")
                 .then()
                 .statusCode(200)
-                .body("id[0]", equalTo("All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4"))
-
-        ;
-
+                .body("id[0]", equalTo("All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4"));
     }
 
     @Test
-    void testTransactionType() throws Exception {
-
-        ValidatableResponse este = given()
+    void testTransactionType() {
+        given()
                 .contentType("application/json")
                 .when()
                 .get("/api/transaction-types")
@@ -195,13 +330,11 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("find { it.title == 'Fx Revaluation' }.id", equalTo("FxRevaluation"))
                 .body("find { it.title == 'Bill Credit' }.id", equalTo("BillCredit"))
                 .body("find { it.title == 'Expense Report' }.id", equalTo("ExpenseReport"));
-
     }
 
     @Test
-    void testRejectionReasons() throws Exception {
-
-        ValidatableResponse este = given()
+    void testRejectionReasons() {
+        given()
                 .contentType("application/json")
                 .when()
                 .get("/api/rejection-reasons")
@@ -213,18 +346,20 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body(containsString("INCORRECT_CURRENCY"))
                 .body(containsString("INCORRECT_VAT_CODE"))
                 .body(containsString("REVIEW_PARENT_COST_CENTER"))
-                .body(containsString("REVIEW_PARENT_PROJECT_CODE"))
-                ;
-
+                .body(containsString("REVIEW_PARENT_PROJECT_CODE"));
     }
 
     @Test
     void testListAllBatch() {
-        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"}";
+        val inputRequestJson = """
+                {
+                    "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"
+                }
+                """;
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
                 .then()
@@ -234,16 +369,22 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.updatedAt[0]", containsString("2024-08-15"))
                 .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
                 .body("total", equalTo(6));
-
     }
 
     @Test
     void testListAllBatchPending() {
-        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",  \"batchStatistics\": [\n\"PENDING\"\n]}";
+        val inputRequestJson = """
+    {
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+        "batchStatistics": [
+            "PENDING"
+        ]
+    }
+    """;
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
                 .then()
@@ -264,11 +405,18 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     @Test
     void testListAllBatchInvalid() {
-        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",  \"batchStatistics\": [\n\"INVALID\"\n]}";
+        val inputRequestJson = """
+    {
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+        "batchStatistics": [
+            "INVALID"
+        ]
+    }
+    """;
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
                 .then()
@@ -289,11 +437,18 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     @Test
     void testListAllBatchApprove() {
-        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",  \"batchStatistics\": [\n\"APPROVE\"\n]}";
+        val inputRequestJson = """
+    {
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+        "batchStatistics": [
+            "APPROVE"
+        ]
+    }
+    """;
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
                 .then()
@@ -314,11 +469,18 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     @Test
     void testListAllBatchPublish() {
-        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",  \"batchStatistics\": [\n\"PUBLISH\"\n]}";
+        val inputRequestJson = """
+    {
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+        "batchStatistics": [
+            "PUBLISH"
+        ]
+    }
+    """;
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
                 .then()
@@ -334,16 +496,22 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(2))
                 .body("total", equalTo(2));
-
     }
 
     @Test
     void testListAllBatchPublished() {
-        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",  \"batchStatistics\": [\n\"PUBLISHED\"\n]}";
+        val inputRequestJson = """
+    {
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+        "batchStatistics": [
+            "PUBLISHED"
+        ]
+    }
+    """;
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
                 .then()
@@ -364,11 +532,17 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     @Test
     void testListAllBatchByTime() {
-        String myJson = "{\"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\"from\": \"2024-06-13\",\n\"to\": \"2024-06-13\"}";
+        val inputRequestJson = """
+    {
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+        "from": "2024-06-13",
+        "to": "2024-06-13"
+    }
+    """;
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
                 .then()
@@ -389,37 +563,36 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     @Test
     void testListAllBatchNull() {
-        String myJson = "{\"organisationId\": \"65f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"}";
+        val inputRequestJson = """
+    {
+        "organisationId": "65f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"
+    }
+    """;
 
         given()
                 .contentType("application/json")
-                .body(myJson)
+                .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
                 .then()
-                .statusCode(200)
+                .statusCode(200);
         //.body("title", equalTo("BATCH_ORGANISATION_NOT_FOUND"))
         //.body("detail", equalTo("Batch with organization id: {65f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94} could not be found"))
-        ;
     }
 
     @Test
     void testListAllBatchNoBody() {
-
-
         given()
                 .contentType("application/json")
                 .when()
                 .post("/api/batches")
                 .then()
                 .statusCode(400)
-                .body("title", equalTo("Bad Request"))
-        ;
+                .body("title", equalTo("Bad Request"));
     }
 
     @Test
     void testListAllBatchDetail() {
-
         given()
                 .contentType("application/json")
                 .when()
@@ -427,14 +600,11 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("id", equalTo("TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e"))
-                .body("organisationId", equalTo("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
-
-        ;
+                .body("organisationId", equalTo("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"));
     }
 
     @Test
     void testListAllBatchDetailNull() {
-
         given()
                 .contentType("application/json")
                 .when()
@@ -442,13 +612,11 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(404)
                 .body("title", equalTo("BATCH_NOT_FOUND"))
-                .body("detail", equalTo("Batch with id: {fb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04} could not be found"))
-        ;
+                .body("detail", equalTo("Batch with id: {fb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04} could not be found"));
     }
 
     @Test
     void testListAllBatchReprocess() {
-
         given()
                 .contentType("application/json")
                 .when()
@@ -456,14 +624,11 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("batchId", equalTo("TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e"))
-                .body("success", equalTo(true))
-
-        ;
+                .body("success", equalTo(true));
     }
 
     @Test
     void testListAllBatchReprocessNoExist() {
-
         given()
                 .contentType("application/json")
                 .when()
@@ -471,8 +636,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("batchId", equalTo("fake"))
-                .body("success", equalTo(false))
-        ;
+                .body("success", equalTo(false));
     }
 
 }

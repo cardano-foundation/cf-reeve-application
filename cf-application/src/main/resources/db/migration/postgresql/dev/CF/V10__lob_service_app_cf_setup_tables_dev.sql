@@ -3,7 +3,17 @@ INSERT INTO organisation (organisation_id, name, tax_id_number, country_code, cu
 -- Start
 -- Invalid
 
-INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'FINISHED', 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '2010-01-01', '2024-05-01', NULL, '2021-06-01', '2024-06-01', 'system', 'system', '2024-01-15 18:25:00.060749','2024-01-15 18:25:00.060749');
+INSERT INTO lob_service.accounting_core_transaction_batch
+VALUES (
+    'TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'FINISHED',
+    1, 1, 1, 0, 0, 0, 0, 0, 1, 0,
+    NULL, NULL, NULL,
+    '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94',
+     1,
+    '{"CARDCH565", "CARDHY777", "CARDCHRG159", "VENDBIL119"}', '2010-01-01', '2024-05-01',
+    '2021-06-01', '2024-06-01', 'system', 'system',
+    '2024-01-15 18:25:00.060749', '2024-01-15 18:25:00.060749'
+);
 INSERT INTO lob_service.accounting_core_transaction VALUES ('Invalid_b38a283b41eab57add98278561ab51d23a16f3e3baf3daa461b84ab4', 'CardCharge', 'TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', '2023-07-04', '2023-07', 'CARDCHRG159', '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'Cardano Foundation', 'CH', 'CHE-184477354', 'ISO_4217:CHF', NULL, NULL, NULL, NULL, NULL, 'FAILED', false, false, 'NOT_DISPATCHED', 'NOK', 'system', 'system', CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
 INSERT INTO lob_service.accounting_core_transaction_batch_assoc VALUES ('TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'Invalid_b38a283b41eab57add98278561ab51d23a16f3e3baf3daa461b84ab4', 'system', 'system', '2024-06-13 14:09:12.050311', '2024-06-13 14:09:12.050311');
 
@@ -13,14 +23,9 @@ INSERT INTO lob_service.accounting_core_transaction_item VALUES ('item_3e212e763
 INSERT INTO lob_service.accounting_core_transaction_violation VALUES ('Invalid_b38a283b41eab57add98278561ab51d23a16f3e3baf3daa461b84ab4', 'item_3e212e7639134ea08a39d1b7e3da27fe65ac0da68972606c15dbaebfc13', 'DOCUMENT_MUST_BE_PRESENT', 'ERROR', '', 'ERP', 'DocumentMustBePresentTaskItem', '{"transactionNumber": "CARDCHRG159"}');
 INSERT INTO lob_service.accounting_core_transaction_violation VALUES ('Invalid_b38a283b41eab57add98278561ab51d23a16f3e3baf3daa461b84ab4', 'item_3e212e7639134ea08a39d1b7e3da27fe65ac0da6897f606c15dbaebfc13', 'DOCUMENT_MUST_BE_PRESENT', 'ERROR', '', 'ERP', 'DocumentMustBePresentTaskItem', '{"transactionNumber": "CARDCHRG159"}');
 
-INSERT INTO lob_service.accounting_core_transaction_filtering_params_transaction_number VALUES ('TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'CARDCH565');
-INSERT INTO lob_service.accounting_core_transaction_filtering_params_transaction_number VALUES ('TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'CARDHY777');
-INSERT INTO lob_service.accounting_core_transaction_filtering_params_transaction_number VALUES ('TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'CARDCHRG159');
-INSERT INTO lob_service.accounting_core_transaction_filtering_params_transaction_number VALUES ('TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'VENDBIL119');
-
 -- PENDING
 
-INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_Pending_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'FINISHED', 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '2010-01-01', '2024-05-01', NULL, '2021-06-01', '2024-06-01', 'system', 'system', '2024-02-15 18:25:00.060749','2024-02-15 18:25:00.060749');
+INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_Pending_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'FINISHED', 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '{}', '2010-01-01', '2024-05-01', '2021-06-01', '2024-06-01', 'system', 'system', '2024-02-15 18:25:00.060749','2024-02-15 18:25:00.060749');
 INSERT INTO lob_service.accounting_core_transaction VALUES ('Pending_1_b38a283b41b57add98278561ab51d23a16f3e3baf3daa461b84ab4', 'CardCharge', 'TEST_Pending_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', '2023-07-04', '2023-07', 'CARDCHRG159', '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'Cardano Foundation', 'CH', 'CHE-184477354', 'ISO_4217:CHF', NULL, NULL, NULL, NULL, NULL, 'FAILED', false, false, 'NOT_DISPATCHED', 'NOK', 'system', 'system', CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
 INSERT INTO lob_service.accounting_core_transaction_batch_assoc VALUES ('TEST_Pending_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', 'Pending_1_b38a283b41b57add98278561ab51d23a16f3e3baf3daa461b84ab4', 'system', 'system', '2024-06-13 14:09:12.050311', '2024-06-13 14:09:12.050311');
 
@@ -31,7 +36,7 @@ INSERT INTO lob_service.accounting_core_transaction_violation VALUES ('Pending_1
 INSERT INTO lob_service.accounting_core_transaction_violation VALUES ('Pending_1_b38a283b41b57add98278561ab51d23a16f3e3baf3daa461b84ab4', 'item_3e212e7639134ea08a39d1b7e3da27fe65ac0da6897f606c15dbaebfc1a', 'DOCUMENT_MUST_BE_PRESENT', 'ERROR', '', 'LOB', 'DocumentMustBePresentTaskItem', '{"transactionNumber": "CARDCHRG159"}');
 
 -- APPROVE
-INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e', 'CREATED', 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '2010-01-01', '2024-05-01', NULL, '2021-06-01', '2024-06-01', 'system', 'system', '2024-08-15 18:25:00.060749','2024-08-15 18:25:00.060749');
+INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e', 'CREATED', 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '{}', '2010-01-01', '2024-05-01', '2021-06-01', '2024-06-01', 'system', 'system', '2024-08-15 18:25:00.060749','2024-08-15 18:25:00.060749');
 
 INSERT INTO lob_service.accounting_core_transaction VALUES ('ReadyToApprove_1_8a283b41eab57add98278561ab51d23f3f3daa461b84ab4', 'CardCharge', 'TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e', '2023-07-04', '2023-07', 'CARDCHRG159', '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'Cardano Foundation', 'CH', 'CHE-184477354', 'ISO_4217:CHF', NULL, NULL, NULL, NULL, NULL, 'VALIDATED', false, false, 'NOT_DISPATCHED', 'NOK', 'system', 'system', CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
 INSERT INTO lob_service.accounting_core_transaction_item VALUES ('item_3e212e7639134ea08a39d1b7e3da27fe65ac0da6897f606c15dbaebfc1c', 'ReadyToApprove_1_8a283b41eab57add98278561ab51d23f3f3daa461b84ab4', 0.85320897, NULL, '0000000000', 'T0000', 'Dummy Account', '2406210100', '3900', 'Equity : Total Retained Earnings : Opening Balance', 'T00003900', 'Transit clearing from Other Liabilities', 790.60, 674.55, 'JE-0058', 'ADA', 'ISO_24165:ADA:HWGL1C2CK', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system', 'system', '2024-08-21 15:16:42.803421', '2024-08-21 15:16:42.803421');
@@ -52,7 +57,7 @@ INSERT INTO lob_service.accounting_core_transaction_batch_assoc VALUES ('TEST_Re
 
 -- Publish
 
-INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_ReadyToPublish_816d14723a4ab4a67636a7d63dc6f7adf61aba32c041', 'FINISHED', 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '2010-01-01', '2024-05-01', NULL, '2021-06-01', '2024-06-01', 'system', 'system', '2024-06-13 14:09:12.050311','2024-06-13 14:09:12.050311');
+INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_ReadyToPublish_816d14723a4ab4a67636a7d63dc6f7adf61aba32c041', 'FINISHED', 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '{}', '2010-01-01', '2024-05-01', '2021-06-01', '2024-06-01', 'system', 'system', '2024-06-13 14:09:12.050311','2024-06-13 14:09:12.050311');
 
 INSERT INTO lob_service.accounting_core_transaction VALUES ('ReadyToPublish_1_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa630', 'Journal', 'TEST_ReadyToPublish_816d14723a4ab4a67636a7d63dc6f7adf61aba32c041', '2022-12-31', '2022-12', 'JOURNAL28', '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'Cardano Foundation', 'CH', 'CHE-184477354', 'ISO_4217:CHF', NULL, NULL, NULL, NULL, NULL, 'VALIDATED', true, false, 'NOT_DISPATCHED', 'NOK', 'system', 'system', CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
 INSERT INTO lob_service.accounting_core_transaction_item VALUES ('item_3e212e7639134ea08a39d1b7e3da27fe65ac0da6897f606c15dbaebfc1i', 'ReadyToPublish_1_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa630', 0.000001, NULL, '1203268140', 'W100', 'Inventory : Wallets CSAG : 026 CSAG Delegated Address ADA', '0000000000', 'T0000', 'Dummy Account', 'W100T0000', 'Crypto Wallets to transit clearing', 0.17, 0, 'JE-0123', 'ADA', 'ISO_24165:ADA:HWGL1C2CK', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system', 'system', '2024-08-21 15:16:42.776094', '2024-08-21 15:16:42.776094');
@@ -68,7 +73,7 @@ INSERT INTO lob_service.accounting_core_transaction_batch_assoc VALUES ('TEST_Re
 
 -- Published
 
-INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_Published_345723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04123', 'FINISHED', 3, 3, 0, 3, 3, 0, 0, 0, 0, 0, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '2010-01-01', '2024-05-01', NULL, '2021-06-01', '2024-06-01', 'system', 'system', '2024-07-17 18:25:00.060749','2024-07-17 18:25:00.060749');
+INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_Published_345723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04123', 'FINISHED', 3, 3, 0, 3, 3, 0, 0, 0, 0, 0, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '{}', '2010-01-01', '2024-05-01', '2021-06-01', '2024-06-01', 'system', 'system', '2024-07-17 18:25:00.060749','2024-07-17 18:25:00.060749');
 
 INSERT INTO lob_service.accounting_core_transaction VALUES ('Published_1_8a283b41eab57add98278561ab51d23a16f3e3baf3daa461b84a', 'CardCharge', 'TEST_Published_345723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04123', '2023-07-04', '2023-07', 'CARDCHRG159', '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'Cardano Foundation', 'CH', 'CHE-184477354', 'ISO_4217:CHF', NULL, NULL, NULL, NULL, NULL, 'VALIDATED', true, true, 'MARK_DISPATCH', 'OK', 'system', 'system', CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
 INSERT INTO lob_service.accounting_core_transaction_item VALUES ('item_3e212e7639134ea08a39d1b7e3da27fe65ac0da6897f606c15dbaebfc1n', 'Published_1_8a283b41eab57add98278561ab51d23a16f3e3baf3daa461b84a', 0.85320897, NULL, '0000000000', 'T0000', 'Dummy Account', '2406210100', '3900', 'Equity : Total Retained Earnings : Opening Balance', 'T00003900', 'Transit clearing from Other Liabilities', 790.60, 674.55, 'JE-0058', 'ADA', 'ISO_24165:ADA:HWGL1C2CK', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system', 'system', '2024-08-21 15:16:42.803421', '2024-08-21 15:16:42.803421');
@@ -90,7 +95,7 @@ INSERT INTO lob_service.accounting_core_transaction_batch_assoc VALUES ('TEST_Pu
 
 -- All States
 
-INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_All_state_b6x90wedd2d9e814b96436029a8ca22440f65c64ef236459e', 'FINISHED', 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '2010-01-01', '2024-05-01', NULL, '2021-06-01', '2024-06-01', 'system', 'system','2020-08-17 18:25:00.060749','2020-08-17 18:25:00.060749');
+INSERT INTO lob_service.accounting_core_transaction_batch VALUES ('TEST_All_state_b6x90wedd2d9e814b96436029a8ca22440f65c64ef236459e', 'FINISHED', 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 1, '{}', '2010-01-01', '2024-05-01', '2021-06-01', '2024-06-01', 'system', 'system','2020-08-17 18:25:00.060749','2020-08-17 18:25:00.060749');
 
 INSERT INTO lob_service.accounting_core_transaction VALUES ('Pending_by_violation_27add98278561ab51d23a16f3e3baf3daa461b84ab4', 'CardCharge', 'TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04', '2023-07-04', '2023-07', 'CARDCHRG159', '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'Cardano Foundation', 'CH', 'CHE-184477354', 'ISO_4217:CHF', NULL, NULL, NULL, NULL, NULL,'FAILED', false, false, 'NOT_DISPATCHED', 'NOK', 'system', 'system', CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
 INSERT INTO lob_service.accounting_core_transaction_batch_assoc VALUES ('TEST_All_state_b6x90wedd2d9e814b96436029a8ca22440f65c64ef236459e', 'Pending_by_violation_27add98278561ab51d23a16f3e3baf3daa461b84ab4', 'system', 'system', '2024-06-13 14:09:12.050311', '2024-06-13 14:09:12.050311');
