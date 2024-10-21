@@ -51,8 +51,6 @@ subprojects {
     extra["cfLobPlatformVersion"] = "0.0.1-SNAPSHOT"
 
     dependencies {
-        implementation("org.json:json:20211205") // TODO check if this is needed at all
-
         implementation("org.springframework.data:spring-data-envers")
 
         implementation("org.flywaydb:flyway-core")
