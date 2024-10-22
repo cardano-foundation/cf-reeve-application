@@ -238,7 +238,8 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                         "PAYOFF196",
                         "BILLTX197",
                         "CARDCH198",
-                        "CARDHY199"
+                        "CARDHY199",
+                        "CARDHY191"
                     ]
                 }""";
 
@@ -248,9 +249,9 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .when()
                 .post("/api/extraction")
                 .then()
-                .statusCode(202)
-                .body("event", equalTo("EXTRACTION"))
-                .body("message", equalTo("We have received your extraction request now. Please review imported transactions from the batch list."));
+                .statusCode(400)
+                .body("title", equalTo("TRANSACTION_NUMBERS_LIMIT_EXCEEDED"))
+                .body("detail", equalTo("Transaction numbers limit exceeded. Maximum allowed transaction numbers is 100."));
     }
 
     @Test
