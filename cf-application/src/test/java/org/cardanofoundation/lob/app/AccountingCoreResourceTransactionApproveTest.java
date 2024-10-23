@@ -15,6 +15,14 @@ class AccountingCoreResourceTransactionApproveTest extends WebBaseIntegrationTes
     void testApproveTransaction() {
         given()
                 .contentType("application/json")
+                .when()
+                .get("/api/transactions/ReadyToApprove_1_8a283b41eab57add98278561ab51d23f3f3daa461b84ab4")
+                .then()
+                .statusCode(200)
+                .body("statistic", equalTo("APPROVE"));
+
+        given()
+                .contentType("application/json")
                 .body("{\n" +
                         "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
                         "  \"transactionIds\": [\n" +
@@ -30,10 +38,25 @@ class AccountingCoreResourceTransactionApproveTest extends WebBaseIntegrationTes
                 .body("id[0]", equalTo("ReadyToApprove_1_8a283b41eab57add98278561ab51d23f3f3daa461b84ab4"))
                 .body("success[0]", equalTo(true))
         ;
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/api/transactions/ReadyToApprove_1_8a283b41eab57add98278561ab51d23f3f3daa461b84ab4")
+                .then()
+                .statusCode(200)
+                .body("statistic", equalTo("PUBLISH"));
     }
 
     @Test
     void testApproveTransactionReadyToPublish() {
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/api/transactions/All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4")
+                .then()
+                .statusCode(200)
+                .body("statistic", equalTo("PUBLISH"));
+
         given()
                 .contentType("application/json")
                 .body("{\n" +
@@ -51,10 +74,24 @@ class AccountingCoreResourceTransactionApproveTest extends WebBaseIntegrationTes
                 .body("id[0]", equalTo("All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4"))
                 .body("success[0]", equalTo(true))
         ;
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/api/transactions/All_test_ready_to_publish_27af5261ab51d23a16f3e3baf3daa461b84ab4")
+                .then()
+                .statusCode(200)
+                .body("statistic", equalTo("PUBLISH"));
     }
 
     @Test
     void testApproveTransactionPublished() {
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/api/transactions/All_test_published_27a89sd8d2f5261ab51d23a16f3e3baf3daa461b84ab4")
+                .then()
+                .statusCode(200)
+                .body("statistic", equalTo("PUBLISH"));
         given()
                 .contentType("application/json")
                 .body("{\n" +
@@ -72,7 +109,15 @@ class AccountingCoreResourceTransactionApproveTest extends WebBaseIntegrationTes
                 .body("id[0]", equalTo("All_test_published_27a89sd8d2f5261ab51d23a16f3e3baf3daa461b84ab4"))
                 .body("success[0]", equalTo(true))
         ;
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/api/transactions/All_test_published_27a89sd8d2f5261ab51d23a16f3e3baf3daa461b84ab4")
+                .then()
+                .statusCode(200)
+                .body("statistic", equalTo("PUBLISH"));
     }
+
     @Test
     void testApproveTransactionTransactionNotFound() {
         given()

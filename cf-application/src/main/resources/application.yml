@@ -117,6 +117,8 @@ lob:
   l1:
     transaction:
       metadata:
+        validation:
+          enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
         label: "22222"
 
   blockfrost:

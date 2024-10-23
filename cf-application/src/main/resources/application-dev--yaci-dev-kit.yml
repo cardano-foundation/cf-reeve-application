@@ -48,7 +48,7 @@ l1:
   transaction:
     debug_store_output_tx: ${LOB_L1_TRANSACTION_DEBUG_STORE_OUTPUT_TX:false}
     metadata_validation:
-      enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLE:true}
+      enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
 
 # yaci-store properties
   cardano:
