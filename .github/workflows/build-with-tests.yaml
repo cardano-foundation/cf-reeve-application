@@ -27,9 +27,9 @@ jobs:
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
 
-      - name: 🌍 earthly (docker build and push)
+      - name: 🌍 earthly (run tests within docker)
         run: |
-          earthly +backend-test 
+          earthly --allow-privileged +backend-test
 
   mutation-test:
     needs: test
