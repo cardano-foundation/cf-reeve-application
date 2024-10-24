@@ -54,9 +54,14 @@ backend:
 
 backend-test-build:
   ARG EARTHLY_TARGET_NAME
-  FROM DOCKERFILE -f Dockerfile --target m2-cache .
-  SAVE ARTIFACT /root/.m2 AS LOCAL .m2
+  FROM DOCKERFILE -f Dockerfile --target build .
 
 backend-test:
-  LOCALLY
+  ARG DB_NAME=lob_service
+  ARG DB_SCHEMA=lob_service
+  ARG DB_URL=jdbc:postgresql://host.docker.internal:5432/postgres?currentSchema=${DB_SCHEMA}
+  ARG DB_USER=postgres
+  ARG DB_PASSWORD=postgres
+  ARG DB_DRIVER=org.postgresql.Driver
+  FROM +backend-test-build
   RUN ./gradlew clean test

@@ -10,16 +10,19 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.3
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lob_service
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'corretto'
 
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
@@ -27,9 +30,6 @@ jobs:
       - name: 🌍 earthly (build)
         run: |
           earthly +backend-test-build
-          bash -x
-          sudo chown -R $USER:$USER .m2
-          mv .m2/* $HOME/.m2/
 
       - name: 🌍 earthly (run tests within docker)
         run: |
