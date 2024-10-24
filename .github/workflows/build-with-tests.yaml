@@ -30,7 +30,7 @@ jobs:
       - name: get runner private ip
         id: runner_private_ip
         run: |
-          PRIVATE_IP=$(ip -o -4 addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//') 
+          PRIVATE_IP=$(ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//' | head -n1) 
           echo "PRIVATE_IP=${PRIVATE_IP}" | tee -a "${GITHUB_ENV}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 🌍 earthly (build)
