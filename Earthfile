@@ -52,7 +52,15 @@ backend:
   FROM DOCKERFILE -f Dockerfile --target ${EARTHLY_TARGET_NAME} .
   SAVE IMAGE ${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}:latest
 
-backend-test:
+backend-test-build:
   ARG EARTHLY_TARGET_NAME
   FROM DOCKERFILE -f Dockerfile --target build .
-  RUN ./gradlew clean test
+  ENTRYPOINT ["./gradlew", "clean", "test"]
+  SAVE IMAGE ${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}:latest
+
+backend-test:
+  FROM earthly/dind:alpine-3.19-docker-25.0.5-r0
+  WITH DOCKER \
+    --load backend-test:latest=(+backend-test-build)
+    RUN docker run --privileged -it --rm backend-test:latest
+  END
