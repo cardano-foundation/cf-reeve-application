@@ -55,7 +55,7 @@ backend:
 backend-test-build:
   ARG EARTHLY_TARGET_NAME
   FROM DOCKERFILE -f Dockerfile --target build .
-  RUN apt update -qq && apt install -y docker.io
+  RUN apt update -qq && apt install -y docker.io &> /dev/null
   SAVE IMAGE ${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}:latest
 
 backend-test:
