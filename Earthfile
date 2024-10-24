@@ -62,5 +62,5 @@ backend-test:
   FROM earthly/dind:ubuntu-24.04-docker-27.3.1-1
   WITH DOCKER \
     --load backend-test:latest=(+backend-test-build)
-    RUN docker run -v /var/run/docker.sock:/var/run/docker.sock --rm --entrypoint=bash backend-test:latest -c "./gradlew clean test -Xdebug"
+    RUN docker run -v /var/run/docker.sock:/var/run/docker.sock --rm --entrypoint=bash backend-test:latest -c "./gradlew --full-stacktrace -Dorg.gradle.debug=true clean test"
   END
