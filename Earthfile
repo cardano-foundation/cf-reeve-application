@@ -55,12 +55,12 @@ backend:
 backend-test-build:
   ARG EARTHLY_TARGET_NAME
   FROM DOCKERFILE -f Dockerfile --target build .
-  RUN apt update -qq && apt install -y docker.io &> /dev/null
+  RUN apt update -qq && apt install -y docker.io
   SAVE IMAGE ${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}:latest
 
 backend-test:
   FROM earthly/dind:ubuntu-24.04-docker-27.3.1-1
   WITH DOCKER \
     --load backend-test:latest=(+backend-test-build)
-    RUN docker run -v /var/run/docker.sock:/var/run/docker.sock --rm --entrypoint=bash backend-test:latest -c "docker ps -a; ./gradlew --full-stacktrace clean test"
+    RUN docker run -v $PWD:/output -v /var/run/docker.sock:/var/run/docker.sock --rm --entrypoint=bash backend-test:latest -c "docker ps -a; ./gradlew --full-stacktrace clean test; cp -a /app/cf-application/build/reports/tests/test/index.html /output/index.html"
   END
