@@ -54,7 +54,7 @@ backend:
 
 backend-test-build:
   ARG EARTHLY_TARGET_NAME
-  FROM DOCKERFILE -f Dockerfile --target build .
+  FROM DOCKERFILE -f Dockerfile --target m2-cache .
   SAVE ARTIFACT /root/.m2 AS LOCAL .m2
 
 backend-test:
