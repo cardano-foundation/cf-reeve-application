@@ -27,13 +27,19 @@ jobs:
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
 
+      - name: get runner private ip
+        id: runner_private_ip
+        run: |
+          PRIVATE_IP=$(ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//')
+          echo "PRIVATE_IP=${PRIVATE_IP}" | tee -a "${GITHUB_ENV}" | tee -a "${GITHUB_OUTPUT}"
+
       - name: 🌍 earthly (build)
         run: |
           earthly +backend-test-build
 
       - name: 🌍 earthly (run tests within docker)
         run: |
-          earthly +backend-test
+          earthly +backend-test --DB_HOST=${{ steps.runner_private_ip.outputs.PRIVATE_IP }}
 
   mutation-test:
     needs: test
