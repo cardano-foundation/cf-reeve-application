@@ -27,8 +27,9 @@ jobs:
       - name: 🌍 earthly (build)
         run: |
           earthly +backend-test-build
+          bash -x
           sudo chown -R $USER:$USER .m2
-          mv .m2 $HOME/.m2
+          mv .m2/* $HOME/.m2/
 
       - name: 🌍 earthly (run tests within docker)
         run: |
