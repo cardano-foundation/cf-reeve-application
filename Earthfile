@@ -51,3 +51,8 @@ backend:
   ARG EARTHLY_TARGET_NAME
   FROM DOCKERFILE -f Dockerfile --target ${EARTHLY_TARGET_NAME} .
   SAVE IMAGE ${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}:latest
+
+backend-test:
+  ARG EARTHLY_TARGET_NAME
+  FROM DOCKERFILE -f Dockerfile --target build .
+  RUN ./gradlew clean test
