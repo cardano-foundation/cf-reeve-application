@@ -57,11 +57,13 @@ backend-test-build:
   FROM DOCKERFILE -f Dockerfile --target build .
 
 backend-test:
-  ARG DB_NAME=lob_service
+  ARG DB_NAME=postgres
   ARG DB_SCHEMA=lob_service
-  ARG DB_URL=jdbc:postgresql://host.docker.internal:5432/postgres?currentSchema=${DB_SCHEMA}
+  ARG DB_HOST=localhost
+  ARG DB_URL=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}?currentSchema=${DB_SCHEMA}
   ARG DB_USER=postgres
   ARG DB_PASSWORD=postgres
   ARG DB_DRIVER=org.postgresql.Driver
   FROM +backend-test-build
+  RUN echo $DB_URL
   RUN ./gradlew clean test
