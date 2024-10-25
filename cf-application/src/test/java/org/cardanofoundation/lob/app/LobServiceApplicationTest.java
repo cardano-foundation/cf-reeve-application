@@ -9,7 +9,7 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 public class LobServiceApplicationTest {
 
-    public static final String POSTGRES_IMAGE = "postgres:14";
+    public static final String POSTGRES_IMAGE = "postgres:16.3";
 //    public static final String RABBIT_IMAGE = "rabbitmq:3-management-alpine:latest";
 
     @Bean
