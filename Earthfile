@@ -51,3 +51,19 @@ backend:
   ARG EARTHLY_TARGET_NAME
   FROM DOCKERFILE -f Dockerfile --target ${EARTHLY_TARGET_NAME} .
   SAVE IMAGE ${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}:latest
+
+backend-test-build:
+  ARG EARTHLY_TARGET_NAME
+  FROM DOCKERFILE -f Dockerfile --target build .
+
+backend-test:
+  ARG DB_NAME=postgres
+  ARG DB_SCHEMA=lob_service
+  ARG DB_HOST=localhost
+  ARG DB_URL=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}?currentSchema=${DB_SCHEMA}
+  ARG DB_USER=postgres
+  ARG DB_PASSWORD=postgres
+  ARG DB_DRIVER=org.postgresql.Driver
+  FROM +backend-test-build
+  RUN echo $DB_URL
+  RUN ./gradlew clean test

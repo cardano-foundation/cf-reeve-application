@@ -1,10 +1,10 @@
 spring:
   datasource:
     name: ${DB_NAME:lob_service}
-    url: jdbc:tc:postgresql:localhost:5432:///postgres
-    username: postgres
-    password: postgres
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: ${DB_URL:jdbc:tc:postgresql:localhost:5432:///postgres}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: ${DB_DRIVER:org.testcontainers.jdbc.ContainerDatabaseDriver}
   jpa:
     hibernate:
     ddl-auto: create
