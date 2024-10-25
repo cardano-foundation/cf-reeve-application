@@ -27,7 +27,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.zalando.problem.Problem;
 
-import java.time.Clock;
 import java.util.HashMap;
 import java.util.function.Function;
 
@@ -78,8 +77,7 @@ public class CFConfig {
     }
 
     @Bean
-    public SystemExtractionParametersFactory systemExtractionParametersFactory(Clock clock,
-                                                                               OrganisationPublicApiIF organisationPublicApiIF,
+    public SystemExtractionParametersFactory systemExtractionParametersFactory(OrganisationPublicApiIF organisationPublicApiIF,
                                                                                AccountingPeriodCalculator accountPeriodService)
      {
         return new SystemExtractionParametersFactory(organisationPublicApiIF, accountPeriodService);
@@ -130,7 +128,6 @@ public class CFConfig {
                                                                      NetSuiteClient netSuiteClient,
                                                                      TransactionConverter transactionConverter,
                                                                      ApplicationEventPublisher eventPublisher,
-                                                                     SystemExtractionParametersFactory extractionParametersFactory,
                                                                      ExtractionParametersFilteringService parametersFilteringService,
                                                                      NetSuiteParser netSuiteParser,
                                                                      @Value("${lob.events.netsuite.to.core.send.batch.size:100}") int sendBatchSize,
