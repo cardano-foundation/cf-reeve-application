@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app;
 
+import io.restassured.http.Header;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +8,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.scribe.model.SignatureType.Header;
 
 class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
@@ -32,6 +34,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/transactions")
@@ -53,7 +56,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     @Test
     void testListAllTransactionsNoOrgnanisationId() {
-        String inputRequestJson = """
+        val inputRequestJson = """
                 {
                   "organisationId": "",
                   "transactionType": [
@@ -73,6 +76,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/transactions")
@@ -110,6 +114,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/extraction")
@@ -245,6 +250,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/extraction")
@@ -283,6 +289,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/extraction")
@@ -305,6 +312,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/transactions")
@@ -317,6 +325,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testTransactionType() {
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .when()
                 .get("/api/transaction-types")
                 .then()
@@ -337,6 +346,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testRejectionReasons() {
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .when()
                 .get("/api/rejection-reasons")
                 .then()
@@ -360,6 +370,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
@@ -385,6 +396,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
@@ -401,7 +413,6 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(1))
                 .body("total", equalTo(4));
-
     }
 
     @Test
@@ -417,6 +428,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
@@ -449,6 +461,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
@@ -481,6 +494,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
@@ -512,6 +526,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
@@ -528,7 +543,6 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].published", equalTo(1))
                 .body("batchs.batchStatistics[0].total", equalTo(3))
                 .body("total", equalTo(1));
-
     }
 
     @Test
@@ -543,6 +557,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
@@ -559,7 +574,6 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(2))
                 .body("total", equalTo(1));
-
     }
 
     @Test
@@ -572,6 +586,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .body(inputRequestJson)
                 .when()
                 .post("/api/batches")
@@ -585,6 +600,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllBatchNoBody() {
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .when()
                 .post("/api/batches")
                 .then()
@@ -596,6 +612,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllBatchDetail() {
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .when()
                 .get("/api/batches/TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e")
                 .then()
@@ -608,6 +625,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllBatchDetailNull() {
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .when()
                 .get("/api/batches/fb47142027c0788116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04")
                 .then()
@@ -620,6 +638,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllBatchReprocess() {
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .when()
                 .get("/api/batches/reprocess/TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e")
                 .then()
@@ -632,6 +651,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllBatchReprocessNoExist() {
         given()
                 .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
                 .when()
                 .get("/api/batches/reprocess/fake")
                 .then()
