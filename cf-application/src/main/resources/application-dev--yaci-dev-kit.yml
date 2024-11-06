@@ -15,6 +15,8 @@ spring:
     # baselineOnMigrate this will create a baseline version if none exists (https://flywaydb.org/documentation/configuration/parameters/baselineOnMigrate)
     baselineOnMigrate: true
     enabled: true
+    cleanDisabled: ${FLYWAY_CLEAN_DISABLED:true}
+    cleanOnValidationError: ${FLYWAY_CLEAN_ON_ERROR:false}
     validateMigrationNaming: true
     locations:
       - classpath:db/store/{vendor}
