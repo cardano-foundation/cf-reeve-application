@@ -31,8 +31,8 @@ class AccountingCoreResourceReconciliationTest extends WebBaseIntegrationTest {
                 .body("statistic.newVersion", equalTo(0))
                 .body("statistic.ok", equalTo(0))
                 .body("statistic.nok", equalTo(0))
-                .body("statistic.never", equalTo(42))
-                .body("statistic.total", equalTo(42))
+                .body("statistic.never", equalTo(45))
+                .body("statistic.total", equalTo(45))
         ;
     }
 
