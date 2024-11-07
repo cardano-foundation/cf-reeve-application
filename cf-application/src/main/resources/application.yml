@@ -119,7 +119,7 @@ lob:
       metadata:
         validation:
           enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
-        label: "22222"
+        label: ${LOB_L1_TRANSACTION_METADATA_LABEL:1447}
 
   blockfrost:
     url: ""
