@@ -41,7 +41,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
-                .body("id[0]", equalTo("ReadyToPublish_18_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa63"));
+                .body("id[0]", equalTo("e86d9c787f7b4f5e4000ada66e267d4e4ff36a98343833f725a8f9933d5a4031"));
     }
 
     // TODO this fails for me since localisation should not be part of the answer:
@@ -318,7 +318,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/transactions")
                 .then()
                 .statusCode(200)
-                .body("id[0]", equalTo("ReadyToPublish_18_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa63"));
+                .body("id[0]", equalTo("e86d9c787f7b4f5e4000ada66e267d4e4ff36a98343833f725a8f9933d5a4031"));
     }
 
     @Test
@@ -380,7 +380,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.createdAt[0]", containsString("2024-08-18"))
                 .body("batchs.updatedAt[0]", containsString("2024-08-18"))
                 .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
-                .body("total", equalTo(12));
+                .body("total", equalTo(13));
     }
 
     @Test
@@ -412,7 +412,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(1))
-                .body("total", equalTo(4));
+                .body("total", equalTo(5));
     }
 
     @Test
@@ -444,7 +444,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(1))
-                .body("total", equalTo(2));
+                .body("total", equalTo(3));
 
     }
 
@@ -477,7 +477,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(3))
-                .body("total", equalTo(4));
+                .body("total", equalTo(5));
 
     }
 
