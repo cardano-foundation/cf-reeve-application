@@ -28,6 +28,7 @@ BUILD SUCCESSFUL in 13s
 Starting postgres DB locally
 ```bash
 git clone https://github.com/cardano-foundation/cf-lob
+cp -a cf-application/.env.template cf-application/.env
 docker compose up
 ```
 
@@ -36,4 +37,12 @@ export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
 export SPRING_CONFIG_LOCATIONS=classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml;export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
 
 ./gradlew clean bootRun
+```
+
+# Run in docker
+
+```bash
+git clone https://github.com/cardano-foundation/cf-lob
+cp -a cf-application/.env.template cf-application/.env
+docker compose up
 ```
