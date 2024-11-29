@@ -4,6 +4,8 @@ import io.restassured.http.Header;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+import java.util.stream.Collectors;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
@@ -126,7 +128,11 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     @Test
     void testExtractionTriggerFailDueToToManyTransactionNumbers() {
-        val inputRequestJson = """
+        val numbers = TxNumbersGenerator.generateUniqueTransactionNumbers(601);
+        // turn into json string as array including opening and ending brackets
+        val transactionNumbersJson = numbers.stream().collect(Collectors.joining("\",\"", "[\"", "\"]"));
+
+        val inputRequestJson = STR."""
                                     {
                                       "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                                       "dateFrom": "2023-01-01",
@@ -143,109 +149,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                                         "VendorPayment",
                                         "BillCredit"
                                       ],
-                                      "transactionNumbers": [
-                        "CARDCH100",
-                        "CARDHY101",
-                        "CARDCHRG102",
-                        "VENDBIL103",
-                        "TXNBANK104",
-                        "PAYOFF105",
-                        "BILLTX106",
-                        "CARDCH107",
-                        "CARDHY108",
-                        "CARDCHRG109",
-                        "VENDBIL110",
-                        "TXNBANK111",
-                        "PAYOFF112",
-                        "BILLTX113",
-                        "CARDCH114",
-                        "CARDHY115",
-                        "CARDCHRG116",
-                        "VENDBIL117",
-                        "TXNBANK118",
-                        "PAYOFF119",
-                        "BILLTX120",
-                        "CARDCH121",
-                        "CARDHY122",
-                        "CARDCHRG123",
-                        "VENDBIL124",
-                        "TXNBANK125",
-                        "PAYOFF126",
-                        "BILLTX127",
-                        "CARDCH128",
-                        "CARDHY129",
-                        "CARDCHRG130",
-                        "VENDBIL131",
-                        "TXNBANK132",
-                        "PAYOFF133",
-                        "BILLTX134",
-                        "CARDCH135",
-                        "CARDHY136",
-                        "CARDCHRG137",
-                        "VENDBIL138",
-                        "TXNBANK139",
-                        "PAYOFF140",
-                        "BILLTX141",
-                        "CARDCH142",
-                        "CARDHY143",
-                        "CARDCHRG144",
-                        "VENDBIL145",
-                        "TXNBANK146",
-                        "PAYOFF147",
-                        "BILLTX148",
-                        "CARDCH149",
-                        "CARDHY150",
-                        "CARDCHRG151",
-                        "VENDBIL152",
-                        "TXNBANK153",
-                        "PAYOFF154",
-                        "BILLTX155",
-                        "CARDCH156",
-                        "CARDHY157",
-                        "CARDCHRG158",
-                        "VENDBIL159",
-                        "TXNBANK160",
-                        "PAYOFF161",
-                        "BILLTX162",
-                        "CARDCH163",
-                        "CARDHY164",
-                        "CARDCHRG165",
-                        "VENDBIL166",
-                        "TXNBANK167",
-                        "PAYOFF168",
-                        "BILLTX169",
-                        "CARDCH170",
-                        "CARDHY171",
-                        "CARDCHRG172",
-                        "VENDBIL173",
-                        "TXNBANK174",
-                        "PAYOFF175",
-                        "BILLTX176",
-                        "CARDCH177",
-                        "CARDHY178",
-                        "CARDCHRG179",
-                        "VENDBIL180",
-                        "TXNBANK181",
-                        "PAYOFF182",
-                        "BILLTX183",
-                        "CARDCH184",
-                        "CARDHY185",
-                        "CARDCHRG186",
-                        "VENDBIL187",
-                        "TXNBANK188",
-                        "PAYOFF189",
-                        "BILLTX190",
-                        "CARDCH191",
-                        "CARDHY192",
-                        "CARDCHRG193",
-                        "VENDBIL194",
-                        "TXNBANK195",
-                        "PAYOFF196",
-                        "BILLTX197",
-                        "CARDCH198",
-                        "CARDHY199",
-                        "CARDHY191"
-                    ]
+                                      "transactionNumbers": \{transactionNumbersJson}
                 }""";
 
         given()
@@ -256,8 +160,8 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/extraction")
                 .then()
                 .statusCode(400)
-                .body("title", equalTo("TRANSACTION_NUMBERS_LIMIT_EXCEEDED"))
-                .body("detail", equalTo("Transaction numbers limit exceeded. Maximum allowed transaction numbers is 100."));
+                .body("title", equalTo("TOO_MANY_TRANSACTIONS"))
+                .body("detail", equalTo("Too many transactions requested, maximum is 600"));
     }
 
     @Test
