@@ -1,0 +1,44 @@
+{
+  "realm": "cf-master",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "webclient",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "redirectUris": [
+        "http://localhost:9000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:9000"
+      ],
+      "adminUrl": "http://localhost:9000",
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "surrogateAuthRequired": false
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "cf_manager",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "attributes": {}
+      },
+      {
+        "name": "cf_auditor",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "attributes": {}
+      }
+    ]
+  }
+}
