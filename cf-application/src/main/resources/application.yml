@@ -154,7 +154,6 @@ endpoints:
 
 keycloak:
   base-url: http://localhost:8080
-  auth-server-url: ${keycloak.base-url}/auth
   realm: cf-master
   public-client: true
   resource: webclient
@@ -162,6 +161,7 @@ keycloak:
   principal-attribute: preferred_username
   token-url: ${keycloak.base-url}/realms/${keycloak.realm}/protocol/openid-connect/token
   cert-url: ${keycloak.base-url}/realms/${keycloak.realm}/protocol/openid-connect/certs
+  authorization-url: ${keycloak.base-url}/realms/${keycloak.realm}/protocol/openid-connect/auth
   roles:
     auditor: cf_auditor
     manager: cf_manager

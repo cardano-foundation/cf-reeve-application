@@ -1,6 +1,32 @@
 {
   "realm": "cf-master",
   "enabled": true,
+  "users": [
+    {
+      "username": "auditor",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "auditor",
+            "temporary": true
+        }
+      ],
+      "realmRoles": ["cf_auditor"]
+    },
+    {
+      "username": "manager",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "manager",
+          "temporary": true
+        }
+      ],
+      "realmRoles": ["cf_manager"]
+    }
+  ],
   "clients": [
     {
       "clientId": "webclient",
@@ -15,8 +41,8 @@
       "adminUrl": "http://localhost:9000",
       "bearerOnly": false,
       "consentRequired": false,
-      "standardFlowEnabled": false,
-      "implicitFlowEnabled": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": true,
