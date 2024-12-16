@@ -1,6 +1,29 @@
 {
   "realm": "cf-master",
   "enabled": true,
+  "authenticationFlows": [
+    {
+      "alias": "browser",
+      "description": "Browser authentication flow with OTP required",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "auth-username-password-form",
+          "priority": 1,
+          "requirement": "REQUIRED",
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "priority": 2,
+          "requirement": "REQUIRED",
+          "userSetupAllowed": false
+        }
+      ]
+    }
+  ],
   "users": [
     {
       "username": "auditor",
