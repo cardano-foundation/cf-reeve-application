@@ -9,9 +9,12 @@ services:
       KC_METRICS_ENABLED: ${KC_METRICS_ENABLED:-true}
       KC_HOSTNAME: ${KC_HOSTNAME-localhost}
       KC_IMPORT: ${KC_IMPORT:-/opt/keycloak/data/import/realm-export.json}
+      KC_HTTP_ENABLED: true
+      KC_PROXY_HEADERS: xforwarded
       KC_HTTP_PORT: ${KC_HTTP_PORT:-8080}
       KC_HTTPS_PORT: ${KC_HTTP_PORT:-8443}
     ports:
       - ${EXPOSED_KC_HTTP_PORT:-8080}:${KC_HTTP_PORT:-8080}
+      - ${EXPOSED_KC_HTTPS_PORT:-8443}:${KC_HTTPS_PORT:-8443}
     volumes:
       - ./keycloak-config:/opt/keycloak/data/import

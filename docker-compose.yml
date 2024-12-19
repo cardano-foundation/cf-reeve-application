@@ -52,6 +52,8 @@ services:
       KC_METRICS_ENABLED: ${KC_METRICS_ENABLED:-true}
       KC_HOSTNAME: ${KC_HOSTNAME-localhost}
       KC_IMPORT: ${KC_IMPORT:-/opt/keycloak/data/import/realm-export.json}
+      KC_HTTP_ENABLED: true
+      KC_PROXY_HEADERS: xforwarded
       KC_HTTP_PORT: ${KC_HTTP_PORT:-8080}
       KC_HTTPS_PORT: ${KC_HTTP_PORT:-8443}
       KC_DB: ${KC_DB:-postgres}
@@ -72,6 +74,7 @@ services:
       - "traefik.http.routers.keycloak.entrypoints=websecure"
       - "traefik.http.routers.keycloak.tls.certresolver=myresolver"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
 
 volumes:
   postgres-data:
