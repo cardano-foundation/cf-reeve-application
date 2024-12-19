@@ -153,7 +153,7 @@ endpoints:
       show-details: ${MANAGEMENT_ENDPOINT_SHOW_DETAILS:always}
 
 keycloak:
-  base-url: http://localhost:8080
+  base-url: ${KC_BASE_URL:http://localhost:8080}
   realm: cf-master
   public-client: true
   resource: webclient
@@ -171,4 +171,4 @@ springdoc:
     oauth:
       client-id: webclient
       realm: cf-master
-    oauth2-redirect-url: http://localhost:9000/swagger-ui/oauth2-redirect.html
+    oauth2-redirect-url: ${OAUTH2_REDIRECT_URL:http://localhost:9000/swagger-ui/oauth2-redirect.html}
