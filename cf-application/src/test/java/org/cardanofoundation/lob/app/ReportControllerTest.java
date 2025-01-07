@@ -1,0 +1,201 @@
+package org.cardanofoundation.lob.app;
+
+import io.restassured.http.Header;
+import io.vavr.collection.Array;
+import lombok.val;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.core.IsEqual.equalTo;
+
+class ReportControllerTest extends WebBaseIntegrationTest {
+
+    @BeforeEach
+    public void clearDatabase(@Autowired Flyway flyway){
+        flyway.clean();
+        flyway.migrate();
+    }
+
+    @Test
+    void testReportList() {
+
+        given()
+                .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
+                .when()
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
+                .then()
+                .statusCode(200)
+                //.body("id", containsString(expectedUpdatedAt))
+                .body("success", equalTo(true));
+    }
+
+    @Test
+    void testReportCreateIncomeStatement() {
+
+        given()
+                .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
+                .when()
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
+                .then()
+                .statusCode(200)
+                //.body("id", containsString(expectedUpdatedAt))
+                .body("success", equalTo(true))
+                .body("report", equalTo(new ArrayList<>()));
+
+
+        val inputRequestJson = """
+                {
+                   "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                   "reportType": "INCOME_STATEMENT",
+                   "intervalType": "MONTH",
+                   "year": 2023,
+                   "period": 1,
+                   "otherIncome": "1",
+                   "buildOfLongTermProvision": "2",
+                   "costOfProvidingServices": "3",
+                   "personnelExpenses": "4",
+                   "rentExpenses": "5",
+                   "generalAndAdministrativeExpenses": "6",
+                   "depreciationAndImpairmentLossesOnTangibleAssets": "7",
+                   "amortizationOnIntangibleAssets": "8",
+                   "financialRevenues": "9",
+                   "realisedGainsOnSaleOfCryptocurrencies": "10",
+                   "stakingRewardsIncome": "11",
+                   "netIncomeOptionsSale": "12",
+                   "financialExpenses": "13",
+                   "extraordinaryExpenses": "14",
+                   "incomeTaxExpense": "15"
+                   }""";
+
+        given()
+                .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
+                .body(inputRequestJson)
+                .when()
+                .post("/api/report-create")
+                .then()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("report[0].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"));
+
+    }
+
+    @Test
+    void testReportCreateBalanceSheet() {
+
+        given()
+                .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
+                .when()
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
+                .then()
+                .statusCode(200)
+                //.body("id", containsString(expectedUpdatedAt))
+                .body("success", equalTo(true))
+                .body("report", equalTo(new ArrayList<>()));
+
+
+        val inputRequestJson = """
+                {
+                "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                "reportType": "BALANCE_SHEET",
+                "intervalType": "MONTH",
+                "year": 2023,
+                "period": 1,
+                "cashAndCashEquivalents": "1",
+                "cryptoAssets": "2",
+                "otherReceivables": "3",
+                "prepaymentsAndOtherShortTermAssets": "4",
+                "financialAssets": "5",
+                "investments": "6",
+                "propertyPlantEquipment": "7",
+                "intangibleAssets": "113",
+          
+                "tradeAccountsPayables": "1",
+                "otherCurrentLiabilities": "2",
+                "accrualsAndShortTermProvisions": "3",
+                "provisions": "4",
+                "capital": "5",
+                "resultsCarriedForward": "6",
+                "profitForTheYear": "120"
+                }""";
+
+        given()
+                .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
+                .body(inputRequestJson)
+                .when()
+                .post("/api/report-create")
+                .then()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("error", equalTo(null))
+                .body("report[0].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"));
+
+    }
+
+    @Test
+    void testReportCreateBalanceSheetWrongData() {
+
+        given()
+                .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
+                .when()
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
+                .then()
+                .statusCode(200)
+                //.body("id", containsString(expectedUpdatedAt))
+                .body("success", equalTo(true))
+                .body("report", equalTo(new ArrayList<>()));
+
+
+        val inputRequestJson = """
+                {
+                "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                "reportType": "BALANCE_SHEET",
+                "intervalType": "MONTH",
+                "year": 2023,
+                "period": 1,
+                "cashAndCashEquivalents": "1",
+                "cryptoAssets": "1",
+                "otherReceivables": "3",
+                "prepaymentsAndOtherShortTermAssets": "4",
+                "financialAssets": "5",
+                "investments": "6",
+                "propertyPlantEquipment": "7",
+                "intangibleAssets": "113",
+          
+                "tradeAccountsPayables": "1",
+                "otherCurrentLiabilities": "2",
+                "accrualsAndShortTermProvisions": "3",
+                "provisions": "4",
+                "capital": "5",
+                "resultsCarriedForward": "6",
+                "profitForTheYear": "120"
+                }""";
+
+        given()
+                .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
+                .body(inputRequestJson)
+                .when()
+                .post("/api/report-create")
+                .then()
+                .statusCode(400)
+                .body("success", equalTo(false))
+                .body("error.title", equalTo("INVALID_REPORT"));
+
+    }
+
+}
