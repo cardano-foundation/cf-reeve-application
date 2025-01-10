@@ -22,6 +22,7 @@ services:
       SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
+      KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive}
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
