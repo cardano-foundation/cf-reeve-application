@@ -8,6 +8,7 @@ services:
       - POSTGRES_DB=postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
     networks:
@@ -38,6 +39,42 @@ services:
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
     volumes:
       - ./:/app/
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    command: start-dev --import-realm
+    networks:
+      - lob
+    environment:
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:-admin}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:-admin}
+      KC_METRICS_ENABLED: ${KC_METRICS_ENABLED:-true}
+      KC_HOSTNAME: ${KC_HOSTNAME-localhost}
+      KC_IMPORT: ${KC_IMPORT:-/opt/keycloak/data/import/realm-export.json}
+      KC_HTTP_ENABLED: true
+      KC_PROXY_HEADERS: xforwarded
+      KC_HTTP_PORT: ${KC_HTTP_PORT:-8080}
+      KC_HTTPS_PORT: ${KC_HTTP_PORT:-8443}
+      KC_DB: ${KC_DB:-postgres}
+      KC_DB_URL_HOST: ${KC_DB_URL_HOST:-postgres}
+      KC_DB_URL_PORT: ${KC_DB_URL_PORT:-5432}
+      KC_DB_USERNAME: ${KC_DB_USERNAME:-postgres}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-postgres}
+    ports:
+      - ${EXPOSED_KC_HTTP_PORT:-8080}:${KC_HTTP_PORT:-8080}
+      - ${EXPOSED_KC_HTTPS_PORT:-8443}:${KC_HTTPS_PORT:-8443}
+    volumes:
+      - ./keycloak-config:/opt/keycloak/data/import
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloakhttp.entrypoints=web"
+      - "traefik.http.routers.keycloakhttp.rule=Host(`${KC_HOSTNAME:-dev.keycloak.cf-lob.metadata.dev.cf-deployments.org}`)"
+      - "traefik.http.routers.keycloak.rule=Host(`${KC_HOSTNAME:-dev.keycloak.cf-lob.metadata.dev.cf-deployments.org}`)"
+      - "traefik.http.routers.keycloak.entrypoints=websecure"
+      - "traefik.http.routers.keycloak.tls.certresolver=myresolver"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
 
 volumes:
   postgres-data:
