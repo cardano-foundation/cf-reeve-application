@@ -4,6 +4,9 @@
   "users": [
     {
       "username": "auditor",
+      "email": "auditor@auditor.de",
+      "firstName": "Auditor",
+      "lastName": "Auditor",
       "enabled": true,
       "credentials": [
         {
@@ -16,6 +19,9 @@
     },
     {
       "username": "manager",
+      "email": "manager@manager.de",
+      "firstName": "Manager",
+      "lastName": "Manager",
       "enabled": true,
       "credentials": [
         {
