@@ -153,6 +153,7 @@ endpoints:
       show-details: ${MANAGEMENT_ENDPOINT_SHOW_DETAILS:always}
 
 keycloak:
+  enabled: true
   base-url: ${KC_BASE_URL:http://localhost:8080}
   realm: cf-master
   public-client: true

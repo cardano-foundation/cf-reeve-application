@@ -37,3 +37,5 @@ lob:
     api_key: ""
 
 #spring.profiles.active=dev--yaci-dev-kit
+keycloak:
+  enabled: false
