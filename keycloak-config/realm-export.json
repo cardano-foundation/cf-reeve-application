@@ -1,6 +1,15 @@
 {
   "realm": "cf-master",
   "enabled": true,
+  "accessTokenLifespan": 1800,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "accessCodeLifespanUserAction": 1800,
+  "accessCodeLifespanLogin": 1800,
+  "actionTokenGeneratedByAdminLifespan": 43200,
+  "actionTokenGeneratedByUserLifespan": 1800,
+  "oauth2DeviceCodeLifespan": 1800,
   "users": [
     {
       "username": "auditor",
