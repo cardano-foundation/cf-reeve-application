@@ -51,6 +51,7 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:-admin}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:-admin}
       KC_METRICS_ENABLED: ${KC_METRICS_ENABLED:-true}
+      KC_HEALTH_ENABLED: ${KC_HEALTH_ENABLED:-true}
       KC_HOSTNAME: ${KC_HOSTNAME-localhost}
       KC_IMPORT: ${KC_IMPORT:-/opt/keycloak/data/import/realm-export.json}
       KC_HTTP_ENABLED: true
@@ -65,6 +66,7 @@ services:
     ports:
       - ${EXPOSED_KC_HTTP_PORT:-8080}:${KC_HTTP_PORT:-8080}
       - ${EXPOSED_KC_HTTPS_PORT:-8443}:${KC_HTTPS_PORT:-8443}
+      - ${EXPOSED_KC_HEALTH_PORT:-8081}:9000
     volumes:
       - ./keycloak-config:/opt/keycloak/data/import
     labels:
