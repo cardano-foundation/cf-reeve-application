@@ -88,7 +88,6 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 .statusCode(200)
                 .body("success", equalTo(true))
                 .body("report[0].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"));
-
     }
 
     @Test
@@ -192,9 +191,12 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 .when()
                 .post("/api/report-create")
                 .then()
-                .statusCode(400)
-                .body("success", equalTo(false))
-                .body("error.title", equalTo("INVALID_REPORT"));
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("report[0].publish", equalTo(false))
+                .body("report[0].canBePublish", equalTo(false))
+                .body("report[0].error.title", equalTo("INVALID_REPORT_DATA"))
+                ;
 
     }
 

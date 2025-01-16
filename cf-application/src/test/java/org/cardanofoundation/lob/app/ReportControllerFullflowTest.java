@@ -66,7 +66,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("report[0].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
                 .body("report[0].publish", equalTo(false))
                 .body("report[0].ver", equalTo(1))
-                .body("report[0].canBenPublish", equalTo(true))
+                .body("report[0].canBePublish", equalTo(true))
                 .body("report[0].error", equalTo(null))
 
         ;
@@ -88,7 +88,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("report[0].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
                 .body("report[0].publish", equalTo(true))
                 .body("report[0].ver", equalTo(1))
-                .body("report[0].canBenPublish", equalTo(true))
+                .body("report[0].canBePublish", equalTo(true))
                 .body("report[0].error", equalTo(null))
         ;
 
@@ -103,11 +103,11 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
 //                .body("success", equalTo(true))
 //                .body("report[0].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"))
 //                .body("report[0].publish", equalTo(true))
-//                .body("report[0].canBenPublish", equalTo(true))
+//                .body("report[0].canBePublish", equalTo(true))
 //                .body("report[0].error", equalTo(null))
 //                .body("report[1].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
 //                .body("report[1].publish", equalTo(false))
-//                .body("report[1].canBenPublish", equalTo(true))
+//                .body("report[1].canBePublish", equalTo(true))
 //                .body("report[1].error", equalTo(null));
 
 
@@ -146,7 +146,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("success", equalTo(true))
                 .body("report[0].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"))
                 .body("report[0].publish", equalTo(false))
-                .body("report[0].canBenPublish", equalTo(false))
+                .body("report[0].canBePublish", equalTo(false))
                 .body("report[0].error.title", equalTo("PROFIT_FOR_THE_YEAR_MISMATCH"))
                 ;
 
