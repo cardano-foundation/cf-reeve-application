@@ -90,6 +90,8 @@ spring:
     republish-outstanding-events-on-restart: false
 
 lob:
+  # Default path is for Docker
+  mock-result-path: ${LOB_MOCK_RESULT_PATH:/app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json}
   blockchain_reader:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
 
