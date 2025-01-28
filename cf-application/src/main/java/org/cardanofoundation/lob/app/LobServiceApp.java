@@ -60,8 +60,6 @@ public class LobServiceApp {
     @Bean
     public CommandLineRunner onStart() {
         return (args) -> {
-            log.info("Starting Lob Service...");
-
             log.info("Lob Service started.");
         };
     }
