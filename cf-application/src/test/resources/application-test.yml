@@ -10,7 +10,7 @@ spring:
     ddl-auto: create
 
   flyway:
-    out-of-order: true
+    out-of-order: false
     url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
     user: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
