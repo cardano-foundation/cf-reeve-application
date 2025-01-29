@@ -82,12 +82,13 @@ spring:
     events:
       externalization:
         enabled: false
+      republish-outstanding-events-on-restart: false
+      completion-mode: archive
 
     jdbc:
       schema-initialization:
         enabled: true
 
-    republish-outstanding-events-on-restart: false
 
 lob:
   # Default path is for Docker
