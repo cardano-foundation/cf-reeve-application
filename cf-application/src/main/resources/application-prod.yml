@@ -1,6 +1,6 @@
 spring:
   flyway:
-    out-of-order: true
+    out-of-order: false
     url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
     user: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
@@ -10,7 +10,6 @@ spring:
     enabled: true
     validateMigrationNaming: true
     locations:
-      - classpath:db/store/{vendor}
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/prod
 
