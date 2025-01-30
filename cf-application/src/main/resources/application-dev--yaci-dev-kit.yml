@@ -7,7 +7,7 @@ spring:
     active: dev--yaci-dev-kit
 
   flyway:
-    out-of-order: true
+    out-of-order: false
     url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
     user: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
@@ -19,7 +19,6 @@ spring:
     cleanOnValidationError: ${FLYWAY_CLEAN_ON_ERROR:false}
     validateMigrationNaming: true
     locations:
-      - classpath:db/store/{vendor}
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
 
