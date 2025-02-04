@@ -1,5 +1,5 @@
 server:
-  port: 9000
+  port: ${SERVER_PORT:9000}
 
 spring:
   task:
@@ -9,6 +9,10 @@ spring:
         core-size: 2
         max-size: 50
         queue-capacity: 10000
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${SPRING_KAFKA_CONSUMER_GROUP_ID:lob-consumer123}
 
   threads:
     virtual:
@@ -81,13 +85,17 @@ spring:
   modulith:
     events:
       externalization:
-        enabled: false
+        enabled: true
       republish-outstanding-events-on-restart: false
       completion-mode: archive
+      kafka:
+        enable-json: true
+
 
     jdbc:
       schema-initialization:
         enabled: true
+
 
 
 lob:
@@ -95,6 +103,15 @@ lob:
   mock-result-path: ${LOB_MOCK_RESULT_PATH:/app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json}
   blockchain_reader:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
+
+  accounting_reporting_core:
+    enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:true}
+
+  organisation:
+    enabled: ${LOB_ORGANISATION_ENABLED:true}
+
+  blockchain_publisher:
+    enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:true}
 
   cors:
     allowed:
@@ -104,6 +121,7 @@ lob:
       type: ${LOB_DISPATCHING_STRATEGY:DELAYED}
 
   netsuite:
+    enabled: ${LOB_NETSUITE_ENABLED:true}
     financial:
       period:
         source: EXPLICIT
