@@ -1,6 +1,7 @@
 services:
 
   postgres:
+    container_name: postgres
     image: postgres:16.3
     environment:
       - POSTGRES_USER=postgres
@@ -14,7 +15,8 @@ services:
     networks:
       - lob
 
-  app:
+  publisher:
+    container_name: publisher
     build:
       context: .
     env_file: cf-application/.env
@@ -27,6 +29,50 @@ services:
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive}
+      LOB_ACCOUNTING_REPORTING_CORE_ENABLED: false
+      LOB_ORGANISATION_ENABLED: false
+      LOB_BLOCKCHAIN_READER_ENABLED: true
+      LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
+      LOB_NETSUITE_ENABLED: true
+      SERVER_PORT: 9001
+      SPRING_KAFKA_ENABLED: true
+    working_dir: /app
+    entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
+    networks:
+      - lob
+    ports:
+      - "9001:9001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backendhttp.entrypoints=web"
+      - "traefik.http.routers.backendhttp.rule=Host(`${APP_BACK_HOSTNAME:-dev.api.cf-lob.metadata.dev.cf-deployments.org}`)"
+      - "traefik.http.routers.backend.rule=Host(`${APP_BACK_HOSTNAME:-dev.api.cf-lob.metadata.dev.cf-deployments.org}`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+    volumes:
+      - ./:/app/
+  api:
+    container_name: api
+    build:
+      context: .
+    env_file: cf-application/.env
+    environment:
+      KEYCLOAK_ENABLED: true
+      # Only used for dev and mocking netsuit
+      LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
+      SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
+      SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
+      DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
+      KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
+      lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive}
+      LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
+      LOB_ORGANISATION_ENABLED: true
+      LOB_BLOCKCHAIN_READER_ENABLED: false
+      LOB_BLOCKCHAIN_PUBLISHER_ENABLED: false
+      LOB_NETSUITE_ENABLED: false
+      SPRING_KAFKA_ENABLED: true
+      SERVER_PORT: 9000
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
@@ -69,7 +115,7 @@ services:
     ports:
       - ${EXPOSED_KC_HTTP_PORT:-8080}:${KC_HTTP_PORT:-8080}
       - ${EXPOSED_KC_HTTPS_PORT:-8443}:${KC_HTTPS_PORT:-8443}
-      - ${EXPOSED_KC_HEALTH_PORT:-8081}:9000
+#      - ${EXPOSED_KC_HEALTH_PORT:-8081}:9000
     volumes:
       - ./keycloak-config:/opt/keycloak/data/import
     labels:
@@ -81,6 +127,34 @@ services:
       - "traefik.http.routers.keycloak.tls.certresolver=myresolver"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    networks:
+      - lob
+    container_name: zookeeper
+    restart: always
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    networks:
+      - lob
+    container_name: kafka
+    restart: always
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
 
 volumes:
   postgres-data:

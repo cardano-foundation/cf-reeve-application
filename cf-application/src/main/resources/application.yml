@@ -10,9 +10,13 @@ spring:
         max-size: 50
         queue-capacity: 10000
   kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    enabled: true
+    bootstrap-servers: kafka:9092
     consumer:
-      group-id: ${SPRING_KAFKA_CONSUMER_GROUP_ID:lob-consumer123}
+      group-id: lob-consumer123
+      auto-offset-reset: latest
+  rabbitmq:
+    enabled: false
 
   threads:
     virtual:

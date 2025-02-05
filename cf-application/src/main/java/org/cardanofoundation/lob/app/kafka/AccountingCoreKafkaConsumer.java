@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = "lob.accounting_reporting_core.enabled", havingValue = "true")
+@ConditionalOnProperty(value = {"lob.accounting_reporting_core.enabled", "spring.kafka.enabled"}, havingValue = "true")
 public class AccountingCoreKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
