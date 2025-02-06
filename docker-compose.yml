@@ -1,7 +1,6 @@
 services:
 
   postgres:
-    container_name: postgres
     image: postgres:16.3
     environment:
       - POSTGRES_USER=postgres
@@ -16,7 +15,6 @@ services:
       - lob
 
   publisher:
-    container_name: publisher
     build:
       context: .
     env_file: cf-application/.env
@@ -35,6 +33,8 @@ services:
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
       LOB_NETSUITE_ENABLED: true
       SERVER_PORT: 9001
+      LOB_BLOCKFROST_URL: http://yaci-cli:8081/api/v1/
+      LOB_BLOCKCHAIN_READER_LOB_FOLLOWER_BASE_URL: http://follower-app:9090/api
       SPRING_KAFKA_ENABLED: true
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
@@ -53,7 +53,6 @@ services:
     volumes:
       - ./:/app/
   api:
-    container_name: api
     build:
       context: .
     env_file: cf-application/.env
@@ -92,7 +91,6 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
-    container_name: keycloak
     command: start-dev --import-realm
     networks:
       - lob
@@ -132,7 +130,6 @@ services:
     image: confluentinc/cp-zookeeper:latest
     networks:
       - lob
-    container_name: zookeeper
     restart: always
     ports:
       - "2181:2181"
@@ -143,7 +140,6 @@ services:
     image: confluentinc/cp-kafka:latest
     networks:
       - lob
-    container_name: kafka
     restart: always
     depends_on:
       - zookeeper
@@ -155,6 +151,35 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+
+  follower-app:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-follower-app:main-cfdc341-GHRUN13132112940
+    networks:
+      - lob
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
+      DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres?currentSchema=lob_follower_service}
+      LOB_BLOCKFROST_URL: http://yaci-cli:8081/api/v1/
+      STORE_CARDANO_HOST: yaci-cli
+      SOTRE_CARDANO_PORT: 3001
+      STORE_CARDANO_PROTOCOL_MAGIC: 42
+
+  yaci-cli:
+    image: bloxbean/yaci-cli:0.10.0-preview5
+    networks:
+      - lob
+    env_file:
+      - ./yaci-config/env
+      - ./yaci-config/node.properties
+    volumes:
+      - ./yaci-config/node.properties:/app/node.properties
+    ports:
+      - "3001:3001"
+      - "8081:8080"
+      - "5173:5173"
+    entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
 
 volumes:
   postgres-data:
