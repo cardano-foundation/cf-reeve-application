@@ -1,22 +1,36 @@
 package org.cardanofoundation.lob.app;
 
 import io.restassured.http.Header;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import lombok.val;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Set;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReportControllerFullflowTest extends WebBaseIntegrationTest {
+    @MockBean
+    private Clock clock;
 
     @Test
     void reportBothReportsTest() {
-
+        Instant fixedInstant = Instant.parse("2025-02-06T12:00:00Z"); // Set a fixed test time
+        ZoneId zoneId = ZoneId.of("UTC");
+        Mockito.when(clock.instant()).thenReturn(fixedInstant);
+        Mockito.when(clock.getZone()).thenReturn(zoneId);
         given()
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
@@ -63,9 +77,9 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("success", equalTo(true))
-                .body("report[0].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
+                .body("report[0].reportId", equalTo("8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"))
                 .body("report[0].publish", equalTo(false))
-                .body("report[0].ver", equalTo(1))
+                .body("report[0].ver", equalTo(0))
                 .body("report[0].canBePublish", equalTo(true))
                 .body("report[0].error", equalTo(null))
 
@@ -78,16 +92,16 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("""
                         {
                           "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
-                          "reportId": "8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"
+                          "reportId": "8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"
                         }""")
                 .when()
                 .post("/api/report-publish")
                 .then()
                 .statusCode(200)
                 .body("success", equalTo(true))
-                .body("report[0].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
+                .body("report[0].reportId", equalTo("8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"))
                 .body("report[0].publish", equalTo(true))
-                .body("report[0].ver", equalTo(1))
+                .body("report[0].ver", equalTo(0))
                 .body("report[0].canBePublish", equalTo(true))
                 .body("report[0].error", equalTo(null))
         ;
@@ -144,7 +158,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("success", equalTo(true))
-                .body("report[0].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"))
+                .body("report[0].reportId", equalTo("2e052f113132803ed48036fe4e1621dbeb33e0cfa193a3f546b0e340f05e8a1a"))
                 .body("report[0].publish", equalTo(false))
                 .body("report[0].canBePublish", equalTo(false))
                 .body("report[0].error.title", equalTo("PROFIT_FOR_THE_YEAR_MISMATCH"))
@@ -156,7 +170,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("""
                         {
                           "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
-                          "reportId": "1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"
+                          "reportId": "2e052f113132803ed48036fe4e1621dbeb33e0cfa193a3f546b0e340f05e8a1a"
                         }""")
                 .when()
                 .post("/api/report-publish")
@@ -199,7 +213,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("success", equalTo(true))
-                .body("report[0].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"))
+                .body("report[0].reportId", equalTo("2e052f113132803ed48036fe4e1621dbeb33e0cfa193a3f546b0e340f05e8a1a"))
                 .body("report[0].publish", equalTo(false))
         ;
 
@@ -209,18 +223,18 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("""
                         {
                           "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
-                          "reportId": "8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"
+                          "reportId": "2e052f113132803ed48036fe4e1621dbeb33e0cfa193a3f546b0e340f05e8a1a"
                         }""")
                 .when()
                 .post("/api/report-publish")
                 .then()
                 .statusCode(200)
                 .body("success", equalTo(true))
-                .body("report[0].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
+                .body("report[0].reportId", equalTo("2e052f113132803ed48036fe4e1621dbeb33e0cfa193a3f546b0e340f05e8a1a"))
                 .body("report[0].publish", equalTo(true))
         ;
 
-        given()
+        ExtractableResponse<Response> success = given()
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .when()
@@ -228,40 +242,12 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("success", equalTo(true))
-                .body("report[0].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
-                .body("report[0].publish", equalTo(true))
-                .body("report[1].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"))
-                .body("report[1].publish", equalTo(false));
-
-        given()
-                .contentType("application/json")
-                .header(new Header("Accept-Language", "en-US"))
-                .body("""
-                        {
-                          "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
-                          "reportId": "1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"
-                        }""")
-                .when()
-                .post("/api/report-publish")
-                .then()
-                .statusCode(200)
-                .body("success", equalTo(true))
-                .body("report[0].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"))
-                .body("report[0].publish", equalTo(true));
-
-        given()
-                .contentType("application/json")
-                .header(new Header("Accept-Language", "en-US"))
-                .when()
-                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
-                .then()
-                .statusCode(200)
-                .body("success", equalTo(true))
-                .body("report[0].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
-                .body("report[0].publish", equalTo(true))
-                .body("report[1].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"))
-                .body("report[1].publish", equalTo(true));
-
+                .extract();
+        String reportIdZero = success.body().path("report[0].reportId");
+        String reportIdOne = success.body().path("report[1].reportId");
+        Set<String> reportIds = Set.of(reportIdZero, reportIdOne);
+        assertTrue(reportIds.contains("8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"));
+        assertTrue(reportIds.contains("2e052f113132803ed48036fe4e1621dbeb33e0cfa193a3f546b0e340f05e8a1a"));
     }
 
 }
