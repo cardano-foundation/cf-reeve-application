@@ -67,7 +67,7 @@ services:
       KC_DB_USERNAME: ${KC_DB_USERNAME:-postgres}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD:-postgres}
     ports:
-      - ${EXPOSED_KC_HTTP_PORT:-8050}:${KC_HTTP_PORT:-8080}
+      - ${EXPOSED_KC_HTTP_PORT:-8080}:${KC_HTTP_PORT:-8080}
       - ${EXPOSED_KC_HTTPS_PORT:-8443}:${KC_HTTPS_PORT:-8443}
       - ${EXPOSED_KC_HEALTH_PORT:-8081}:9000
     volumes:
