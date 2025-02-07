@@ -72,6 +72,7 @@ services:
       - ${EXPOSED_KC_HEALTH_PORT:-8081}:9000
     volumes:
       - ./keycloak-config:/opt/keycloak/data/import
+      - ./keycloak-theme/reeve-theme.jar:/opt/keycloak/providers/reeve-theme.jar 
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.keycloakhttp.entrypoints=web"
