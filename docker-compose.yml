@@ -14,6 +14,20 @@ services:
     networks:
       - lob
 
+  frontend:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-frontend:main
+    networks:
+      - lob
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      VITE_APP_VERSION: $npm_package_version
+      VITE_APP_API_URL: http://localhost:9000
+      VITE_KEYCLOAK_URL: http://localhost:8080
+      VITE_KEYCLOAK_REALM: cf-master
+      VITE_KEYCLOAK_CLIENT_ID: webclient
+
   publisher:
     build:
       context: .
@@ -153,7 +167,7 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
 
   follower-app:
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-follower-app:main-cfdc341-GHRUN13132112940
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-follower-app:main
     networks:
       - lob
     ports:
