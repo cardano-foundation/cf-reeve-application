@@ -1,7 +1,7 @@
 plugins {
     id("org.springframework.boot") version "3.3.0"
 }
-val isKafkaEnabled: Boolean = System.getenv("KAFKA_ENABLED")?.toBooleanStrictOrNull() ?: false
+val isKafkaEnabled: Boolean = System.getenv("KAFKA_ENABLED")?.toBooleanStrictOrNull() ?: true
 dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 

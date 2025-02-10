@@ -119,7 +119,7 @@ subprojects {
         withType<JavaCompile> {
             options.compilerArgs.add(ENABLE_PREVIEW)
             //options.compilerArgs.add("-Xlint:preview")
-            val isKafkaEnabled: Boolean = System.getenv("KAFKA_ENABLED")?.toBooleanStrictOrNull() ?: false
+            val isKafkaEnabled: Boolean = System.getenv("KAFKA_ENABLED")?.toBooleanStrictOrNull() ?: true
             if (!isKafkaEnabled) {
                 exclude("**/kafka/**")
             }
