@@ -1,7 +1,7 @@
 plugins {
     id("org.springframework.boot") version "3.3.0"
 }
-
+val isKafkaEnabled: Boolean = System.getenv("KAFKA_ENABLED")?.toBooleanStrictOrNull() ?: true
 dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
@@ -15,9 +15,14 @@ dependencies {
 
     implementation("org.springframework.modulith:spring-modulith-starter-core")
     implementation("org.springframework.modulith:spring-modulith-starter-jdbc")
-    implementation("org.springframework.modulith:spring-modulith-events-amqp")
-
-    implementation("org.springframework.boot:spring-boot-starter-amqp")
+    // Kafka
+    if(isKafkaEnabled) {
+        runtimeOnly("org.springframework.modulith:spring-modulith-events-kafka")
+        implementation("org.springframework.kafka:spring-kafka")
+    }
+    // RabbitMQ
+//    implementation("org.springframework.modulith:spring-modulith-events-amqp")
+//    implementation("org.springframework.boot:spring-boot-starter-amqp")
 
     implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
 
