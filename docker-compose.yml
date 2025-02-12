@@ -14,7 +14,29 @@ services:
     networks:
       - lob
 
-  app:
+  frontend:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-frontend:main
+    networks:
+      - lob
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      VITE_APP_VERSION: $npm_package_version
+      VITE_APP_API_URL: ${API_HOSTNAME}
+      VITE_KEYCLOAK_URL: ${KC_HOSTNAME}
+      VITE_KEYCLOAK_REALM: cf-master
+      VITE_KEYCLOAK_CLIENT_ID: webclient
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend-http.entrypoints=web"
+      - "traefik.http.routers.frontend-http.rule=Host(`${FRONTEND_HOSTNAME:-example.com}`)"
+      - "traefik.http.routers.frontend-https.rule=Host(`${FRONTEND_HOSTNAME:-example.com}`)"
+      - "traefik.http.routers.frontend-https.entrypoints=websecure"
+      - "traefik.http.routers.frontend-https.tls=true"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+  publisher:
     build:
       context: .
     env_file: cf-application/.env
@@ -27,6 +49,43 @@ services:
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive}
+      LOB_ACCOUNTING_REPORTING_CORE_ENABLED: false
+      LOB_ORGANISATION_ENABLED: false
+      LOB_BLOCKCHAIN_READER_ENABLED: true
+      LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
+      LOB_NETSUITE_ENABLED: true
+      SERVER_PORT: 9001
+      LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
+      LOB_BLOCKCHAIN_READER_LOB_FOLLOWER_BASE_URL: http://follower-app:9090/api
+      SPRING_KAFKA_ENABLED: true
+    working_dir: /app
+    entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
+    networks:
+      - lob
+    ports:
+      - "9001:9001"
+    volumes:
+      - ./:/app/
+  api:
+    build:
+      context: .
+    env_file: cf-application/.env
+    environment:
+      KEYCLOAK_ENABLED: true
+      # Only used for dev and mocking netsuit
+      LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
+      SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
+      SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
+      DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
+      KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
+      lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive}
+      LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
+      LOB_ORGANISATION_ENABLED: true
+      LOB_BLOCKCHAIN_READER_ENABLED: false
+      LOB_BLOCKCHAIN_PUBLISHER_ENABLED: false
+      LOB_NETSUITE_ENABLED: false
+      SPRING_KAFKA_ENABLED: true
+      SERVER_PORT: 9000
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
@@ -35,18 +94,17 @@ services:
       - "9000:9000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backendhttp.entrypoints=web"
-      - "traefik.http.routers.backendhttp.rule=Host(`${APP_BACK_HOSTNAME:-dev.api.cf-lob.metadata.dev.cf-deployments.org}`)"
-      - "traefik.http.routers.backend.rule=Host(`${APP_BACK_HOSTNAME:-dev.api.cf-lob.metadata.dev.cf-deployments.org}`)"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.routers.backend-http.entrypoints=web"
+      - "traefik.http.routers.backend-http.rule=Host(`${API_HOSTNAME:-api.example.com}`)"
+      - "traefik.http.routers.backend-https.rule=Host(`${API_HOSTNAME:-api.example.com}`)"
+      - "traefik.http.routers.backend-https.entrypoints=websecure"
+      - "traefik.http.routers.backend-https.tls=true"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
     volumes:
       - ./:/app/
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
-    container_name: keycloak
     command: start-dev --import-realm
     networks:
       - lob
@@ -69,18 +127,119 @@ services:
     ports:
       - ${EXPOSED_KC_HTTP_PORT:-8080}:${KC_HTTP_PORT:-8080}
       - ${EXPOSED_KC_HTTPS_PORT:-8443}:${KC_HTTPS_PORT:-8443}
-      - ${EXPOSED_KC_HEALTH_PORT:-8081}:9000
+#      - ${EXPOSED_KC_HEALTH_PORT:-8081}:9000
     volumes:
       - ./keycloak-config:/opt/keycloak/data/import
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.keycloakhttp.entrypoints=web"
-      - "traefik.http.routers.keycloakhttp.rule=Host(`${KC_HOSTNAME:-dev.keycloak.cf-lob.metadata.dev.cf-deployments.org}`)"
-      - "traefik.http.routers.keycloak.rule=Host(`${KC_HOSTNAME:-dev.keycloak.cf-lob.metadata.dev.cf-deployments.org}`)"
-      - "traefik.http.routers.keycloak.entrypoints=websecure"
-      - "traefik.http.routers.keycloak.tls.certresolver=myresolver"
+      - "traefik.http.routers.keycloak-http.entrypoints=web"
+      - "traefik.http.routers.keycloak-http.rule=Host(`${KC_HOSTNAME:-keycloak.example.com}`)"
+      - "traefik.http.routers.keycloak-https.rule=Host(`${KC_HOSTNAME:-keycloak.example.com}`)"
+      - "traefik.http.routers.keycloak-https.entrypoints=websecure"
+      - "traefik.http.routers.keycloack-https.tls=true"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    networks:
+      - lob
+    restart: always
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    networks:
+      - lob
+    restart: always
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+
+  follower-app:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-follower-app:main
+    networks:
+      - lob
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
+      DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres?currentSchema=lob_follower_service}
+      LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
+      STORE_CARDANO_HOST: yaci-cli
+      SOTRE_CARDANO_PORT: 3001
+      STORE_CARDANO_PROTOCOL_MAGIC: 42
+
+  yaci-cli:
+    image: bloxbean/yaci-cli:0.10.0-preview5
+    networks:
+      - lob
+    env_file:
+      - ./yaci-config/env
+      - ./yaci-config/node.properties
+    volumes:
+      - ./yaci-config/node.properties:/app/node.properties
+    ports:
+      - "3001:3001"
+      - "8081:8080"
+    entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
+      - "traefik.http.routers.yaci-bf-http.rule=Host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+      - "traefik.http.routers.yaci-bf-https.rule=Host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+      - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
+      - "traefik.http.routers.yaci-bf-https.tls=true"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+  yaci-viewer:
+    image: bloxbean/yaci-viewer:0.10.0-preview5
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./yaci-config/env
+    networks:
+      - lob
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yaci-viewer-http.entrypoints=web"
+      - "traefik.http.routers.yaci-viewer-http.rule=Host(`${YACI_VIEWER_HOSTNAME:-yaci-viewer.example.com}`)"
+      - "traefik.http.routers.yaci-viewer-https.rule=Host(`${YACI_VIEWER_HOSTNAME:-yaci-viewer.example.com}`)"
+      - "traefik.http.routers.yaci-viewer-https.entrypoints=websecure"
+      - "traefik.http.routers.yaci-viewer-https.tls=true"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+  traefik:
+    profiles: [traefik]
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--accesslog.filepath=/dev/stdout"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "443:443"
+      - "80:80"
+        #- "8080:8080"
+    volumes:
+      - "/var/lib/letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - lob
 
 volumes:
   postgres-data:
