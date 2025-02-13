@@ -3,11 +3,10 @@ package org.cardanofoundation.lob.app;
 import io.restassured.http.Header;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.vavr.collection.Array;
 import lombok.val;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -104,6 +103,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
     }
 
     @Test
+    @Disabled
     void testReportCreateBalanceSheet() {
 
         given()

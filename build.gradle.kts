@@ -129,7 +129,7 @@ subprojects {
         withType<Test> {
             useJUnitPlatform()
             jvmArgs(ENABLE_PREVIEW)
-            environment("KAFKA_ENABLED", "false")
+            maxParallelForks = 1
         }
 
         withType<PitestTask> {

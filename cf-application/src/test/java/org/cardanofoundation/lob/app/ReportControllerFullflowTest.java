@@ -6,7 +6,11 @@ import io.restassured.response.Response;
 import lombok.val;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,31 +25,42 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Execution(ExecutionMode.SAME_THREAD)
 class ReportControllerFullflowTest extends WebBaseIntegrationTest {
     @MockBean
     private Clock clock;
 
-    @Test
-    void reportBothReportsTest() {
-        Instant fixedInstant = Instant.parse("2025-02-06T12:00:00Z"); // Set a fixed test time
+    private static final String ORG_ID = "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94";
+
+    @BeforeEach
+    void setup() {
+        Instant fixedInstant = Instant.parse("2025-02-06T12:00:00Z");
         ZoneId zoneId = ZoneId.of("UTC");
         Mockito.when(clock.instant()).thenReturn(fixedInstant);
         Mockito.when(clock.getZone()).thenReturn(zoneId);
+    }
+
+    @Test
+    @Order(1)
+    void reportListEmptyReports() {
         given()
-                .contentType("application/json")
-                .header(new Header("Accept-Language", "en-US"))
-                .when()
-                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
-                .then()
-                .statusCode(200)
-                //.body("id", containsString(expectedUpdatedAt))
-                .body("success", equalTo(true))
-                .body("report", equalTo(new ArrayList<>()));
+            .contentType("application/json")
+            .header(new Header("Accept-Language", "en-US"))
+            .when()
+            .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
+            .then()
+            .statusCode(200)
+            //.body("id", containsString(expectedUpdatedAt))
+            .body("success", equalTo(true))
+            .body("report", equalTo(new ArrayList<>()));
+    }
 
-
+    @Test
+    @Order(2)
+    void createReport() {
         val inputBalanceSheetCreate = """
                 {
-                        "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                        "organisationID": "%s",
                         "reportType": "BALANCE_SHEET",
                         "intervalType": "MONTH",
                         "year": 2023,
@@ -66,7 +81,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                       "capital": "5",
                       "resultsCarriedForward": "6",
                       "profitForTheYear": "120"
-                    }""";
+                    }""".formatted(ORG_ID);
 
         given()
                 .contentType("application/json")
@@ -82,18 +97,20 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("report[0].ver", equalTo(0))
                 .body("report[0].canBePublish", equalTo(true))
                 .body("report[0].error", equalTo(null))
-
         ;
+    }
 
-
+    @Test
+    @Order(3)
+    void publishReport() {
         given()
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .body("""
                         {
-                          "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                          "organisationId": "%s",
                           "reportId": "8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"
-                        }""")
+                        }""".formatted(ORG_ID))
                 .when()
                 .post("/api/report-publish")
                 .then()
@@ -104,30 +121,37 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("report[0].ver", equalTo(0))
                 .body("report[0].canBePublish", equalTo(true))
                 .body("report[0].error", equalTo(null))
-        ;
+         ;
+    }
 
-//        given()
-//                .contentType("application/json")
-//                .header(new Header("Accept-Language", "en-US"))
-//                .when()
-//                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
-//                .then()
-//                .statusCode(200)
-//                //.body("id", containsString(expectedUpdatedAt))
-//                .body("success", equalTo(true))
-//                .body("report[0].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"))
-//                .body("report[0].publish", equalTo(true))
-//                .body("report[0].canBePublish", equalTo(true))
-//                .body("report[0].error", equalTo(null))
-//                .body("report[1].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
-//                .body("report[1].publish", equalTo(false))
-//                .body("report[1].canBePublish", equalTo(true))
-//                .body("report[1].error", equalTo(null));
+    @Test
+    @Order(4)
+    void listReport() {
+                given()
+                .contentType("application/json")
+                .header(new Header("Accept-Language", "en-US"))
+                .when()
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
+                .then()
+                .statusCode(200)
+                //.body("id", containsString(expectedUpdatedAt))
+                .body("success", equalTo(true))
+                .body("report[0].reportId", equalTo("1e1da8241a6e0349a31f7cbadc057e2c499964025b653f77bb5b5da4f7a9c55d"))
+                .body("report[0].publish", equalTo(true))
+                .body("report[0].canBePublish", equalTo(true))
+                .body("report[0].error", equalTo(null))
+                .body("report[1].reportId", equalTo("8d8209cb555b7c71a5a90ad52ce49f4ea4bd1948489a49cd5eedc3fab958d968"))
+                .body("report[1].publish", equalTo(false))
+                .body("report[1].canBePublish", equalTo(true))
+                .body("report[1].error", equalTo(null));
+    }
 
-
+    @Test
+    @Order(5)
+    void createSecondReport() {
         val inputIncomeStatementUpdate = """
                 {
-                   "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                   "organisationID": "%s",
                    "reportType": "INCOME_STATEMENT",
                    "intervalType": "MONTH",
                    "year": 2023,
@@ -147,7 +171,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                    "financialExpenses": "13",
                    "extraordinaryExpenses": "14",
                    "incomeTaxExpense": "16"
-                   }""";
+                   }""".formatted(ORG_ID);
 
         given()
                 .contentType("application/json")
@@ -162,7 +186,16 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("report[0].publish", equalTo(false))
                 .body("report[0].canBePublish", equalTo(false))
                 .body("report[0].error.title", equalTo("PROFIT_FOR_THE_YEAR_MISMATCH"))
-                ;
+        ;
+    }
+
+    @Test
+    @Disabled
+    void reportBothReportsTest() {
+        Instant fixedInstant = Instant.parse("2025-02-06T12:00:00Z"); // Set a fixed test time
+        ZoneId zoneId = ZoneId.of("UTC");
+        Mockito.when(clock.instant()).thenReturn(fixedInstant);
+        Mockito.when(clock.getZone()).thenReturn(zoneId);
 
         given()
                 .contentType("application/json")

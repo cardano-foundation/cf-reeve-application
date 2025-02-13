@@ -35,7 +35,7 @@ public class WebBaseIntegrationTest {
 
     protected WireMockServer wireMockServer;
 
-    protected int randomWebMockPort = 1024 + (int) (Math.random() * 1000);
+    protected int randomWebMockPort = 19000;
 
     @BeforeAll
     public void setUp() {
@@ -50,6 +50,11 @@ public class WebBaseIntegrationTest {
     }
 
     @BeforeEach
+    void resetWireMock() {
+        wireMockServer.resetAll();
+    }
+
+    @BeforeAll
     public void clearDatabase(@Autowired Flyway flyway){
         flyway.clean();
         flyway.migrate();

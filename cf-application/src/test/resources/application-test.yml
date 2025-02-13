@@ -1,3 +1,6 @@
+server:
+  port: 19000
+
 spring:
   datasource:
     name: ${DB_NAME:lob_service}
@@ -25,7 +28,13 @@ spring:
       - classpath:db/store/{vendor}
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
-
+  modulith:
+    events:
+      externalization:
+        enabled: false
+netsuite:
+  altavia:
+    client-url: http://localhost:19000/api/mockresult
 lob:
   cardano:
     network: "DEV"
@@ -36,6 +45,17 @@ lob:
     url: "http://localhost:8080/api/v1/"
     # locally YaciDevKit runs on port 8080
     api_key: ""
+  netsuite:
+    enabled: false
+    client:
+      url: "http://localhost:19000/api/mockresult"
+#  LOB_BLOCKCHAIN_READER_ENABLED=true
+#  LOB_BLOCKCHAIN_PUBLISHER_ENABLED=true
+#  LOB_NETSUITE_ENABLED=true
+  blockchain-reader:
+    enabled: false
+  blockchain-publisher:
+    enabled: false
 
 #spring.profiles.active=dev--yaci-dev-kit
 keycloak:
