@@ -49,10 +49,10 @@ public class WebBaseIntegrationTest {
         RestAssured.baseURI = "http://localhost";
     }
 
-    @BeforeEach
-    void resetWireMock() {
-        wireMockServer.resetAll();
-    }
+//    @BeforeEach
+//    void resetWireMock() {
+//        wireMockServer.resetAll();
+//    }
 
     @BeforeAll
     public void clearDatabase(@Autowired Flyway flyway){
