@@ -4,8 +4,9 @@ CF specific application that uses cf-lob-platform
 # Requirements
 - Linux or OSX
 - JDK 21 LTS installed
+- Docker installed
 
-# How to start Start
+# How to start the application
 To start the whole application stack you need to run the following command in this repository root:
 ```bash
 docker compose up -d --build
