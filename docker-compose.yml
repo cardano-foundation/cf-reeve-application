@@ -23,8 +23,8 @@ services:
     environment:
       PORT: 3000
       VITE_APP_VERSION: $npm_package_version
-      VITE_APP_API_URL: ${API_HOSTNAME}
-      VITE_KEYCLOAK_URL: ${KC_HOSTNAME}
+      VITE_APP_API_URL: ${API_HOSTNAME:-http://localhost:9000}
+      VITE_KEYCLOAK_URL: ${KC_HOSTNAME:-http://localhost:8080}
       VITE_KEYCLOAK_REALM: cf-master
       VITE_KEYCLOAK_CLIENT_ID: webclient
     labels:
@@ -165,7 +165,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
-
   follower-app:
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-follower-app:main
     networks:
