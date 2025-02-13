@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -48,7 +49,7 @@ public class WebBaseIntegrationTest {
         RestAssured.baseURI = "http://localhost";
     }
 
-    @BeforeAll
+    @BeforeEach
     public void clearDatabase(@Autowired Flyway flyway){
         flyway.clean();
         flyway.migrate();

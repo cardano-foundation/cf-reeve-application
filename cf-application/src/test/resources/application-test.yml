@@ -8,7 +8,8 @@ spring:
   jpa:
     hibernate:
     ddl-auto: create
-
+  kafka:
+    enabled: false
   flyway:
     out-of-order: false
     url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
