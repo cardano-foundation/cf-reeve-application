@@ -15,7 +15,7 @@ spring:
     enabled: false
   flyway:
     out-of-order: false
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
+    url: ${DB_URL:jdbc:tc:postgresql:localhost:5432:///postgres}
     user: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     schemas: ${DB_SCHEMA:lob_service}
@@ -28,6 +28,7 @@ spring:
       - classpath:db/store/{vendor}
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
+    driver-class-name: ${DB_DRIVER:org.testcontainers.jdbc.ContainerDatabaseDriver}
   modulith:
     events:
       externalization:
@@ -60,3 +61,5 @@ lob:
 #spring.profiles.active=dev--yaci-dev-kit
 keycloak:
   enabled: false
+testcontainers:
+  enabled: true
