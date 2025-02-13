@@ -48,7 +48,7 @@ services:
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
-      lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive}
+      lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: false
       LOB_ORGANISATION_ENABLED: false
       LOB_BLOCKCHAIN_READER_ENABLED: true
@@ -78,7 +78,7 @@ services:
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
-      lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive}
+      lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
       LOB_ORGANISATION_ENABLED: true
       LOB_BLOCKCHAIN_READER_ENABLED: false
@@ -180,7 +180,7 @@ services:
       STORE_CARDANO_PROTOCOL_MAGIC: 42
 
   yaci-cli:
-    image: bloxbean/yaci-cli:0.10.0-preview5
+    image: bloxbean/yaci-cli:0.10.2
     networks:
       - lob
     env_file:
@@ -202,7 +202,7 @@ services:
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
 
   yaci-viewer:
-    image: bloxbean/yaci-viewer:0.10.0-preview5
+    image: bloxbean/yaci-viewer:0.10.2
     ports:
       - "5173:5173"
     env_file:
