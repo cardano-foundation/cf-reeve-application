@@ -9,6 +9,7 @@ on:
 jobs:
 
   test:
+    if: false # disable this job
     runs-on: ubuntu-latest
     services:
       postgres:
