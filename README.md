@@ -9,7 +9,7 @@ CF specific application that uses cf-lob-platform
 # How to start the application
 To start the whole application stack you need to run the following command in this repository root:
 ```bash
-docker compose up -d --build
+docker compose --profile frontend up -d --build
 ```
 The `--build` flag is optional and is used to rebuild the images if you have made changes to the Dockerfiles.
 This will start the following services:
