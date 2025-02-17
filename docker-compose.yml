@@ -15,6 +15,7 @@ services:
       - lob
 
   frontend:
+    profiles: [frontend]
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-frontend:main
     networks:
       - lob
