@@ -15,11 +15,11 @@ import java.sql.SQLException;
 public class LobServiceApplicationTest {
     private static final String POSTGRES_IMAGE = "postgres:16.3";
 
-    @Bean
-    @ServiceConnection
-    public PostgreSQLContainer<?> postgreSQLContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse(POSTGRES_IMAGE));
-    }
+//    @Bean
+//    @ServiceConnection
+//    public PostgreSQLContainer<?> postgreSQLContainer() {
+//        return new PostgreSQLContainer<>(DockerImageName.parse(POSTGRES_IMAGE));
+//    }
 
 //    @Bean
 //    @ServiceConnection
