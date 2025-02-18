@@ -24,8 +24,8 @@ services:
     environment:
       PORT: 3000
       VITE_APP_VERSION: $npm_package_version
-      VITE_APP_API_URL: ${API_HOSTNAME:-http://localhost:9000}
-      VITE_KEYCLOAK_URL: ${KC_HOSTNAME:-http://localhost:8080}
+      VITE_APP_API_URL: ${API_FRONTEND_HOSTNAME:-http://localhost:9000}
+      VITE_KEYCLOAK_URL: ${KC_FRONTEND_HOSTNAME:-http://localhost:8080}
       VITE_KEYCLOAK_REALM: cf-master
       VITE_KEYCLOAK_CLIENT_ID: webclient
     labels:
@@ -74,6 +74,7 @@ services:
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
+      LOB_CORS_ALLOWED_ORIGINS: ${LOB_CORS_ALLOWED_ORIGINS}
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
       SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
