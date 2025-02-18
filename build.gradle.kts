@@ -102,7 +102,6 @@ subprojects {
         testImplementation("net.jqwik:jqwik:1.9.0") // Jqwik for property-based testing
         testImplementation("org.assertj:assertj-core:3.26.0")
         testImplementation("org.pitest:pitest-junit5-plugin:1.2.1")
-
     }
 
     dependencyManagement {
@@ -124,12 +123,12 @@ subprojects {
             if (!isKafkaEnabled) {
                 exclude("**/kafka/**")
             }
+
         }
 
         withType<Test> {
             useJUnitPlatform()
             jvmArgs(ENABLE_PREVIEW)
-            maxParallelForks = 1
         }
 
         withType<PitestTask> {
