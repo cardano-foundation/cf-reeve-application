@@ -137,7 +137,7 @@ services:
       - "traefik.http.routers.keycloak-http.rule=Host(`${KC_HOSTNAME:-keycloak.example.com}`)"
       - "traefik.http.routers.keycloak-https.rule=Host(`${KC_HOSTNAME:-keycloak.example.com}`)"
       - "traefik.http.routers.keycloak-https.entrypoints=websecure"
-      - "traefik.http.routers.keycloack-https.tls=true"
+      - "traefik.http.routers.keycloak-https.tls=true"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
 
