@@ -1,4 +1,4 @@
-DOMAIN=dev.reeve.cf-deployments.org
+DOMAIN=example.org
 KC_HOSTNAME=keycloak.${DOMAIN}
 KC_FRONTEND_HOSTNAME=https://keycloak.${DOMAIN}
 API_FRONTEND_HOSTNAME=https://api.${DOMAIN}
