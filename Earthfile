@@ -64,6 +64,7 @@ backend-test:
   ARG DB_USER=postgres
   ARG DB_PASSWORD=postgres
   ARG DB_DRIVER=org.postgresql.Driver
+  ARG TESTCONTAINERS_ENABLED=false
   FROM +backend-test-build
   RUN echo $DB_URL
   RUN ./gradlew clean test
