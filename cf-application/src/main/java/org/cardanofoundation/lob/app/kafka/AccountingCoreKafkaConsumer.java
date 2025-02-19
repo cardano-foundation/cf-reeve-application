@@ -19,12 +19,12 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = {"lob.accounting_reporting_core.enabled", "spring.kafka.enabled"}, havingValue = "true")
+@ConditionalOnProperty(value = {"lob.accounting_reporting_core.enabled", "spring.kafka.enabled"}, havingValue = "true", matchIfMissing = true)
 public class AccountingCoreKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.ledger.TxsLedgerUpdateEvent")
+    @KafkaListener(topics = "accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent")
     public void listen(TxsLedgerUpdatedEvent message) {
         applicationEventPublisher.publishEvent(message);
     }
