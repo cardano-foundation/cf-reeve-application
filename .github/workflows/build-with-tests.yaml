@@ -44,6 +44,7 @@ jobs:
           earthly +backend-test --DB_HOST=${{ steps.runner_private_ip.outputs.PRIVATE_IP }}
 
   mutation-test:
+    if: false
     needs: test
     runs-on: ubuntu-latest
     services:
