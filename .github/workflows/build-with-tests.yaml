@@ -8,7 +8,6 @@ on:
 
 jobs:
   test:
-    if: false
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -23,24 +22,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: ⛮ cf-gha-baseline
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
-
-      - name: get runner private ip
-        id: runner_private_ip
+      - name: Checkout platform code
+        uses: actions/checkout@v3
+        with:
+          repository: cardano-foundation/cf-lob-platform
+          ref: refs/heads/main
+          path: platform
+      - name: Build platform
         run: |
-          PRIVATE_IP=$(ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//' | head -n1) 
-          echo "PRIVATE_IP=${PRIVATE_IP}" | tee -a "${GITHUB_ENV}" | tee -a "${GITHUB_OUTPUT}"
-          nc -z ${PRIVATE_IP} 5432 || exit -1
-
-      - name: 🌍 earthly (build)
+          cd platform
+          ./gradlew clean build publishMavenJavaPublicationToLocalM2Repository -x test
+      - name: Run tests
         run: |
-          earthly +backend-test-build
-
-      - name: 🌍 earthly (run tests within docker)
-        run: |
-          earthly +backend-test --DB_HOST=${{ steps.runner_private_ip.outputs.PRIVATE_IP }}
+          ./gradlew test
 
   mutation-test:
     needs: test
