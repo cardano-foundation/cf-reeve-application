@@ -22,9 +22,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Copy Env File
-        run: |
-          cp cf-application/.env.template cf-application/.env
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
 

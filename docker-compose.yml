@@ -45,7 +45,6 @@ services:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
-      SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
@@ -76,7 +75,6 @@ services:
       # Only used for dev and mocking netsuit
       LOB_CORS_ALLOWED_ORIGINS: ${LOB_CORS_ALLOWED_ORIGINS:-http://localhost:3000}
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
-      SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
