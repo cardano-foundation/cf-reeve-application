@@ -131,13 +131,13 @@ lob:
         source: EXPLICIT
 
     client:
-      realm: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_REALM}
-      oauth_nonce: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_OAUTH_NONCE}
-      consumer_key: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_CONSUMER_KEY}
-      token_secret: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_TOKEN_SECRET}
-      consumer_secret: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_CONSUMER_SECRET}
-      token: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_TOKEN}
-      url: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_URL}
+      realm: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_REALM:<enter value>}
+      oauth_nonce: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_OAUTH_NONCE:<enter value>}
+      consumer_key: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_CONSUMER_KEY:<enter value>}
+      token_secret: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_TOKEN_SECRET:<enter value>}
+      consumer_secret: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_CONSUMER_SECRET:<enter value>}
+      token: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_TOKEN:<enter value>}
+      url: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_URL:<enter value>}
 
   l1:
     transaction:
