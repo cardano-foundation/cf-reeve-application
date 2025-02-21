@@ -40,7 +40,6 @@ services:
   publisher:
     build:
       context: .
-    env_file: cf-application/.env
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
@@ -69,7 +68,6 @@ services:
   api:
     build:
       context: .
-    env_file: cf-application/.env
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
