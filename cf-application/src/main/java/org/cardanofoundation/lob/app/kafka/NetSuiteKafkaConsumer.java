@@ -2,8 +2,8 @@ package org.cardanofoundation.lob.app.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,7 +20,7 @@ public class NetSuiteKafkaConsumer {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @KafkaListener(topics = "accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent")
-    public void listen(ReportLedgerUpdateCommand message) {
+    public void listen(ScheduledIngestionEvent message) {
         applicationEventPublisher.publishEvent(message);
     }
 
