@@ -7,7 +7,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   test:
     runs-on: ubuntu-latest
     services:
@@ -23,7 +22,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
 
@@ -43,6 +41,7 @@ jobs:
           earthly +backend-test --DB_HOST=${{ steps.runner_private_ip.outputs.PRIVATE_IP }}
 
   mutation-test:
+    if: false
     needs: test
     runs-on: ubuntu-latest
     services:

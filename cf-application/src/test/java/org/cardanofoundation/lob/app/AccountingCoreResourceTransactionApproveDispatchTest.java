@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -8,7 +9,9 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 
 class AccountingCoreResourceTransactionApproveDispatchTest extends WebBaseIntegrationTest {
+
     @Test
+    @Order(1)
     void testApproveDispatchTransaction() {
 
         given()
@@ -47,6 +50,7 @@ class AccountingCoreResourceTransactionApproveDispatchTest extends WebBaseIntegr
     }
 
     @Test
+    @Order(2)
     void testApproveDispatchTransactionAlreadyDispatched() {
 
         given()
@@ -86,6 +90,7 @@ class AccountingCoreResourceTransactionApproveDispatchTest extends WebBaseIntegr
     }
 
     @Test
+    @Order(3)
     void testApproveDispatchTransactionAlreadyMarkForDispatch() {
 
         given()
@@ -124,6 +129,7 @@ class AccountingCoreResourceTransactionApproveDispatchTest extends WebBaseIntegr
     }
 
     @Test
+    @Order(4)
     void testApproveDispatchTransactionNotReadyToPublish() {
         given()
                 .contentType("application/json")
@@ -147,6 +153,7 @@ class AccountingCoreResourceTransactionApproveDispatchTest extends WebBaseIntegr
     }
 
     @Test
+    @Order(5)
     void testApproveDispatchTransactionTransactionNotFound() {
         given()
                 .contentType("application/json")
@@ -169,6 +176,7 @@ class AccountingCoreResourceTransactionApproveDispatchTest extends WebBaseIntegr
     }
 
     @Test
+    @Order(6)
     void testApproveDispatchTransactionFailedTransactionViolation() {
         given()
                 .contentType("application/json")
@@ -191,6 +199,7 @@ class AccountingCoreResourceTransactionApproveDispatchTest extends WebBaseIntegr
     }
 
     @Test
+    @Order(7)
     void testApproveDispatchTransactionFailedTransactionItemRejected() {
         given()
                 .contentType("application/json")

@@ -1,5 +1,6 @@
 package org.cardanofoundation.lob.app;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ public class LobServiceApplicationTest {
 
     @Bean
     @ServiceConnection
+    @ConditionalOnProperty(name = "testcontainers.enabled", havingValue = "true", matchIfMissing = true)
     public PostgreSQLContainer<?> postgreSQLContainer() {
         return new PostgreSQLContainer<>(DockerImageName.parse(POSTGRES_IMAGE));
     }

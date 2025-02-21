@@ -15,6 +15,7 @@ services:
       - lob
 
   frontend:
+    profiles: [frontend]
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-frontend:main
     networks:
       - lob
@@ -23,8 +24,8 @@ services:
     environment:
       PORT: 3000
       VITE_APP_VERSION: $npm_package_version
-      VITE_APP_API_URL: ${API_HOSTNAME:-http://localhost:9000}
-      VITE_KEYCLOAK_URL: ${KC_HOSTNAME:-http://localhost:8080}
+      VITE_APP_API_URL: ${API_FRONTEND_HOSTNAME:-http://localhost:9000}
+      VITE_KEYCLOAK_URL: ${KC_FRONTEND_HOSTNAME:-http://localhost:8080}
       VITE_KEYCLOAK_REALM: cf-master
       VITE_KEYCLOAK_CLIENT_ID: webclient
     labels:
@@ -39,12 +40,10 @@ services:
   publisher:
     build:
       context: .
-    env_file: cf-application/.env
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
-      SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
@@ -69,12 +68,11 @@ services:
   api:
     build:
       context: .
-    env_file: cf-application/.env
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
+      LOB_CORS_ALLOWED_ORIGINS: ${LOB_CORS_ALLOWED_ORIGINS:-http://localhost:3000}
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
-      SPRING_CONFIG_LOCATIONS: classpath:/application.yml,classpath:/application-dev--yaci-dev-kit.yml
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
@@ -136,7 +134,7 @@ services:
       - "traefik.http.routers.keycloak-http.rule=Host(`${KC_HOSTNAME:-keycloak.example.com}`)"
       - "traefik.http.routers.keycloak-https.rule=Host(`${KC_HOSTNAME:-keycloak.example.com}`)"
       - "traefik.http.routers.keycloak-https.entrypoints=websecure"
-      - "traefik.http.routers.keycloack-https.tls=true"
+      - "traefik.http.routers.keycloak-https.tls=true"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
 
