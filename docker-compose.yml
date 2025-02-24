@@ -173,9 +173,9 @@ services:
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres?currentSchema=lob_follower_service}
       LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
-      STORE_CARDANO_HOST: yaci-cli
-      STORE_CARDANO_PORT: 3001
-      STORE_CARDANO_PROTOCOL_MAGIC: 42
+      STORE_CARDANO_NODE_HOST: yaci-cli
+      STORE_CARDANO_NODE_PORT: 3001
+      STORE_CARDANO_NODE_PROTOCOL_MAGIC: 42
 
   yaci-cli:
     image: bloxbean/yaci-cli:0.10.2
