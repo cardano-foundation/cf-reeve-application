@@ -179,7 +179,7 @@ endpoints:
 
 keycloak:
   enabled: true
-  base-url: ${KC_BASE_URL:http://localhost:8050}
+  base-url: ${KC_BASE_URL:http://localhost:8080}
   realm: cf-master
   public-client: true
   resource: webclient
