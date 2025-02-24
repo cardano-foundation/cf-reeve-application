@@ -250,6 +250,7 @@ services:
 
 volumes:
   postgres-data:
+  keycloak-providers:
 
 networks:
   lob:
