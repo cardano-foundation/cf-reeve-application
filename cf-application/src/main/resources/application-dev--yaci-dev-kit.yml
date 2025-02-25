@@ -25,7 +25,10 @@ lob:
     api_key: ""
 
   # it is implicit here because on sandbox we have problems accessing explicit accounting period
-  netsuite_financial_period_source: IMPLICIT
+  netsuite:
+    financial:
+      period:
+        source: IMPLICIT
 
 # yaci-store properties
 store:
