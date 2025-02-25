@@ -6,8 +6,8 @@ spring:
   env:
     active: dev--yaci-dev-kit
   flyway:
-    cleanDisabled: ${FLYWAY_CLEAN_DISABLED:true}
-    cleanOnValidationError: ${FLYWAY_CLEAN_ON_ERROR:false}
+    cleanDisabled: ${FLYWAY_CLEAN_DISABLED:false}
+    cleanOnValidationError: ${FLYWAY_CLEAN_ON_ERROR:true}
     locations:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
