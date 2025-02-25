@@ -5,19 +5,9 @@
 spring:
   env:
     active: dev--yaci-dev-kit
-
   flyway:
-    out-of-order: false
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
-    user: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
-    schemas: ${DB_SCHEMA:lob_service}
-    # baselineOnMigrate this will create a baseline version if none exists (https://flywaydb.org/documentation/configuration/parameters/baselineOnMigrate)
-    baselineOnMigrate: true
-    enabled: true
     cleanDisabled: ${FLYWAY_CLEAN_DISABLED:true}
     cleanOnValidationError: ${FLYWAY_CLEAN_ON_ERROR:false}
-    validateMigrationNaming: true
     locations:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
@@ -25,14 +15,6 @@ spring:
 lob:
   cardano:
     network: ${LOB_CARDANO_NETWORK:DEV}
-
-  blockchain_publisher:
-    dispatcher:
-      enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:true}
-    watchdog:
-      enabled: ${LOB_BLOCKCHAIN_WATCHDOG_ENABLED:true}
-      fixed_delay: ${LOB_BLOCKCHAIN_WATCHDOG_FIXED_DELAY:PT1M}
-      initial_delay: ${LOB_BLOCKCHAIN_WATCHDOG_INITIAL_DELAY:PT1M}
 
   dispatching_strategy:
     type: ${LOB_DISPATCHING_STRATEGY_TYPE:IMMEDIATE}
@@ -45,16 +27,9 @@ lob:
   # it is implicit here because on sandbox we have problems accessing explicit accounting period
   netsuite_financial_period_source: IMPLICIT
 
-l1:
-  transaction:
-    debug_store_output_tx: ${LOB_L1_TRANSACTION_DEBUG_STORE_OUTPUT_TX:false}
-    metadata_validation:
-      enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
-
 # yaci-store properties
+store:
   cardano:
-    host: ${LOB_STORE_HOST:localhost}
-    port: ${LOB_STORE_PORT:3001}
     # 42 is protocol magic for Yaci-Dev-Kit
     protocol-magic: 42
     # for devnet we must specify the genesis files for Yaci-Store

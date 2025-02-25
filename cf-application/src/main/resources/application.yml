@@ -57,7 +57,16 @@ spring:
       hibernate:
         ddl-auto: none
         show_sql: ${JPA_SHOW_SQL:false}
-
+  flyway:
+    out-of-order: false
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
+    user: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    schemas: ${DB_SCHEMA:lob_service}
+    # baselineOnMigrate this will create a baseline version if none exists (https://flywaydb.org/documentation/configuration/parameters/baselineOnMigrate)
+    baselineOnMigrate: true
+    enabled: true
+    validateMigrationNaming: true
   web:
     resources:
       add-mappings: false
@@ -105,6 +114,11 @@ spring:
 lob:
   # Default path is for Docker
   mock-result-path: ${LOB_MOCK_RESULT_PATH:/app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json}
+  cardano:
+    watchdog:
+      enabled: ${LOB_BLOCKCHAIN_WATCHDOG_ENABLED:true}
+      fixed_delay: ${LOB_BLOCKCHAIN_WATCHDOG_FIXED_DELAY:PT1M}
+      initial_delay: ${LOB_BLOCKCHAIN_WATCHDOG_INITIAL_DELAY:PT1M}
   blockchain_reader:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
 
@@ -158,8 +172,8 @@ store:
     # protocol magic 1 = Cardano PreProd network
     protocol-magic: ${CARDANO_NODE_PROTOCOL_MAGIC:1}
 
-  sync-start-blockhash: ${YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH:274218b4101de63d02dd38fa0ff9be75a1c146667f4aa67fe8a04e462c8c55b1}
-  sync-start-slot: ${YACI_STORE_CARDANO_SYNC_START_SLOT:67868386}
+  sync-start-blockhash: ${STOE_CARDANO_SYNC_START_BLOCKHASH:274218b4101de63d02dd38fa0ff9be75a1c146667f4aa67fe8a04e462c8c55b1}
+  sync-start-slot: ${STORE_CARDANO_SYNC_START_SLOT:67868386}
 
   blocks.epoch-calculation-interval: 86400
   blocks.epoch-calculation-enabled: false
