@@ -46,27 +46,19 @@ jobs:
 
       - name: Set event dispatch type
         id: set-event-dispatch-type
-        if: >
-          steps.cf-gha-baseline.outputs.TRIGGERING_REF == 'tag' &&
-          (
-            endsWith(steps.cf-gha-baseline.outputs.TAG_NAME, '.rc') ||
-            endsWith(steps.cf-gha-baseline.outputs.TAG_NAME, '.rc-qa-signoff')
-          )
+        if: steps.cf-gha-baseline.outputs.TRIGGERING_REF == 'tag'
         run: |
           if [[ ${{ steps.cf-gha-baseline.outputs.TAG_NAME }} =~ .*rc$ ]]; then
             echo "EVENT_TYPE=${{ github.event_name }}-${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}-rc" | tee -a $GITHUB_ENV | tee -a $GITHUB_OUTPUT
           elif [[ ${{ steps.cf-gha-baseline.outputs.TAG_NAME }} =~ .*rc-qa-signoff$ ]]; then
             echo "EVENT_TYPE=${{ github.event_name }}-${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}-rc-qa-signoff" | tee -a $GITHUB_ENV | tee -a $GITHUB_OUTPUT
+          else
+            echo "EVENT_TYPE=${{ github.event_name }}-${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}" | tee -a $GITHUB_ENV | tee -a $GITHUB_OUTPUT
           fi
 
       - name: Dispatch successful build event to private repo
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-dispatch-event@main
-        if: >
-          steps.cf-gha-baseline.outputs.TRIGGERING_REF == 'tag' &&
-          (
-            endsWith(steps.cf-gha-baseline.outputs.TAG_NAME, '.rc') ||
-            endsWith(steps.cf-gha-baseline.outputs.TAG_NAME, '.rc-qa-signoff')
-          )
+        if: steps.cf-gha-baseline.outputs.TRIGGERING_REF == 'tag'
         with:
           EVENT_TYPE: ${{ steps.set-event-dispatch-type.outputs.EVENT_TYPE }}
           GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
