@@ -153,13 +153,13 @@ lob:
 # yaci store
 store:
   cardano:
-    host: ${CARDANO_NODE_HOST:preprod-node.world.dev.cardano.org}
-    port: ${CARDANO_NODE_PORT:30000}
+    host: ${STORE_CARDANO_HOST:preprod-node.world.dev.cardano.org}
+    port: ${STORE_CARDANO_PORT:30000}
     # protocol magic 1 = Cardano PreProd network
-    protocol-magic: ${CARDANO_NODE_PROTOCOL_MAGIC:1}
+    protocol-magic: ${STORE_CARDANO_PROTOCOL_MAGIC:1}
 
-  sync-start-blockhash: ${STOE_CARDANO_SYNC_START_BLOCKHASH:274218b4101de63d02dd38fa0ff9be75a1c146667f4aa67fe8a04e462c8c55b1}
-  sync-start-slot: ${STORE_CARDANO_SYNC_START_SLOT:67868386}
+    sync-start-blockhash: ${STORE_CARDANO_SYNC_START_BLOCKHASH:274218b4101de63d02dd38fa0ff9be75a1c146667f4aa67fe8a04e462c8c55b1}
+    sync-start-slot: ${STORE_CARDANO_SYNC_START_SLOT:67868386}
 
   blocks.epoch-calculation-interval: 86400
   blocks.epoch-calculation-enabled: false
