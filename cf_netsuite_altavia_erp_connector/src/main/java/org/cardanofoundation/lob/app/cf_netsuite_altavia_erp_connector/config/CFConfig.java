@@ -89,7 +89,7 @@ public class CFConfig {
                                                      CodesMappingService codesMappingService,
                                                      PreprocessorService preprocessorService,
                                                      TransactionTypeMapper transactionTypeMapper,
-                                                     @Value("${lob.netsuite_financial_period_source:IMPLICIT}") FinancialPeriodSource financialPeriodSource) {
+                                                     @Value("${lob.netsuite.financial.period.source:IMPLICIT}") FinancialPeriodSource financialPeriodSource) {
         return new TransactionConverter(validator,
                 codesMappingService,
                 preprocessorService,

@@ -1,34 +1,7 @@
 spring:
+  env:
+    active: prod
   flyway:
-    out-of-order: false
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
-    user: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
-    schemas: ${DB_SCHEMA:lob_service}
-    # baselineOnMigrate this will create a baseline version if none exists (https://flywaydb.org/documentation/configuration/parameters/baselineOnMigrate)
-    baselineOnMigrate: true
-    enabled: true
-    validateMigrationNaming: true
     locations:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/prod
-
-  env:
-    active: prod
-
-lob:
-  l1:
-    transaction:
-      metadata_validation:
-          enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLE:true}
-
-# yaci store
-store:
-  cardano:
-    host: ${CARDANO_NODE_HOST:preprod-node.world.dev.cardano.org}
-    port: ${CARDANO_NODE_PORT:30000}
-    # protocol magic 1 = Cardano PreProd network
-    protocol-magic: ${CARDANO_NODE_PROTOCOL_MAGIC:1}
-
-  sync-start-blockhash: ${YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH:}
-  sync-start-slot: ${YACI_STORE_CARDANO_SYNC_START_SLOT:0}
