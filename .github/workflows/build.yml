@@ -49,8 +49,8 @@ jobs:
         if: >
           steps.cf-gha-baseline.outputs.TRIGGERING_REF == 'tag' &&
           (
-            matches(steps.cf-gha-baseline.outputs.TAG_NAME, '.*rc$') ||
-            matches(steps.cf-gha-baseline.outputs.TAG_NAME, '.*rc-qa-signoff$')
+            endsWith(steps.cf-gha-baseline.outputs.TAG_NAME, '.rc') ||
+            endsWith(steps.cf-gha-baseline.outputs.TAG_NAME, '.rc-qa-signoff')
           )
         run: |
           if [[ ${{ steps.cf-gha-baseline.outputs.TAG_NAME }} =~ .*rc$ ]]; then
@@ -64,8 +64,8 @@ jobs:
         if: >
           steps.cf-gha-baseline.outputs.TRIGGERING_REF == 'tag' &&
           (
-            matches(steps.cf-gha-baseline.outputs.TAG_NAME, '.*rc$') ||
-            matches(steps.cf-gha-baseline.outputs.TAG_NAME, '.*rc-qa-signoff$')
+            endsWith(steps.cf-gha-baseline.outputs.TAG_NAME, '.rc') ||
+            endsWith(steps.cf-gha-baseline.outputs.TAG_NAME, '.rc-qa-signoff')
           )
         with:
           EVENT_TYPE: ${{ steps.set-event-dispatch-type.outputs.EVENT_TYPE }}
