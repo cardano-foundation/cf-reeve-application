@@ -1,0 +1,5 @@
+.github/* @rcmorano
+Earthfile @rcmorano
+Dockerfile @rcmorano
+docker* @rcmorano
+
