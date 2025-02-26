@@ -57,7 +57,16 @@ spring:
       hibernate:
         ddl-auto: none
         show_sql: ${JPA_SHOW_SQL:false}
-
+  flyway:
+    out-of-order: false
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
+    user: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    schemas: ${DB_SCHEMA:lob_service}
+    # baselineOnMigrate this will create a baseline version if none exists (https://flywaydb.org/documentation/configuration/parameters/baselineOnMigrate)
+    baselineOnMigrate: true
+    enabled: true
+    validateMigrationNaming: true
   web:
     resources:
       add-mappings: false
@@ -94,29 +103,20 @@ spring:
       completion-mode: archive
       kafka:
         enable-json: true
-
-
     jdbc:
       schema-initialization:
         enabled: true
-
-
-
 lob:
   # Default path is for Docker
   mock-result-path: ${LOB_MOCK_RESULT_PATH:/app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json}
   blockchain_reader:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
-
   accounting_reporting_core:
     enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:true}
-
   organisation:
     enabled: ${LOB_ORGANISATION_ENABLED:true}
-
   blockchain_publisher:
     enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:true}
-
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}
@@ -153,13 +153,13 @@ lob:
 # yaci store
 store:
   cardano:
-    host: ${CARDANO_NODE_HOST:preprod-node.world.dev.cardano.org}
-    port: ${CARDANO_NODE_PORT:30000}
+    host: ${STORE_CARDANO_HOST:preprod-node.world.dev.cardano.org}
+    port: ${STORE_CARDANO_PORT:30000}
     # protocol magic 1 = Cardano PreProd network
-    protocol-magic: ${CARDANO_NODE_PROTOCOL_MAGIC:1}
+    protocol-magic: ${STORE_CARDANO_PROTOCOL_MAGIC:1}
 
-  sync-start-blockhash: ${YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH:274218b4101de63d02dd38fa0ff9be75a1c146667f4aa67fe8a04e462c8c55b1}
-  sync-start-slot: ${YACI_STORE_CARDANO_SYNC_START_SLOT:67868386}
+    sync-start-blockhash: ${STORE_CARDANO_SYNC_START_BLOCKHASH:274218b4101de63d02dd38fa0ff9be75a1c146667f4aa67fe8a04e462c8c55b1}
+    sync-start-slot: ${STORE_CARDANO_SYNC_START_SLOT:67868386}
 
   blocks.epoch-calculation-interval: 86400
   blocks.epoch-calculation-enabled: false
