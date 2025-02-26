@@ -42,3 +42,37 @@ jobs:
             --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
+
+
+      - name: Set event dispatch type
+        id: set-event-dispatch-type
+        if: >
+          steps.cf-gha-baseline.outputs.TRIGGERING_REF == 'tag' &&
+          (
+            matches(steps.cf-gha-baseline.outputs.TAG_NAME, '.*rc$') ||
+            matches(steps.cf-gha-baseline.outputs.TAG_NAME, '.*rc-qa-signoff$')
+          )
+        run: |
+          if [[ ${{ steps.cf-gha-baseline.outputs.TAG_NAME }} =~ .*rc$ ]]; then
+            echo "EVENT_TYPE=${{ github.event_name }}-${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}-rc" | tee -a $GITHUB_ENV | tee -a $GITHUB_OUTPUT
+          elif [[ ${{ steps.cf-gha-baseline.outputs.TAG_NAME }} =~ .*rc-qa-signoff$ ]]; then
+            echo "EVENT_TYPE=${{ github.event_name }}-${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}-rc-qa-signoff" | tee -a $GITHUB_ENV | tee -a $GITHUB_OUTPUT
+          fi
+
+      - name: Dispatch successful build event to private repo
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-dispatch-event@main
+        if: >
+          steps.cf-gha-baseline.outputs.TRIGGERING_REF == 'tag' &&
+          (
+            matches(steps.cf-gha-baseline.outputs.TAG_NAME, '.*rc$') ||
+            matches(steps.cf-gha-baseline.outputs.TAG_NAME, '.*rc-qa-signoff$')
+          )
+        with:
+          EVENT_TYPE: ${{ steps.set-event-dispatch-type.outputs.EVENT_TYPE }}
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
+          GITHUB_REPO: ${{ secrets.PRIVATE_REPO }}
+          TRIGGERING_EVENT: ${{ github.event_name }}
+          TRIGGERING_REF: ${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}
+          TRIGGERING_BRANCH: ${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}
+          TRIGGERING_GHRUNID: ${{ github.run_id }}
+          GIT_SHORT_COMMIT: ${{ steps.cf-gha-baseline.outputs.GIT_SHORT_COMMIT }}
