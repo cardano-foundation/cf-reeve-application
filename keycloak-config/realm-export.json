@@ -1,6 +1,7 @@
 {
   "realm": "cf-master",
   "enabled": true,
+  "passwordPolicy": "length(8) and upperCase(1) and lowerCase(1) and specialChars(1) and notUsername() and digits(1)",
   "accessTokenLifespan": 1800,
   "accessTokenLifespanForImplicitFlow": 900,
   "ssoSessionIdleTimeout": 1800,
@@ -20,7 +21,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "auditor",
+          "value": "CF-aud123",
             "temporary": true
         }
       ],
@@ -35,7 +36,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "manager",
+          "value": "CF-man123",
           "temporary": true
         }
       ],
