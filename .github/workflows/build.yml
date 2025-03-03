@@ -67,5 +67,6 @@ jobs:
           TRIGGERING_EVENT: ${{ github.event_name }}
           TRIGGERING_REF: ${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}
           TRIGGERING_BRANCH: ${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}
+          TRIGGERING_TAG: ${{ steps.cf-gha-baseline.outputs.TAG_NAME }}
           TRIGGERING_GHRUNID: ${{ github.run_id }}
           GIT_SHORT_COMMIT: ${{ steps.cf-gha-baseline.outputs.GIT_SHORT_COMMIT }}
