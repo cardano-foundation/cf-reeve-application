@@ -1,6 +1,7 @@
 {
   "realm": "cf-master",
   "enabled": true,
+  "passwordPolicy": "length(8) and upperCase(1) and lowerCase(1) and specialChars(1) and notUsername() and digits(1)",
   "accessTokenLifespan": 1800,
   "accessTokenLifespanForImplicitFlow": 900,
   "ssoSessionIdleTimeout": 1800,
@@ -10,6 +11,18 @@
   "actionTokenGeneratedByAdminLifespan": 43200,
   "actionTokenGeneratedByUserLifespan": 1800,
   "oauth2DeviceCodeLifespan": 1800,
+  "components": {
+    "org.keycloak.userprofile.UserProfileProvider": [
+      {
+        "providerId": "declarative-user-profile",
+        "config": {
+          "kc.user.profile.config": [
+            "{\"attributes\":[{\"name\":\"username\",\"displayName\":\"${username}\",\"validations\":{\"length\":{\"min\":3,\"max\":255},\"username-prohibited-characters\":{},\"up-username-not-idn-homograph\":{}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"email\",\"displayName\":\"${email}\",\"validations\":{\"email\":{},\"length\":{\"max\":255}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"firstName\",\"displayName\":\"${firstName}\",\"validations\":{\"length\":{\"max\":255},\"person-name-prohibited-characters\":{}},\"annotations\":{},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"lastName\",\"displayName\":\"${lastName}\",\"validations\":{\"length\":{\"max\":255},\"person-name-prohibited-characters\":{}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"phone\",\"displayName\":\"${phone}\",\"validations\":{},\"annotations\":{},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"job\",\"displayName\":\"${job}\",\"validations\":{},\"annotations\":{},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false}],\"groups\":[{\"name\":\"user-metadata\",\"displayHeader\":\"User metadata\",\"displayDescription\":\"Attributes, which refer to user metadata\"}]}"
+          ]
+        }
+      }
+    ]
+  },
   "users": [
     {
       "username": "auditor",
@@ -20,11 +33,15 @@
       "credentials": [
         {
           "type": "password",
-          "value": "auditor",
+          "value": "CF-aud123",
             "temporary": true
         }
       ],
-      "realmRoles": ["cf_auditor"]
+      "realmRoles": ["cf_auditor"],
+      "attributes": {
+        "JobTitle": "Auditor",
+        "PhoneNumber": "+123456789"
+      }
     },
     {
       "username": "manager",
@@ -35,11 +52,15 @@
       "credentials": [
         {
           "type": "password",
-          "value": "manager",
+          "value": "CF-man123",
           "temporary": true
         }
       ],
-      "realmRoles": ["cf_manager"]
+      "realmRoles": ["cf_manager"],
+      "attributes": {
+          "JobTitle": "Manager",
+          "PhoneNumber": "+987654321"
+      }
     }
   ],
   "clients": [
