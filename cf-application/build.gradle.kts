@@ -11,15 +11,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    implementation("org.springframework.modulith:spring-modulith-starter-core")
-    implementation("org.springframework.modulith:spring-modulith-starter-jdbc")
     // Kafka
     if(isKafkaEnabled) {
-        runtimeOnly("org.springframework.modulith:spring-modulith-events-kafka")
         implementation("org.springframework.kafka:spring-kafka")
     }
     // RabbitMQ
-//    implementation("org.springframework.modulith:spring-modulith-events-amqp")
 //    implementation("org.springframework.boot:spring-boot-starter-amqp")
 
     implementation("org.jmolecules.integrations:jmolecules-starter-ddd")

@@ -29,10 +29,6 @@ spring:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
     driver-class-name: ${DB_DRIVER:org.testcontainers.jdbc.ContainerDatabaseDriver}
-  modulith:
-    events:
-      externalization:
-        enabled: false
 netsuite:
   altavia:
     client-url: http://localhost:19000/api/mockresult
