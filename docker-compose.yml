@@ -12,13 +12,13 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - reeve
+      - lob
 
   frontend:
     profiles: [frontend]
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-frontend:${FRONTEND_DOCKER_TAG:-main}
     networks:
-      - reeve
+      - lob
     ports:
       - "3000:3000"
     environment:
@@ -61,7 +61,7 @@ services:
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
-      - reeve
+      - lob
     ports:
       - "9001:9001"
     volumes:
@@ -88,7 +88,7 @@ services:
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
-      - reeve
+      - lob
     ports:
       - "9000:9000"
     labels:
@@ -109,7 +109,7 @@ services:
       - postgres
       - keycloak-theme-setup
     networks:
-      - reeve
+      - lob
     environment:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:-admin}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:-admin}
@@ -152,7 +152,7 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     networks:
-      - reeve
+      - lob
     restart: always
     ports:
       - "2181:2181"
@@ -162,7 +162,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:latest
     networks:
-      - reeve
+      - lob
     restart: always
     depends_on:
       - zookeeper
@@ -177,12 +177,12 @@ services:
   follower-app:
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-follower-app:main
     networks:
-      - reeve
+      - lob
     ports:
       - "9090:9090"
     environment:
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
-      DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres?currentSchema=reeve_follower_service}
+      DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres?currentSchema=lob_follower_service}
       LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
       STORE_CARDANO_HOST: ${STORE_CARDANO_HOST:-yaci-cli}
       STORE_CARDANO_PORT: ${STORE_CARDANO_PORT:-3001}
@@ -191,7 +191,7 @@ services:
   yaci-cli:
     image: bloxbean/yaci-cli:0.10.2
     networks:
-      - reeve
+      - lob
     env_file:
       - ./yaci-config/env
       - ./yaci-config/node.properties
@@ -218,7 +218,7 @@ services:
     env_file:
       - ./yaci-config/env
     networks:
-      - reeve
+      - lob
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.yaci-viewer-http.entrypoints=web"
@@ -248,7 +248,7 @@ services:
       - "/var/lib/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
-      - reeve
+      - lob
 
 volumes:
   postgres-data:
@@ -256,5 +256,5 @@ volumes:
   yaci-data:
 
 networks:
-  reeve:
-    name: reeve
+  lob:
+    name: lob
