@@ -148,12 +148,8 @@ lob:
       scheduled-reconcilation-event: accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent
       reconcilation-created-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent
     client:
-      realm: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_REALM:<enter value>}
-      oauth_nonce: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_OAUTH_NONCE:<enter value>}
-      consumer_key: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_CONSUMER_KEY:<enter value>}
-      token_secret: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_TOKEN_SECRET:<enter value>}
-      consumer_secret: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_CONSUMER_SECRET:<enter value>}
-      token: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_TOKEN:<enter value>}
+      tokenUrl: ${NETSUITE_CLIENT_TOKEN_URL:<enter value>}
+      privateKeyFilePath: ${NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:<enter value>}
       url: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_URL:<enter value>}
 
   l1:
