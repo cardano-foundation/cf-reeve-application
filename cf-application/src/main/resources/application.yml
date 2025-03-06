@@ -15,6 +15,17 @@ spring:
     consumer:
       group-id: lob-consumer123
       auto-offset-reset: latest
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
+      enable-auto-commit: false
+      auto-commit-interval: 1000
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 0
   rabbitmq:
     enabled: false
 
@@ -95,17 +106,6 @@ spring:
     health:
       show-details: ${MANAGEMENT_ENDPOINT_SHOW_DETAILS:always}
 
-  modulith:
-    events:
-      externalization:
-        enabled: true
-      republish-outstanding-events-on-restart: false
-      completion-mode: archive
-      kafka:
-        enable-json: true
-    jdbc:
-      schema-initialization:
-        enabled: true
 lob:
   # Default path is for Docker
   mock-result-path: ${LOB_MOCK_RESULT_PATH:/app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json}
@@ -113,10 +113,23 @@ lob:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
   accounting_reporting_core:
     enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:true}
+    topics:
+      tx-ledger-updated-event: accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent
+      reports-ledger-updated-event: accounting_reporting_core.domain.event.ledger.ReportsLedgerUpdatedEvent
+      transaction-batch-failed-event: accounting_reporting_core.domain.event.extraction.TransactionBatchFailedEvent
+      transaction-batch-started-event: accounting_reporting_core.domain.event.extraction.TransactionBatchStartedEvent
+      transaction-batch-chunk-event: accounting_reporting_core.domain.event.extraction.TransactionBatchChunkEvent
+      reconcilation-failed-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationFailedEvent
+      reconcilation-started-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationStartedEvent
+      reconcilation-chunk-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationChunkEvent
+      reconcilation-finalisation-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationFinalisationEvent
   organisation:
     enabled: ${LOB_ORGANISATION_ENABLED:true}
   blockchain_publisher:
     enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:true}
+    topics:
+      report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
+      transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}
@@ -129,7 +142,11 @@ lob:
     financial:
       period:
         source: EXPLICIT
-
+    topics:
+      scheduled-ingestion-event: accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent
+      transaction-batch-created-event: accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent
+      scheduled-reconcilation-event: accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent
+      reconcilation-created-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent
     client:
       realm: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_REALM:<enter value>}
       oauth_nonce: ${NETSUITE_ALTAVIA_ADAPTER_CLIENT_OAUTH_NONCE:<enter value>}

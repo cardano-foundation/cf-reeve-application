@@ -1,5 +1,6 @@
-package org.cardanofoundation.lob.app.kafka;
+package org.cardanofoundation.lob.app.kafka.consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent;
@@ -18,24 +19,28 @@ import org.springframework.stereotype.Service;
 public class NetSuiteKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent")
+    @KafkaListener(topics = "${lob.netsuite.topics.scheduled-ingestion-event}")
     public void listen(ScheduledIngestionEvent message) {
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent")
+    @KafkaListener(topics = "${lob.netsuite.topics.transaction-batch-created-event}")
     public void listen(TransactionBatchCreatedEvent message) {
+        log.info("Received TransactionBatchCreatedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent")
+    @KafkaListener(topics = "${lob.netsuite.topics.scheduled-reconcilation-event}")
     public void listen(ScheduledReconcilationEvent message) {
+        log.info("Received ScheduledReconcilationEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent")
+    @KafkaListener(topics = "${lob.netsuite.topics.reconcilation-created-event}")
     public void listen(ReconcilationCreatedEvent message) {
+        log.info("Received ReconcilationCreatedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
