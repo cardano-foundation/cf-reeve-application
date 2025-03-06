@@ -77,9 +77,11 @@ public class CFConfig {
                                          WebClient webClient,
                                          @Value("${lob.netsuite.client.url}") String url,
                                          @Value("${lob.netsuite.client.tokenUrl}") String tokenUrl,
-                                         @Value("${lob.netsuite.client.privateKeyFilePath}") String privateKeyFilePath
+                                         @Value("${lob.netsuite.client.privateKeyFilePath}") String privateKeyFilePath,
+                                         @Value("${lob.netsuite.client.clientId}") String clientId,
+                                         @Value("${lob.netsuite.client.certficateId}") String certifcateId
     ) {
-        return new NetSuiteClient(objectMapper, webClient, url, tokenUrl, privateKeyFilePath);
+        return new NetSuiteClient(objectMapper, webClient, url, tokenUrl, privateKeyFilePath, clientId, certifcateId);
     }
 
     @Bean
