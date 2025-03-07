@@ -12,6 +12,7 @@ spring:
   kafka:
     enabled: true
     bootstrap-servers: kafka:9092
+    useSsl: ${KAFKA_USE_SSL:false}
     consumer:
       group-id: lob-consumer123
       auto-offset-reset: latest
