@@ -1,5 +1,5 @@
 # I will update the PR Hash before merging. I added this tag just for the sake of testing the pipeline.
-ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-platform-library-m2-cache:PR178-d4f636d-GHRUN13716113491
+ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-platform-library-m2-cache:PR178-ed8f095-GHRUN13717071467
 
 FROM ${LIB_DOCKER_IMAGE} AS m2-cache
 
