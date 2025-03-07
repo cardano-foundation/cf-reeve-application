@@ -70,7 +70,7 @@ services:
       - "9001:9001"
     volumes:
       - ./:/app/
-      - ${LOCAL_PRIVATE_KEY_PATH:-.}:${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
+      - ${LOCAL_PRIVATE_KEY_PATH:-./erp-cert/dummy.pem}:${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
   api:
     build:
       context: .

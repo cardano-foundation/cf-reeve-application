@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
 import jakarta.validation.Validator;
 import lombok.val;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.util.Timeout;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.assistance.AccountingPeriodCalculator;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.AccountNumberConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.CostCenterConvertor;
@@ -49,10 +51,13 @@ public class CFConfig {
         // Configure HTTP Client with timeouts
 
         CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setConnectionRequestTimeout(Timeout.of(Duration.ofSeconds(30)))
+                        .setResponseTimeout(Timeout.of(Duration.ofSeconds(30)))
+                        .build())
                 .build();
 
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        factory.setConnectionRequestTimeout(Duration.ofSeconds(10)); // Read timeout
 
         return RestClient.builder()
                 .requestFactory(factory)
