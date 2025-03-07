@@ -1,12 +1,11 @@
 package org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.channel.ChannelOption;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.timeout.WriteTimeoutHandler;
 import io.vavr.control.Either;
 import jakarta.validation.Validator;
 import lombok.val;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.assistance.AccountingPeriodCalculator;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.AccountNumberConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.CostCenterConvertor;
@@ -26,15 +25,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.netty.http.client.HttpClient;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestClient;
 import org.zalando.problem.Problem;
 
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType.*;
@@ -49,39 +45,35 @@ public class CFConfig {
     private final static String NETSUITE_CONNECTOR_ID = "fEU237r9rqAPEGEFY1yr";
 
     @Bean
-    public WebClient.Builder webClientBuilder() {
-        HttpClient httpClient = HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000) // 5 seconds connection timeout
-                .responseTimeout(Duration.ofSeconds(10)) // Response timeout
-                .doOnConnected(conn ->
-                        conn.addHandlerLast(new ReadTimeoutHandler(10, TimeUnit.SECONDS)) // Read timeout
-                                .addHandlerLast(new WriteTimeoutHandler(10, TimeUnit.SECONDS)) // Write timeout
-                );
+    public RestClient restClient() {
+        // Configure HTTP Client with timeouts
 
-        return WebClient.builder()
-                .clientConnector(new ReactorClientHttpConnector(httpClient))
-                .exchangeStrategies(ExchangeStrategies.builder()
-                        .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024)) // 16MB Buffer Size
-                        .build())
-                .defaultHeader("Accept", "application/json")
-                .defaultHeader("Content-Type", "application/json");
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .build();
+
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        factory.setConnectionRequestTimeout(Duration.ofSeconds(10)); // Read timeout
+
+        return RestClient.builder()
+                .requestFactory(factory)
+                .defaultHeaders(headers -> {
+                    headers.add("Accept", "application/json");
+                    headers.add("Content-Type", "application/json");
+                })
+                .build();
     }
 
-    @Bean
-    public WebClient webClient(WebClient.Builder builder) {
-        return builder.build();
-    }
 
     @Bean
     public NetSuiteClient netSuiteClient(ObjectMapper objectMapper,
-                                         WebClient webClient,
+                                         RestClient restClient,
                                          @Value("${lob.netsuite.client.url}") String url,
-                                         @Value("${lob.netsuite.client.tokenUrl}") String tokenUrl,
-                                         @Value("${lob.netsuite.client.privateKeyFilePath}") String privateKeyFilePath,
-                                         @Value("${lob.netsuite.client.clientId}") String clientId,
-                                         @Value("${lob.netsuite.client.certficateId}") String certifcateId
+                                         @Value("${lob.netsuite.client.token-url}") String tokenUrl,
+                                         @Value("${lob.netsuite.client.private-key-file-path}") String privateKeyFilePath,
+                                         @Value("${lob.netsuite.client.client-id}") String clientId,
+                                         @Value("${lob.netsuite.client.certificate-id}") String certificateId
     ) {
-        return new NetSuiteClient(objectMapper, webClient, url, tokenUrl, privateKeyFilePath, clientId, certifcateId);
+        return new NetSuiteClient(objectMapper, restClient, url, tokenUrl, privateKeyFilePath, certificateId, clientId);
     }
 
     @Bean
