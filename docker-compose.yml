@@ -209,6 +209,7 @@ services:
       - "traefik.http.routers.yaci-bf-https.rule=Host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
       - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
       - "traefik.http.routers.yaci-bf-https.tls=true"
+      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=8080"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
 
   yaci-viewer:
