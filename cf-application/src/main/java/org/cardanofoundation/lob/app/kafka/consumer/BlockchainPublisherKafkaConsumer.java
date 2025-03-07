@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.kafka;
+package org.cardanofoundation.lob.app.kafka.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,15 +17,15 @@ public class BlockchainPublisherKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand")
+    @KafkaListener(topics = "${lob.blockchain_publisher.topics.report-ledger-update-command}")
     public void listen(ReportLedgerUpdateCommand message) {
-        log.info("Received LedgerUpdateCommand 123: {}", message);
+        log.info("Received LedgerUpdateCommand from Kafa: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand")
+    @KafkaListener(topics = "${lob.blockchain_publisher.topics.transaction-ledger-update-commander}")
     public void listen(TransactionLedgerUpdateCommand message) {
-        log.info("Received LedgerUpdateCommand: {}", message);
+        log.info("Received LedgerUpdateCommand from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 }

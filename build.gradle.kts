@@ -46,7 +46,6 @@ subprojects {
 
     extra["springBootVersion"] = "3.3.3"
     extra["springCloudVersion"] = "2023.0.0"
-    extra["springModulithVersion"] = "1.3.0"
     extra["jMoleculesVersion"] = "2023.1.0"
     extra["cfLobPlatformVersion"] = "0.0.1-SNAPSHOT"
 
@@ -64,13 +63,9 @@ subprojects {
         runtimeOnly("io.micrometer:micrometer-registry-prometheus")
         runtimeOnly("org.postgresql:postgresql")
 
-        runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
-
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.springframework.boot:spring-boot-testcontainers")
-
-        testImplementation("org.springframework.modulith:spring-modulith-starter-test")
 
         testImplementation("org.testcontainers:junit-jupiter")
         testImplementation("org.testcontainers:postgresql")
@@ -107,7 +102,6 @@ subprojects {
     dependencyManagement {
         imports {
             mavenBom("org.springframework.boot:spring-boot-dependencies:${property("springBootVersion")}")
-            mavenBom("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
             mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
             mavenBom("org.jmolecules:jmolecules-bom:${property("jMoleculesVersion")}")
         }

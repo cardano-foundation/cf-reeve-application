@@ -1,4 +1,4 @@
-package org.cardanofoundation.lob.app.kafka;
+package org.cardanofoundation.lob.app.kafka.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,48 +24,56 @@ public class AccountingCoreKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.tx-ledger-updated-event}", groupId = "${spring.kafka.consumer.group-id}")
     public void listen(TxsLedgerUpdatedEvent message) {
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.ledger.ReportsLedgerUpdatedEvent")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reports-ledger-updated-event}")
     public void listen(ReportsLedgerUpdatedEvent message) {
+        log.info("Received ReportsLedgerUpdatedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.extraction.TransactionBatchFailedEvent")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.transaction-batch-failed-event}")
     public void listen(TransactionBatchFailedEvent message) {
+        log.info("Received TransactionBatchFailedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.extraction.TransactionBatchStartedEvent")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.transaction-batch-started-event}")
     public void listen(TransactionBatchStartedEvent message) {
+        log.info("Received TransactionBatchStartedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.extraction.TransactionBatchChunkEvent")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.transaction-batch-chunk-event}")
     public void listen(TransactionBatchChunkEvent message) {
+        log.info("Received TransactionBatchChunkEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.reconcilation.ReconcilationFailedEvent")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-failed-event}")
     public void listen(ReconcilationFailedEvent message) {
+        log.info("Received ReconcilationFailedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.reconcilation.ReconcilationStartedEvent")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-started-event}")
     public void listen(ReconcilationStartedEvent message) {
+        log.info("Received ReconcilationStartedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.reconcilation.ReconcilationChunkEvent")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-chunk-event}")
     public void listen(ReconcilationChunkEvent message) {
+        log.info("Received ReconcilationChunkEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "accounting_reporting_core.domain.event.reconcilation.ReconcilationFinalisationEvent")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-finalisation-event}")
     public void listen(ReconcilationFinalisationEvent message) {
+        log.info("Received ReconcilationFinalisationEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 

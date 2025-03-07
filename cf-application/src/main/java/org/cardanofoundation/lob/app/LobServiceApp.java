@@ -22,7 +22,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.modulith.Modulith;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -35,16 +34,14 @@ import java.math.BigDecimal;
 import java.time.Clock;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
-@EnableJpaRepositories( { "org.cardanofoundation.lob", "org.springframework.modulith.events.jpa" } )
+@EnableJpaRepositories( { "org.cardanofoundation.lob" } )
 @EntityScan(basePackages = { "org.cardanofoundation.lob.app.support.web_support.internal",
                              "org.cardanofoundation.lob.app.support.audit_support.internal",
-                             "org.cardanofoundation.lob",
-                             "org.springframework.modulith.events.jpa"
+                             "org.cardanofoundation.lob"
                            } )
 @ComponentScan(basePackages = {
         "org.cardanofoundation.lob.app"
 })
-@Modulith
 @EnableTransactionManagement
 @EnableAsync
 //@ImportRuntimeHints(org.cardanofoundation.lob.app.LobServiceApp.Hints.class)
