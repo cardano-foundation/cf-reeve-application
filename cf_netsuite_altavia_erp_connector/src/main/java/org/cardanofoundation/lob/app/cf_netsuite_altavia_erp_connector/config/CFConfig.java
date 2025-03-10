@@ -3,11 +3,8 @@ package org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
 import jakarta.validation.Validator;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.util.Timeout;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.assistance.AccountingPeriodCalculator;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.AccountNumberConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.CostCenterConvertor;
@@ -21,17 +18,16 @@ import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.Ing
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.*;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.zalando.problem.Problem;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.function.Function;
 
@@ -42,42 +38,21 @@ import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.
         "org.cardanofoundation.lob.app.netsuite_altavia_adapter.config",
         "org.cardanofoundation.lob.app.netsuite_altavia_adapter.service"
 })
+@Slf4j
 public class CFConfig {
 
     private final static String NETSUITE_CONNECTOR_ID = "fEU237r9rqAPEGEFY1yr";
 
     @Bean
-    public RestClient restClient() {
-        // Configure HTTP Client with timeouts
-
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectionRequestTimeout(Timeout.of(Duration.ofSeconds(30)))
-                        .setResponseTimeout(Timeout.of(Duration.ofSeconds(30)))
-                        .build())
-                .build();
-
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-
-        return RestClient.builder()
-                .requestFactory(factory)
-                .defaultHeaders(headers -> {
-                    headers.add("Accept", "application/json");
-                    headers.add("Content-Type", "application/json");
-                })
-                .build();
-    }
-
-
-    @Bean
     public NetSuiteClient netSuiteClient(ObjectMapper objectMapper,
-                                         RestClient restClient,
+                                         @Qualifier("netsuiteRestClient") RestClient restClient,
                                          @Value("${lob.netsuite.client.url}") String url,
                                          @Value("${lob.netsuite.client.token-url}") String tokenUrl,
                                          @Value("${lob.netsuite.client.private-key-file-path}") String privateKeyFilePath,
                                          @Value("${lob.netsuite.client.client-id}") String clientId,
                                          @Value("${lob.netsuite.client.certificate-id}") String certificateId
     ) {
+        log.info("Creating NetSuite client with url: {}", url);
         return new NetSuiteClient(objectMapper, restClient, url, tokenUrl, privateKeyFilePath, certificateId, clientId);
     }
 
