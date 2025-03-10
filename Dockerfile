@@ -1,5 +1,4 @@
-# I will update the PR Hash before merging. I added this tag just for the sake of testing the pipeline.
-ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-platform-library-m2-cache:PR178-a7edb76-GHRUN13759648464
+ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-platform-library-m2-cache:main-fade596-GHRUN13760147385
 
 FROM ${LIB_DOCKER_IMAGE} AS m2-cache
 
