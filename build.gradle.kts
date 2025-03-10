@@ -87,6 +87,9 @@ subprojects {
         implementation("org.apache.commons:commons-collections4:4.4")
         implementation("org.javers:javers-core:7.6.1")
 
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
+
         compileOnly("org.projectlombok:lombok:1.18.32")
         annotationProcessor("org.projectlombok:lombok:1.18.32")
         implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
