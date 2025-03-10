@@ -180,7 +180,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
   follower-app:
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-follower-app:main
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-follower-app:main
     networks:
       - lob
     ports:
@@ -214,6 +214,7 @@ services:
       - "traefik.http.routers.yaci-bf-https.rule=Host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
       - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
       - "traefik.http.routers.yaci-bf-https.tls=true"
+      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=8080"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
 
   yaci-viewer:
