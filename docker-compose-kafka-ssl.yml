@@ -62,6 +62,9 @@ services:
       LOB_NETSUITE_CLIENT_CLIENT_ID: ${LOB_NETSUITE_CLIENT_CLIENT_ID:-<enter value>}
       LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
       LOB_NETSUITE_CLIENT_TOKEN_URL: ${LOB_NETSUITE_CLIENT_TOKEN_URL:-<enter value>}
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: ${KAFKA_SSL_TRUSTSTORE_PASSWORD}
+      KAFKA_SSL_KEYSTORE_PASSWORD: ${KAFKA_SSL_KEYSTORE_PASSWORD}
+      KAFKA_SSL_KEY_PASSWORD: ${KAFKA_SSL_KEY_PASSWORD}
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
@@ -71,8 +74,8 @@ services:
     volumes:
       - ./:/app/
       - ${LOCAL_PRIVATE_KEY_PATH:-./certs/dummy.pem}:${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
-      - ${LOCAL_KAFKA_SSL_CLIENT_KEYSTORE:-./certs/dummy.keystore.jks}:/etc/kafka/secrets/kafka.keystore.jks
-      - ${LOCAL_KAFKA_SSL_CLIENT_TRUSTSTORE:-./certs/dummy.truststore.jks}:/etc/kafka/secrets/kafka.truststore.jks
+      - ${LOCAL_KAFKA_CLIENT_SSL_KEYSTORE_PATH:-./certs/ssl/kafka.client.keystore.jks}:/etc/kafka/secrets/kafka.keystore.jks
+      - ${LOCAL_KAFKA_CLIENT_SSL_TRUSTSTORE_PATH:-./certs/ssl/kafka.client.truststore.jks}:/etc/kafka/secrets/kafka.truststore.jks
   api:
     build:
       context: .
@@ -81,7 +84,7 @@ services:
       # Only used for dev and mocking netsuit
       LOB_CORS_ALLOWED_ORIGINS: ${LOB_CORS_ALLOWED_ORIGINS:-http://localhost:3000}
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
-      SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
+      SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit,kafka-ssl
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
@@ -92,6 +95,9 @@ services:
       LOB_NETSUITE_ENABLED: false
       SPRING_KAFKA_ENABLED: true
       SERVER_PORT: 9000
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: ${KAFKA_SSL_TRUSTSTORE_PASSWORD}
+      KAFKA_SSL_KEYSTORE_PASSWORD: ${KAFKA_SSL_KEYSTORE_PASSWORD}
+      KAFKA_SSL_KEY_PASSWORD: ${KAFKA_SSL_KEY_PASSWORD}
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
@@ -108,6 +114,8 @@ services:
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
     volumes:
       - ./:/app/
+      - ${LOCAL_KAFKA_CLIENT_SSL_KEYSTORE_PATH:-./certs/ssl/kafka.client.keystore.jks}:/etc/kafka/secrets/kafka.keystore.jks
+      - ${LOCAL_KAFKA_CLIENT_SSL_TRUSTSTORE_PATH:-./certs/ssl/kafka.client.truststore.jks}:/etc/kafka/secrets/kafka.truststore.jks
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
@@ -179,8 +187,8 @@ services:
         ls -l /etc/kafka/secrets  # Debugging
     volumes:
       - kafka-secrets:/etc/kafka/secrets
-      - ${LOCAL_KAFKA_SSL_KEYSTORE_PATH}:/local/kafka.keystore.jks
-      - ${LOCAL_KAFKA_SSL_TRUSTSTORE_PATH}:/local/kafka.truststore.jks
+      - ${LOCAL_KAFKA_BROKER_SSL_KEYSTORE_PATH:-./certs/ssl/kafka.broker.keystore.jks}:/local/kafka.keystore.jks
+      - ${LOCAL_KAFKA_BROKER_SSL_TRUSTSTORE_PATH:-./certs/ssl/kafka.broker.truststore.jks}:/local/kafka.truststore.jks
     environment:
       KAFKA_SSL_KEYSTORE_PASSWORD: ${KAFKA_SSL_KEYSTORE_PASSWORD}
       KAFKA_SSL_TRUSTSTORE_PASSWORD: ${KAFKA_SSL_TRUSTSTORE_PASSWORD}
@@ -194,27 +202,32 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
+      - "9093:9093"  # Make sure SSL port is exposed
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+      # Listener configuration
+      KAFKA_LISTENERS: SSL://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka:9093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL
-      KAFKA_LISTENER_SECURITY_PROTOCOL: SSL
-      KAFKA_LISTENER_NAME_SSL_SECURITY_PROTOCOL: SSL
-      KAFKA_LISTENER_PORT: 9093
-      KAFKA_LISTENER_NAME_SSL_PORT: 9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL
+
+      # SSL configuration
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.keystore.jks
-      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.truststore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: keystore_creds
-      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore_creds
       KAFKA_SSL_KEY_CREDENTIALS: key_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore_creds
       KAFKA_SSL_CLIENT_AUTH: required
-      KAFKA_SECURITY_PROTOCOL: SSL
+      # Disable hostname verification
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ""
+
+      # Inter-broker communication
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
     volumes:
-        - kafka-secrets:/etc/kafka/secrets
+      - kafka-secrets:/etc/kafka/secrets
 #        - ${LOCAL_KAFKA_SSL_KEYSTORE_PATH}:/etc/kafka/secrets/kafka.keystore.jks
 #        - ${LOCAL_KAFKA_SSL_TRUSTSTORE_PATH}:/etc/kafka/secrets/kafka.truststore.jks
   follower-app:
