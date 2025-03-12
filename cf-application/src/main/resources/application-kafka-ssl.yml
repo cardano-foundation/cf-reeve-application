@@ -1,0 +1,15 @@
+spring:
+  kafka:
+    security:
+      protocol: SSL
+      ssl:
+        truststore-location: file:/etc/kafka/secrets/kafka.truststore.jks
+        truststore-password: myTruststorePass
+        keystore-location: file:/etc/kafka/secrets/kafka.keystore.jks
+        keystore-password: myKeystorePass
+        key-password: myKeyPass
+        consumer:
+          group-id: lob-consumer
+          auto-offset-reset: earliest
+          key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          value-deserializer: org.apache.kafka.common.serialization.StringDeserializer

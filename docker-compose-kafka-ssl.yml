@@ -44,7 +44,7 @@ services:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
-      SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
+      SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit,kafka-ssl
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
@@ -71,6 +71,8 @@ services:
     volumes:
       - ./:/app/
       - ${LOCAL_PRIVATE_KEY_PATH:-./certs/dummy.pem}:${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
+      - ${LOCAL_KAFKA_SSL_CLIENT_KEYSTORE:-./certs/dummy.keystore.jks}:/etc/kafka/secrets/kafka.keystore.jks
+      - ${LOCAL_KAFKA_SSL_CLIENT_TRUSTSTORE:-./certs/dummy.truststore.jks}:/etc/kafka/secrets/kafka.truststore.jks
   api:
     build:
       context: .
@@ -163,7 +165,26 @@ services:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-
+  init-kafka:
+    image: alpine
+    entrypoint: [ "/bin/sh", "-c" ]
+    command:
+      - |
+        mkdir -p /etc/kafka/secrets && \
+        echo "$KAFKA_SSL_KEYSTORE_PASSWORD" > /etc/kafka/secrets/keystore_creds && \
+        echo "$KAFKA_SSL_TRUSTSTORE_PASSWORD" > /etc/kafka/secrets/truststore_creds && \
+        echo "$KAFKA_SSL_KEY_PASSWORD" > /etc/kafka/secrets/key_creds && \
+        cp /local/kafka.keystore.jks etc/kafka/secrets/kafka.keystore.jks && \
+        cp /local/kafka.truststore.jks /etc/kafka/secrets/kafka.truststore.jks && \
+        ls -l /etc/kafka/secrets  # Debugging
+    volumes:
+      - kafka-secrets:/etc/kafka/secrets
+      - ${LOCAL_KAFKA_SSL_KEYSTORE_PATH}:/local/kafka.keystore.jks
+      - ${LOCAL_KAFKA_SSL_TRUSTSTORE_PATH}:/local/kafka.truststore.jks
+    environment:
+      KAFKA_SSL_KEYSTORE_PASSWORD: ${KAFKA_SSL_KEYSTORE_PASSWORD}
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: ${KAFKA_SSL_TRUSTSTORE_PASSWORD}
+      KAFKA_SSL_KEY_PASSWORD: ${KAFKA_SSL_KEY_PASSWORD}
   kafka:
     image: confluentinc/cp-kafka:latest
     networks:
@@ -176,9 +197,26 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL
+      KAFKA_LISTENER_SECURITY_PROTOCOL: SSL
+      KAFKA_LISTENER_NAME_SSL_SECURITY_PROTOCOL: SSL
+      KAFKA_LISTENER_PORT: 9093
+      KAFKA_LISTENER_NAME_SSL_PORT: 9093
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.keystore.jks
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.truststore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: keystore_creds
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: key_creds
+      KAFKA_SSL_CLIENT_AUTH: required
+      KAFKA_SECURITY_PROTOCOL: SSL
+      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
+    volumes:
+        - kafka-secrets:/etc/kafka/secrets
+#        - ${LOCAL_KAFKA_SSL_KEYSTORE_PATH}:/etc/kafka/secrets/kafka.keystore.jks
+#        - ${LOCAL_KAFKA_SSL_TRUSTSTORE_PATH}:/etc/kafka/secrets/kafka.truststore.jks
   follower-app:
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-follower-app:main
     networks:
@@ -260,6 +298,7 @@ volumes:
   postgres-data:
   keycloak-providers:
   yaci-data:
+  kafka-secrets:
 
 networks:
   lob:
