@@ -55,6 +55,22 @@ subprojects {
 
         implementation("org.javers:javers-core:7.6.1")
         implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
+
+        testCompileOnly("org.projectlombok:lombok:1.18.32")
+        testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
+        testImplementation("io.rest-assured:rest-assured:5.5.0")
+        testImplementation("org.wiremock:wiremock-standalone:3.9.1")
+        testImplementation("net.jqwik:jqwik:1.9.0") // Jqwik for property-based testing
+        testImplementation("org.assertj:assertj-core:3.26.0")
+        testImplementation("org.pitest:pitest-junit5-plugin:1.2.1")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("org.springframework.boot:spring-boot-testcontainers")
+
+        testImplementation("org.testcontainers:junit-jupiter")
+        testImplementation("org.testcontainers:postgresql")
+        testImplementation("org.scribe:scribe:1.3.7") // needed for OAuth 1.0 for NetSuite Module
+        testImplementation("org.flywaydb:flyway-core")
+        testImplementation("org.flywaydb:flyway-database-postgresql")
     }
 
     dependencyManagement {
