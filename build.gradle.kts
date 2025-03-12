@@ -50,56 +50,11 @@ subprojects {
     extra["cfLobPlatformVersion"] = "0.0.1-SNAPSHOT"
 
     dependencies {
-        implementation("org.springframework.data:spring-data-envers")
-
-        implementation("org.flywaydb:flyway-core")
-        implementation("org.flywaydb:flyway-database-postgresql")
-
-        implementation("com.bloxbean.cardano:cardano-client-crypto:0.6.0-beta1")
-
-        // needed to store json via JPA in PostgreSQL
-        implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.8.2")
-
-        runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-        runtimeOnly("org.postgresql:postgresql")
-
-        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testImplementation("org.springframework.boot:spring-boot-testcontainers")
-
-        testImplementation("org.testcontainers:junit-jupiter")
-        testImplementation("org.testcontainers:postgresql")
-
-        runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
-        implementation("org.zalando:problem-spring-web-starter:0.29.1")
-        implementation("io.vavr:vavr:0.10.4")
-        implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
-
-        implementation("org.scribe:scribe:1.3.7") // needed for OAuth 1.0 for NetSuite Module
-
-        implementation("javax.xml.bind", "jaxb-api", "2.3.0")
-        implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2") // needed for OAuth 1.0 for NetSuite Module
-
-        implementation("com.networknt:json-schema-validator:1.5.1")
-
-        implementation("com.google.guava:guava:33.3.0-jre")
-
-        implementation("org.apache.commons:commons-collections4:4.4")
-        implementation("org.javers:javers-core:7.6.1")
-
-        implementation("org.springframework.boot:spring-boot-starter-web")
-        implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
-
         compileOnly("org.projectlombok:lombok:1.18.32")
         annotationProcessor("org.projectlombok:lombok:1.18.32")
-        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-        testCompileOnly("org.projectlombok:lombok:1.18.32")
-        testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
-        testImplementation("io.rest-assured:rest-assured:5.5.0")
-        testImplementation("org.wiremock:wiremock-standalone:3.9.1")
-        testImplementation("net.jqwik:jqwik:1.9.0") // Jqwik for property-based testing
-        testImplementation("org.assertj:assertj-core:3.26.0")
-        testImplementation("org.pitest:pitest-junit5-plugin:1.2.1")
+
+        implementation("org.javers:javers-core:7.6.1")
+        implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
     }
 
     dependencyManagement {
