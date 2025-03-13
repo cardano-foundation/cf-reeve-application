@@ -18,8 +18,6 @@ dependencies {
     // RabbitMQ
 //    implementation("org.springframework.boot:spring-boot-starter-amqp")
 
-    implementation("org.jmolecules.integrations:jmolecules-starter-ddd")
-
     implementation(project(":cf_netsuite_altavia_erp_connector"))
     implementation("org.cardanofoundation:cf-lob-platform-organisation:${property("cfLobPlatformVersion")}")
     implementation("org.cardanofoundation:cf-lob-platform-support:${property("cfLobPlatformVersion")}")
