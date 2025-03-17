@@ -13,7 +13,7 @@ spring:
     enabled: true
     bootstrap-servers: kafka:9092
     consumer:
-      group-id: lob-consumer123
+      group-id: lob-consumer
       auto-offset-reset: latest
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
