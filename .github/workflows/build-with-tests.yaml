@@ -36,6 +36,13 @@ jobs:
         run: |
           earthly +backend-test-build
 
+      - name: Checkout cf-reeve-db-migrations
+        uses: actions/checkout@v3
+        with:
+          repository: cardano-foundation/cf-reeve-db-migrations
+          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+          path: cf-reeve-db-migrations
+
       - name: 🌍 earthly (run tests within docker)
         run: |
           earthly +backend-test --DB_HOST=${{ steps.runner_private_ip.outputs.PRIVATE_IP }}

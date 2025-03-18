@@ -7,6 +7,7 @@ ARG --global DOCKER_IMAGES_EXTRA_TAGS=""
 ARG --global DOCKER_REGISTRIES="hub.docker.com"
 ARG --global HUB_DOCKER_COM_ORG=cardanofoundation
 ARG --global PUSH=false
+ARG --global DB_MIGRATIONS_PATH="cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations"
 
 all:
   LOCALLY
@@ -66,5 +67,6 @@ backend-test:
   ARG DB_DRIVER=org.postgresql.Driver
   ARG TESTCONTAINERS_ENABLED=false
   FROM +backend-test-build
+  COPY cf-reeve-db-migrations ${DB_MIGRATIONS_PATH}
   RUN echo $DB_URL
   RUN ./gradlew clean test
