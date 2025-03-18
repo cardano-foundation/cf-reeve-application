@@ -56,6 +56,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout cf-reeve-db-migrations
+        uses: actions/checkout@v3
+        with:
+          repository: cardano-foundation/cf-reeve-db-migrations
+          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+          path: cf-reeve-db-migrations
+
       - name: Setup JDK 21
         uses: actions/setup-java@v4
         with:
