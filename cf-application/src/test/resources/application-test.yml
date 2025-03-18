@@ -28,6 +28,8 @@ spring:
       - classpath:db/store/{vendor}
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/dev
     driver-class-name: ${DB_DRIVER:org.testcontainers.jdbc.ContainerDatabaseDriver}
 netsuite:
   altavia:
