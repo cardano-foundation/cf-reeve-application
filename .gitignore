@@ -42,3 +42,4 @@ out/
 .minio_bucket*
 .jqwik-database
 /certs/private.pem
+/cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations/
