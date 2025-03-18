@@ -3,5 +3,7 @@ spring:
     active: prod
   flyway:
     locations:
+      - classpath:db/migration/{vendor}/common
+      - classpath:db/migration/{vendor}/prod
       - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common
       - classpath:db/migration/{vendor}/cf-reeve-db-migrations/prod
