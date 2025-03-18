@@ -1,1 +1,0 @@
-INSERT INTO netsuite_adapter_code_mapping (mapping_id, internal_id, code_type, customer_code, created_by, updated_by, created_at, updated_at) VALUES ('fEU237r9rqAPEGEFY1yr', 1, 'ORGANISATION', '75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94', 'system', 'system', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

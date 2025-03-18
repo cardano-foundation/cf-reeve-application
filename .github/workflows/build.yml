@@ -30,7 +30,7 @@ jobs:
         with:
           repository: cardano-foundation/cf-reeve-db-migrations
           ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
-          path: cf-reeve-db-migrations
+          path: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations
 
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
