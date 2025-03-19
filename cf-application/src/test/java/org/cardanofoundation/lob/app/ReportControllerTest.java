@@ -33,7 +33,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .when()
-                .get("/api/report-list/dummy-organisation")
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
@@ -47,7 +47,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .when()
-                .get("/api/report-list/dummy-organisation")
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
@@ -57,7 +57,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
 
         val inputRequestJson = """
                 {
-                   "organisationID": "dummy-organisation",
+                   "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                    "reportType": "INCOME_STATEMENT",
                    "intervalType": "MONTH",
                    "year": 2023,
@@ -94,7 +94,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .when()
-                .get("/api/report-list/dummy-organisation")
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
@@ -110,7 +110,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .when()
-                .get("/api/report-list/dummy-organisation")
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
@@ -120,7 +120,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
 
         val inputRequestJson = """
                 {
-                "organisationID": "dummy-organisation",
+                "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                 "reportType": "BALANCE_SHEET",
                 "intervalType": "MONTH",
                 "year": 2023,
@@ -159,7 +159,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .when()
-                .get("/api/report-list/dummy-organisation")
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
@@ -175,7 +175,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .when()
-                .get("/api/report-list/dummy-organisation")
+                .get("/api/report-list/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94")
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
@@ -185,7 +185,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
 
         val inputRequestJson = """
                 {
-                "organisationID": "dummy-organisation",
+                "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                 "reportType": "BALANCE_SHEET",
                 "intervalType": "MONTH",
                 "year": 2023,
