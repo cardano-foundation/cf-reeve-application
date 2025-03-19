@@ -6,6 +6,11 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
+  REEVE_DB_MIGRATIONS_REF: main
+  REEVE_DB_MIGRATIONS_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -22,6 +27,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout cf-reeve-db-migrations
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
+          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
+          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
+
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
 
@@ -35,13 +49,6 @@ jobs:
       - name: 🌍 earthly (build)
         run: |
           earthly +backend-test-build
-
-      - name: Checkout cf-reeve-db-migrations
-        uses: actions/checkout@v3
-        with:
-          repository: cardano-foundation/cf-reeve-db-migrations
-          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
-          path: cf-reeve-db-migrations
 
       - name: 🌍 earthly (run tests within docker)
         run: |
@@ -65,11 +72,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Checkout cf-reeve-db-migrations
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          repository: cardano-foundation/cf-reeve-db-migrations
+          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
+          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
           ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
-          path: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations
+          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
 
       - name: Setup JDK 21
         uses: actions/setup-java@v4
