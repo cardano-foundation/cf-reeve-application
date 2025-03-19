@@ -13,7 +13,7 @@ class AccountingCoreResourceReconciliationTest extends WebBaseIntegrationTest {
         given()
                 .contentType("application/json")
                 .body("{\n" +
-                        "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
+                        "  \"organisationId\": \"dummy-organisation\",\n" +
                         "\"filter\": \"UNRECONCILED\",\n" +
                         "\"dateFrom\": \"2024-11-05\"," +
                         "  \"reconciliationRejectionCode\": " +
@@ -31,7 +31,7 @@ class AccountingCoreResourceReconciliationTest extends WebBaseIntegrationTest {
                 .body("statistic.newVersion", equalTo(0))
                 .body("statistic.ok", equalTo(0))
                 .body("statistic.nok", equalTo(0))
-                .body("statistic.never", equalTo(45))
+                .body("statistic.never", equalTo(17))
                 .body("statistic.total", equalTo(0))
         ;
     }
@@ -42,7 +42,7 @@ class AccountingCoreResourceReconciliationTest extends WebBaseIntegrationTest {
         given()
                 .contentType("application/json")
                 .body("{\n" +
-                        "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
+                        "  \"organisationId\": \"dummy-organisation\",\n" +
                         "\"dateFrom\": \"2014-11-05\",\n" +
                         "\"dateTo\": \"2024-11-01\"" +
                         "}")
@@ -66,7 +66,7 @@ class AccountingCoreResourceReconciliationTest extends WebBaseIntegrationTest {
         given()
                 .contentType("application/json")
                 .body("{\n" +
-                        "  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
+                        "  \"organisationId\": \"dummy-organisation\",\n" +
                         "\"dateFrom\": \"2001-11-05\",\n" +
                         "\"dateTo\": \"2024-11-05\"" +
                         "}")
@@ -88,7 +88,7 @@ class AccountingCoreResourceReconciliationTest extends WebBaseIntegrationTest {
         given()
                 .contentType("application/json")
                 .body("{\n" +
-                        "  \"organisationId\": \"75f95560c1d883ee7228993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n" +
+                        "  \"organisationId\": \"dummy-organisation-not-found\",\n" +
                         "\"dateFrom\": \"2001-11-05\",\n" +
                         "\"dateTo\": \"2024-11-05\"" +
                         "}")
