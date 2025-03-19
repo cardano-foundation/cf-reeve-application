@@ -22,7 +22,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
     @MockBean
     private Clock clock;
 
-    private static final String ORG_ID = "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94";
+    private static final String ORG_ID = "dummy-organisation";
 
     @BeforeEach
     void setup() {
@@ -86,7 +86,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .statusCode(200)
                 .body("success", equalTo(true))
                 .body("report[0].error", equalTo(null))
-                .body("report[0].reportId", equalTo("8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"))
+                .body("report[0].reportId", equalTo("f44d395345aef059d4442e0bf7d3925da36fa029c453a093c4af0759d3b7580a"))
                 .body("report[0].publish", equalTo(false))
                 .body("report[0].ver", equalTo(0))
                 .body("report[0].canBePublish", equalTo(true))
@@ -102,7 +102,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("""
                         {
                           "organisationId": "%s",
-                          "reportId": "8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"
+                          "reportId": "f44d395345aef059d4442e0bf7d3925da36fa029c453a093c4af0759d3b7580a"
                         }""".formatted(ORG_ID))
 
                 .when()
@@ -111,7 +111,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .statusCode(200)
                 .body("success", equalTo(true))
                 .body("report[0].error", equalTo(null))
-                .body("report[0].reportId", equalTo("8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"))
+                .body("report[0].reportId", equalTo("f44d395345aef059d4442e0bf7d3925da36fa029c453a093c4af0759d3b7580a"))
                 .body("report[0].publish", equalTo(true))
                 .body("report[0].ver", equalTo(0))
                 .body("report[0].canBePublish", equalTo(true))
@@ -128,7 +128,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("success", equalTo(true))
                 .body("total", equalTo(1))
                 .body("report[0].error", equalTo(null))
-                .body("report[0].reportId", equalTo("8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"))
+                .body("report[0].reportId", equalTo("f44d395345aef059d4442e0bf7d3925da36fa029c453a093c4af0759d3b7580a"))
                 .body("report[0].publish", equalTo(true))
                 .body("report[0].canBePublish", equalTo(true))
         ;
