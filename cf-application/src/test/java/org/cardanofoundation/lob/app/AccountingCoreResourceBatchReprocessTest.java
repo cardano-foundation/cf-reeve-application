@@ -1,6 +1,8 @@
 package org.cardanofoundation.lob.app;
 
+import io.restassured.response.ValidatableResponse;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -28,6 +30,7 @@ class AccountingCoreResourceBatchReprocessTest extends WebBaseIntegrationTest {
                 .body("transactions.find { it.id == 'T_Vio_inv_pen_9msd923md93mx923md93k1ab51d23a16f3e3baf3daa461b84a' }.violations.code", containsInAnyOrder("DOCUMENT_MUST_BE_PRESENT", "EVENT_DATA_NOT_FOUND"))
                 .body("transactions.find { it.items.find { item -> item.id == 'ITEM_Rej_inv_pen_9msd923md93mx923md93k1ab51d23a16f3e3baf3daa461b' } }.items.find { it.id == 'ITEM_Rej_inv_pen_9msd923md93mx923md93k1ab51d23a16f3e3baf3daa461b' }.rejectionReason", equalTo("INCORRECT_CURRENCY"))
                 .body("transactions.find { it.items.find { item -> item.id == 'ITEM_Rej_inv_pen_9msd923md93mx923md93k1ab51d23a16f3e3baf3daa461a' } }.items.find { it.id == 'ITEM_Rej_inv_pen_9msd923md93mx923md93k1ab51d23a16f3e3baf3daa461a' }.rejectionReason", equalTo("REVIEW_PARENT_PROJECT_CODE"))
+
         ;
 
         given()

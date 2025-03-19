@@ -25,9 +25,11 @@ spring:
     validateMigrationNaming: true
     cleanDisabled: false
     locations:
-      - classpath:db/store/{vendor} # this is needed to load the scripts from yaci-store
-      - classpath:db/migration/{vendor}/common # common is needed to load the scripts from cf-reeve-platform
-      - classpath:db/migration/{vendor}/test # test scripts to populate the database with test data
+      - classpath:db/store/{vendor}
+      - classpath:db/migration/{vendor}/common
+      - classpath:db/migration/{vendor}/dev
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/dev
     driver-class-name: ${DB_DRIVER:org.testcontainers.jdbc.ContainerDatabaseDriver}
 netsuite:
   altavia:

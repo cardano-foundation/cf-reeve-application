@@ -9,10 +9,10 @@ spring:
     cleanDisabled: ${FLYWAY_CLEAN_DISABLED:false}
     cleanOnValidationError: ${FLYWAY_CLEAN_ON_ERROR:true}
     locations:
-      - classpath:db/migration/{vendor}/common # common is needed to load the scripts from cf-reeve-platform
-      - classpath:db/migration/{vendor}/test # test scripts to populate the database with test data
-      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common # custom common migrations for CF, use test migrations as an example
-      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/dev # custom dev migrations for CF, use test migrations as an example
+      - classpath:db/migration/{vendor}/common
+      - classpath:db/migration/{vendor}/dev
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/dev
 logging:
   level:
     org.flywaydb: DEBUG

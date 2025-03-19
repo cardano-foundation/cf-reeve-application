@@ -18,7 +18,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllTransactions() {
         val inputRequestJson = """
                 {
-                  "organisationId": "dummy-organisation",
+                  "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                   "transactionType": [
                     "CardCharge",
                     "VendorBill",
@@ -43,7 +43,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .then()
                 .statusCode(200)
                 //.body("id", containsString(expectedUpdatedAt))
-                .body("id[0]", equalTo("Rej_inv_pen_9msd923md93mx923md93k1ab51d23a16f3e3baf3daa461b84ab4"));
+                .body("id[0]", equalTo("e86d9c787f7b4f5e4000ada66e267d4e4ff36a98343833f725a8f9933d5a4031"));
     }
 
     // TODO this fails for me since localisation should not be part of the answer:
@@ -91,7 +91,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testExtractionTrigger() {
         val inputRequestJson = """
                 {
-                  "organisationId": "dummy-organisation",
+                  "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                   "dateFrom": "2023-01-01",
                   "dateTo": "2024-05-01",
                   "transactionType": [
@@ -134,7 +134,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
         val inputRequestJson = STR."""
                                     {
-                                      "organisationId": "dummy-organisation",
+                                      "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                                       "dateFrom": "2023-01-01",
                                       "dateTo": "2024-05-01",
                                       "transactionType": [
@@ -168,7 +168,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllActionWrongDate() {
         val inputRequestJson = """
                 {
-                  "organisationId": "dummy-organisation",
+                  "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                   "dateFrom": "2003-01-01",
                   "dateTo": "2024-05-01",
                   "transactionType": [
@@ -207,7 +207,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllAction() {
         val inputRequestJson = """
     {
-        "organisationId": "dummy-organisation",
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
         "status": [
             "VALIDATED"
         ]
@@ -222,7 +222,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/transactions")
                 .then()
                 .statusCode(200)
-                .body("id[0]", equalTo("Rej_inv_pen_9msd923md93mx923md93k1ab51d23a16f3e3baf3daa461b84ab4"));
+                .body("id[0]", equalTo("e86d9c787f7b4f5e4000ada66e267d4e4ff36a98343833f725a8f9933d5a4031"));
     }
 
     @Test
@@ -268,7 +268,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllBatch() {
         val inputRequestJson = """
                 {
-                    "organisationId": "dummy-organisation"
+                    "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"
                 }
                 """;
 
@@ -280,18 +280,18 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/batches")
                 .then()
                 .statusCode(200)
-                .body("batchs.id[0]", containsString("TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e"))
-                .body("batchs.createdAt[0]", containsString("2024-08-16"))
-                .body("batchs.updatedAt[0]", containsString("2024-08-16"))
-                .body("batchs.organisationId[0]", containsString("dummy-organisation"))
-                .body("total", equalTo(4));
+                .body("batchs.id[0]", containsString("TEST_ReadyToPublish2_816d14723a4ab4a67636a7d63dc6f7adf61aba32c04"))
+                .body("batchs.createdAt[0]", containsString("2024-08-18"))
+                .body("batchs.updatedAt[0]", containsString("2024-08-18"))
+                .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
+                .body("total", equalTo(13));
     }
 
     @Test
     void testListAllBatchPending() {
         val inputRequestJson = """
     {
-        "organisationId": "dummy-organisation",
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
         "batchStatistics": [
             "PENDING"
         ]
@@ -306,24 +306,24 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/batches")
                 .then()
                 .statusCode(200)
-                .body("batchs.id[0]", containsString("TEST_All_state_b6x90wedd2d9e814b96436029a8ca22440f65c64ef236459e"))
-                .body("batchs.createdAt[0]", containsString("2020-08-17"))
-                .body("batchs.updatedAt[0]", containsString("2020-08-17"))
-                .body("batchs.organisationId[0]", containsString("dummy-organisation"))
-                .body("batchs.batchStatistics[0].invalid", equalTo(4))
-                .body("batchs.batchStatistics[0].pending", equalTo(2))
-                .body("batchs.batchStatistics[0].approve", equalTo(1))
-                .body("batchs.batchStatistics[0].publish", equalTo(2))
+                .body("batchs.id[0]", containsString("TEST_Rejection_b6x90wedd2d9e814b96436029a8ca22440f65c64ef236459e"))
+                .body("batchs.createdAt[0]", containsString("2024-07-17"))
+                .body("batchs.updatedAt[0]", containsString("2024-08-16"))
+                .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
+                .body("batchs.batchStatistics[0].invalid", equalTo(0))
+                .body("batchs.batchStatistics[0].pending", equalTo(1))
+                .body("batchs.batchStatistics[0].approve", equalTo(0))
+                .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
-                .body("batchs.batchStatistics[0].total", equalTo(9))
-                .body("total", equalTo(1));
+                .body("batchs.batchStatistics[0].total", equalTo(1))
+                .body("total", equalTo(5));
     }
 
     @Test
     void testListAllBatchInvalid() {
         val inputRequestJson = """
     {
-        "organisationId": "dummy-organisation",
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
         "batchStatistics": [
             "INVALID"
         ]
@@ -338,17 +338,17 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/batches")
                 .then()
                 .statusCode(200)
-                .body("batchs.id[0]", containsString("TEST_All_state_b6x90wedd2d9e814b96436029a8ca22440f65c64ef236459e"))
-                .body("batchs.createdAt[0]", containsString("2020-08-17"))
-                .body("batchs.updatedAt[0]", containsString("2020-08-17"))
-                .body("batchs.organisationId[0]", containsString("dummy-organisation"))
-                .body("batchs.batchStatistics[0].invalid", equalTo(4))
-                .body("batchs.batchStatistics[0].pending", equalTo(2))
-                .body("batchs.batchStatistics[0].approve", equalTo(1))
-                .body("batchs.batchStatistics[0].publish", equalTo(2))
+                .body("batchs.id[0]", containsString("TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04"))
+                .body("batchs.createdAt[0]", containsString("2024-01-15"))
+                .body("batchs.updatedAt[0]", containsString("2024-01-15"))
+                .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
+                .body("batchs.batchStatistics[0].invalid", equalTo(1))
+                .body("batchs.batchStatistics[0].pending", equalTo(0))
+                .body("batchs.batchStatistics[0].approve", equalTo(0))
+                .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
-                .body("batchs.batchStatistics[0].total", equalTo(9))
-                .body("total", equalTo(1));
+                .body("batchs.batchStatistics[0].total", equalTo(1))
+                .body("total", equalTo(2));
 
     }
 
@@ -356,7 +356,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllBatchApprove() {
         val inputRequestJson = """
     {
-        "organisationId": "dummy-organisation",
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
         "batchStatistics": [
             "APPROVE"
         ]
@@ -374,14 +374,14 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.id[0]", containsString("TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e"))
                 .body("batchs.createdAt[0]", containsString("2024-08-16"))
                 .body("batchs.updatedAt[0]", containsString("2024-08-16"))
-                .body("batchs.organisationId[0]", containsString("dummy-organisation"))
+                .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
                 .body("batchs.batchStatistics[0].invalid", equalTo(0))
                 .body("batchs.batchStatistics[0].pending", equalTo(0))
                 .body("batchs.batchStatistics[0].approve", equalTo(3))
                 .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(3))
-                .body("total", equalTo(2));
+                .body("total", equalTo(5));
 
     }
 
@@ -389,7 +389,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllBatchPublish() {
         val inputRequestJson = """
     {
-        "organisationId": "dummy-organisation",
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
         "batchStatistics": [
             "PUBLISH"
         ]
@@ -404,24 +404,24 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/batches")
                 .then()
                 .statusCode(200)
-                .body("batchs.id[0]", containsString("TEST_Published_345723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04123"))
-                .body("batchs.createdAt[0]", containsString("2024-07-17"))
-                .body("batchs.updatedAt[0]", containsString("2024-07-17"))
-                .body("batchs.organisationId[0]", containsString("dummy-organisation"))
+                .body("batchs.id[0]", containsString("TEST_ReadyToPublish2_816d14723a4ab4a67636a7d63dc6f7adf61aba32c04"))
+                .body("batchs.createdAt[0]", containsString("2024-08-18"))
+                .body("batchs.updatedAt[0]", containsString("2024-08-18"))
+                .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
                 .body("batchs.batchStatistics[0].invalid", equalTo(0))
                 .body("batchs.batchStatistics[0].pending", equalTo(0))
                 .body("batchs.batchStatistics[0].approve", equalTo(0))
-                .body("batchs.batchStatistics[0].publish", equalTo(2))
-                .body("batchs.batchStatistics[0].published", equalTo(1))
+                .body("batchs.batchStatistics[0].publish", equalTo(3))
+                .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(3))
-                .body("total", equalTo(3));
+                .body("total", equalTo(5));
     }
 
     @Test
     void testListAllBatchPublished() {
         val inputRequestJson = """
     {
-        "organisationId": "dummy-organisation",
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
         "batchStatistics": [
             "PUBLISHED"
         ]
@@ -439,7 +439,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.id[0]", containsString("TEST_Published_345723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04123"))
                 .body("batchs.createdAt[0]", containsString("2024-07-17"))
                 .body("batchs.updatedAt[0]", containsString("2024-07-17"))
-                .body("batchs.organisationId[0]", containsString("dummy-organisation"))
+                .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
                 .body("batchs.batchStatistics[0].invalid", equalTo(0))
                 .body("batchs.batchStatistics[0].pending", equalTo(0))
                 .body("batchs.batchStatistics[0].approve", equalTo(0))
@@ -453,7 +453,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
     void testListAllBatchByTime() {
         val inputRequestJson = """
     {
-        "organisationId": "dummy-organisation",
+        "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
         "from": "2024-06-13",
         "to": "2024-06-13"
     }
@@ -470,7 +470,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.id[0]", containsString("TEST_ReadyToPublish_816d14723a4ab4a67636a7d63dc6f7adf61aba32c041"))
                 .body("batchs.createdAt[0]", containsString("2024-06-13"))
                 .body("batchs.updatedAt[0]", containsString("2024-06-13"))
-                .body("batchs.organisationId[0]", containsString("dummy-organisation"))
+                .body("batchs.organisationId[0]", containsString("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"))
                 .body("batchs.batchStatistics[0].invalid", equalTo(0))
                 .body("batchs.batchStatistics[0].pending", equalTo(0))
                 .body("batchs.batchStatistics[0].approve", equalTo(0))
@@ -518,11 +518,11 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .when()
-                .get("/api/batches/TEST_ReadyToPublish_816d14723a4ab4a67636a7d63dc6f7adf61aba32c041")
+                .get("/api/batches/TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e")
                 .then()
                 .statusCode(200)
-                .body("id", equalTo("TEST_ReadyToPublish_816d14723a4ab4a67636a7d63dc6f7adf61aba32c041"))
-                .body("organisationId", equalTo("dummy-organisation"));
+                .body("id", equalTo("TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e"))
+                .body("organisationId", equalTo("75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"));
     }
 
     @Test
@@ -544,10 +544,10 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .contentType("application/json")
                 .header(new Header("Accept-Language", "en-US"))
                 .when()
-                .get("/api/batches/reprocess/TEST_ReadyToPublish_816d14723a4ab4a67636a7d63dc6f7adf61aba32c041")
+                .get("/api/batches/reprocess/TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e")
                 .then()
                 .statusCode(200)
-                .body("batchId", equalTo("TEST_ReadyToPublish_816d14723a4ab4a67636a7d63dc6f7adf61aba32c041"))
+                .body("batchId", equalTo("TEST_ReadyToApprove_b6dd2d9e814b96436029a8ca22440f65c64ef236459e"))
                 .body("success", equalTo(true));
     }
 
