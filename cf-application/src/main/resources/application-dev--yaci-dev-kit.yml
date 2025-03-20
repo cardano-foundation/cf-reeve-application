@@ -11,7 +11,11 @@ spring:
     locations:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
-
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/dev
+logging:
+  level:
+    org.flywaydb: DEBUG
 lob:
   cardano:
     network: ${LOB_CARDANO_NETWORK:DEV}

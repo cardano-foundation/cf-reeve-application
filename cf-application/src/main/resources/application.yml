@@ -108,7 +108,7 @@ spring:
 
 lob:
   # Default path is for Docker
-  mock-result-path: ${LOB_MOCK_RESULT_PATH:/app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json}
+  mock-result-path: ${LOB_MOCK_RESULT_PATH:/app/cf-application/src/main/resources/db/migrations/postgresql/cf-reeve-db-migrations/NetSuiteIngestionMock.json}
   blockchain_reader:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
   accounting_reporting_core:
