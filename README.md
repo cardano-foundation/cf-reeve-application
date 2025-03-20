@@ -1,10 +1,17 @@
-# Introduction
-CF specific application that uses cf-lob-platform
+# Reeve | Cardano Foundation
+In a time where trust and transparency hold paramount importance, blockchain emerges as a powerful solution, enabling a fundamental transformation in financial data management.
+Reeve, also known as Ledger on the Blockchain (LOB), empowers organizations to securely record and share critical financial data on the Cardano blockchain, ensuring its integrity and verifiability for all stakeholders.
 
-# Requirements
-- Linux or OSX
-- JDK 21 LTS installed
-- Docker installed
+## Project Overview
+The Reeve platform is designed to integrate traditional accounting systems with blockchain technology, ensuring transparency, immutability, and enhanced security for financial records. By leveraging the Cardano blockchain, the platform offers a decentralized approach to financial data management, facilitating trust and efficiency in accounting processes.
+
+Learn more about Reeve: [Reeve - Ledger on the Blockchain](https://www.cardanofoundation.org/blog/boosting-transparency-on-chain-financial-report)
+
+
+This application is an implementation of the [cf-reeve-platform](https://github.com/cardano-foundation/cf-reeve-platform). 
+Please find all further information in this repository.
+
+This repository provides the needed configuration to start the whole application stack and use the Reeve platform. 
 
 # How to start the application
 To start the whole application stack you need to run the following command in this repository root:
@@ -45,20 +52,3 @@ export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
 - To test the api swagger set the following two environment variables in the `.env` file or in the docker-compose file:
   - `KEYCLOAK_ENABLED=false`
   - `KC_BASE_URL=http://localhost:8080`
-- 
-
-### How to add SSL to Kafka
-- Create a keystore and a truststore. Example:
-```bash
-# generate the certificates. The script certs/generate_ssl_keys.sh can used to generate the certificates
-chmod +x certs/generate_ssl_keys.sh
-./certs/generate_ssl_keys.sh
-```
-- Create a .env file and add the following environment variables:
-  - `KAFKA_SSL_KEYSTORE_PASSWORD=your_keystore_password` (default is password)
-  - `KAFKA_SSL_TRUSTSTORE_PASSWORD=your_truststore_password` (default is password)
-  - `KAFKA_SSL_KEY_PASSWORD=your_key_password` (default is password)
-- Run the application
-```bash
-docker compose --profile frontend --env-file .env -f docker-compose-kafka-ssl.yml‚‚ up -d --build
-```
