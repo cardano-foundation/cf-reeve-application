@@ -88,7 +88,50 @@
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": true,
-      "surrogateAuthRequired": false
+      "surrogateAuthRequired": false,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "organisations",
+        "phone",
+        "profile",
+        "organization",
+        "roles",
+        "basic",
+        "email"
+      ]
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "organisations",
+      "description": "A user is a member of one or more organisations",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false",
+        "display.on.consent.screen": "true",
+        "gui.order": "",
+        "consent.screen.text": ""
+      },
+      "protocolMappers": [
+        {
+          "name": "organisations",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "introspection.token.claim": "true",
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "user.attribute": "organisations",
+            "id.token.claim": "true",
+            "lightweight.claim": "false",
+            "access.token.claim": "true",
+            "claim.name": "organisations",
+            "jsonType.label": "String"
+          }
+        }
+      ]
     }
   ],
   "roles": {
