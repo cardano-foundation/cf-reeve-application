@@ -204,8 +204,8 @@ keycloak:
   cert-url: ${keycloak.base-url}/realms/${keycloak.realm}/protocol/openid-connect/certs
   authorization-url: ${keycloak.base-url}/realms/${keycloak.realm}/protocol/openid-connect/auth
   roles:
-    auditor: cf_auditor
-    manager: cf_manager
+    auditor: reeve_auditor
+    manager: reeve_manager
 springdoc:
   api-docs.enabled: true
   swagger-ui:

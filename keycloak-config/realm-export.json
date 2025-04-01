@@ -92,14 +92,14 @@
   "roles": {
     "realm": [
       {
-        "name": "cf_manager",
+        "name": "reeve_manager",
         "description": "",
         "composite": false,
         "clientRole": false,
         "attributes": {}
       },
       {
-        "name": "cf_auditor",
+        "name": "reeve_auditor",
         "description": "",
         "composite": false,
         "clientRole": false,
