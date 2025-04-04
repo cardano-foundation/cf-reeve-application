@@ -205,7 +205,7 @@ keycloak:
   authorization-url: ${keycloak.base-url}/realms/${keycloak.realm}/protocol/openid-connect/auth
   roles:
     auditor: reeve_auditor
-    manager: reeve_manager
+    manager: reeve_account_manager
 springdoc:
   api-docs.enabled: true
   swagger-ui:
