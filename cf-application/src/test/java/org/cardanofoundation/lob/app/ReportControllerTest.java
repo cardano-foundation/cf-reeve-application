@@ -57,7 +57,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
 
         val inputRequestJson = """
                 {
-                   "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                   "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                    "reportType": "INCOME_STATEMENT",
                    "intervalType": "MONTH",
                    "year": 2023,
@@ -185,7 +185,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
 
         val inputRequestJson = """
                 {
-                "organisationID": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+                "organisationId": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
                 "reportType": "BALANCE_SHEET",
                 "intervalType": "MONTH",
                 "year": 2023,

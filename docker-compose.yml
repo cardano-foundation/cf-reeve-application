@@ -28,7 +28,7 @@ services:
       VITE_KEYCLOAK_URL: ${KC_FRONTEND_HOSTNAME:-http://localhost:8080}
       VITE_KEYCLOAK_REALM: cf-master
       VITE_KEYCLOAK_CLIENT_ID: webclient
-      VITE_KEYCLOAK_REDIRECT_URL: ${FRONTEND_HOSTNAME:-http://localhost:3000}
+      VITE_KEYCLOAK_REDIRECT_URL: ${FRONTEND_URL:-http://localhost:3000}/auth/login
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend-http.entrypoints=web"
@@ -150,7 +150,7 @@ services:
       - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
 
   keycloak-theme-setup:
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-keycloak-theme:0.0.0-main-2c0830d-GHRUN14240723570
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-keycloak-theme:0.0.0-main-998a4d4-GHRUN14269566883
     entrypoint: /bin/sh -c "cp -a /reeve-theme.jar /opt/keycloak/providers/"
     volumes:
       - keycloak-providers:/opt/keycloak/providers
@@ -239,6 +239,7 @@ services:
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
 
   caddy:
+    profiles: [traefik]
     container_name: "caddy"
     image: caddy:latest
     networks:

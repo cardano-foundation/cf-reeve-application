@@ -84,7 +84,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .post("/api/transactions")
                 .then()
                 .statusCode(400)
-                .body(equalTo("{\"violations\":[{\"field\":\"organisationId\",\"message\":\"must not be blank\"}],\"type\":\"https://zalando.github.io/problem/constraint-violation\",\"status\":400,\"title\":\"Constraint Violation\"}"));
+                .body(equalTo("{\"violations\":[{\"field\":\"organisationId\",\"message\":\"Organisation Id is mandatory and must not be blank or null.\"}],\"type\":\"https://zalando.github.io/problem/constraint-violation\",\"status\":400,\"title\":\"Constraint Violation\"}"));
     }
 
     @Test
