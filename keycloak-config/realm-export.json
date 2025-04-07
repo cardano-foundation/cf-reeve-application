@@ -40,7 +40,7 @@
             "temporary": true
         }
       ],
-      "realmRoles": ["cf_auditor"],
+      "realmRoles": ["reeve_auditor"],
       "attributes": {
         "JobTitle": "Auditor",
         "PhoneNumber": "+123456789",
@@ -60,11 +60,13 @@
           "temporary": true
         }
       ],
-      "realmRoles": ["cf_manager"],
+      "realmRoles": ["reeve_account_manager"],
       "attributes": {
-          "JobTitle": "Manager",
+          "JobTitle": "Account Manager",
           "PhoneNumber": "+987654321",
           "organisations": ["75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"]
+          "JobTitle": "Account Manager",
+          "PhoneNumber": "+987654321"
       }
     }
   ],
@@ -424,14 +426,14 @@
   "roles": {
     "realm": [
       {
-        "name": "cf_manager",
+        "name": "reeve_account_manager",
         "description": "",
         "composite": false,
         "clientRole": false,
         "attributes": {}
       },
       {
-        "name": "cf_auditor",
+        "name": "reeve_auditor",
         "description": "",
         "composite": false,
         "clientRole": false,

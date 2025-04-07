@@ -28,6 +28,7 @@ services:
       VITE_KEYCLOAK_URL: ${KC_FRONTEND_HOSTNAME:-http://localhost:8080}
       VITE_KEYCLOAK_REALM: cf-master
       VITE_KEYCLOAK_CLIENT_ID: webclient
+      VITE_KEYCLOAK_REDIRECT_URL: ${FRONTEND_URL:-http://localhost:3000}/auth/login
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend-http.entrypoints=web"
@@ -149,7 +150,7 @@ services:
       - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
 
   keycloak-theme-setup:
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-keycloak-theme:main-143e7f8-GHRUN14082485605
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-keycloak-theme:0.0.0-main-998a4d4-GHRUN14269566883
     entrypoint: /bin/sh -c "cp -a /reeve-theme.jar /opt/keycloak/providers/"
     volumes:
       - keycloak-providers:/opt/keycloak/providers
@@ -207,15 +208,15 @@ services:
       - "3001:3001"
       - "8081:8080"
     entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
-      - "traefik.http.routers.yaci-bf-http.rule=Host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
-      - "traefik.http.routers.yaci-bf-https.rule=Host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
-      - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
-      - "traefik.http.routers.yaci-bf-https.tls=true"
-      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=8080"
-      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
+#      - "traefik.http.routers.yaci-bf-http.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+#      - "traefik.http.routers.yaci-bf-https.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+#      - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
+#      - "traefik.http.routers.yaci-bf-https.tls=true"
+#      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=8080"
+#      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
 
   yaci-viewer:
     image: bloxbean/yaci-viewer:0.10.2
@@ -223,6 +224,9 @@ services:
       - "5173:5173"
     env_file:
       - ./yaci-config/env
+    environment:
+      PUBLIC_INDEXER_BASE_URL: ${PUBLIC_INDEXER_BASE_URL:-http://yaci-cli:8080/api/v1}
+      PUBLIC_INDEXER_WS_URL: ${PUBLIC_INDEXER_WS_URL:-ws://localhost:8080/ws/liveblocks}
     networks:
       - lob
     labels:
@@ -233,6 +237,26 @@ services:
       - "traefik.http.routers.yaci-viewer-https.entrypoints=websecure"
       - "traefik.http.routers.yaci-viewer-https.tls=true"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+  caddy:
+    container_name: "caddy"
+    image: caddy:latest
+    networks:
+      - lob
+    ports:
+      - "10080:80"
+      - "10443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
+      - "traefik.http.routers.yaci-bf-http.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+      - "traefik.http.routers.yaci-bf-https.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+      - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
+      - "traefik.http.routers.yaci-bf-https.tls=true"
+      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
 
   traefik:
     profiles: [traefik]
