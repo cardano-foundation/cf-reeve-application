@@ -52,7 +52,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
     void createReport() {
         String inputBalanceSheetCreate = """
                 {
-                    "organisationID": "%s",
+                    "organisationId": "%s",
                     "reportType": "BALANCE_SHEET",
                     "intervalType": "MONTH",
                     "year": 2023,
