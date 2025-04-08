@@ -239,6 +239,7 @@ services:
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
 
   caddy:
+    profiles: [traefik]
     container_name: "caddy"
     image: caddy:latest
     networks:

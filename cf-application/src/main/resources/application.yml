@@ -213,3 +213,5 @@ springdoc:
       client-id: webclient
       realm: reeve-master
     oauth2-redirect-url: ${OAUTH2_REDIRECT_URL:http://localhost:9000/swagger-ui/oauth2-redirect.html}
+security:
+  csp-policy: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
