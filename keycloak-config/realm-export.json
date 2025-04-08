@@ -86,12 +86,12 @@
       ],
       "adminUrl": "http://localhost:8080",
       "rootUrl": "https://localhost:3000",
-      "baseUrl": "http://localhost:3000",
+      "baseUrl": "https://localhost:3000",
       "attributes": {
         "realm_client": "false",
         "oidc.ciba.grant.enabled": "false",
         "backchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "http://localhost:3000/*##http://localhost:3000/auth/login/",
+        "post.logout.redirect.uris": "https://localhost:3000/*##https://localhost:3000/auth/login/",
         "display.on.consent.screen": "false",
         "oauth2.device.authorization.grant.enabled": "true",
         "backchannel.logout.revoke.offline.tokens": "false"
