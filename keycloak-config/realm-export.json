@@ -456,14 +456,14 @@
   },
   "smtpServer": {
     "password": "**********",
-    "replyToDisplayName": "Reeve Dev",
+    "replyToDisplayName": "Reeve Admin",
     "starttls": "true",
     "auth": "true",
     "port": "587",
     "host": "email-smtp.eu-west-1.amazonaws.com",
     "replyTo": "dev-reeve@metadata.dev.cf-deployments.org",
     "from": "dev-reeve@metadata.dev.cf-deployments.org",
-    "fromDisplayName": "Reeve Dev",
+    "fromDisplayName": "Reeve Admin",
     "envelopeFrom": "dev-reeve@metadata.dev.cf-deployments.org",
     "ssl": "false",
     "user": "AKIA233ZQYOM3EL3COS6"
