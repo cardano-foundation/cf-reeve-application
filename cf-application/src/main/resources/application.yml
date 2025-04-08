@@ -195,7 +195,7 @@ endpoints:
 keycloak:
   enabled: true
   base-url: ${KC_BASE_URL:http://localhost:8080}
-  realm: cf-master
+  realm: reeve-master
   public-client: true
   resource: webclient
   bearer-only: true
@@ -211,7 +211,7 @@ springdoc:
   swagger-ui:
     oauth:
       client-id: webclient
-      realm: cf-master
+      realm: reeve-master
     oauth2-redirect-url: ${OAUTH2_REDIRECT_URL:http://localhost:9000/swagger-ui/oauth2-redirect.html}
 security:
   csp-policy: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
