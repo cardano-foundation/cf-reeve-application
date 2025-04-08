@@ -214,4 +214,4 @@ springdoc:
       realm: reeve-master
     oauth2-redirect-url: ${OAUTH2_REDIRECT_URL:http://localhost:9000/swagger-ui/oauth2-redirect.html}
 security:
-  csp-policy: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
+  csp-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:8080; frame-src http://localhost:8080"
