@@ -1,6 +1,7 @@
 services:
 
   postgres:
+    restart: unless-stopped
     image: postgres:16.3
     environment:
       - POSTGRES_USER=postgres
@@ -16,6 +17,7 @@ services:
 
   frontend:
     profiles: [frontend]
+    restart: unless-stopped
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-frontend:${FRONTEND_DOCKER_TAG:-main}
     networks:
       - lob
@@ -39,6 +41,7 @@ services:
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
 
   publisher:
+    restart: unless-stopped
     build:
       context: .
     environment:
@@ -73,6 +76,7 @@ services:
       - ./:/app/
       - ${LOCAL_PRIVATE_KEY_PATH:-./certs/dummy.pem}:${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
   api:
+    restart: unless-stopped
     build:
       context: .
     environment:
@@ -109,6 +113,7 @@ services:
       - ./:/app/
 
   keycloak:
+    restart: unless-stopped
     image: quay.io/keycloak/keycloak:26.0
     command: start-dev --import-realm
     depends_on:
@@ -156,20 +161,20 @@ services:
       - keycloak-providers:/opt/keycloak/providers
 
   zookeeper:
+    restart: unless-stopped
     image: confluentinc/cp-zookeeper:latest
     networks:
       - lob
-    restart: always
     ports:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
 
   kafka:
+    restart: unless-stopped
     image: confluentinc/cp-kafka:latest
     networks:
       - lob
-    restart: always
     depends_on:
       - zookeeper
     ports:
@@ -181,6 +186,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
   follower-app:
+    restart: unless-stopped
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-follower-app:main
     networks:
       - lob
@@ -195,6 +201,7 @@ services:
       STORE_CARDANO_PROTOCOL_MAGIC: ${STORE_CARDANO_PROTOCOL_MAGIC:-42}
 
   yaci-cli:
+    restart: unless-stopped
     image: bloxbean/yaci-cli:0.10.2
     networks:
       - lob
@@ -219,6 +226,7 @@ services:
 #      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
 
   yaci-viewer:
+    restart: unless-stopped
     image: bloxbean/yaci-viewer:0.10.2
     ports:
       - "5173:5173"
@@ -240,6 +248,7 @@ services:
 
   caddy:
     profiles: [traefik]
+    restart: unless-stopped
     container_name: "caddy"
     image: caddy:latest
     networks:
@@ -261,6 +270,7 @@ services:
 
   traefik:
     profiles: [traefik]
+    restart: unless-stopped
     image: "traefik:v2.9"
     container_name: "traefik"
     command:
