@@ -5,7 +5,9 @@ import io.vavr.control.Either;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.assistance.AccountingPeriodCalculator;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.AccountNumberConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.CostCenterConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.ProjectConvertor;
@@ -120,6 +122,7 @@ public class CFConfig {
                                                                      ApplicationEventPublisher eventPublisher,
                                                                      ExtractionParametersFilteringService parametersFilteringService,
                                                                      NetSuiteParser netSuiteParser,
+                                                                     AccountingCoreTransactionRepository accountingCoreTransactionRepository,
                                                                      @Value("${lob.events.netsuite.to.core.send.batch.size:100}") int sendBatchSize,
                                                                      @Value("${lob.events.netsuite.to.core.netsuite.instance.debug.mode:true}") boolean isDebugMode
     ) {
@@ -130,6 +133,7 @@ public class CFConfig {
                 parametersFilteringService,
                 netSuiteParser,
                 eventPublisher,
+                accountingCoreTransactionRepository,
                 sendBatchSize,
                 NETSUITE_CONNECTOR_ID,
                 isDebugMode
