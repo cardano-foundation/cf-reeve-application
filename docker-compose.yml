@@ -150,7 +150,7 @@ services:
       - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
 
   keycloak-theme-setup:
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-keycloak-theme:0.0.0-main-998a4d4-GHRUN14269566883
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-keycloak-theme:0.0.0-main-faf3054-GHRUN14407110159
     entrypoint: /bin/sh -c "cp -a /reeve-theme.jar /opt/keycloak/providers/"
     volumes:
       - keycloak-providers:/opt/keycloak/providers
