@@ -94,7 +94,6 @@ public class CFConfig {
 
     @Bean
     public NetSuiteExtractionService netSuiteExtractionService(IngestionRepository ingestionRepository,
-                                           IngestionBodyRepository ingestionBodyRepository,
                                            NetSuiteClient netSuiteClient,
                                            TransactionConverter transactionConverter,
                                            ApplicationEventPublisher eventPublisher,
@@ -106,7 +105,6 @@ public class CFConfig {
     ) {
         return new NetSuiteExtractionService(
                 ingestionRepository,
-                ingestionBodyRepository,
                 netSuiteClient,
                 transactionConverter,
                 eventPublisher,
