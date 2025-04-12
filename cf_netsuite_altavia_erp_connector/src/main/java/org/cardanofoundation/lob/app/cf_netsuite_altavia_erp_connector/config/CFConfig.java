@@ -16,6 +16,7 @@ import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.NetSuit
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FinancialPeriodSource;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.CodesMappingRepository;
+import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.IngestionBodyRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.*;
@@ -93,6 +94,7 @@ public class CFConfig {
 
     @Bean
     public NetSuiteExtractionService netSuiteExtractionService(IngestionRepository ingestionRepository,
+                                           IngestionBodyRepository ingestionBodyRepository,
                                            NetSuiteClient netSuiteClient,
                                            TransactionConverter transactionConverter,
                                            ApplicationEventPublisher eventPublisher,
@@ -104,6 +106,7 @@ public class CFConfig {
     ) {
         return new NetSuiteExtractionService(
                 ingestionRepository,
+                ingestionBodyRepository,
                 netSuiteClient,
                 transactionConverter,
                 eventPublisher,

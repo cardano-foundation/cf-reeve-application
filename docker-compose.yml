@@ -66,6 +66,7 @@ services:
       LOB_NETSUITE_CLIENT_CLIENT_ID: ${LOB_NETSUITE_CLIENT_CLIENT_ID:-<enter value>}
       LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
       LOB_NETSUITE_CLIENT_TOKEN_URL: ${LOB_NETSUITE_CLIENT_TOKEN_URL:-<enter value>}
+      LOB_NETSUITE_CLIENT_RECORDSPERCALL: 100
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
