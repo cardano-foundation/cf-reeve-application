@@ -154,6 +154,7 @@ lob:
       url: ${LOB_NETSUITE_CLIENT_URL:<enter value>}
       client-id: ${LOB_NETSUITE_CLIENT_CLIENT_ID:<enter value>}
       certificate-id: ${LOB_NETSUITE_CLIENT_CERTIFICATE_ID:<enter value>}
+      recordspercall: ${LOB_NETSUITE_CLIENT_RECORDSPERCALL:10000}
 
   l1:
     transaction:

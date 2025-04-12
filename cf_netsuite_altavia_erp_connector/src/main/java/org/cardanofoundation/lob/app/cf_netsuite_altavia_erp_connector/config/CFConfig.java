@@ -52,10 +52,11 @@ public class CFConfig {
                                          @Value("${lob.netsuite.client.token-url}") String tokenUrl,
                                          @Value("${lob.netsuite.client.private-key-file-path}") String privateKeyFilePath,
                                          @Value("${lob.netsuite.client.client-id}") String clientId,
-                                         @Value("${lob.netsuite.client.certificate-id}") String certificateId
+                                         @Value("${lob.netsuite.client.certificate-id}") String certificateId,
+                                         @Value("${lob.netsuite.client.recordspercall}") int recordsPerCall
     ) {
         log.info("Creating NetSuite client with url: {}", url);
-        return new NetSuiteClient(objectMapper, restClient, url, tokenUrl, privateKeyFilePath, certificateId, clientId);
+        return new NetSuiteClient(objectMapper, restClient, url, tokenUrl, privateKeyFilePath, certificateId, clientId, recordsPerCall);
     }
 
     @Bean
