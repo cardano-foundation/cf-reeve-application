@@ -61,8 +61,8 @@ public class CFConfig {
     }
 
     @Bean
-    public NetSuiteParser netSuiteParser(ObjectMapper objectMapper) {
-        return new NetSuiteParser(objectMapper);
+    public NetSuiteParser netSuiteParser(ObjectMapper objectMapper, IngestionBodyRepository ingestionBodyRepository) {
+        return new NetSuiteParser(objectMapper, ingestionBodyRepository);
     }
 
     @Bean
