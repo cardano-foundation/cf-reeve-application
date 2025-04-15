@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 import org.zalando.problem.Problem;
 
+import java.time.Clock;
 import java.util.HashMap;
 import java.util.function.Function;
 
@@ -61,8 +62,8 @@ public class CFConfig {
     }
 
     @Bean
-    public NetSuiteParser netSuiteParser(ObjectMapper objectMapper, IngestionRepository ingestionRepository, IngestionBodyRepository ingestionBodyRepository) {
-        return new NetSuiteParser(objectMapper, ingestionRepository, ingestionBodyRepository, NETSUITE_CONNECTOR_ID);
+    public NetSuiteParser netSuiteParser(ObjectMapper objectMapper, IngestionRepository ingestionRepository, IngestionBodyRepository ingestionBodyRepository, Clock clock) {
+        return new NetSuiteParser(objectMapper, ingestionRepository, ingestionBodyRepository, NETSUITE_CONNECTOR_ID, clock);
     }
 
     @Bean
