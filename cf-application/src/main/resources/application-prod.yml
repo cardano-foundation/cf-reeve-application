@@ -7,3 +7,13 @@ spring:
       - classpath:db/migration/{vendor}/prod
       - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common
       - classpath:db/migration/{vendor}/cf-reeve-db-migrations/prod
+
+lob:
+  blockchain_publisher:
+    tx:
+      submit:
+        url: ${LOB_BLOCKCHAIN_PUBLISHER_TX_SUBMIT_URL:""}
+        timeout:
+          in:
+            seconds: 30
+        api_key: ${LOB_BLOCKCHAIN_PUBLISHER_TX_SUBMIT_API_KEY:""}
