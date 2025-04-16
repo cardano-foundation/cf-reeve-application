@@ -16,6 +16,7 @@ import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.NetSuit
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FinancialPeriodSource;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.CodesMappingRepository;
+import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.IngestionBodyRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.*;
@@ -30,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 import org.zalando.problem.Problem;
 
+import java.time.Clock;
 import java.util.HashMap;
 import java.util.function.Function;
 
@@ -52,15 +54,16 @@ public class CFConfig {
                                          @Value("${lob.netsuite.client.token-url}") String tokenUrl,
                                          @Value("${lob.netsuite.client.private-key-file-path}") String privateKeyFilePath,
                                          @Value("${lob.netsuite.client.client-id}") String clientId,
-                                         @Value("${lob.netsuite.client.certificate-id}") String certificateId
+                                         @Value("${lob.netsuite.client.certificate-id}") String certificateId,
+                                         @Value("${lob.netsuite.client.recordspercall}") int recordsPerCall
     ) {
         log.info("Creating NetSuite client with url: {}", url);
-        return new NetSuiteClient(objectMapper, restClient, url, tokenUrl, privateKeyFilePath, certificateId, clientId);
+        return new NetSuiteClient(objectMapper, restClient, url, tokenUrl, privateKeyFilePath, certificateId, clientId, recordsPerCall);
     }
 
     @Bean
-    public NetSuiteParser netSuiteParser(ObjectMapper objectMapper) {
-        return new NetSuiteParser(objectMapper);
+    public NetSuiteParser netSuiteParser(ObjectMapper objectMapper, IngestionRepository ingestionRepository, IngestionBodyRepository ingestionBodyRepository, Clock clock) {
+        return new NetSuiteParser(objectMapper, ingestionRepository, ingestionBodyRepository, NETSUITE_CONNECTOR_ID, clock);
     }
 
     @Bean
