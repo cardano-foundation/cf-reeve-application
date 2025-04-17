@@ -1,4 +1,4 @@
-ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-platform-library-m2-cache:main-0350069-GHRUN14508219842
+ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-platform-library-m2-cache:main-0c8336b-GHRUN14511281206
 
 FROM ${LIB_DOCKER_IMAGE} AS m2-cache
 
