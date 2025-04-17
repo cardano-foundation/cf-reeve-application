@@ -65,6 +65,7 @@ services:
       LOB_NETSUITE_CLIENT_CLIENT_ID: ${LOB_NETSUITE_CLIENT_CLIENT_ID:-<enter value>}
       LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
       LOB_NETSUITE_CLIENT_TOKEN_URL: ${LOB_NETSUITE_CLIENT_TOKEN_URL:-<enter value>}
+      LOB_NETSUITE_CLIENT_RECORDSPERCALL: 1000
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
@@ -154,7 +155,7 @@ services:
       - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
 
   keycloak-theme-setup:
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-keycloak-theme:0.0.0-main-faf3054-GHRUN14407110159
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-keycloak-theme:0.0.0-main-66196f8-GHRUN14472195207
     entrypoint: /bin/sh -c "cp -a /reeve-theme.jar /opt/keycloak/providers/"
     volumes:
       - keycloak-providers:/opt/keycloak/providers

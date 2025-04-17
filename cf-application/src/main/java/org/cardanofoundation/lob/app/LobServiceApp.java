@@ -12,6 +12,7 @@ import org.cardanofoundation.lob.app.support.javers.LOBBigDecimalComparator;
 import org.cardanofoundation.lob.app.support.spring_web.SpringWebConfig;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -148,18 +149,21 @@ public class LobServiceApp {
     @Configuration
     public class RestClientConfig {
 
+        @Value("${lob.netsuite.client.timeout-seconds:300}")
+        private int netsuiteClientTimeoutSeconds;
+
         @Bean("netsuiteRestClient")
         public RestClient restClient() {
             CloseableHttpClient httpClient = HttpClients.custom()
                     .setDefaultRequestConfig(RequestConfig.custom()
-                            .setConnectionRequestTimeout(Timeout.of(Duration.ofSeconds(30)))
-                            .setResponseTimeout(Timeout.of(Duration.ofSeconds(30)))
+                            .setConnectionRequestTimeout(Timeout.of(Duration.ofSeconds(netsuiteClientTimeoutSeconds)))
+                            .setResponseTimeout(Timeout.of(Duration.ofSeconds(netsuiteClientTimeoutSeconds)))
                             .build())
                     .build();
 
             HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-            factory.setConnectTimeout(Duration.ofSeconds(30));
-            factory.setConnectionRequestTimeout(Duration.ofSeconds(30));
+            factory.setConnectTimeout(Duration.ofSeconds(netsuiteClientTimeoutSeconds));
+            factory.setConnectionRequestTimeout(Duration.ofSeconds(netsuiteClientTimeoutSeconds));
             return RestClient.builder()
                     .requestFactory(factory)
                     .defaultHeaders(headers -> {
