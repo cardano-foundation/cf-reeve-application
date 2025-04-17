@@ -1,4 +1,4 @@
 lob:
   blockfrost:
-    url: ""
+    url: "http://dummy-url.de"
     api_key: ""
