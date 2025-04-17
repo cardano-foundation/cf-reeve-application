@@ -7,3 +7,8 @@ spring:
       - classpath:db/migration/{vendor}/prod
       - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common
       - classpath:db/migration/{vendor}/cf-reeve-db-migrations/prod
+lob:
+  netsuite:
+    financial:
+      period:
+        source: IMPLICIT

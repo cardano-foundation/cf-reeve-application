@@ -164,10 +164,6 @@ lob:
           enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
       metadata_label: ${LOB_L1_TRANSACTION_METADATA_LABEL:1447}
 
-  blockfrost:
-    url: ""
-    api_key: ""
-
 # yaci store
 store:
   cardano:
