@@ -99,6 +99,27 @@
             "PhoneNumber": "+987654321",
             "organisations": ["75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"]
         }
+      },
+      {
+        "username": "admin",
+        "email": "admin@reeve.technology",
+        "firstName": "Reeve",
+        "lastName": "Admin",
+        "enabled": true,
+        "emailVerified": true,
+        "credentials": [
+          {
+            "type": "password",
+            "value": "CF-adm123",
+            "temporary": true
+          }
+        ],
+        "realmRoles": ["reeve_admin"],
+        "attributes": {
+          "JobTitle": "Administrator",
+          "PhoneNumber": "+987654321",
+          "organisations": ["75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"]
+        }
       }
     ],
     "clients": [
@@ -484,6 +505,13 @@
         },
         {
           "name": "reeve_accountant",
+          "description": "",
+          "composite": false,
+          "clientRole": false,
+          "attributes": {}
+        },
+        {
+          "name": "reeve_admin",
           "description": "",
           "composite": false,
           "clientRole": false,
