@@ -22,7 +22,7 @@ services:
     networks:
       - lob
     ports:
-      - "3000:80"
+      - "3000:3000"
     environment:
       PORT: 3000
       VITE_API_URL: ${API_FRONTEND_HOSTNAME:-http://localhost:9000}

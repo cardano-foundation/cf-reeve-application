@@ -205,6 +205,7 @@ keycloak:
   roles:
     auditor: reeve_auditor
     manager: reeve_account_manager
+    accountant: reeve_accountant
 springdoc:
   api-docs.enabled: true
   swagger-ui:
