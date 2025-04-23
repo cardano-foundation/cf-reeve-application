@@ -196,11 +196,11 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 "prepaymentsAndOtherShortTermAssets": "4",
                 "financialAssets": "5",
                 "investments": "6",
-                "propertyPlantEquipment": "7",
+                "tangibleAssets": "7",
                 "intangibleAssets": "113",
           
                 "tradeAccountsPayables": "1",
-                "otherCurrentLiabilities": "2",
+                "otherShortTermLiabilities": "2",
                 "accrualsAndShortTermProvisions": "3",
                 "provisions": "4",
                 "capital": "5",
