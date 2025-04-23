@@ -64,7 +64,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                    "period": 1,
                    "otherIncome": "1",
                    "buildOfLongTermProvision": "2",
-                   "costOfProvidingServices": "3",
+                   "externalServices": "3",
                    "personnelExpenses": "4",
                    "rentExpenses": "5",
                    "generalAndAdministrativeExpenses": "6",
@@ -76,7 +76,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                    "netIncomeOptionsSale": "12",
                    "financialExpenses": "13",
                    "extraordinaryExpenses": "14",
-                   "incomeTaxExpense": "15"
+                   "directTaxes": "15"
                    }""";
 
         ExtractableResponse<Response> success = given()
@@ -131,11 +131,11 @@ class ReportControllerTest extends WebBaseIntegrationTest {
                 "prepaymentsAndOtherShortTermAssets": "4",
                 "financialAssets": "5",
                 "investments": "6",
-                "propertyPlantEquipment": "7",
+                "tangibleAssets": "7",
                 "intangibleAssets": "113",
           
                 "tradeAccountsPayables": "1",
-                "otherCurrentLiabilities": "2",
+                "otherShortTermLiabilities": "2",
                 "accrualsAndShortTermProvisions": "3",
                 "provisions": "4",
                 "capital": "5",

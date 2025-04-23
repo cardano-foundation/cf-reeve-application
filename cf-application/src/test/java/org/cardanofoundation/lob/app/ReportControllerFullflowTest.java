@@ -57,22 +57,22 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                     "intervalType": "MONTH",
                     "year": 2023,
                     "period": 1,
-                      "cashAndCashEquivalents": "1",
-                      "cryptoAssets": "2",
-                      "otherReceivables": "3",
-                      "prepaymentsAndOtherShortTermAssets": "4",
-                      "financialAssets": "5",
-                      "investments": "6",
-                      "propertyPlantEquipment": "7",
-                      "intangibleAssets": "8",
-                
-                      "tradeAccountsPayables": "1",
-                      "otherCurrentLiabilities": "2",
-                      "accrualsAndShortTermProvisions": "3",
-                      "provisions": "4",
-                      "capital": "5",
-                      "resultsCarriedForward": "6",
-                      "profitForTheYear": "15"
+                  "cashAndCashEquivalents": "1",
+                  "cryptoAssets": "2",
+                  "otherReceivables": "3",
+                  "prepaymentsAndOtherShortTermAssets": "4",
+                  "financialAssets": "5",
+                  "investments": "6",
+                  "tangibleAssets": "7",
+                  "intangibleAssets": "8",
+            
+                  "tradeAccountsPayables": "1",
+                  "otherShortTermLiabilities": "2",
+                  "accrualsAndShortTermProvisions": "3",
+                  "provisions": "4",
+                  "capital": "5",
+                  "resultsCarriedForward": "6",
+                  "profitForTheYear": "15"
                     }
                 """.formatted(ORG_ID);
 
