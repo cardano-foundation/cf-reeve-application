@@ -63,6 +63,7 @@ spring:
       idle-timeout: ${DB_IDLE_TIMEOUT:300000}
       schema: ${DB_SCHEMA:lob_service}
       #auto-commit: ${DB_AUTO_COMMIT:false}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:300000}
 
     jpa:
       database-platform: ${DB_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
