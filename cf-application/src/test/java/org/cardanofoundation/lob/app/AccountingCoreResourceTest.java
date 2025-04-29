@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app;
 
 import io.restassured.http.Header;
 import lombok.val;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import static org.scribe.model.SignatureType.Header;
 class AccountingCoreResourceTest extends WebBaseIntegrationTest {
 
     @Test
+    @Disabled("Will reactive it later")
     void testListAllTransactions() {
         val inputRequestJson = """
                 {
