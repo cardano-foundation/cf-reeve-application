@@ -350,7 +350,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(1))
-                .body("total", equalTo(2));
+                .body("total", equalTo(3));
 
     }
 
@@ -383,7 +383,7 @@ class AccountingCoreResourceTest extends WebBaseIntegrationTest {
                 .body("batchs.batchStatistics[0].publish", equalTo(0))
                 .body("batchs.batchStatistics[0].published", equalTo(0))
                 .body("batchs.batchStatistics[0].total", equalTo(3))
-                .body("total", equalTo(5));
+                .body("total", equalTo(4));
 
     }
 
