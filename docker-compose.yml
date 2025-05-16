@@ -56,6 +56,7 @@ services:
       LOB_BLOCKCHAIN_READER_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
       LOB_NETSUITE_ENABLED: true
+      LOB_CSV_ENABLED: true
       SERVER_PORT: 9001
       LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
       LOB_BLOCKCHAIN_READER_LOB_FOLLOWER_BASE_URL: http://follower-app:9090/api
@@ -93,6 +94,7 @@ services:
       LOB_BLOCKCHAIN_READER_ENABLED: false
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: false
       LOB_NETSUITE_ENABLED: false
+      LOB_CSV_ENABLED: false
       SPRING_KAFKA_ENABLED: true
       SERVER_PORT: 9000
     working_dir: /app
