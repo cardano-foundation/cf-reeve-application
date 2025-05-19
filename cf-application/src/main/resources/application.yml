@@ -137,7 +137,7 @@ lob:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}
   dispatching:
     strategy:
-      type: ${LOB_DISPATCHING_STRATEGY:DELAYED}
+      type: ${LOB_DISPATCHING_STRATEGY:IMMEDIATE}
 
   netsuite:
     enabled: ${LOB_NETSUITE_ENABLED:true}
