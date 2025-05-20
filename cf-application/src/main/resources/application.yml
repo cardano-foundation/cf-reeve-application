@@ -133,6 +133,7 @@ lob:
     enabled: ${LOB_ORGANISATION_ENABLED:true}
   blockchain_publisher:
     enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:true}
+    maxDelay: ${LOB_BLOCKCHAIN_PUBLISHER_MAX_DELAY:PT5M}
     topics:
       report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand

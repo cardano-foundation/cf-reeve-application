@@ -26,6 +26,7 @@ services:
     environment:
       PORT: 3000
       VITE_API_URL: ${API_FRONTEND_HOSTNAME:-http://localhost:9000}
+      VITE_ADMIN_EMAIL: access_reeve-support@cardanofoundation.org
       VITE_KEYCLOAK_URL: ${KC_FRONTEND_HOSTNAME:-http://localhost:8080}
       VITE_KEYCLOAK_REALM: reeve-master
       VITE_KEYCLOAK_CLIENT_ID: webclient
