@@ -90,6 +90,10 @@ spring:
     servlet:
       encoding:
         force: true
+      multipart:
+        enabled: trues
+        max-file-size: 10MB
+        max-request-size: 10MB
 
     exposure:
       include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,flyway,applicationmodules}
@@ -158,7 +162,10 @@ lob:
       certificate-id: ${LOB_NETSUITE_CLIENT_CERTIFICATE_ID:<enter value>}
       recordspercall: ${LOB_NETSUITE_CLIENT_RECORDSPERCALL:10000}
       timeout-seconds: ${LOB_NETSUITE_CLIENT_TIMEOUT_SECONDS:300}
-
+  csv:
+    enabled: ${LOB_CSV_ENABLED:true}
+    delimiter: ${LOB_CSV_DELIMITER:,}
+    send-batch-size: ${LOB_CSV_SEND_BATCH_SIZE:100}
   l1:
     transaction:
       metadata:

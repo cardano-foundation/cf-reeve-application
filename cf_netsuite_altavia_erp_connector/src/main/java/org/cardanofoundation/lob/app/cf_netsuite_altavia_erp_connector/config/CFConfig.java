@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.assistance.AccountingPeriodCalculator;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionRepositoryGateway;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.SystemExtractionParametersFactory;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.AccountNumberConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.CostCenterConvertor;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.ProjectConvertor;
@@ -40,7 +40,9 @@ import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.
 @Configuration
 @ComponentScan(basePackages = {
         "org.cardanofoundation.lob.app.netsuite_altavia_adapter.config",
-        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.service"
+        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.service",
+        "org.cardanofoundation.lob.app.accounting_reporting_core.service",
+        "org.cardanofoundation.lob.app.csv_erp_adapter.service"
 })
 @Slf4j
 public class CFConfig {
