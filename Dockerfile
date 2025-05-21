@@ -1,4 +1,4 @@
-ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-platform-library-m2-cache:PR273-bb6d5c3-GHRUN15158325784
+ARG LIB_DOCKER_IMAGE=pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-platform-library-m2-cache:PR273-a8feaef-GHRUN15159484539
 FROM ${LIB_DOCKER_IMAGE} AS m2-cache
 
 FROM openjdk:21-jdk-slim AS build
