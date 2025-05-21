@@ -59,7 +59,7 @@ spring:
 
     hikari:
       minimum-idle: ${DB_MIN_IDLE:5}
-      maximum-pool-size: ${DB_MAX_POOL_SIZE:50}
+      maximum-pool-size: ${DB_MAX_POOL_SIZE:100}
       idle-timeout: ${DB_IDLE_TIMEOUT:30000}
       schema: ${DB_SCHEMA:lob_service}
       #auto-commit: ${DB_AUTO_COMMIT:false}
