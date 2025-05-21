@@ -78,7 +78,7 @@ spring:
     schemas: ${DB_SCHEMA:lob_service}
     # baselineOnMigrate this will create a baseline version if none exists (https://flywaydb.org/documentation/configuration/parameters/baselineOnMigrate)
     baselineOnMigrate: true
-    enabled: false
+    enabled: true
     validateMigrationNaming: true
   web:
     resources:
@@ -119,6 +119,8 @@ lob:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
   accounting_reporting_core:
     enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:true}
+    debounce:
+      duration: ${LOB_ACCOUNTING_REPORTING_CORE_DEBOUNCE_DURATION:PT10S}
     topics:
       tx-ledger-updated-event: accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent
       reports-ledger-updated-event: accounting_reporting_core.domain.event.ledger.ReportsLedgerUpdatedEvent
