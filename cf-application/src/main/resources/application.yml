@@ -1,6 +1,16 @@
 server:
   port: ${SERVER_PORT:9000}
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    metrics:
+      enabled: true
+  metrics:
+    enable:
+      all: true
 spring:
   task:
     execution:

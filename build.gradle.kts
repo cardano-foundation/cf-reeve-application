@@ -56,6 +56,11 @@ subprojects {
         implementation("org.javers:javers-core:7.6.1")
         implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
 
+        // testing
+        implementation("org.springframework.boot:spring-boot-starter-actuator")
+        implementation("io.micrometer:micrometer-core")
+        implementation("io.micrometer:micrometer-registry-prometheus")
+
         testCompileOnly("org.projectlombok:lombok:1.18.32")
         testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
         testImplementation("io.rest-assured:rest-assured:5.5.0")
