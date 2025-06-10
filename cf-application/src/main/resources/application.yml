@@ -59,7 +59,8 @@ spring:
 
     hikari:
       minimum-idle: ${DB_MIN_IDLE:5}
-      maximum-pool-size: ${DB_MAX_POOL_SIZE:10}
+      # on peak load there can be a lot of connections and this should be able to handle it
+      maximum-pool-size: ${DB_MAX_POOL_SIZE:100}
       idle-timeout: ${DB_IDLE_TIMEOUT:30000}
       schema: ${DB_SCHEMA:lob_service}
       #auto-commit: ${DB_AUTO_COMMIT:false}
@@ -115,6 +116,8 @@ lob:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
   accounting_reporting_core:
     enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:true}
+    debounce:
+      duration: ${LOB_ACCOUNTING_REPORTING_CORE_DEBOUNCE_DURATION:PT10S}
     topics:
       tx-ledger-updated-event: accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent
       reports-ledger-updated-event: accounting_reporting_core.domain.event.ledger.ReportsLedgerUpdatedEvent
@@ -129,6 +132,7 @@ lob:
     enabled: ${LOB_ORGANISATION_ENABLED:true}
   blockchain_publisher:
     enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:true}
+    maxDelay: ${LOB_BLOCKCHAIN_PUBLISHER_MAX_DELAY:PT5M}
     topics:
       report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
