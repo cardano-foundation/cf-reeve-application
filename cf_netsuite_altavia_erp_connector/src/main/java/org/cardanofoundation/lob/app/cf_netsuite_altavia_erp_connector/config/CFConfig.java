@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.assistance.AccountingPeriodCalculator;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.SystemExtractionParametersFactory;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.*;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.NetSuiteClient;

@@ -217,6 +217,7 @@ services:
     ports:
       - "3001:3001"
       - "8081:8080"
+      - "10000:10000"
     entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
 #    labels:
 #      - "traefik.enable=true"
