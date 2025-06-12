@@ -2,10 +2,7 @@ name: Build
 
 on:
   push:
-    branches:
-      - main
-      - develop
-      - 'release/*'
+    branches: [ main, develop ]
     tags:
       - '[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
