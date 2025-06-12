@@ -8,10 +8,8 @@ import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.assistance.AccountingPeriodCalculator;
 import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.SystemExtractionParametersFactory;
-import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.AccountNumberConvertor;
-import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.CostCenterConvertor;
-import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.ProjectConvertor;
-import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.VatConvertor;
+import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionRepositoryGateway;
+import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.*;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.NetSuiteClient;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FinancialPeriodSource;
@@ -40,9 +38,7 @@ import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.
 @Configuration
 @ComponentScan(basePackages = {
         "org.cardanofoundation.lob.app.netsuite_altavia_adapter.config",
-        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.service",
-        "org.cardanofoundation.lob.app.accounting_reporting_core.service",
-        "org.cardanofoundation.lob.app.csv_erp_adapter.service"
+        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.service"
 })
 @Slf4j
 public class CFConfig {
@@ -75,8 +71,7 @@ public class CFConfig {
 
     @Bean
     public SystemExtractionParametersFactory systemExtractionParametersFactory(OrganisationPublicApiIF organisationPublicApiIF,
-                                                                               AccountingPeriodCalculator accountPeriodService)
-     {
+                                                                               AccountingPeriodCalculator accountPeriodService) {
         return new SystemExtractionParametersFactory(organisationPublicApiIF, accountPeriodService);
     }
 
@@ -97,14 +92,14 @@ public class CFConfig {
 
     @Bean
     public NetSuiteExtractionService netSuiteExtractionService(IngestionRepository ingestionRepository,
-                                           NetSuiteClient netSuiteClient,
-                                           TransactionConverter transactionConverter,
-                                           ApplicationEventPublisher eventPublisher,
-                                           SystemExtractionParametersFactory extractionParametersFactory,
-                                           ExtractionParametersFilteringService parametersFilteringService,
-                                           NetSuiteParser netSuiteParser,
-                                           @Value("${lob.events.netsuite.to.core.send.batch.size:100}") int sendBatchSize,
-                                           @Value("${lob.events.netsuite.to.core.netsuite.instance.debug.mode:true}") boolean isDebugMode
+                                                               NetSuiteClient netSuiteClient,
+                                                               TransactionConverter transactionConverter,
+                                                               ApplicationEventPublisher eventPublisher,
+                                                               SystemExtractionParametersFactory extractionParametersFactory,
+                                                               ExtractionParametersFilteringService parametersFilteringService,
+                                                               NetSuiteParser netSuiteParser,
+                                                               @Value("${lob.events.netsuite.to.core.send.batch.size:100}") int sendBatchSize,
+                                                               @Value("${lob.events.netsuite.to.core.netsuite.instance.debug.mode:true}") boolean isDebugMode
     ) {
         return new NetSuiteExtractionService(
                 ingestionRepository,
@@ -169,6 +164,7 @@ public class CFConfig {
         fieldProcessors.put(PROJECT, new ProjectConvertor());
         fieldProcessors.put(CHART_OF_ACCOUNT, new AccountNumberConvertor());
         fieldProcessors.put(VAT, new VatConvertor());
+        fieldProcessors.put(ACCOUNT_CREDIT_NAME, new AccountCreditConvertor());
 
         return new PreprocessorService(fieldProcessors);
     }
