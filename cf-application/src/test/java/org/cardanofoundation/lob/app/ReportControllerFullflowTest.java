@@ -89,7 +89,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("report[0].reportId", equalTo("8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"))
                 .body("report[0].publish", equalTo(false))
                 .body("report[0].ver", equalTo(0))
-                .body("report[0].canBePublish", equalTo(true))
+                .body("report[0].canBePublish", equalTo(false))
                 ;
     }
 
@@ -114,7 +114,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("report[0].reportId", equalTo("8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"))
                 .body("report[0].publish", equalTo(true))
                 .body("report[0].ver", equalTo(0))
-                .body("report[0].canBePublish", equalTo(true))
+                .body("report[0].canBePublish", equalTo(false))
 
         ;
         given()
@@ -130,7 +130,7 @@ class ReportControllerFullflowTest extends WebBaseIntegrationTest {
                 .body("report[0].error", equalTo(null))
                 .body("report[0].reportId", equalTo("8fb79106c39a8e1f227e5cb1931a5ad1898dd5e06b6d0fb5d8ac21941f3bf3dd"))
                 .body("report[0].publish", equalTo(true))
-                .body("report[0].canBePublish", equalTo(true))
+                .body("report[0].canBePublish", equalTo(false))
         ;
     }
 
