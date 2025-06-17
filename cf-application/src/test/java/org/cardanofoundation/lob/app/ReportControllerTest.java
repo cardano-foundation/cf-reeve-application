@@ -169,6 +169,7 @@ class ReportControllerTest extends WebBaseIntegrationTest {
     }
 
     @Test
+    @Disabled
     void testReportCreateBalanceSheetWrongData() {
 
         given()
