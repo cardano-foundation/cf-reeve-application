@@ -184,6 +184,11 @@ lob:
         validation:
           enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
       metadata_label: ${LOB_L1_TRANSACTION_METADATA_LABEL:1447}
+  security:
+    clamav:
+      enabled: ${LOB_SECURITY_CLAMAV_ENABLED:false}
+      host: ${LOB_SECURITY_CLAMAV_HOST:localhost}
+      port: ${LOB_SECURITY_CLAMAV_PORT:3310}
 
 # yaci store
 store:

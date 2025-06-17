@@ -98,6 +98,9 @@ services:
       LOB_CSV_ENABLED: false
       SPRING_KAFKA_ENABLED: true
       SERVER_PORT: 9000
+      LOB_SECURITY_CLAMAV_ENABLED: true
+      LOB_SECURITY_CLAMAV_HOST: clamav
+      LOB_SECURITY_CLAMAV_PORT: 3310
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
@@ -114,7 +117,17 @@ services:
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
     volumes:
       - ./:/app/
-
+  clamav:
+    image: clamav/clamav:1.4.2
+    container_name: clamav
+    platform: linux/amd64
+    ports:
+      - "3310:3310"
+    healthcheck:
+      test: [ "CMD", "clamdscan", "--version" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
   keycloak:
     restart: unless-stopped
     image: quay.io/keycloak/keycloak:26.0
