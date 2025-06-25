@@ -141,6 +141,7 @@ lob:
       reconcilation-started-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationStartedEvent
       reconcilation-chunk-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationChunkEvent
       reconcilation-finalisation-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationFinalisationEvent
+      validate-ingestion-response-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionResponseEvent
   organisation:
     enabled: ${LOB_ORGANISATION_ENABLED:true}
   blockchain_publisher:
@@ -163,6 +164,7 @@ lob:
         source: EXPLICIT
     topics:
       scheduled-ingestion-event: accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent
+      validate-ingestion-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent
       transaction-batch-created-event: accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent
       scheduled-reconcilation-event: accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent
       reconcilation-created-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent

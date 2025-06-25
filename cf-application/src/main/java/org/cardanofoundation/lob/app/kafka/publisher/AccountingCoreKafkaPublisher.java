@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent;
@@ -24,6 +25,8 @@ public class AccountingCoreKafkaPublisher {
     // Netsuite Topics
     @Value("${lob.netsuite.topics.scheduled-ingestion-event}")
     private String scheduledIngestionEventTopic;
+    @Value("${lob.netsuite.topics.validate-ingestion-event}")
+    private String validateIngestionEventTopic;
     @Value("${lob.netsuite.topics.scheduled-reconcilation-event}")
     private String scheduledReconcilationEventTopic;
     @Value("${lob.netsuite.topics.transaction-batch-created-event}")
@@ -41,6 +44,12 @@ public class AccountingCoreKafkaPublisher {
     public void handleScheduledIngestionEvent(ScheduledIngestionEvent event) {
         log.info("Sending ScheduledIngestionEvent to Kafka: {}", event);
         kafkaTemplate.send(scheduledIngestionEventTopic, event);
+    }
+
+    @EventListener
+    public void handleValidationIngestionResponseEvent(ValidateIngestionEvent event) {
+        log.info("Sending ScheduledIngestionEvent to Kafka: {}", event);
+        kafkaTemplate.send(validateIngestionEventTopic, event);
     }
 
     @EventListener
