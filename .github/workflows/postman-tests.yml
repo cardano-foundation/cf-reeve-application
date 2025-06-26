@@ -1,0 +1,46 @@
+name: Postman Tests
+
+on:
+  pull_request:
+
+env:
+  REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
+  REEVE_DB_MIGRATIONS_REF: main
+  REEVE_DB_MIGRATIONS_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Checkout cf-reeve-db-migrations
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
+          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
+          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
+
+      - name: Set up Docker Compose
+        run: docker-compose up -d
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for services..."
+          sleep 30  # increase if your services take longer to boot
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Newman (Postman CLI)
+        run: npm install -g newman
+
+      - name: Run Postman Collection with Environment
+        run: |
+          newman run postman/Reeve_Integration.postman_collection.json \
+            --environment postman/Reeve_env.postman_environment.json
