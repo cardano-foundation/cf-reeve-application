@@ -30,7 +30,7 @@ jobs:
       - name: Wait for services to be ready
         run: |
           echo "Waiting for services..."
-          sleep 30  # increase if your services take longer to boot
+          sleep 45  # increase if your services take longer to boot
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
