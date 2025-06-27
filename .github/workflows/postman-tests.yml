@@ -33,8 +33,10 @@ jobs:
 
       - name: Install Newman (Postman CLI)
         run: npm install -g newman
-
+      - name: Wait for services to stabilize
+        run: sleep 30
       - name: Run Postman Collection with Environment
         run: |
           newman run postman/Reeve_Integration.postman_collection.json \
-            --environment postman/Reeve_env.postman_environment.json
+            --environment postman/Reeve_env.postman_environment.json \
+            --delay-request 500
