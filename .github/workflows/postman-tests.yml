@@ -12,8 +12,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Docker Compose
-        run: docker compose up -d --build
-
+        run: |
+          docker compose up -d --build
+          timeout 120 docker compose logs -f api || true
       - name: Services health-check API
         run: |
           timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9000/swagger-ui/index.html)" != "200" ]]; do sleep 2;echo "."; done'
