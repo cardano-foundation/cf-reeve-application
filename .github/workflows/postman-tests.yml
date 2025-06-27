@@ -25,7 +25,7 @@ jobs:
           path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
 
       - name: Set up Docker Compose
-        run: docker-compose up -d
+        run: docker compose up -d --build
 
       - name: Wait for services to be ready
         run: |
