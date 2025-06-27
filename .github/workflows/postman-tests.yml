@@ -2,6 +2,10 @@ name: Postman Tests
 
 on:
   pull_request:
+env:
+  REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
+  REEVE_DB_MIGRATIONS_REF: main
+  REEVE_DB_MIGRATIONS_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations
 
 jobs:
   test:
@@ -10,6 +14,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Checkout cf-reeve-db-migrations
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
+          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
+          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
 
       - name: Set up Docker Compose
         run: |
