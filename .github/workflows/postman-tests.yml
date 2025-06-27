@@ -40,3 +40,10 @@ jobs:
           newman run postman/Reeve_Integration.postman_collection.json \
             --environment postman/Reeve_env.postman_environment.json \
             --delay-request 500
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          echo "===== API LOGS ====="
+          docker compose logs api
+          echo "===== Keycloak LOGS ====="
+          docker compose logs keycloak
