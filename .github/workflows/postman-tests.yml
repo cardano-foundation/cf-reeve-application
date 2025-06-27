@@ -14,10 +14,16 @@ jobs:
       - name: Set up Docker Compose
         run: docker compose up -d --build
 
-      - name: Wait for services to be ready
+      - name: Services health-check API
         run: |
-          echo "Waiting for services..."
-          sleep 90 
+          timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9000/swagger-ui/index.html)" != "200" ]]; do sleep 2;echo "."; done'
+          echo "API is up"
+          docker ps
+      - name: Services health-check Keycloak
+        run: |
+          timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/realms/master)" != "200" ]]; do sleep 2;echo "."; done'
+          echo "Keycloak is up"
+          docker ps
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
