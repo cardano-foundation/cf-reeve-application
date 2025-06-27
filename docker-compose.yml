@@ -39,6 +39,11 @@ services:
       - "traefik.http.routers.frontend-https.entrypoints=websecure"
       - "traefik.http.routers.frontend-https.tls=true"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   publisher:
     restart: unless-stopped
@@ -77,6 +82,11 @@ services:
     volumes:
       - ./:/app/
       - ${LOCAL_PRIVATE_KEY_PATH:-./certs/dummy.pem}:${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
   api:
     restart: unless-stopped
     build:
@@ -85,7 +95,7 @@ services:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
       LOB_CORS_ALLOWED_ORIGINS: ${LOB_CORS_ALLOWED_ORIGINS:-http://localhost:3000}
-      LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
+      LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations/NetSuiteIngestionMock.json
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
@@ -117,6 +127,12 @@ services:
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
     volumes:
       - ./:/app/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+
   clamav:
     image: clamav/clamav:1.4.2
     container_name: clamav
@@ -171,12 +187,22 @@ services:
       - "traefik.http.routers.keycloak-https.tls=true"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.services.keycloak.loadbalancer.server.port=${KC_HTTP_PORT:-8080}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   keycloak-theme-setup:
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-keycloak-theme:0.0.0-main-66196f8-GHRUN14472195207
     entrypoint: /bin/sh -c "cp -a /reeve-theme.jar /opt/keycloak/providers/"
     volumes:
       - keycloak-providers:/opt/keycloak/providers
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   zookeeper:
     restart: unless-stopped
@@ -187,6 +213,11 @@ services:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   kafka:
     restart: unless-stopped
@@ -217,6 +248,11 @@ services:
       STORE_CARDANO_HOST: ${STORE_CARDANO_HOST:-yaci-cli}
       STORE_CARDANO_PORT: ${STORE_CARDANO_PORT:-3001}
       STORE_CARDANO_PROTOCOL_MAGIC: ${STORE_CARDANO_PROTOCOL_MAGIC:-42}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   yaci-cli:
     restart: unless-stopped
@@ -232,7 +268,6 @@ services:
     ports:
       - "3001:3001"
       - "8081:8080"
-      - "10000:10000"
     entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
 #    labels:
 #      - "traefik.enable=true"
@@ -243,6 +278,11 @@ services:
 #      - "traefik.http.routers.yaci-bf-https.tls=true"
 #      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=8080"
 #      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   yaci-viewer:
     restart: unless-stopped
@@ -264,6 +304,11 @@ services:
       - "traefik.http.routers.yaci-viewer-https.entrypoints=websecure"
       - "traefik.http.routers.yaci-viewer-https.tls=true"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   caddy:
     profiles: [traefik]
@@ -286,6 +331,11 @@ services:
       - "traefik.http.routers.yaci-bf-https.tls=true"
       - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=80"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   traefik:
     profiles: [traefik]
@@ -309,6 +359,11 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - lob
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
 volumes:
   postgres-data:

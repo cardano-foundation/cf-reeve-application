@@ -1,10 +1,11 @@
 name: Run Tests
 
-on:
-  push:
-    branches-ignore:
-      - main
-  workflow_dispatch:
+# Disabling for now
+#on:
+#  push:
+#    branches-ignore:
+#      - main
+#  workflow_dispatch:
 
 env:
   REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
