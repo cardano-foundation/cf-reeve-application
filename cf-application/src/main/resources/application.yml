@@ -31,11 +31,18 @@ spring:
           json:
             trusted:
               packages: '*'
+        fetch:
+            max:
+                bytes: 15728640 # 15MB
       enable-auto-commit: false
       auto-commit-interval: 1000
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       retries: 0
+      properties:
+        max:
+          request:
+            size: 15728640 # 15MB
   rabbitmq:
     enabled: false
 
@@ -97,13 +104,13 @@ spring:
     spring.web.resources.add-mappings: false
     spring.mvc.throw-exception-if-no-handler-found: true
     # force charset in request and responses
-    servlet:
-      encoding:
-        force: true
-      multipart:
-        enabled: trues
-        max-file-size: 10MB
-        max-request-size: 10MB
+  servlet:
+    encoding:
+      force: true
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 
     exposure:
       include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,flyway,applicationmodules}

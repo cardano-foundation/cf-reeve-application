@@ -2526,7 +2526,7 @@
 					"response": []
 				},
 				{
-					"name": "POST Extraction Copy",
+					"name": "POST Extraction Validation",
 					"event": [
 						{
 							"listen": "test",
