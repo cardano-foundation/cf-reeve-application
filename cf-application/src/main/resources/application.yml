@@ -33,7 +33,7 @@ spring:
               packages: '*'
         fetch:
             max:
-                bytes: 12582912 # 12MB
+                bytes: 15728640 # 15MB
       enable-auto-commit: false
       auto-commit-interval: 1000
     producer:
@@ -42,7 +42,7 @@ spring:
       properties:
         max:
           request:
-            size: 12582912 # 12MB
+            size: 15728640 # 15MB
   rabbitmq:
     enabled: false
 

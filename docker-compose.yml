@@ -234,8 +234,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
-      KAFKA_MESSAGE_MAX_BYTES: 12582912 # 12MB
-      KAFKA_REPLICA_FETCH_MAX_BYTES: 12582912 # 12MB
+      KAFKA_MESSAGE_MAX_BYTES: 15728640 # 15MB
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 15728640 # 15MB
   follower-app:
     restart: unless-stopped
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-follower-app:main
