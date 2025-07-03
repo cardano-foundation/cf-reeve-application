@@ -47,5 +47,4 @@ jobs:
       - name: Run Postman Collection with Environment
         run: |
           newman run postman/Reeve_Integration.postman_collection.json \
-            --environment postman/Reeve_env.postman_environment.json \
-            --timeout 5000
+            --environment postman/Reeve_env.postman_environment.json
