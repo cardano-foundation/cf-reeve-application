@@ -108,6 +108,11 @@ services:
       SERVER_PORT: 9000
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/swagger-ui/index.html"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
     networks:
       - lob
     ports:
@@ -153,6 +158,11 @@ services:
       KC_DB_URL_PORT: ${KC_DB_URL_PORT:-5432}
       KC_DB_USERNAME: ${KC_DB_USERNAME:-postgres}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD:-postgres}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/realms/master"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
     ports:
       - ${EXPOSED_KC_HTTP_PORT:-8080}:${KC_HTTP_PORT:-8080}
       - ${EXPOSED_KC_HTTPS_PORT:-8443}:${KC_HTTPS_PORT:-8443}
