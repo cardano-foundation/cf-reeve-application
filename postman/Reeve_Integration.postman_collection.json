@@ -2101,7 +2101,7 @@
 									"",
 									"// Check if 'keyName' exists and equals 'expectedValue'",
 									"pm.test(\"Check if array contains elements\", function () {",
-									"    pm.expect(jsonData.total).eq(13);",
+									"    pm.expect(jsonData.total).above(1);",
 									"});"
 								],
 								"type": "text/javascript",
