@@ -200,7 +200,7 @@ services:
 
   zookeeper:
     restart: unless-stopped
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.9.2
     networks:
       - lob
     ports:
@@ -215,7 +215,7 @@ services:
 
   kafka:
     restart: unless-stopped
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.9.2
     networks:
       - lob
     depends_on:
