@@ -135,7 +135,6 @@ services:
 
   clamav:
     image: clamav/clamav:1.4.2
-    container_name: clamav
     platform: linux/amd64
     ports:
       - "3310:3310"
