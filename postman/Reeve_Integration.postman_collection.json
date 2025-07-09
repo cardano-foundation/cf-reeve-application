@@ -114,12 +114,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}"
 							]
@@ -170,12 +171,13 @@
 							"raw": "{\n    \"customerCode\": \"6311170100\",\n    \"refCode\": \"7157\",\n    \"eventRefCode\": \"7100\",\n    \"name\": \"New Postman Name\",\n    \"subType\": 18,\n    \"type\": 5,\n    \"active\": true\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/validate",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/validate",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"validate"
@@ -228,12 +230,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}"
 							]
@@ -276,12 +279,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/vat-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/vat-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"vat-codes"
@@ -334,12 +338,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/vat-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/vat-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"vat-codes"
@@ -392,12 +397,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/vat-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/vat-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"vat-codes"
@@ -466,12 +472,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/vat-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/vat-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"vat-codes"
@@ -538,12 +545,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/vat-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/vat-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"vat-codes"
@@ -587,12 +595,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/reference-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/reference-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"reference-codes"
@@ -645,12 +654,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/reference-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/reference-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"reference-codes"
@@ -703,12 +713,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/reference-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/reference-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"reference-codes"
@@ -777,12 +788,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/reference-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/reference-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"reference-codes"
@@ -849,12 +861,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/reference-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/reference-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"reference-codes"
@@ -898,12 +911,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/projects",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/projects",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"projects"
@@ -956,12 +970,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/projects",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/projects",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"projects"
@@ -1014,12 +1029,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/projects",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/projects",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"projects"
@@ -1088,12 +1104,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/projects",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/projects",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"projects"
@@ -1137,12 +1154,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/event-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/event-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"event-codes"
@@ -1195,12 +1213,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/event-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/event-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"event-codes"
@@ -1256,12 +1275,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/event-codes",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/event-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"event-codes"
@@ -1315,12 +1335,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/currencies",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/currencies",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"currencies"
@@ -1373,12 +1394,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/currencies",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/currencies",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"currencies"
@@ -1447,12 +1469,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/currencies",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/currencies",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"currencies"
@@ -1506,12 +1529,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/cost-centers",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/cost-centers",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"cost-centers"
@@ -1575,12 +1599,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/cost-centers",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/cost-centers",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"cost-centers"
@@ -1649,12 +1674,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/cost-centers",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/cost-centers",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"cost-centers"
@@ -1708,12 +1734,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/chart-of-accounts",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/chart-of-accounts",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"chart-of-accounts"
@@ -1777,12 +1804,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/organisations/{{orgId}}/chart-of-accounts",
+							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/chart-of-accounts",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"organisations",
 								"{{orgId}}",
 								"chart-of-accounts"
@@ -1838,12 +1866,13 @@
 							"raw": "{\n    \"customerCode\": \"6311170100\",\n    \"refCode\": \"7157\",\n    \"eventRefCode\": \"7100\",\n    \"name\": \"New Postman Name\",\n    \"subType\": 18,\n    \"type\": 5,\n    \"active\": true\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/transactions-rejection-codes",
+							"raw": "{{base_url}}/api/v1/transactions-rejection-codes",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"transactions-rejection-codes"
 							]
 						}
@@ -1898,12 +1927,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/transactions-reconcile",
+							"raw": "{{base_url}}/api/v1/transactions-reconcile",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"transactions-reconcile"
 							]
 						}
@@ -1955,12 +1985,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/reconcile/trigger",
+							"raw": "{{base_url}}/api/v1/reconcile/trigger",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"reconcile",
 								"trigger"
 							]
@@ -2015,12 +2046,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/metrics/dashboards/{{orgId}}",
+							"raw": "{{base_url}}/api/v1/metrics/dashboards/{{orgId}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"metrics",
 								"dashboards",
 								"{{orgId}}"
@@ -2066,12 +2098,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/metrics/saveDashboard",
+							"raw": "{{base_url}}/api/v1/metrics/saveDashboard",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"metrics",
 								"saveDashboard"
 							]
@@ -2128,12 +2161,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/batches",
+							"raw": "{{base_url}}/api/v1/batches",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"batches"
 							]
 						}
@@ -2175,12 +2209,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/batches/{{batchId}}",
+							"raw": "{{base_url}}/api/v1/batches/{{batchId}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"batches",
 								"{{batchId}}"
 							]
@@ -2223,12 +2258,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/batches/reprocess/{{batchId}}",
+							"raw": "{{base_url}}/api/v1/batches/reprocess/{{batchId}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"batches",
 								"reprocess",
 								"{{batchId}}"
@@ -2286,12 +2322,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/transactions",
+							"raw": "{{base_url}}/api/v1/transactions",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"transactions"
 							]
 						}
@@ -2342,12 +2379,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/transactions/publish",
+							"raw": "{{base_url}}/api/v1/transactions/publish",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"transactions",
 								"publish"
 							]
@@ -2399,12 +2437,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/transactions/approve",
+							"raw": "{{base_url}}/api/v1/transactions/approve",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"transactions",
 								"approve"
 							]
@@ -2456,12 +2495,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/transaction/reject",
+							"raw": "{{base_url}}/api/v1/transaction/reject",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"transaction",
 								"reject"
 							]
@@ -2513,12 +2553,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/extraction",
+							"raw": "{{base_url}}/api/v1/extraction",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"extraction"
 							]
 						}
@@ -2569,12 +2610,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/extraction/validation",
+							"raw": "{{base_url}}/api/v1/extraction/validation",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"extraction",
 								"validation"
 							]
@@ -2618,12 +2660,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/transactions/{{transactionId}}",
+							"raw": "{{base_url}}/api/v1/transactions/{{transactionId}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"transactions",
 								"{{transactionId}}"
 							]
@@ -2666,12 +2709,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/transaction-types",
+							"raw": "{{base_url}}/api/v1/transaction-types",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"transaction-types"
 							]
 						}
@@ -2713,12 +2757,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/rejection-reasons",
+							"raw": "{{base_url}}/api/v1/rejection-reasons",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"rejection-reasons"
 							]
 						}
@@ -2766,12 +2811,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/report-search",
+							"raw": "{{base_url}}/api/v1/report-search",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"report-search"
 							]
 						}
