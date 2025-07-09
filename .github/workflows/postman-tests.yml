@@ -36,8 +36,6 @@ jobs:
           timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/realms/master)" != "200" ]]; do sleep 2;echo "."; done'
           echo "Keycloak is up"
           docker ps
-      - name: Wait 30 seconds for publisher to start
-        run: sleep 30s
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:

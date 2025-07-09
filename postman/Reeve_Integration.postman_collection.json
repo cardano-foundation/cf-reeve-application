@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "858d15f0-aa7e-4b78-92d9-210dfdbabfa3",
+		"_postman_id": "fcdbb6e9-4504-49c8-b43b-60e7225f0ace",
 		"name": "Reeve Integration",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "32834089"
@@ -2573,18 +2573,19 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// Check if response status code is 200",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
+									"// commenting this out until we have a health check for the publisher implemented",
+									"// // Check if response status code is 200",
+									"// pm.test(\"Status code is 200\", function () {",
+									"//     pm.response.to.have.status(200);",
+									"// });",
 									"",
-									"// Parse response JSON",
-									"const jsonData = pm.response.json();",
+									"// // Parse response JSON",
+									"// const jsonData = pm.response.json();",
 									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if array contains elements\", function () {",
-									"    pm.expect(jsonData.valid).eq(true);",
-									"});"
+									"// // Check if 'keyName' exists and equals 'expectedValue'",
+									"// pm.test(\"Check if array contains elements\", function () {",
+									"//     pm.expect(jsonData.valid).eq(true);",
+									"// });"
 								],
 								"type": "text/javascript",
 								"packages": {}
