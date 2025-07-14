@@ -1,4 +1,4 @@
-ARG LIB_DOCKER_IMAGE=ghcr.io/cardano-foundation/cf-reeve-platform-library-m2-cache:1.0.0-release-1.0.1-244c99d-GHRUN16262376772
+ARG LIB_DOCKER_IMAGE=ghcr.io/cardano-foundation/cf-reeve-platform-library-m2-cache:1.0.1
 FROM ${LIB_DOCKER_IMAGE} AS m2-cache
 
 FROM openjdk:21-jdk-slim AS build
