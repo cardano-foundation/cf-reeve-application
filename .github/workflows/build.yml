@@ -57,8 +57,8 @@ jobs:
           earthly +docker-publish \
             --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
-            --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
-
+            --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}" \
+            --GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
 
       - name: Set event dispatch type
         id: set-event-dispatch-type
