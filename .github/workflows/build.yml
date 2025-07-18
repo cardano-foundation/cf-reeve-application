@@ -55,9 +55,8 @@ jobs:
         run: |
           earthly +docker-publish \
             --PUSH=${DOCKER_PUSH} \
-            --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
+            --DOCKER_REGISTRIES="${{ env.DOCKER_REGISTRIES_FILTERED }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
-
 
       - name: Set event dispatch type
         id: set-event-dispatch-type
