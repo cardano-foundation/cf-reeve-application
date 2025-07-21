@@ -5,6 +5,7 @@ ARG --global ALL_BUILD_TARGETS="backend"
 ARG --global DOCKER_IMAGE_PREFIX="cf-reeve"
 ARG --global DOCKER_IMAGES_EXTRA_TAGS=""
 ARG --global DOCKER_REGISTRIES="docker.io/cardanofoundation"
+ARG --global GITLAB_MAVEN_REGISTRY_URL=""
 ARG --global PUSH=false
 
 all:
@@ -40,12 +41,12 @@ docker-publish:
 
 backend:
   ARG EARTHLY_TARGET_NAME
-  FROM DOCKERFILE -f Dockerfile --target ${EARTHLY_TARGET_NAME} .
+  FROM DOCKERFILE -f Dockerfile --target ${EARTHLY_TARGET_NAME} --build-arg GITLAB_MAVEN_REGISTRY_URL .
   SAVE IMAGE ${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}:latest
 
 backend-test-build:
   ARG EARTHLY_TARGET_NAME
-  FROM DOCKERFILE -f Dockerfile --target build .
+  FROM DOCKERFILE -f Dockerfile --target build --build-arg GITLAB_MAVEN_REGISTRY_URL .
 
 backend-test:
   ARG DB_NAME=postgres

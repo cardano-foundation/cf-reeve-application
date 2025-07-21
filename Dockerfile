@@ -1,4 +1,6 @@
 FROM openjdk:21-jdk-slim AS build
+
+ARG GITLAB_MAVEN_REGISTRY_URL
 WORKDIR /app
 COPY . /app
 
