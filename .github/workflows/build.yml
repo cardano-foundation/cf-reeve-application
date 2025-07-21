@@ -20,6 +20,7 @@ env:
   REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
   REEVE_DB_MIGRATIONS_REF: main
   REEVE_DB_MIGRATIONS_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations
+  GITLAB_MAVEN_REGISTRY_URL: ${{ secrets.GITLAB_MAVEN_REGISTRY_URL }}
 
 jobs:
   publish:

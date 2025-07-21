@@ -32,6 +32,9 @@ subprojects {
         maven {
             url = uri("https://oss.sonatype.org/content/repositories/snapshots")
         }
+        maven {
+            url = uri(System.getenv("GITLAB_MAVEN_REGISTRY_URL") ?: "")
+        }
     }
 
     java {
@@ -47,7 +50,7 @@ subprojects {
     extra["springBootVersion"] = "3.3.3"
     extra["springCloudVersion"] = "2023.0.0"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["cfLobPlatformVersion"] = "1.1.0"
+    extra["cfLobPlatformVersion"] = "1.1.0-SNAPSHOT-PR355-d25110d-GHRUN16369999371"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
