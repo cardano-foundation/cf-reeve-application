@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "fcdbb6e9-4504-49c8-b43b-60e7225f0ace",
+		"_postman_id": "53f7484a-2487-4f6d-91bb-a946495c2c68",
 		"name": "Reeve Integration",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "32834089"
@@ -330,7 +330,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -389,7 +389,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N123\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N123\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -464,7 +464,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N{{randomNumber}}\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N{{randomNumber}}\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -537,7 +537,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
