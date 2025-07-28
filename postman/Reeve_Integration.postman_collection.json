@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "53f7484a-2487-4f6d-91bb-a946495c2c68",
+		"_postman_id": "9c50d47a-80b8-4c3e-9097-3c05a8543ffc",
 		"name": "Reeve Integration",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "32834089"
@@ -962,7 +962,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"CF 000002 2023\",\n        \"externalCustomerCode\": \"CF 000002 2023\",\n        \"name\": \"New Postman Name\"\n    }",
+							"raw": "{\n        \"customerCode\": \"CF 000002 2023\",\n        \"name\": \"New Postman Name\"\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1021,7 +1021,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"CF 000002 2023 Postman Unkown\",\n        \"externalCustomerCode\": \"CF 000002 2023\",\n        \"name\": \"New Postman Name\"\n    }",
+							"raw": "{\n        \"customerCode\": \"CF 000002 2023 Postman Unkown\",\n        \"name\": \"New Postman Name\"\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1096,7 +1096,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"{{randomNumber}}\",\n        \"externalCustomerCode\": \"{{randomNumber}}\",\n        \"name\": \"New Postman Name\"\n    }",
+							"raw": "{\n        \"customerCode\": \"{{randomNumber}}\",\n        \"name\": \"New Postman Name\"\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1591,7 +1591,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"3500\",\n    \"externalCustomerCode\": \"6\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
+							"raw": "{\n    \"customerCode\": \"3500\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1666,7 +1666,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"{{randomNumber}}\",\n    \"externalCustomerCode\": \"6\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
+							"raw": "{\n    \"customerCode\": \"{{randomNumber}}\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1796,7 +1796,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"6311170100\",\n    \"refCode\": \"7157\",\n    \"eventRefCode\": \"7100\",\n    \"name\": \"New Postman Name\",\n    \"subType\": 18,\n    \"type\": 5,\n    \"active\": true\n}",
+							"raw": "{\n    \"customerCode\": \"6311170100\",\n    \"eventRefCode\": \"7100\",\n    \"name\": \"New Postman Name\",\n    \"subType\": 18,\n    \"type\": 5,\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
