@@ -32,8 +32,13 @@ subprojects {
         maven {
             url = uri("https://oss.sonatype.org/content/repositories/snapshots")
         }
-        maven {
-            url = uri(System.getenv("GITLAB_MAVEN_REGISTRY_URL") ?: "")
+        
+        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL").orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
+        if (gitlabMavenRegistryUrl.isPresent()) {
+            maven {
+                name = "gitlab"
+                url = uri(gitlabMavenRegistryUrl)
+            }
         }
     }
 
