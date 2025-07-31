@@ -1,0 +1,12 @@
+FROM ghcr.io/graalvm/graalvm-community:21 AS build
+ARG GITLAB_MAVEN_REGISTRY_URL
+WORKDIR /app
+COPY . /app
+RUN ./gradlew clean nativeCompile
+
+# Final image
+FROM ubuntu:22.04
+WORKDIR /app
+COPY --from=build /app/cf-application/build/native/nativeCompile/cf-application /opt/cf-application
+EXPOSE 8080
+ENTRYPOINT ["/opt/cf-application"]
