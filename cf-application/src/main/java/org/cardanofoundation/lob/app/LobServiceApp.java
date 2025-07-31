@@ -71,7 +71,7 @@ public class LobServiceApp {
 
     @Configuration
     @EnableCaching
-    public class CacheConfig {
+    public static class CacheConfig {
 
         // https://asbnotebook.com/etags-in-restful-services-spring-boot/
         @Bean
@@ -84,7 +84,7 @@ public class LobServiceApp {
     }
 
     @Configuration
-    public class MetricsConfig {
+    public static class MetricsConfig {
 
         @Bean
         public TimedAspect timedAspect(MeterRegistry registry) {
@@ -96,7 +96,7 @@ public class LobServiceApp {
 
     @Configuration
     @EnableScheduling
-    public class SchedulerConfig {
+    public static class SchedulerConfig {
 
         @Bean
         public ScheduledTaskRegistrar scheduledTaskRegistrar() {
@@ -121,7 +121,7 @@ public class LobServiceApp {
     }
 
     @Configuration
-    public class TimeConfig {
+    public static class TimeConfig {
 
         @Bean
         public Clock clock() {
@@ -132,7 +132,7 @@ public class LobServiceApp {
     }
 
     @Configuration
-    public class JaversConfig {
+    public static class JaversConfig {
 
         @Bean
         public Javers javers() {
@@ -147,7 +147,7 @@ public class LobServiceApp {
     }
 
     @Configuration
-    public class RestClientConfig {
+    public static class RestClientConfig {
 
         @Value("${lob.netsuite.client.timeout-seconds:300}")
         private int netsuiteClientTimeoutSeconds;
