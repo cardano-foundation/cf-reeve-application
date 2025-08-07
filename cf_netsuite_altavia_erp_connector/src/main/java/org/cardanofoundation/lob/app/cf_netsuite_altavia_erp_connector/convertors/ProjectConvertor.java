@@ -16,7 +16,7 @@ public class ProjectConvertor implements Function<String, Either<Problem, String
         val matcher = pattern.matcher(s);
 
         if (matcher.matches()) {
-            return Either.right(STR."\{matcher.group(1)} \{matcher.group(2)} \{matcher.group(3)}");
+            return Either.right(String.join(" ", matcher.group(1), matcher.group(2), matcher.group(3)));
         }
 
         return Either.left(Problem.builder()

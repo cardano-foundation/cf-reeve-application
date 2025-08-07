@@ -52,7 +52,7 @@ subprojects {
         }
     }
 
-    extra["springBootVersion"] = "3.3.3"
+    extra["springBootVersion"] = "3.3.13"
     extra["springCloudVersion"] = "2023.0.0"
     extra["jMoleculesVersion"] = "2023.1.0"
     extra["cfLobPlatformVersion"] = "1.1.0-release-1.1.0-d6fcd8a-GHRUN16669156803"

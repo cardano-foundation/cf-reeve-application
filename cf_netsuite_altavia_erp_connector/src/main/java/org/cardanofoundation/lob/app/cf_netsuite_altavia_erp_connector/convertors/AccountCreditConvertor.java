@@ -16,7 +16,7 @@ public class AccountCreditConvertor implements Function<String, Either<Problem, 
         val matcher = pattern.matcher(s);
 
         if (matcher.matches()) {
-            return Either.right(STR."\{matcher.group(2)}");
+            return Either.right(matcher.group(2));
         }
 
         return Either.left(Problem.builder()

@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot") version "3.3.0"
+    id("org.springframework.boot") version "3.3.13"
     id("org.graalvm.buildtools.native") version "0.11.0"
 }
 val isKafkaEnabled: Boolean = System.getenv("KAFKA_ENABLED")?.toBooleanStrictOrNull() ?: true
