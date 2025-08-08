@@ -41,9 +41,6 @@
         "pattern": "\\QMETA-INF/services/jakarta.el.ExpressionFactory\\E"
       },
       {
-        "pattern": "\\QMETA-INF/services/jakarta.persistence.spi.PersistenceProvider\\E"
-      },
-      {
         "pattern": "\\QMETA-INF/services/jakarta.validation.ConstraintValidator\\E"
       },
       {
@@ -144,9 +141,6 @@
       },
       {
         "pattern": "\\QMETA-INF/services/org.slf4j.spi.SLF4JServiceProvider\\E"
-      },
-      {
-        "pattern": "\\QMETA-INF/services/org.zalando.problem.spi.StackTraceProcessor\\E"
       },
       {
         "pattern": "\\QMETA-INF/spring-autoconfigure-metadata.properties\\E"
@@ -731,7 +725,7 @@
         "pattern": "\\Qorg/cardanofoundation/lob/app.class\\E"
       },
       {
-        "pattern": "\\Qorg/cardanofoundation/lob/app/LobServiceApp$$Lambda/0x0000002801e4c000.class\\E"
+        "pattern": "\\Qorg/cardanofoundation/lob/app/LobServiceApp$$Lambda/0x0000008801e2e4c0.class\\E"
       },
       {
         "pattern": "\\Qorg/cardanofoundation/lob/app/LobServiceApp$$SpringCGLIB$$0.class\\E"
@@ -2024,15 +2018,6 @@
         "pattern": "\\Qorg/hibernate/usertype/UserType.class\\E"
       },
       {
-        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/NotBlankValidator.class\\E"
-      },
-      {
-        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/NotNullValidator.class\\E"
-      },
-      {
-        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/size/SizeValidatorForCollection.class\\E"
-      },
-      {
         "pattern": "\\Qorg/javers/core/JaversCore.class\\E"
       },
       {
@@ -2129,7 +2114,7 @@
         "pattern": "\\Qorg/springdoc/core/configuration/SpringDocJavadocConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springdoc/core/configuration/SpringDocKotlinConfiguration$$Lambda/0x0000002801eb5c10.class\\E"
+        "pattern": "\\Qorg/springdoc/core/configuration/SpringDocKotlinConfiguration$$Lambda/0x0000008801eb6f20.class\\E"
       },
       {
         "pattern": "\\Qorg/springdoc/core/configuration/SpringDocKotlinConfiguration.class\\E"
@@ -2426,7 +2411,7 @@
         "pattern": "\\Qorg/springframework/boot/ApplicationRunner.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/LazyInitializationExcludeFilter$$Lambda/0x0000002801eca860.class\\E"
+        "pattern": "\\Qorg/springframework/boot/LazyInitializationExcludeFilter$$Lambda/0x0000008801ed1160.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/LazyInitializationExcludeFilter.class\\E"
@@ -2480,7 +2465,7 @@
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/expose/IncludeExcludeEndpointFilter.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration$$Lambda/0x0000002801e0e368.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration$$Lambda/0x0000008801df7660.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration.class\\E"
@@ -2651,13 +2636,13 @@
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/JvmMetricsAutoConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000002801ae33a0.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000008801b0b3a0.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000002801ec4bd0.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000008801ec8440.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration$$Lambda/0x0000002801ec49b0.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration$$Lambda/0x0000008801ec8220.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration.class\\E"
@@ -2951,7 +2936,7 @@
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementChildContextConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$$Lambda/0x0000002801ec1b48.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$$Lambda/0x0000008801ec22b8.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$ApplicationContextFilterConfiguration.class\\E"
@@ -3272,10 +3257,10 @@
         "pattern": "\\Qorg/springframework/boot/autoconfigure/data/jpa/JpaRepositoriesRegistrar.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000002801e2fcc0.class\\E"
+        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000008801e165d0.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000002801e306f0.class\\E"
+        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000008801e16ee0.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration.class\\E"
@@ -3527,7 +3512,7 @@
         "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$CommonsDbcp2PoolDataSourceMetadataProviderConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration$$Lambda/0x000000280168fb80.class\\E"
+        "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration$$Lambda/0x00000088016b6a38.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration.class\\E"
@@ -4904,7 +4889,7 @@
         "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerExceptionResolverComposite.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerMappingIntrospector$$Lambda/0x0000002801e94e20.class\\E"
+        "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerMappingIntrospector$$Lambda/0x0000008801e97db0.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerMappingIntrospector.class\\E"
@@ -5174,12 +5159,6 @@
   },
   "bundles": [
     {
-      "name": "jakarta.servlet.LocalStrings",
-      "locales": [
-        ""
-      ]
-    },
-    {
       "name": "jakarta.servlet.http.LocalStrings",
       "locales": [
         ""
@@ -5187,12 +5166,6 @@
     },
     {
       "name": "org.apache.catalina.authenticator.LocalStrings",
-      "locales": [
-        ""
-      ]
-    },
-    {
-      "name": "org.apache.catalina.authenticator.jaspic.LocalStrings",
       "locales": [
         ""
       ]

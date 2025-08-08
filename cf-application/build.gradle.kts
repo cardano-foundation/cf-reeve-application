@@ -31,9 +31,9 @@ dependencies {
     }
 }
 
-tasks.withType<org.springframework.boot.gradle.tasks.aot.ProcessAot> {
-    args("--spring.profiles.active=dev--yaci-dev-kit,pre-prod-prod")
-}
+// tasks.withType<org.springframework.boot.gradle.tasks.aot.ProcessAot> {
+//     args("--spring.profiles.active=dev--yaci-dev-kit,pre-prod-prod")
+// }
 
 graalvmNative {
     binaries {

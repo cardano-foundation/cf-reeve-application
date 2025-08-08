@@ -150,9 +150,6 @@
     "interfaces":["org.hibernate.SessionFactory","org.springframework.orm.jpa.EntityManagerFactoryInfo"]
   },
   {
-    "interfaces":["org.hibernate.query.hql.spi.SqmQueryImplementor","org.hibernate.query.sqm.internal.SqmInterpretationsKey$InterpretationsKeySource","org.hibernate.query.spi.DomainQueryExecutionContext","org.hibernate.query.SelectionQuery","org.hibernate.query.CommonQueryContract"]
-  },
-  {
     "interfaces":["org.springframework.beans.factory.annotation.Qualifier"]
   },
   {

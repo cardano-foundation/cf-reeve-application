@@ -15,7 +15,7 @@ subprojects {
     apply(plugin = "com.github.ben-manes.versions")
     apply(plugin = "info.solidsoft.pitest")
 
-    group = "de.cardanofoundation"
+    group = "org.cardanofoundation"
     version = "1.1.0-SNAPSHOT"
 
     sourceSets {
@@ -95,10 +95,8 @@ subprojects {
     }
 
     tasks {
-        val ENABLE_PREVIEW = "--enable-preview"
 
         withType<JavaCompile> {
-            options.compilerArgs.add(ENABLE_PREVIEW)
             //options.compilerArgs.add("-Xlint:preview")
             val isKafkaEnabled: Boolean = System.getenv("KAFKA_ENABLED")?.toBooleanStrictOrNull() ?: true
             if (!isKafkaEnabled) {
@@ -109,22 +107,19 @@ subprojects {
 
         withType<Test> {
             useJUnitPlatform()
-            jvmArgs(ENABLE_PREVIEW)
         }
 
         withType<PitestTask> {
-            jvmArgs(ENABLE_PREVIEW)
         }
 
         withType<JavaExec> {
-            jvmArgs(ENABLE_PREVIEW)
         }
 
     }
 
     pitest {
         //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
-        jvmArgs.add("--enable-preview")
+        // jvmArgs.add("--enable-preview")
         targetClasses.set(setOf("org.cardanofoundation.lob.app.*"))
         targetTests.set(setOf("org.cardanofoundation.lob.app.*"))
         exportLineCoverage = true
