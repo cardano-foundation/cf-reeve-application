@@ -12,7 +12,7 @@ spring:
       - classpath:db/migration/{vendor}/common
       - classpath:db/migration/{vendor}/dev
       - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common
-      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/dev
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/prod
 logging:
   level:
     org.flywaydb: DEBUG
