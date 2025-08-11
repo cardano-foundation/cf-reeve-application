@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5272252b-bc85-4b48-839c-0e747cc1a6bd",
+		"_postman_id": "639687ef-394d-4b27-924a-e6e2e4f258ba",
 		"name": "Reeve Integration",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "32834089"
@@ -144,9 +144,10 @@
 									"const jsonData = pm.response.json();",
 									"",
 									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if  org is valid\", function () {",
+									"pm.test(\"Check if org is invalid\", function () {",
 									"",
-									"    pm.expect(jsonData.valid).to.eql(true);",
+									"    pm.expect(jsonData.valid).to.eql(false);",
+									"    pm.expect(jsonData.violations.length).to.eql(2);",
 									"});"
 								],
 								"type": "text/javascript",
@@ -154,9 +155,6 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [
@@ -166,10 +164,6 @@
 								"type": "text"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"6311170100\",\n    \"refCode\": \"7157\",\n    \"eventRefCode\": \"7100\",\n    \"name\": \"New Postman Name\",\n    \"subType\": 18,\n    \"type\": 5,\n    \"active\": true\n}"
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/organisations/{{orgId}}/validate",
 							"host": [
@@ -646,7 +640,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"referenceCode\": \"1102\",\n    \"name\": \"New Postman Name\"\n}",
+							"raw": "{\n    \"referenceCode\": \"1100\",\n    \"name\": \"New Postman Name\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -853,7 +847,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"referenceCode\": \"1102\",\n  \"name\": \"Random referenceCode\",\n  \"active\": true\n}",
+							"raw": "{\n  \"referenceCode\": \"1100\",\n  \"name\": \"Random referenceCode\",\n  \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1591,7 +1585,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"3500\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
+							"raw": "{\n    \"customerCode\": \"7300\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2115,400 +2109,8 @@
 			]
 		},
 		{
-			"name": "Batches",
-			"item": [
-				{
-					"name": "POST Batches",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Check if response status code is 200",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"// Parse response JSON",
-									"const jsonData = pm.response.json();",
-									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if array contains elements\", function () {",
-									"    pm.expect(jsonData.total).above(1);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"organisationId\": \"{{orgId}}\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/v1/batches",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"batches"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET Batch",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Check if response status code is 200",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"// Parse response JSON",
-									"const jsonData = pm.response.json();",
-									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if array contains elements\", function () {",
-									"    pm.expect(jsonData.id).eq(\"TEST_ReadyToPublish2_816d14723a4ab4a67636a7d63dc6f7adf61aba32c04\");",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/v1/batches/{{batchId}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"batches",
-								"{{batchId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET Batch reprocess",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Check if response status code is 200",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"// Parse response JSON",
-									"const jsonData = pm.response.json();",
-									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if array contains elements\", function () {",
-									"    pm.expect(jsonData.success).eq(true);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/v1/batches/reprocess/{{batchId}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"batches",
-								"reprocess",
-								"{{batchId}}"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Transactions",
 			"item": [
-				{
-					"name": "POST transactions",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Check if response status code is 200",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"// Parse response JSON",
-									"const jsonData = pm.response.json();",
-									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if array contains elements\", function () {",
-									"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/v1/transactions",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"transactions"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "POST transaction publish",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Check if response status code is 200",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"// Parse response JSON",
-									"const jsonData = pm.response.json();",
-									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if array contains elements\", function () {",
-									"    pm.expect(jsonData[0].success).eq(true);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"organisationId\": \"{{orgId}}\",\n    \"transactionIds\": [\n        {\n            \"id\": \"ReadyToPublish_18_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa63\"\n        }\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/v1/transactions/publish",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"transactions",
-								"publish"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "POST transaction approve",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Check if response status code is 200",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"// Parse response JSON",
-									"const jsonData = pm.response.json();",
-									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if array contains elements\", function () {",
-									"    pm.expect(jsonData[0].success).eq(true);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"organisationId\": \"{{orgId}}\",\n    \"transactionIds\": [\n        {\n            \"id\": \"ReadyToPublish_18_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa63\"\n        }\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/v1/transactions/approve",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"transactions",
-								"approve"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "POST transaction reject",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Check if response status code is 200",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"// Parse response JSON",
-									"const jsonData = pm.response.json();",
-									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if array contains elements\", function () {",
-									"    pm.expect(jsonData.success).eq(true);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"organisationId\": \"{{orgId}}\",\n    \"transactionId\": \"ReadyToPublish_18_c2b0d6e504aadf32d573602b9cff433f703b6e0618fa63\",\n    \"transactionItemsRejections\": [\n    {\n      \"txItemId\": \"1a8fd26dc5bcc99e8b5cc16545c4ce383aabf6862652015c0e45ff7dbfa69263\",\n      \"rejectionReason\": \"INCORRECT_VAT_CODE\"\n    },\n    {\n      \"txItemId\": \"f02873e91884eb28160b5d56a7fe1cd2ef3e079ab25875f39779ad3fca36c063\",\n      \"rejectionReason\": \"REVIEW_PARENT_PROJECT_CODE\"\n    }\n  ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/v1/transaction/reject",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"transaction",
-								"reject"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "POST Extraction",
 					"event": [
@@ -2567,6 +2169,263 @@
 					"response": []
 				},
 				{
+					"name": "POST transactions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse response JSON",
+									"let jsonData = pm.response.json();",
+									"",
+									"// Retry counter",
+									"let counter = parseInt(pm.environment.get(\"retryCounter\") || \"0\", 10);",
+									"counter++;",
+									"pm.environment.set(\"retryCounter\", counter);",
+									"",
+									"// Condition: array is empty and retry limit not reached",
+									"if (counter < 20 && Array.isArray(jsonData) && jsonData.length === 0) {",
+									"    setTimeout(function () {",
+									"        console.log(`Retry ${counter}: array still empty. Waiting before retry...`);",
+									"        pm.execution.setNextRequest('POST transactions'); // jump to wait request",
+									"    }, 10000); // 10 seconds delay before retrying (10000 milliseconds)",
+									"} else {",
+									"    console.log(`Stopping after ${counter} tries.`);",
+									"    pm.environment.set(\"retryCounter\", 0); // reset",
+									"    pm.execution.setNextRequest(null); // stop",
+									"}",
+									"",
+									"// ✅ Basic tests",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Array contains elements\", function () {",
+									"    pm.expect(jsonData).to.have.length.above(0);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST transaction approve",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check if response status code is 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Parse response JSON",
+									"const jsonData = pm.response.json();",
+									"",
+									"// Check if 'keyName' exists and equals 'expectedValue'",
+									"pm.test(\"Check if success is true\", function () {",
+									"    pm.expect(jsonData[0].success).eq(true);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organisationId\": \"{{orgId}}\",\n    \"transactionIds\": [\n        {\n            \"id\": \"170601e7d7217efdd3ddc6720aabf33e134798b458d16d2d69f8c354ad4ca826\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions/approve",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"approve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST transaction publish",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check if response status code is 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Parse response JSON",
+									"const jsonData = pm.response.json();",
+									"",
+									"// Check if 'keyName' exists and equals 'expectedValue'",
+									"pm.test(\"Check if success is true\", function () {",
+									"    pm.expect(jsonData[0].success).eq(true);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organisationId\": \"{{orgId}}\",\n    \"transactionIds\": [\n        {\n            \"id\": \"170601e7d7217efdd3ddc6720aabf33e134798b458d16d2d69f8c354ad4ca826\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions/publish",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"publish"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST transaction reject",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check if response status code is 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Parse response JSON",
+									"const jsonData = pm.response.json();",
+									"",
+									"// Check if 'keyName' exists and equals 'expectedValue'",
+									"pm.test(\"Check if success is true\", function () {",
+									"    pm.expect(jsonData.success).eq(true);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organisationId\": \"{{orgId}}\",\n    \"transactionId\": \"54f3ec88393a7966a9d2e285dcda2bf3a1806e1e2d6dc6224c16c7fcf57e9130\",\n    \"transactionItemsRejections\": [\n    {\n      \"txItemId\": \"07ada41d8df8bcd8324e35f982eaaf23bbdf1fa39efa957557a417bd87ff2d7b\",\n      \"rejectionReason\": \"INCORRECT_VAT_CODE\"\n    },\n    {\n      \"txItemId\": \"d96235c121c35a9ac3b5ac3126faadf362bce926e782784a8f69ac7f7694651e\",\n      \"rejectionReason\": \"REVIEW_PARENT_PROJECT_CODE\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transaction/reject",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transaction",
+								"reject"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "POST Extraction Validation",
 					"event": [
 						{
@@ -2575,17 +2434,16 @@
 								"exec": [
 									"// commenting this out until we have a health check for the publisher implemented",
 									"// // Check if response status code is 200",
-									"// pm.test(\"Status code is 200\", function () {",
-									"//     pm.response.to.have.status(200);",
-									"// });",
+									" pm.test(\"Status code is 200\", function () {",
+									"     pm.response.to.have.status(200);",
+									" });",
 									"",
 									"// // Parse response JSON",
-									"// const jsonData = pm.response.json();",
-									"",
-									"// // Check if 'keyName' exists and equals 'expectedValue'",
-									"// pm.test(\"Check if array contains elements\", function () {",
-									"//     pm.expect(jsonData.valid).eq(true);",
-									"// });"
+									" const jsonData = pm.response.json();",
+									"// Check if 'keyName' exists and equals 'expectedValue'",
+									" pm.test(\"Check if array contains elements\", function () {",
+									"     pm.expect(jsonData.valid).eq(true);",
+									" });"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -2724,7 +2582,7 @@
 					"response": []
 				},
 				{
-					"name": "GET Transaction types Copy",
+					"name": "GET Rejection Reasons",
 					"event": [
 						{
 							"listen": "test",
@@ -2766,6 +2624,170 @@
 								"api",
 								"v1",
 								"rejection-reasons"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Batches",
+			"item": [
+				{
+					"name": "POST Batches",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check if response status code is 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Parse response JSON",
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set environment variable 'batchId' ",
+									"pm.environment.set(\"batchId\", jsonData.batchs[0].id);",
+									"",
+									"// Check if 'keyName' exists and equals 'expectedValue'",
+									"pm.test(\"Check if array contains elements\", function () {",
+									"    pm.expect(jsonData.total).above(0)",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organisationId\": \"{{orgId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/batches",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"batches"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Batch",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check if response status code is 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Parse response JSON",
+									"const jsonData = pm.response.json();",
+									"",
+									"// Check if 'keyName' exists and equals 'expectedValue'",
+									"pm.test(\"Check response contains BatchID \", function () {",
+									"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"batchId\"));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/batches/{{batchId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"batches",
+								"{{batchId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Batch reprocess",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check if response status code is 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Parse response JSON",
+									"const jsonData = pm.response.json();",
+									"",
+									"// Check if 'keyName' exists and equals 'expectedValue'",
+									"pm.test(\"Check if array contains elements\", function () {",
+									"    pm.expect(jsonData.success).eq(true);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/batches/reprocess/{{batchId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"batches",
+								"reprocess",
+								"{{batchId}}"
 							]
 						}
 					},
