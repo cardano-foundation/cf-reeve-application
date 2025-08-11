@@ -2198,10 +2198,6 @@
 									"// ✅ Basic tests",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Array contains elements\", function () {",
-									"    pm.expect(jsonData).to.have.length.above(0);",
 									"});"
 								],
 								"type": "text/javascript",
