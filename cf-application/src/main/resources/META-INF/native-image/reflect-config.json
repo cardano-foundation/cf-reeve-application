@@ -57,6 +57,9 @@
   "name":"[Ljava.math.BigDecimal;"
 },
 {
+  "name":"[Ljava.math.BigInteger;"
+},
+{
   "name":"[Ljava.sql.Statement;"
 },
 {
@@ -285,10 +288,28 @@
   "name":"com.bloxbean.cardano.client.api.helper.UtxoTransactionBuilder"
 },
 {
+  "name":"com.bloxbean.cardano.client.api.model.Amount",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setQuantity","parameterTypes":["java.math.BigInteger"] }, {"name":"setUnit","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.bloxbean.cardano.client.api.model.ProtocolParams",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setA0","parameterTypes":["java.math.BigDecimal"] }, {"name":"setCoinsPerUtxoSize","parameterTypes":["java.lang.String"] }, {"name":"setCollateralPercent","parameterTypes":["java.math.BigDecimal"] }, {"name":"setCommitteeMaxTermLength","parameterTypes":["java.lang.Integer"] }, {"name":"setCommitteeMinSize","parameterTypes":["java.lang.Integer"] }, {"name":"setCostModels","parameterTypes":["java.util.LinkedHashMap"] }, {"name":"setDrepActivity","parameterTypes":["java.lang.Integer"] }, {"name":"setDrepDeposit","parameterTypes":["java.math.BigInteger"] }, {"name":"setDvtCommitteeNoConfidence","parameterTypes":["java.math.BigDecimal"] }, {"name":"setDvtCommitteeNormal","parameterTypes":["java.math.BigDecimal"] }, {"name":"setDvtHardForkInitiation","parameterTypes":["java.math.BigDecimal"] }, {"name":"setDvtMotionNoConfidence","parameterTypes":["java.math.BigDecimal"] }, {"name":"setDvtTreasuryWithdrawal","parameterTypes":["java.math.BigDecimal"] }, {"name":"setDvtUpdateToConstitution","parameterTypes":["java.math.BigDecimal"] }, {"name":"setEMax","parameterTypes":["java.lang.Integer"] }, {"name":"setGovActionDeposit","parameterTypes":["java.math.BigInteger"] }, {"name":"setGovActionLifetime","parameterTypes":["java.lang.Integer"] }, {"name":"setKeyDeposit","parameterTypes":["java.lang.String"] }, {"name":"setMaxBlockExMem","parameterTypes":["java.lang.String"] }, {"name":"setMaxBlockExSteps","parameterTypes":["java.lang.String"] }, {"name":"setMaxBlockHeaderSize","parameterTypes":["java.lang.Integer"] }, {"name":"setMaxBlockSize","parameterTypes":["java.lang.Integer"] }, {"name":"setMaxCollateralInputs","parameterTypes":["java.lang.Integer"] }, {"name":"setMaxTxExMem","parameterTypes":["java.lang.String"] }, {"name":"setMaxTxExSteps","parameterTypes":["java.lang.String"] }, {"name":"setMaxTxSize","parameterTypes":["java.lang.Integer"] }, {"name":"setMaxValSize","parameterTypes":["java.lang.String"] }, {"name":"setMinFeeA","parameterTypes":["java.lang.Integer"] }, {"name":"setMinFeeB","parameterTypes":["java.lang.Integer"] }, {"name":"setMinFeeRefScriptCostPerByte","parameterTypes":["java.math.BigDecimal"] }, {"name":"setMinPoolCost","parameterTypes":["java.lang.String"] }, {"name":"setNOpt","parameterTypes":["java.lang.Integer"] }, {"name":"setPoolDeposit","parameterTypes":["java.lang.String"] }, {"name":"setPriceMem","parameterTypes":["java.math.BigDecimal"] }, {"name":"setPriceStep","parameterTypes":["java.math.BigDecimal"] }, {"name":"setProtocolMajorVer","parameterTypes":["java.lang.Integer"] }, {"name":"setProtocolMinorVer","parameterTypes":["java.lang.Integer"] }, {"name":"setPvtCommitteeNoConfidence","parameterTypes":["java.math.BigDecimal"] }, {"name":"setPvtCommitteeNormal","parameterTypes":["java.math.BigDecimal"] }, {"name":"setPvtHardForkInitiation","parameterTypes":["java.math.BigDecimal"] }, {"name":"setPvtMotionNoConfidence","parameterTypes":["java.math.BigDecimal"] }, {"name":"setRho","parameterTypes":["java.math.BigDecimal"] }, {"name":"setTau","parameterTypes":["java.math.BigDecimal"] }]
+},
+{
   "name":"com.bloxbean.cardano.client.api.model.Result"
 },
 {
-  "name":"com.bloxbean.cardano.client.api.model.Utxo"
+  "name":"com.bloxbean.cardano.client.api.model.Utxo",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAddress","parameterTypes":["java.lang.String"] }, {"name":"setAmount","parameterTypes":["java.util.List"] }, {"name":"setDataHash","parameterTypes":["java.lang.String"] }, {"name":"setInlineDatum","parameterTypes":["java.lang.String"] }, {"name":"setOutputIndex","parameterTypes":["int"] }, {"name":"setReferenceScriptHash","parameterTypes":["java.lang.String"] }, {"name":"setTxHash","parameterTypes":["java.lang.String"] }]
 },
 {
   "name":"com.bloxbean.cardano.client.backend.api.AccountService"
@@ -348,6 +369,26 @@
   "methods":[{"name":"getBaseUrl","parameterTypes":[] }, {"name":"getProjectId","parameterTypes":[] }]
 },
 {
+  "name":"com.bloxbean.cardano.client.backend.model.EpochContent",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setEpoch","parameterTypes":["java.lang.Integer"] }]
+},
+{
+  "name":"com.bloxbean.cardano.client.backend.model.TransactionContent",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setBlockHeight","parameterTypes":["java.lang.Long"] }, {"name":"setFees","parameterTypes":["java.lang.String"] }, {"name":"setHash","parameterTypes":["java.lang.String"] }, {"name":"setSlot","parameterTypes":["java.lang.Long"] }, {"name":"setUtxoCount","parameterTypes":["java.lang.Integer"] }]
+},
+{
+  "name":"com.bloxbean.cardano.client.backend.model.TxOutputAmount",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
   "name":"com.bloxbean.cardano.client.crypto.bip32.HdKeyPair"
 },
 {
@@ -387,6 +428,9 @@
   "name":"com.datastax.oss.driver.api.core.CqlSession"
 },
 {
+  "name":"com.ethlo.time.ITU"
+},
+{
   "name":"com.fasterxml.jackson.annotation.JacksonAnnotation",
   "queryAllDeclaredMethods":true
 },
@@ -422,7 +466,8 @@
 },
 {
   "name":"com.fasterxml.jackson.annotation.JsonProperty",
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"value","parameterTypes":[] }]
 },
 {
   "name":"com.fasterxml.jackson.annotation.JsonSetter$Value"
@@ -580,6 +625,10 @@
 },
 {
   "name":"com.fasterxml.jackson.databind.ObjectWriter"
+},
+{
+  "name":"com.fasterxml.jackson.databind.PropertyNamingStrategies$SnakeCaseStrategy",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"com.fasterxml.jackson.databind.PropertyNamingStrategy"
@@ -788,6 +837,9 @@
 },
 {
   "name":"com.google.common.collect.Range"
+},
+{
+  "name":"com.google.common.primitives.UnsignedBytes$LexicographicalComparatorHolder$UnsafeComparator"
 },
 {
   "name":"com.google.common.util.concurrent.AbstractFuture",
@@ -1143,6 +1195,48 @@
 },
 {
   "name":"io.hypersistence.utils.hibernate.type.util.Configuration"
+},
+{
+  "name":"io.jsonwebtoken.Claims",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"io.jsonwebtoken.ClaimsMutator",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"io.jsonwebtoken.Header",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"io.jsonwebtoken.JwsHeader",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"io.jsonwebtoken.impl.DefaultClaims",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.jsonwebtoken.impl.DefaultHeader",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"io.jsonwebtoken.impl.DefaultJwsHeader",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.jsonwebtoken.impl.DefaultJwtBuilder",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"io.jsonwebtoken.impl.JwtMap",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"io.lettuce.core.metrics.MicrometerCommandLatencyRecorder"
@@ -2185,7 +2279,7 @@
   "name":"jakarta.servlet.Filter",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.springframework.security.web.FilterChainProxy"] }, {"name":"<init>","parameterTypes":["org.springframework.web.servlet.handler.HandlerMappingIntrospector$$Lambda/0x0000005001e7fdb0"] }, {"name":"destroy","parameterTypes":[] }, {"name":"from","parameterTypes":["org.springframework.security.web.FilterChainProxy"] }, {"name":"from","parameterTypes":["org.springframework.web.servlet.handler.HandlerMappingIntrospector$$Lambda/0x0000005001e7fdb0"] }, {"name":"init","parameterTypes":["jakarta.servlet.FilterConfig"] }, {"name":"of","parameterTypes":["org.springframework.security.web.FilterChainProxy"] }, {"name":"of","parameterTypes":["org.springframework.web.servlet.handler.HandlerMappingIntrospector$$Lambda/0x0000005001e7fdb0"] }, {"name":"valueOf","parameterTypes":["org.springframework.security.web.FilterChainProxy"] }, {"name":"valueOf","parameterTypes":["org.springframework.web.servlet.handler.HandlerMappingIntrospector$$Lambda/0x0000005001e7fdb0"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.security.web.FilterChainProxy"] }, {"name":"<init>","parameterTypes":["org.springframework.web.servlet.handler.HandlerMappingIntrospector$$Lambda/0x0000005001f34ee0"] }, {"name":"destroy","parameterTypes":[] }, {"name":"from","parameterTypes":["org.springframework.security.web.FilterChainProxy"] }, {"name":"from","parameterTypes":["org.springframework.web.servlet.handler.HandlerMappingIntrospector$$Lambda/0x0000005001f34ee0"] }, {"name":"init","parameterTypes":["jakarta.servlet.FilterConfig"] }, {"name":"of","parameterTypes":["org.springframework.security.web.FilterChainProxy"] }, {"name":"of","parameterTypes":["org.springframework.web.servlet.handler.HandlerMappingIntrospector$$Lambda/0x0000005001f34ee0"] }, {"name":"valueOf","parameterTypes":["org.springframework.security.web.FilterChainProxy"] }, {"name":"valueOf","parameterTypes":["org.springframework.web.servlet.handler.HandlerMappingIntrospector$$Lambda/0x0000005001f34ee0"] }]
 },
 {
   "name":"jakarta.servlet.FilterChain"
@@ -2335,7 +2429,8 @@
 },
 {
   "name":"jakarta.validation.constraints.DecimalMin",
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"groups","parameterTypes":[] }, {"name":"inclusive","parameterTypes":[] }, {"name":"message","parameterTypes":[] }, {"name":"payload","parameterTypes":[] }, {"name":"value","parameterTypes":[] }]
 },
 {
   "name":"jakarta.validation.constraints.Max",
@@ -2359,11 +2454,13 @@
 },
 {
   "name":"jakarta.validation.constraints.Positive",
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"groups","parameterTypes":[] }, {"name":"message","parameterTypes":[] }, {"name":"payload","parameterTypes":[] }]
 },
 {
   "name":"jakarta.validation.constraints.PositiveOrZero",
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"groups","parameterTypes":[] }, {"name":"message","parameterTypes":[] }, {"name":"payload","parameterTypes":[] }]
 },
 {
   "name":"jakarta.validation.constraints.Size",
@@ -2507,9 +2604,6 @@
 },
 {
   "name":"java.lang.Double",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "fields":[{"name":"TYPE"}]
 },
 {
@@ -2583,7 +2677,10 @@
   "name":"java.lang.Package"
 },
 {
-  "name":"java.lang.Record"
+  "name":"java.lang.Record",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.lang.Runnable"
@@ -2652,9 +2749,6 @@
   "name":"java.lang.UnsupportedOperationException"
 },
 {
-  "name":"java.lang.VirtualThread"
-},
-{
   "name":"java.lang.Void",
   "fields":[{"name":"TYPE"}]
 },
@@ -2693,10 +2787,6 @@
   "name":"java.lang.constant.Constable",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
-},
-{
-  "name":"java.lang.constant.ConstantDesc",
-  "queryAllDeclaredMethods":true
 },
 {
   "name":"java.lang.invoke.MethodHandles",
@@ -2852,7 +2942,10 @@
   "queryAllDeclaredConstructors":true
 },
 {
-  "name":"java.math.BigInteger"
+  "name":"java.math.BigInteger",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.net.HttpURLConnection"
@@ -2926,6 +3019,9 @@
 },
 {
   "name":"java.security.SecureRandomParameters"
+},
+{
+  "name":"java.security.cert.PKIXRevocationChecker"
 },
 {
   "name":"java.security.interfaces.ECPrivateKey"
@@ -3116,7 +3212,8 @@
   "name":"java.util.Locale"
 },
 {
-  "name":"java.util.Map"
+  "name":"java.util.Map",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"java.util.Map$Entry"
@@ -3874,33 +3971,12 @@
   "name":"org.apache.catalina.WebResourceRoot"
 },
 {
-  "name":"org.apache.catalina.authenticator.AuthenticatorBase"
-},
-{
   "name":"org.apache.catalina.connector.Connector"
-},
-{
-  "name":"org.apache.catalina.connector.CoyoteAdapter"
 },
 {
   "name":"org.apache.catalina.core.ApplicationContextFacade",
   "queryAllDeclaredMethods":true,
   "methods":[{"name":"addFilter","parameterTypes":["java.lang.String","jakarta.servlet.Filter"] }, {"name":"addFilter","parameterTypes":["java.lang.String","java.lang.Class"] }, {"name":"addFilter","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"addJspFile","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"addListener","parameterTypes":["java.lang.Class"] }, {"name":"addListener","parameterTypes":["java.lang.String"] }, {"name":"addListener","parameterTypes":["java.util.EventListener"] }, {"name":"addServlet","parameterTypes":["java.lang.String","jakarta.servlet.Servlet"] }, {"name":"addServlet","parameterTypes":["java.lang.String","java.lang.Class"] }, {"name":"addServlet","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"createFilter","parameterTypes":["java.lang.Class"] }, {"name":"createListener","parameterTypes":["java.lang.Class"] }, {"name":"createServlet","parameterTypes":["java.lang.Class"] }, {"name":"declareRoles","parameterTypes":["java.lang.String[]"] }, {"name":"getAttribute","parameterTypes":["java.lang.String"] }, {"name":"getAttributeNames","parameterTypes":[] }, {"name":"getClassLoader","parameterTypes":[] }, {"name":"getContext","parameterTypes":["java.lang.String"] }, {"name":"getContextPath","parameterTypes":[] }, {"name":"getDefaultSessionTrackingModes","parameterTypes":[] }, {"name":"getEffectiveMajorVersion","parameterTypes":[] }, {"name":"getEffectiveMinorVersion","parameterTypes":[] }, {"name":"getEffectiveSessionTrackingModes","parameterTypes":[] }, {"name":"getFilterRegistration","parameterTypes":["java.lang.String"] }, {"name":"getFilterRegistrations","parameterTypes":[] }, {"name":"getInitParameter","parameterTypes":["java.lang.String"] }, {"name":"getInitParameterNames","parameterTypes":[] }, {"name":"getJspConfigDescriptor","parameterTypes":[] }, {"name":"getMajorVersion","parameterTypes":[] }, {"name":"getMimeType","parameterTypes":["java.lang.String"] }, {"name":"getMinorVersion","parameterTypes":[] }, {"name":"getNamedDispatcher","parameterTypes":["java.lang.String"] }, {"name":"getRealPath","parameterTypes":["java.lang.String"] }, {"name":"getRequestCharacterEncoding","parameterTypes":[] }, {"name":"getRequestDispatcher","parameterTypes":["java.lang.String"] }, {"name":"getResource","parameterTypes":["java.lang.String"] }, {"name":"getResourceAsStream","parameterTypes":["java.lang.String"] }, {"name":"getResourcePaths","parameterTypes":["java.lang.String"] }, {"name":"getResponseCharacterEncoding","parameterTypes":[] }, {"name":"getServerInfo","parameterTypes":[] }, {"name":"getServletContextName","parameterTypes":[] }, {"name":"getServletRegistration","parameterTypes":["java.lang.String"] }, {"name":"getServletRegistrations","parameterTypes":[] }, {"name":"getSessionCookieConfig","parameterTypes":[] }, {"name":"getSessionTimeout","parameterTypes":[] }, {"name":"getVirtualServerName","parameterTypes":[] }, {"name":"log","parameterTypes":["java.lang.String"] }, {"name":"log","parameterTypes":["java.lang.String","java.lang.Throwable"] }, {"name":"removeAttribute","parameterTypes":["java.lang.String"] }, {"name":"setAttribute","parameterTypes":["java.lang.String","java.lang.Object"] }, {"name":"setInitParameter","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"setRequestCharacterEncoding","parameterTypes":["java.lang.String"] }, {"name":"setResponseCharacterEncoding","parameterTypes":["java.lang.String"] }, {"name":"setSessionTimeout","parameterTypes":["int"] }, {"name":"setSessionTrackingModes","parameterTypes":["java.util.Set"] }]
-},
-{
-  "name":"org.apache.catalina.core.ApplicationFilterChain"
-},
-{
-  "name":"org.apache.catalina.core.StandardContextValve"
-},
-{
-  "name":"org.apache.catalina.core.StandardEngineValve"
-},
-{
-  "name":"org.apache.catalina.core.StandardHostValve"
-},
-{
-  "name":"org.apache.catalina.core.StandardWrapperValve"
 },
 {
   "name":"org.apache.catalina.loader.JdbcLeakPrevention",
@@ -3914,9 +3990,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"org.apache.catalina.valves.ErrorReportValve"
-},
-{
   "name":"org.apache.commons.dbcp2.BasicDataSource"
 },
 {
@@ -3926,14 +3999,8 @@
   "name":"org.apache.commons.logging.Log"
 },
 {
-  "name":"org.apache.coyote.AbstractProcessorLight"
-},
-{
   "name":"org.apache.coyote.AbstractProtocol",
   "methods":[{"name":"getAddress","parameterTypes":[] }, {"name":"getLocalPort","parameterTypes":[] }, {"name":"getProperty","parameterTypes":["java.lang.String"] }, {"name":"setPort","parameterTypes":["int"] }, {"name":"setProperty","parameterTypes":["java.lang.String","java.lang.String"] }]
-},
-{
-  "name":"org.apache.coyote.AbstractProtocol$ConnectionHandler"
 },
 {
   "name":"org.apache.coyote.ProtocolHandler"
@@ -3948,9 +4015,6 @@
 {
   "name":"org.apache.coyote.http11.Http11NioProtocol",
   "queryAllPublicMethods":true
-},
-{
-  "name":"org.apache.coyote.http11.Http11Processor"
 },
 {
   "name":"org.apache.derby.jdbc.EmbeddedDriver"
@@ -4061,12 +4125,6 @@
   "queryAllPublicMethods":true
 },
 {
-  "name":"org.apache.tomcat.util.net.NioEndpoint$SocketProcessor"
-},
-{
-  "name":"org.apache.tomcat.util.net.SocketProcessorBase"
-},
-{
   "name":"org.apache.tomcat.websocket.server.WsFilter",
   "queryAllDeclaredMethods":true
 },
@@ -4125,6 +4183,386 @@
 },
 {
   "name":"org.aspectj.weaver.tools.Jdk14TraceFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.COMPOSITE$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.CompositeSignatures$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.DH$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.DSA$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.DSTU4145$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.Dilithium$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.EC$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.ECGOST$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.EXTERNAL$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.EdEC$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.ElGamal$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.Falcon$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.GM$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.GOST$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.IES$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.LMS$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.NTRU$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.RSA$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.SPHINCSPlus$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.asymmetric.X509$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.Blake2b$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.Blake2s$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.Blake3$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.DSTU7564$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.GOST3411$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.Haraka$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.Keccak$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.MD2$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.MD4$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.MD5$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.RIPEMD128$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.RIPEMD160$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.RIPEMD256$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.RIPEMD320$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.SHA1$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.SHA224$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.SHA256$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.SHA3$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.SHA384$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.SHA512$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.SM3$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.Skein$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.Tiger$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.digest.Whirlpool$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.drbg.DRBG$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.keystore.BC$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.keystore.BCFKS$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.keystore.PKCS12$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.AES$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.ARC4$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.ARIA$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Blowfish$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.CAST5$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.CAST6$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Camellia$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.ChaCha$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.DES$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.DESede$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.DSTU7624$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.GOST28147$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.GOST3412_2015$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Grain128$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Grainv1$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.HC128$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.HC256$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.IDEA$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Noekeon$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.OpenSSLPBKDF$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.PBEPBKDF1$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.PBEPBKDF2$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.PBEPKCS12$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Poly1305$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.RC2$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.RC5$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.RC6$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Rijndael$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.SCRYPT$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.SEED$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.SM4$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Salsa20$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Serpent$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Shacal2$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.SipHash$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.SipHash128$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Skipjack$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.TEA$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.TLSKDF$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Threefish$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Twofish$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.VMPC$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.VMPCKSA3$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.XSalsa20$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.XTEA$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jcajce.provider.symmetric.Zuc$Mappings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.bouncycastle.jce.provider.BouncyCastleProvider",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -4705,7 +5143,7 @@
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"update","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Project",
@@ -4743,12 +5181,12 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"equals","parameterTypes":["java.lang.Object"] }, {"name":"getId","parameterTypes":[] }, {"name":"setId","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity$Id"] }]
 },
 {
-  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity$HibernateAccessOptimizer$Xk19rytA",
-  "fields":[{"name":"invocationTarget$14fm4n0"}],
+  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity$HibernateAccessOptimizer$fUhRXq3V",
+  "fields":[{"name":"invocationTarget$f4j0n30"}],
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity$HibernateInstantiator$N8sJ4Boh",
+  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity$HibernateInstantiator$xlZpMRJB",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -4766,6 +5204,11 @@
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity_"
 },
 {
+  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity_Accessor_cnyjyy",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchAssocEntity"] }]
+},
+{
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -4777,7 +5220,7 @@
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity_"
 },
 {
-  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity_Accessor_xffej",
+  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity_Accessor_onzoh0",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionBatchEntity"] }]
 },
@@ -4787,10 +5230,15 @@
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"equals","parameterTypes":["java.lang.Object"] }, {"name":"getId","parameterTypes":[] }, {"name":"setAccountingPeriod","parameterTypes":["java.time.YearMonth"] }, {"name":"setAutomatedValidationStatus","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxValidationStatus"] }, {"name":"setBatchId","parameterTypes":["java.lang.String"] }, {"name":"setBatches","parameterTypes":["java.util.Set"] }, {"name":"setEntryDate","parameterTypes":["java.time.LocalDate"] }, {"name":"setId","parameterTypes":["java.lang.String"] }, {"name":"setItems","parameterTypes":["java.util.Set"] }, {"name":"setLastReconcilation","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.reconcilation.ReconcilationEntity"] }, {"name":"setLedgerDispatchApproved","parameterTypes":["java.lang.Boolean"] }, {"name":"setLedgerDispatchReceipt","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.LedgerDispatchReceipt"] }, {"name":"setLedgerDispatchStatus","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus"] }, {"name":"setOrganisation","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation"] }, {"name":"setOverallStatus","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus"] }, {"name":"setProcessingStatus","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionProcessingStatus"] }, {"name":"setReconcilation","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.reconcilation.Reconcilation"] }, {"name":"setTransactionApproved","parameterTypes":["java.lang.Boolean"] }, {"name":"setTransactionInternalNumber","parameterTypes":["java.lang.String"] }, {"name":"setTransactionType","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType"] }, {"name":"setUserComment","parameterTypes":["java.lang.String"] }, {"name":"setViolations","parameterTypes":["java.util.Set"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"equals","parameterTypes":["java.lang.Object"] }, {"name":"getId","parameterTypes":[] }, {"name":"setAccountingPeriod","parameterTypes":["java.time.YearMonth"] }, {"name":"setAutomatedValidationStatus","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TxValidationStatus"] }, {"name":"setBatchId","parameterTypes":["java.lang.String"] }, {"name":"setBatches","parameterTypes":["java.util.Set"] }, {"name":"setEntryDate","parameterTypes":["java.time.LocalDate"] }, {"name":"setId","parameterTypes":["java.lang.String"] }, {"name":"setItems","parameterTypes":["java.util.Set"] }, {"name":"setLastReconcilation","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.reconcilation.ReconcilationEntity"] }, {"name":"setLedgerDispatchApproved","parameterTypes":["java.lang.Boolean"] }, {"name":"setLedgerDispatchReceipt","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.LedgerDispatchReceipt"] }, {"name":"setLedgerDispatchStatus","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.LedgerDispatchStatus"] }, {"name":"setOrganisation","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.Organisation"] }, {"name":"setOverallStatus","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionStatus"] }, {"name":"setProcessingStatus","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionProcessingStatus"] }, {"name":"setReconcilation","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.reconcilation.Reconcilation"] }, {"name":"setTransactionApproved","parameterTypes":["java.lang.Boolean"] }, {"name":"setTransactionInternalNumber","parameterTypes":["java.lang.String"] }, {"name":"setTransactionType","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.TransactionType"] }, {"name":"setUserComment","parameterTypes":["java.lang.String"] }, {"name":"setViolations","parameterTypes":["java.util.Set"] }, {"name":"updateProcessingStatus","parameterTypes":[] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity_"
+},
+{
+  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity_Accessor_za4cbg",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity",
@@ -4802,6 +5250,11 @@
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity_"
+},
+{
+  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity_Accessor_62u2tl",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionItemEntity"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionProcessingStatus"
@@ -4874,6 +5327,11 @@
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.reconcilation.ReconcilationEntity_"
+},
+{
+  "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.reconcilation.ReconcilationEntity_Accessor_5bde5t",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.reconcilation.ReconcilationEntity"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.reconcilation.ReconcilationRejectionCode"
@@ -5155,7 +5613,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService","org.cardanofoundation.lob.app.accounting_reporting_core.repository.ReportRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.ReportService"] }, {"name":"execute","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService","org.cardanofoundation.lob.app.accounting_reporting_core.repository.ReportRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.ReportService"] }, {"name":"addToStatusUpdateMap","parameterTypes":["java.util.Map"] }, {"name":"execute","parameterTypes":[] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.job.TxStatusUpdaterJob$$SpringCGLIB$$0",
@@ -5679,14 +6137,14 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getHeight","parameterTypes":[] }, {"name":"getMetric","parameterTypes":[] }, {"name":"getSubMetric","parameterTypes":[] }, {"name":"getWidth","parameterTypes":[] }, {"name":"getXPos","parameterTypes":[] }, {"name":"getYPos","parameterTypes":[] }, {"name":"setHeight","parameterTypes":["java.lang.Double"] }, {"name":"setMetric","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.metric.MetricEnum"] }, {"name":"setSubMetric","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.metric.MetricEnum$SubMetric"] }, {"name":"setWidth","parameterTypes":["java.lang.Double"] }, {"name":"setXPos","parameterTypes":["java.lang.Double"] }, {"name":"setYPos","parameterTypes":["java.lang.Double"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setHeight","parameterTypes":["java.lang.Double"] }, {"name":"setMetric","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.metric.MetricEnum"] }, {"name":"setSubMetric","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.metric.MetricEnum$SubMetric"] }, {"name":"setWidth","parameterTypes":["java.lang.Double"] }, {"name":"setXPos","parameterTypes":["java.lang.Double"] }, {"name":"setYPos","parameterTypes":["java.lang.Double"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.resource.views.metric.DashboardView",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getCharts","parameterTypes":[] }, {"name":"getDescription","parameterTypes":[] }, {"name":"getId","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"setCharts","parameterTypes":["java.util.List"] }, {"name":"setDescription","parameterTypes":["java.lang.String"] }, {"name":"setId","parameterTypes":["java.lang.Long"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setCharts","parameterTypes":["java.util.List"] }, {"name":"setDescription","parameterTypes":["java.lang.String"] }, {"name":"setId","parameterTypes":["java.lang.Long"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.service.ValidateIngestionResponseWaiter",
@@ -5736,7 +6194,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.ERPIncomingDataProcessor","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionReconcilationService","org.springframework.context.ApplicationEventPublisher","org.cardanofoundation.lob.app.accounting_reporting_core.job.TxStatusUpdaterJob","org.cardanofoundation.lob.app.accounting_reporting_core.service.ValidateIngestionResponseWaiter"] }, {"name":"handleTransactionBatchFailedEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchFailedEvent"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.ERPIncomingDataProcessor","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionReconcilationService","org.springframework.context.ApplicationEventPublisher","org.cardanofoundation.lob.app.accounting_reporting_core.job.TxStatusUpdaterJob","org.cardanofoundation.lob.app.accounting_reporting_core.service.ValidateIngestionResponseWaiter"] }, {"name":"handleLedgerUpdatedEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent"] }, {"name":"handleReconcilationChunkEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationChunkEvent"] }, {"name":"handleReconcilationFinalisation","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationFinalisationEvent"] }, {"name":"handleReconcilationStartedEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationStartedEvent"] }, {"name":"handleTransactionBatchChunkEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchChunkEvent"] }, {"name":"handleTransactionBatchStartedEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchStartedEvent"] }, {"name":"handleValidateIngestionResponseEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionResponseEvent"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.AccountingCoreEventHandler$$SpringCGLIB$$0",
@@ -5774,7 +6232,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter","org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionItemRepository","org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchAssocRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter","org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionItemRepository","org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchAssocRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService"] }, {"name":"execute","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.OrganisationTransactions","int","org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.DbSynchronisationUseCaseService$$SpringCGLIB$$0",
@@ -5786,7 +6244,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionReconcilationService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.DbSynchronisationUseCaseService","org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionReconcilationService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.DbSynchronisationUseCaseService","org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository"] }, {"name":"continueIngestion","parameterTypes":["java.lang.String","java.lang.String","int","java.util.Set","org.cardanofoundation.lob.app.accounting_reporting_core.service.business_rules.ProcessorFlags"] }, {"name":"continueReconcilation","parameterTypes":["java.lang.String","java.lang.String","java.time.LocalDate","java.time.LocalDate","java.util.Set"] }, {"name":"finialiseReconcilation","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationFinalisationEvent"] }, {"name":"initiateIngestion","parameterTypes":["java.lang.String","java.lang.String","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.SystemExtractionParameters","java.lang.String","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ExtractorType"] }, {"name":"initiateReconcilation","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationStartedEvent"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.ERPIncomingDataProcessor$$SpringCGLIB$$0",
@@ -5805,7 +6263,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository","org.cardanofoundation.lob.app.accounting_reporting_core.repository.ReportRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.ReportConverter","org.springframework.context.ApplicationEventPublisher","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.PIIDataFilteringService","org.cardanofoundation.lob.app.organisation.OrganisationPublicApi"] }, {"name":"dispatchPending","parameterTypes":["int"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository","org.cardanofoundation.lob.app.accounting_reporting_core.repository.ReportRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.ReportConverter","org.springframework.context.ApplicationEventPublisher","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.PIIDataFilteringService","org.cardanofoundation.lob.app.organisation.OrganisationPublicApi"] }, {"name":"dispatchPending","parameterTypes":["int"] }, {"name":"saveAllTransactionEntities","parameterTypes":["java.util.Collection"] }, {"name":"updateTransactionsWithNewStatuses","parameterTypes":["java.util.Map"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService$$SpringCGLIB$$0",
@@ -5856,7 +6314,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepositoryGateway","org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter","org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchAssocRepository","org.springframework.context.ApplicationEventPublisher","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TxBatchStatusCalculator","org.cardanofoundation.lob.app.support.reactive.DebouncerManager","org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository"] }, {"name":"failTransactionBatch","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters","java.util.Optional","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.FatalError"] }, {"name":"invokeUpdateTransactionBatchStatusAndStats","parameterTypes":["java.lang.String","java.util.Optional","java.util.Optional"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepositoryGateway","org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionConverter","org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionBatchAssocRepository","org.springframework.context.ApplicationEventPublisher","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TxBatchStatusCalculator","org.cardanofoundation.lob.app.support.reactive.DebouncerManager","org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository"] }, {"name":"createTransactionBatch","parameterTypes":["java.lang.String","java.lang.String","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.SystemExtractionParameters","java.lang.String","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ExtractorType"] }, {"name":"invokeUpdateTransactionBatchStatusAndStats","parameterTypes":["java.lang.String","java.util.Optional","java.util.Optional"] }, {"name":"updateBatchesPerTransactions","parameterTypes":["java.util.Map"] }, {"name":"updateTransactionBatchStatusAndStats","parameterTypes":["java.lang.String","java.lang.Integer","java.util.Optional"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService$$SpringCGLIB$$0",
@@ -5875,7 +6333,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionReconcilationRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionRepositoryGateway","org.springframework.context.ApplicationEventPublisher","org.cardanofoundation.lob.app.blockchain_reader.BlockchainReaderPublicApiIF","org.javers.core.Javers"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionReconcilationRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionRepositoryGateway","org.springframework.context.ApplicationEventPublisher","org.cardanofoundation.lob.app.blockchain_reader.BlockchainReaderPublicApiIF","org.javers.core.Javers"] }, {"name":"createReconcilation","parameterTypes":["java.lang.String","java.lang.String","java.time.LocalDate","java.time.LocalDate","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.ExtractorType"] }, {"name":"reconcileChunk","parameterTypes":["java.lang.String","java.lang.String","java.time.LocalDate","java.time.LocalDate","java.util.Set"] }, {"name":"wrapUpReconcilation","parameterTypes":["java.lang.String","java.lang.String","long"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionReconcilationService$$SpringCGLIB$$0",
@@ -5887,7 +6345,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionItemRepository","org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService"] }, {"name":"approveTransactions","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.TransactionsRequest"] }, {"name":"approveTransactionsDispatch","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.TransactionsRequest"] }, {"name":"findAllByStatus","parameterTypes":["java.lang.String","java.util.List","java.util.List","org.springframework.data.domain.PageRequest"] }, {"name":"findById","parameterTypes":["java.lang.String"] }, {"name":"rejectTransactionItems","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity","java.util.Set"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.repository.TransactionItemRepository","org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionBatchService","org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.LedgerService"] }, {"name":"approveTransactions","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.TransactionsRequest"] }, {"name":"approveTransactionsDispatch","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.TransactionsRequest"] }, {"name":"findAllByDateRangeAndNotReconciledYet","parameterTypes":["java.lang.String","java.time.LocalDate","java.time.LocalDate"] }, {"name":"findAllByStatus","parameterTypes":["java.lang.String","java.util.List","java.util.List","org.springframework.data.domain.PageRequest"] }, {"name":"findByAllId","parameterTypes":["java.util.Set"] }, {"name":"findById","parameterTypes":["java.lang.String"] }, {"name":"rejectTransactionItems","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.entity.TransactionEntity","java.util.Set"] }, {"name":"storeAll","parameterTypes":["java.util.Collection"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionRepositoryGateway$$SpringCGLIB$$0",
@@ -5973,7 +6431,16 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAbsoluteSlot","parameterTypes":["long"] }, {"name":"setBlockHash","parameterTypes":["java.lang.String"] }, {"name":"setEpochNo","parameterTypes":["java.util.Optional"] }, {"name":"setNetwork","parameterTypes":["org.cardanofoundation.lob.app.blockchain_common.domain.CardanoNetwork"] }, {"name":"setSynced","parameterTypes":["boolean"] }]
 },
 {
-  "name":"org.cardanofoundation.lob.app.blockchain_common.domain.FinalityScore"
+  "name":"org.cardanofoundation.lob.app.blockchain_common.domain.FinalityScore",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.cardanofoundation.lob.app.blockchain_common.domain.OnChainTxDetails",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAbsoluteSlot","parameterTypes":["long"] }, {"name":"setBlockHash","parameterTypes":["java.lang.String"] }, {"name":"setFinalityScore","parameterTypes":["org.cardanofoundation.lob.app.blockchain_common.domain.FinalityScore"] }, {"name":"setNetwork","parameterTypes":["org.cardanofoundation.lob.app.blockchain_common.domain.CardanoNetwork"] }, {"name":"setSlotConfirmations","parameterTypes":["long"] }, {"name":"setTransactionHash","parameterTypes":["java.lang.String"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.blockchain_common.domain.package-info"
@@ -6348,6 +6815,11 @@
   "name":"org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.txs.TransactionEntity_"
 },
 {
+  "name":"org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.txs.TransactionEntity_Accessor_3psaq2",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.txs.TransactionEntity"] }]
+},
+{
   "name":"org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.txs.TransactionItemEntity",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -6357,6 +6829,11 @@
 },
 {
   "name":"org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.txs.TransactionItemEntity_"
+},
+{
+  "name":"org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.txs.TransactionItemEntity_Accessor_aa630f",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.txs.TransactionItemEntity"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.txs.Vat",
@@ -6426,7 +6903,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepository","org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionItemEntityRepository","java.time.Clock"] }, {"name":"findAndLockTransactionsReadyToBeDispatched","parameterTypes":["java.lang.String","int"] }, {"name":"findDispatchedTransactionsThatAreNotFinalizedYet","parameterTypes":["java.lang.String","org.springframework.data.domain.Limit"] }, {"name":"storeTransactions","parameterTypes":["java.util.Set"] }, {"name":"unlockTransactions","parameterTypes":["java.util.Set"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepository","org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionItemEntityRepository","java.time.Clock"] }, {"name":"findAndLockTransactionsReadyToBeDispatched","parameterTypes":["java.lang.String","int"] }, {"name":"findDispatchedTransactionsThatAreNotFinalizedYet","parameterTypes":["java.lang.String","org.springframework.data.domain.Limit"] }, {"name":"storeOnlyNew","parameterTypes":["java.util.Set"] }, {"name":"storeTransaction","parameterTypes":["org.cardanofoundation.lob.app.blockchain_publisher.domain.entity.txs.TransactionEntity"] }, {"name":"storeTransactions","parameterTypes":["java.util.Set"] }, {"name":"unlockTransactions","parameterTypes":["java.util.Set"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepositoryGateway$$SpringCGLIB$$0",
@@ -6476,7 +6953,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepositoryGateway","org.cardanofoundation.lob.app.blockchain_publisher.repository.ReportEntityRepositoryGateway","org.cardanofoundation.lob.app.blockchain_publisher.service.event_publish.LedgerUpdatedEventPublisher","org.cardanofoundation.lob.app.blockchain_publisher.service.TransactionConverter","org.cardanofoundation.lob.app.blockchain_publisher.service.ReportConverter"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.blockchain_publisher.repository.TransactionEntityRepositoryGateway","org.cardanofoundation.lob.app.blockchain_publisher.repository.ReportEntityRepositoryGateway","org.cardanofoundation.lob.app.blockchain_publisher.service.event_publish.LedgerUpdatedEventPublisher","org.cardanofoundation.lob.app.blockchain_publisher.service.TransactionConverter","org.cardanofoundation.lob.app.blockchain_publisher.service.ReportConverter"] }, {"name":"storeTransactionForDispatchLater","parameterTypes":["java.lang.String","java.util.Set"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.blockchain_publisher.service.BlockchainPublisherService$$SpringCGLIB$$0",
@@ -6554,7 +7031,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.blockchain_publisher.service.BlockchainPublisherService"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.blockchain_publisher.service.BlockchainPublisherService"] }, {"name":"handleLedgerUpdateCommand","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.blockchain_publisher.service.event_handle.BlockchainPublisherEventHandler$$SpringCGLIB$$0",
@@ -6728,6 +7205,20 @@
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
 },
 {
+  "name":"org.cardanofoundation.lob.app.blockchain_reader.domain.LOBOnChainTxStatusRequest",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"getTransactionIds","parameterTypes":[] }]
+},
+{
+  "name":"org.cardanofoundation.lob.app.blockchain_reader.domain.LOBOnChainTxStatusResponse",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setNetwork","parameterTypes":["org.cardanofoundation.lob.app.blockchain_common.domain.CardanoNetwork"] }, {"name":"setTransactionStatuses","parameterTypes":["java.util.Map"] }]
+},
+{
   "name":"org.cardanofoundation.lob.app.blockchain_reader.package-info"
 },
 {
@@ -6819,13 +7310,31 @@
   "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.package-info"
 },
 {
+  "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.responses.TokenReponse",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAccessToken","parameterTypes":["java.lang.String"] }, {"name":"setExpiresIn","parameterTypes":["int"] }, {"name":"setTokenType","parameterTypes":["java.lang.String"] }]
+},
+{
   "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType"
 },
 {
   "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FinancialPeriodSource"
 },
 {
-  "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.TxLine"
+  "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.TransactionDataSearchResult",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.util.List","boolean"] }]
+},
+{
+  "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.TxLine",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Integer","java.lang.Long","java.lang.String","java.time.LocalDate","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.time.LocalDate","java.time.LocalDateTime","java.time.LocalDateTime","java.math.BigDecimal","java.math.BigDecimal","java.math.BigDecimal","java.math.BigDecimal","java.math.BigDecimal"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.package-info"
@@ -6906,7 +7415,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"close","parameterTypes":[] }, {"name":"handleScheduledIngestionEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent"] }, {"name":"handleScheduledReconciliationEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent"] }, {"name":"handleValidateIngestionEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent"] }, {"name":"shutdown","parameterTypes":[] }]
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"handleCreatedReconciliationEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent"] }, {"name":"handleScheduledIngestionEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent"] }, {"name":"handleScheduledReconciliationEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent"] }, {"name":"handleTransactionBatchCreatedEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent"] }, {"name":"handleValidateIngestionEvent","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent"] }, {"name":"shutdown","parameterTypes":[] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler$$SpringCGLIB$$0",
@@ -6921,7 +7430,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"close","parameterTypes":[] }, {"name":"shutdown","parameterTypes":[] }]
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"getCodeMapping","parameterTypes":["java.lang.String","java.lang.Long","org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.entity.CodeMappingType"] }, {"name":"shutdown","parameterTypes":[] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.CodesMappingService$$SpringCGLIB$$0",
@@ -6939,7 +7448,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"close","parameterTypes":[] }, {"name":"shutdown","parameterTypes":[] }, {"name":"startNewERPExtraction","parameterTypes":["java.lang.String","java.lang.String","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters"] }, {"name":"validateIngestion","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }]
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"continueERPExtraction","parameterTypes":["java.lang.String","java.lang.String","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.SystemExtractionParameters"] }, {"name":"shutdown","parameterTypes":[] }, {"name":"startNewERPExtraction","parameterTypes":["java.lang.String","java.lang.String","org.cardanofoundation.lob.app.accounting_reporting_core.domain.core.UserExtractionParameters"] }, {"name":"validateIngestion","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.NetSuiteExtractionService$$SpringCGLIB$$0",
@@ -6951,7 +7460,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"close","parameterTypes":[] }, {"name":"shutdown","parameterTypes":[] }]
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"getAllTxLinesFromBodies","parameterTypes":["java.util.List"] }, {"name":"saveToDataBase","parameterTypes":["java.lang.String","java.util.Optional","boolean","java.lang.String"] }, {"name":"shutdown","parameterTypes":[] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.NetSuiteParser$$SpringCGLIB$$0",
@@ -6963,7 +7472,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"close","parameterTypes":[] }, {"name":"shutdown","parameterTypes":[] }, {"name":"startERPReconcilation","parameterTypes":["java.lang.String","java.lang.String","java.time.LocalDate","java.time.LocalDate"] }]
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"continueReconcilation","parameterTypes":["java.lang.String","java.lang.String","java.time.LocalDate","java.time.LocalDate"] }, {"name":"shutdown","parameterTypes":[] }, {"name":"startERPReconcilation","parameterTypes":["java.lang.String","java.lang.String","java.time.LocalDate","java.time.LocalDate"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.NetSuiteReconcilationService$$SpringCGLIB$$0",
@@ -7087,7 +7596,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getId","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"getOrganisationId","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }, {"name":"setId","parameterTypes":["java.lang.Long"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setOrganisationId","parameterTypes":["java.lang.String"] }, {"name":"setType","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.ChartOfAccountType"] }]
 },
 {
-  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.ChartOfAccountSubType$HibernateProxy$HJuCwaur",
+  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.ChartOfAccountSubType$HibernateProxy$T7ikzs7H",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -7102,7 +7611,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getId","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"getOrganisationId","parameterTypes":[] }, {"name":"getSubTypes","parameterTypes":[] }, {"name":"setId","parameterTypes":["java.lang.Long"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setOrganisationId","parameterTypes":["java.lang.String"] }, {"name":"setSubTypes","parameterTypes":["java.util.Set"] }]
 },
 {
-  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.ChartOfAccountType$HibernateProxy$V5tw7hTr",
+  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.ChartOfAccountType$HibernateProxy$s1NrRmN4",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -7110,6 +7619,11 @@
 },
 {
   "name":"org.cardanofoundation.lob.app.organisation.domain.entity.ChartOfAccount_"
+},
+{
+  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.ChartOfAccount_Accessor_srjixw",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.ChartOfAccount"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.organisation.domain.entity.CostCenter",
@@ -7134,7 +7648,7 @@
   "name":"org.cardanofoundation.lob.app.organisation.domain.entity.CostCenter_"
 },
 {
-  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.CostCenter_Accessor_40yw38",
+  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.CostCenter_Accessor_gseoi6",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.CostCenter"] }]
 },
@@ -7161,7 +7675,7 @@
   "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Currency_"
 },
 {
-  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Currency_Accessor_yx32du",
+  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Currency_Accessor_ghuzvi",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.Currency"] }]
 },
@@ -7188,6 +7702,11 @@
   "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Organisation_"
 },
 {
+  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Organisation_Accessor_8b4qfo",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.Organisation"] }]
+},
+{
   "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Project",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -7210,7 +7729,7 @@
   "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Project_"
 },
 {
-  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Project_Accessor_b7kdnb",
+  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Project_Accessor_lfje0j",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.Project"] }]
 },
@@ -7237,7 +7756,7 @@
   "name":"org.cardanofoundation.lob.app.organisation.domain.entity.ReferenceCode_"
 },
 {
-  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.ReferenceCode_Accessor_hap6kg",
+  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.ReferenceCode_Accessor_4hiox9",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.ReferenceCode"] }]
 },
@@ -7286,7 +7805,7 @@
   "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Vat_"
 },
 {
-  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Vat_Accessor_vt8yjc",
+  "name":"org.cardanofoundation.lob.app.organisation.domain.entity.Vat_Accessor_mupx17",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.Vat"] }]
 },
@@ -7589,7 +8108,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.AccountEventRepository","org.cardanofoundation.lob.app.organisation.repository.ReferenceCodeRepository","org.cardanofoundation.lob.app.organisation.service.OrganisationService","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"getAllAccountEvent","parameterTypes":["java.lang.String"] }, {"name":"insertAccountEvent","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.EventCodeUpdate","boolean"] }, {"name":"updateAccountEvent","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.EventCodeUpdate"] }, {"name":"updateStatus","parameterTypes":["java.lang.String","java.lang.String"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.AccountEventRepository","org.cardanofoundation.lob.app.organisation.repository.ReferenceCodeRepository","org.cardanofoundation.lob.app.organisation.service.OrganisationService","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"findByIdAndActive","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, {"name":"getAllAccountEvent","parameterTypes":["java.lang.String"] }, {"name":"insertAccountEvent","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.EventCodeUpdate","boolean"] }, {"name":"updateAccountEvent","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.EventCodeUpdate"] }, {"name":"updateStatus","parameterTypes":["java.lang.String","java.lang.String"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.organisation.service.AccountEventService$$SpringCGLIB$$0",
@@ -7601,7 +8120,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.ChartOfAccountRepository","org.cardanofoundation.lob.app.organisation.repository.ChartOfAccountTypeRepository","org.cardanofoundation.lob.app.organisation.repository.ChartOfAccountSubTypeRepository","org.cardanofoundation.lob.app.organisation.repository.ReferenceCodeRepository","org.cardanofoundation.lob.app.organisation.repository.CurrencyRepository","org.cardanofoundation.lob.app.organisation.service.OrganisationService","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"getAllChartOfAccount","parameterTypes":["java.lang.String"] }, {"name":"updateChartOfAccount","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.ChartOfAccountUpdate"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.ChartOfAccountRepository","org.cardanofoundation.lob.app.organisation.repository.ChartOfAccountTypeRepository","org.cardanofoundation.lob.app.organisation.repository.ChartOfAccountSubTypeRepository","org.cardanofoundation.lob.app.organisation.repository.ReferenceCodeRepository","org.cardanofoundation.lob.app.organisation.repository.CurrencyRepository","org.cardanofoundation.lob.app.organisation.service.OrganisationService","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"getAllChartOfAccount","parameterTypes":["java.lang.String"] }, {"name":"getChartAccount","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"updateChartOfAccount","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.ChartOfAccountUpdate"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.organisation.service.ChartOfAccountsService$$SpringCGLIB$$0",
@@ -7613,7 +8132,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.CostCenterRepository","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"getAllCostCenter","parameterTypes":["java.lang.String"] }, {"name":"insertCostCenter","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.csv.CostCenterUpdate","boolean"] }, {"name":"updateCostCenter","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.csv.CostCenterUpdate"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.CostCenterRepository","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"getAllCostCenter","parameterTypes":["java.lang.String"] }, {"name":"getCostCenter","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"insertCostCenter","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.csv.CostCenterUpdate","boolean"] }, {"name":"updateCostCenter","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.csv.CostCenterUpdate"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.organisation.service.CostCenterService$$SpringCGLIB$$0",
@@ -7644,7 +8163,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.ProjectMappingRepository","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"getAllProjects","parameterTypes":["java.lang.String"] }, {"name":"insertProject","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.csv.ProjectUpdate","boolean"] }, {"name":"updateProject","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.csv.ProjectUpdate"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.ProjectMappingRepository","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"getAllProjects","parameterTypes":["java.lang.String"] }, {"name":"getProject","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"insertProject","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.csv.ProjectUpdate","boolean"] }, {"name":"updateProject","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.csv.ProjectUpdate"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.organisation.service.ProjectCodeService$$SpringCGLIB$$0",
@@ -7680,7 +8199,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.VatRepository","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"findAllByOrganisationId","parameterTypes":["java.lang.String"] }, {"name":"insert","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.VatUpdate","boolean"] }, {"name":"update","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.VatUpdate"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.cardanofoundation.lob.app.organisation.repository.VatRepository","org.cardanofoundation.lob.app.organisation.service.csv.CsvParser","org.springframework.validation.Validator"] }, {"name":"findAllByOrganisationId","parameterTypes":["java.lang.String"] }, {"name":"findByOrganisationAndCode","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"insert","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.VatUpdate","boolean"] }, {"name":"update","parameterTypes":["java.lang.String","org.cardanofoundation.lob.app.organisation.domain.request.VatUpdate"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.organisation.service.VatService$$SpringCGLIB$$0",
@@ -7824,7 +8343,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"setCreatedAt","parameterTypes":["java.time.LocalDateTime"] }, {"name":"setUpdatedAt","parameterTypes":["java.time.LocalDateTime"] }]
+  "methods":[{"name":"markNotNew","parameterTypes":[] }, {"name":"setCreatedAt","parameterTypes":["java.time.LocalDateTime"] }, {"name":"setUpdatedAt","parameterTypes":["java.time.LocalDateTime"] }]
 },
 {
   "name":"org.cardanofoundation.lob.app.support.spring_audit.CommonDateOnlyEntity_"
@@ -7847,7 +8366,7 @@
   "methods":[{"name":"getCreatedAt","parameterTypes":[] }, {"name":"getCreatedBy","parameterTypes":[] }, {"name":"getUpdatedAt","parameterTypes":[] }, {"name":"getUpdatedBy","parameterTypes":[] }, {"name":"isNew","parameterTypes":[] }, {"name":"markNotNew","parameterTypes":[] }, {"name":"setBatches","parameterTypes":["java.util.Set"] }, {"name":"setCreatedAt","parameterTypes":["java.time.LocalDateTime"] }, {"name":"setCreatedBy","parameterTypes":["java.lang.String"] }, {"name":"setIsActive","parameterTypes":["boolean"] }, {"name":"setNew","parameterTypes":["boolean"] }, {"name":"setUpdatedAt","parameterTypes":["java.time.LocalDateTime"] }, {"name":"setUpdatedBy","parameterTypes":["java.lang.String"] }]
 },
 {
-  "name":"org.cardanofoundation.lob.app.support.spring_audit.CommonEntity$HibernateAccessOptimizer$TbdTHflJ",
+  "name":"org.cardanofoundation.lob.app.support.spring_audit.CommonEntity$HibernateAccessOptimizer$ZQoFJHtP",
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true
 },
@@ -9034,6 +9553,44 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"isValid","parameterTypes":["java.lang.Object","jakarta.validation.ConstraintValidatorContext"] }]
 },
 {
+  "name":"org.hibernate.validator.internal.constraintvalidators.bv.number.bound.decimal.AbstractDecimalMinValidator",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"compare","parameterTypes":["java.lang.Object"] }, {"name":"initialize","parameterTypes":["jakarta.validation.constraints.DecimalMin"] }, {"name":"initialize","parameterTypes":["java.lang.annotation.Annotation"] }, {"name":"isValid","parameterTypes":["java.lang.Object","jakarta.validation.ConstraintValidatorContext"] }]
+},
+{
+  "name":"org.hibernate.validator.internal.constraintvalidators.bv.number.bound.decimal.DecimalMinValidatorForBigDecimal",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.hibernate.validator.internal.constraintvalidators.bv.number.sign.PositiveOrZeroValidatorForInteger",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"isValid","parameterTypes":["java.lang.Object","jakarta.validation.ConstraintValidatorContext"] }]
+},
+{
+  "name":"org.hibernate.validator.internal.constraintvalidators.bv.number.sign.PositiveOrZeroValidatorForLong",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"isValid","parameterTypes":["java.lang.Object","jakarta.validation.ConstraintValidatorContext"] }]
+},
+{
+  "name":"org.hibernate.validator.internal.constraintvalidators.bv.number.sign.PositiveValidatorForBigDecimal",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"isValid","parameterTypes":["java.lang.Object","jakarta.validation.ConstraintValidatorContext"] }]
+},
+{
   "name":"org.hibernate.validator.internal.constraintvalidators.bv.size.SizeValidatorForCollection",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -10127,9 +10684,6 @@
   "name":"org.springframework.aop.framework.AopProxyFactory"
 },
 {
-  "name":"org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation"
-},
-{
   "name":"org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor"
 },
 {
@@ -10159,9 +10713,6 @@
   "methods":[{"name":"setOrder","parameterTypes":["int"] }]
 },
 {
-  "name":"org.springframework.aop.framework.ReflectiveMethodInvocation"
-},
-{
   "name":"org.springframework.aop.framework.adapter.AdvisorAdapterRegistry"
 },
 {
@@ -10178,9 +10729,6 @@
   "name":"org.springframework.aop.framework.autoproxy.AbstractBeanFactoryAwareAdvisingPostProcessor",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true
-},
-{
-  "name":"org.springframework.aop.interceptor.AsyncExecutionInterceptor"
 },
 {
   "name":"org.springframework.aop.scope.ScopedObject"
@@ -15296,7 +15844,7 @@
   "name":"org.springframework.data.domain.AuditorAware",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":["jdk.proxy2.$Proxy290"] }, {"name":"from","parameterTypes":["jdk.proxy2.$Proxy290"] }, {"name":"getCurrentAuditor","parameterTypes":[] }, {"name":"of","parameterTypes":["jdk.proxy2.$Proxy290"] }, {"name":"valueOf","parameterTypes":["jdk.proxy2.$Proxy290"] }]
+  "methods":[{"name":"<init>","parameterTypes":["jdk.proxy2.$Proxy291"] }, {"name":"from","parameterTypes":["jdk.proxy2.$Proxy291"] }, {"name":"getCurrentAuditor","parameterTypes":[] }, {"name":"of","parameterTypes":["jdk.proxy2.$Proxy291"] }, {"name":"valueOf","parameterTypes":["jdk.proxy2.$Proxy291"] }]
 },
 {
   "name":"org.springframework.data.domain.Example"
@@ -15362,7 +15910,7 @@
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAuditingHandler","parameterTypes":["org.springframework.beans.factory.ObjectFactory"] }, {"name":"touchForCreate","parameterTypes":["java.lang.Object"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAuditingHandler","parameterTypes":["org.springframework.beans.factory.ObjectFactory"] }, {"name":"touchForCreate","parameterTypes":["java.lang.Object"] }, {"name":"touchForUpdate","parameterTypes":["java.lang.Object"] }]
 },
 {
   "name":"org.springframework.data.jpa.mapping.JpaMetamodelMappingContext",
@@ -15478,7 +16026,7 @@
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.springframework.data.jpa.repository.support.JpaEntityInformation","jakarta.persistence.EntityManager"] }, {"name":"count","parameterTypes":[] }, {"name":"count","parameterTypes":["org.springframework.data.domain.Example"] }, {"name":"count","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"delete","parameterTypes":["java.lang.Object"] }, {"name":"delete","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"deleteAll","parameterTypes":[] }, {"name":"deleteAll","parameterTypes":["java.lang.Iterable"] }, {"name":"deleteAllById","parameterTypes":["java.lang.Iterable"] }, {"name":"deleteAllByIdInBatch","parameterTypes":["java.lang.Iterable"] }, {"name":"deleteAllInBatch","parameterTypes":[] }, {"name":"deleteAllInBatch","parameterTypes":["java.lang.Iterable"] }, {"name":"deleteById","parameterTypes":["java.lang.Object"] }, {"name":"exists","parameterTypes":["org.springframework.data.domain.Example"] }, {"name":"exists","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"existsById","parameterTypes":["java.lang.Object"] }, {"name":"findAll","parameterTypes":[] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Example"] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Example","org.springframework.data.domain.Pageable"] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Example","org.springframework.data.domain.Sort"] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Pageable"] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Sort"] }, {"name":"findAll","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"findAll","parameterTypes":["org.springframework.data.jpa.domain.Specification","org.springframework.data.domain.Pageable"] }, {"name":"findAll","parameterTypes":["org.springframework.data.jpa.domain.Specification","org.springframework.data.domain.Sort"] }, {"name":"findAllByBatchId","parameterTypes":["java.lang.String","java.util.List","org.springframework.data.domain.Pageable"] }, {"name":"findAllById","parameterTypes":["java.lang.Iterable"] }, {"name":"findAllByOrgId","parameterTypes":["java.lang.String"] }, {"name":"findAllByOrganisationID","parameterTypes":["java.lang.String"] }, {"name":"findAllByOrganisationId","parameterTypes":["java.lang.String"] }, {"name":"findAllByOrganisationIdAndReferenceCode","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findAllByOrganisationIdAndSubTypeId","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findAllByStatus","parameterTypes":["java.lang.String","java.util.List","java.util.List","org.springframework.data.domain.PageRequest"] }, {"name":"findAllReconciliationSpecial","parameterTypes":["java.util.Set","java.util.Optional","java.util.Optional","java.lang.Integer","java.lang.Integer"] }, {"name":"findAllReconciliationSpecialCount","parameterTypes":["java.util.Set","java.util.Optional","java.util.Optional","java.lang.Integer","java.lang.Integer"] }, {"name":"findBy","parameterTypes":["org.springframework.data.domain.Example","java.util.function.Function"] }, {"name":"findBy","parameterTypes":["org.springframework.data.jpa.domain.Specification","java.util.function.Function"] }, {"name":"findByFilter","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest"] }, {"name":"findByFilterCount","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest"] }, {"name":"findById","parameterTypes":["java.lang.Object"] }, {"name":"findByOrgIdAndDebitReferenceCodeAndCreditReferenceCode","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, {"name":"findByOrgIdAndRefCodeAccount","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findByOrgIdAndReferenceCode","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findByTxIdAndItemId","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findCalcReconciliationStatistic","parameterTypes":[] }, {"name":"findDispatchableReports","parameterTypes":["java.lang.String","org.springframework.data.domain.Limit"] }, {"name":"findDispatchableTransactions","parameterTypes":["java.lang.String","org.springframework.data.domain.Limit"] }, {"name":"findDispatchedReportsThatAreNotFinalizedYet","parameterTypes":["java.lang.String","java.util.Set","org.springframework.data.domain.Limit"] }, {"name":"findDispatchedTransactionsThatAreNotFinalizedYet","parameterTypes":["java.lang.String","java.util.Set","org.springframework.data.domain.Limit"] }, {"name":"findFreeTransactionsByStatus","parameterTypes":["java.lang.String","java.util.Set","java.time.LocalDateTime","org.springframework.data.domain.Limit"] }, {"name":"findLatestByIdControl","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findOne","parameterTypes":["org.springframework.data.domain.Example"] }, {"name":"findOne","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"findReportsByStatus","parameterTypes":["java.lang.String","java.util.Set","org.springframework.data.domain.Limit"] }, {"name":"findTopByOrderByCreatedAtDesc","parameterTypes":[] }, {"name":"flush","parameterTypes":[] }, {"name":"getBatchStatisticViewForBatchId","parameterTypes":["java.lang.String"] }, {"name":"getById","parameterTypes":["java.lang.Object"] }, {"name":"getOne","parameterTypes":["java.lang.Object"] }, {"name":"getReferenceById","parameterTypes":["java.lang.Object"] }, {"name":"save","parameterTypes":["java.lang.Object"] }, {"name":"saveAll","parameterTypes":["java.lang.Iterable"] }, {"name":"saveAllAndFlush","parameterTypes":["java.lang.Iterable"] }, {"name":"saveAndFlush","parameterTypes":["java.lang.Object"] }, {"name":"setEscapeCharacter","parameterTypes":["org.springframework.data.jpa.repository.query.EscapeCharacter"] }, {"name":"setProjectionFactory","parameterTypes":["org.springframework.data.projection.ProjectionFactory"] }, {"name":"setRepositoryMethodMetadata","parameterTypes":["org.springframework.data.jpa.repository.support.CrudMethodMetadata"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.data.jpa.repository.support.JpaEntityInformation","jakarta.persistence.EntityManager"] }, {"name":"count","parameterTypes":[] }, {"name":"count","parameterTypes":["org.springframework.data.domain.Example"] }, {"name":"count","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"delete","parameterTypes":["java.lang.Object"] }, {"name":"delete","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"deleteAll","parameterTypes":[] }, {"name":"deleteAll","parameterTypes":["java.lang.Iterable"] }, {"name":"deleteAllById","parameterTypes":["java.lang.Iterable"] }, {"name":"deleteAllByIdInBatch","parameterTypes":["java.lang.Iterable"] }, {"name":"deleteAllInBatch","parameterTypes":[] }, {"name":"deleteAllInBatch","parameterTypes":["java.lang.Iterable"] }, {"name":"deleteById","parameterTypes":["java.lang.Object"] }, {"name":"exists","parameterTypes":["org.springframework.data.domain.Example"] }, {"name":"exists","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"existsById","parameterTypes":["java.lang.Object"] }, {"name":"findAll","parameterTypes":[] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Example"] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Example","org.springframework.data.domain.Pageable"] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Example","org.springframework.data.domain.Sort"] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Pageable"] }, {"name":"findAll","parameterTypes":["org.springframework.data.domain.Sort"] }, {"name":"findAll","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"findAll","parameterTypes":["org.springframework.data.jpa.domain.Specification","org.springframework.data.domain.Pageable"] }, {"name":"findAll","parameterTypes":["org.springframework.data.jpa.domain.Specification","org.springframework.data.domain.Sort"] }, {"name":"findAllByBatchId","parameterTypes":["java.lang.String","java.util.List","org.springframework.data.domain.Pageable"] }, {"name":"findAllById","parameterTypes":["java.lang.Iterable"] }, {"name":"findAllByOrgId","parameterTypes":["java.lang.String"] }, {"name":"findAllByOrganisationID","parameterTypes":["java.lang.String"] }, {"name":"findAllByOrganisationId","parameterTypes":["java.lang.String"] }, {"name":"findAllByOrganisationIdAndReferenceCode","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findAllByOrganisationIdAndSubTypeId","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findAllByStatus","parameterTypes":["java.lang.String","java.util.List","java.util.List","org.springframework.data.domain.PageRequest"] }, {"name":"findAllByTxId","parameterTypes":["java.lang.String"] }, {"name":"findAllReconciliationSpecial","parameterTypes":["java.util.Set","java.util.Optional","java.util.Optional","java.lang.Integer","java.lang.Integer"] }, {"name":"findAllReconciliationSpecialCount","parameterTypes":["java.util.Set","java.util.Optional","java.util.Optional","java.lang.Integer","java.lang.Integer"] }, {"name":"findBy","parameterTypes":["org.springframework.data.domain.Example","java.util.function.Function"] }, {"name":"findBy","parameterTypes":["org.springframework.data.jpa.domain.Specification","java.util.function.Function"] }, {"name":"findByEntryDateRangeAndNotInReconciliation","parameterTypes":["java.lang.String","java.time.LocalDate","java.time.LocalDate","java.util.Set"] }, {"name":"findByEntryDateRangeAndNotReconciledYet","parameterTypes":["java.lang.String","java.time.LocalDate","java.time.LocalDate"] }, {"name":"findByFilter","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest"] }, {"name":"findByFilterCount","parameterTypes":["org.cardanofoundation.lob.app.accounting_reporting_core.resource.requests.BatchSearchRequest"] }, {"name":"findById","parameterTypes":["java.lang.Object"] }, {"name":"findByIdAndActive","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.AccountEvent$Id","boolean"] }, {"name":"findByIdAndActive","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.ChartOfAccount$Id","boolean"] }, {"name":"findByIdAndActive","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.CostCenter$Id","boolean"] }, {"name":"findByIdAndActive","parameterTypes":["org.cardanofoundation.lob.app.organisation.domain.entity.Vat$Id","boolean"] }, {"name":"findByOrgIdAndDebitReferenceCodeAndCreditReferenceCode","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, {"name":"findByOrgIdAndRefCodeAccount","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findByOrgIdAndReferenceCode","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findByTxIdAndItemId","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findCalcReconciliationStatistic","parameterTypes":[] }, {"name":"findDispatchableReports","parameterTypes":["java.lang.String","org.springframework.data.domain.Limit"] }, {"name":"findDispatchableTransactions","parameterTypes":["java.lang.String","org.springframework.data.domain.Limit"] }, {"name":"findDispatchedReportsThatAreNotFinalizedYet","parameterTypes":["java.lang.String","java.util.Set","org.springframework.data.domain.Limit"] }, {"name":"findDispatchedTransactionsThatAreNotFinalizedYet","parameterTypes":["java.lang.String","java.util.Set","org.springframework.data.domain.Limit"] }, {"name":"findFreeTransactionsByStatus","parameterTypes":["java.lang.String","java.util.Set","java.time.LocalDateTime","org.springframework.data.domain.Limit"] }, {"name":"findLatestByIdControl","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"findNotPublishedByOrganisationIdAndContainingDate","parameterTypes":["java.lang.String","int","int","int"] }, {"name":"findOne","parameterTypes":["org.springframework.data.domain.Example"] }, {"name":"findOne","parameterTypes":["org.springframework.data.jpa.domain.Specification"] }, {"name":"findReportsByStatus","parameterTypes":["java.lang.String","java.util.Set","org.springframework.data.domain.Limit"] }, {"name":"findTopByOrderByCreatedAtDesc","parameterTypes":[] }, {"name":"flush","parameterTypes":[] }, {"name":"getBatchStatisticViewForBatchId","parameterTypes":["java.lang.String"] }, {"name":"getById","parameterTypes":["java.lang.Object"] }, {"name":"getOne","parameterTypes":["java.lang.Object"] }, {"name":"getReferenceById","parameterTypes":["java.lang.Object"] }, {"name":"save","parameterTypes":["java.lang.Object"] }, {"name":"saveAll","parameterTypes":["java.lang.Iterable"] }, {"name":"saveAllAndFlush","parameterTypes":["java.lang.Iterable"] }, {"name":"saveAndFlush","parameterTypes":["java.lang.Object"] }, {"name":"setEscapeCharacter","parameterTypes":["org.springframework.data.jpa.repository.query.EscapeCharacter"] }, {"name":"setProjectionFactory","parameterTypes":["org.springframework.data.projection.ProjectionFactory"] }, {"name":"setRepositoryMethodMetadata","parameterTypes":["org.springframework.data.jpa.repository.support.CrudMethodMetadata"] }]
 },
 {
   "name":"org.springframework.data.jpa.util.HibernateProxyDetector",
@@ -16889,9 +17437,6 @@
   "name":"org.springframework.security.authorization.method.AuthorizationAdvisorProxyFactory$TargetVisitor"
 },
 {
-  "name":"org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor"
-},
-{
   "name":"org.springframework.security.authorization.method.AuthorizeReturnObjectMethodInterceptor",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -17370,21 +17915,6 @@
   "name":"org.springframework.security.web.FilterChainProxy$FilterChainValidator"
 },
 {
-  "name":"org.springframework.security.web.ObservationFilterChainDecorator"
-},
-{
-  "name":"org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation"
-},
-{
-  "name":"org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation"
-},
-{
-  "name":"org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter"
-},
-{
-  "name":"org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain"
-},
-{
   "name":"org.springframework.security.web.SecurityFilterChain",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
@@ -17443,9 +17973,6 @@
 },
 {
   "name":"org.springframework.security.web.access.intercept.RequestMatcherDelegatingAuthorizationManager$Builder"
-},
-{
-  "name":"org.springframework.security.web.authentication.AnonymousAuthenticationFilter"
 },
 {
   "name":"org.springframework.security.web.authentication.AuthenticationFailureHandler",
@@ -17507,9 +18034,6 @@
   "name":"org.springframework.security.web.context.SecurityContextRepository"
 },
 {
-  "name":"org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter"
-},
-{
   "name":"org.springframework.security.web.firewall.FirewalledRequest"
 },
 {
@@ -17546,9 +18070,6 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "methods":[{"name":"afterPropertiesSet","parameterTypes":[] }, {"name":"doFilter","parameterTypes":["jakarta.servlet.ServletRequest","jakarta.servlet.ServletResponse","jakarta.servlet.FilterChain"] }]
-},
-{
-  "name":"org.springframework.security.web.session.DisableEncodeUrlFilter"
 },
 {
   "name":"org.springframework.security.web.util.ThrowableAnalyzer"
@@ -17981,16 +18502,10 @@
   "name":"org.springframework.web.client.DefaultRestClient$DefaultRequestBodyUriSpec"
 },
 {
-  "name":"org.springframework.web.client.DefaultRestClient$DefaultResponseSpec"
-},
-{
   "name":"org.springframework.web.client.DefaultRestClientBuilder",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "methods":[{"name":"apply","parameterTypes":["java.util.function.Consumer"] }, {"name":"baseUrl","parameterTypes":["java.lang.String"] }, {"name":"build","parameterTypes":[] }, {"name":"clone","parameterTypes":[] }, {"name":"defaultHeader","parameterTypes":["java.lang.String","java.lang.String[]"] }, {"name":"defaultHeaders","parameterTypes":["java.util.function.Consumer"] }, {"name":"defaultRequest","parameterTypes":["java.util.function.Consumer"] }, {"name":"defaultStatusHandler","parameterTypes":["java.util.function.Predicate","org.springframework.web.client.RestClient$ResponseSpec$ErrorHandler"] }, {"name":"defaultStatusHandler","parameterTypes":["org.springframework.web.client.ResponseErrorHandler"] }, {"name":"defaultUriVariables","parameterTypes":["java.util.Map"] }, {"name":"messageConverters","parameterTypes":["java.util.function.Consumer"] }, {"name":"observationConvention","parameterTypes":["org.springframework.http.client.observation.ClientRequestObservationConvention"] }, {"name":"observationRegistry","parameterTypes":["io.micrometer.observation.ObservationRegistry"] }, {"name":"requestFactory","parameterTypes":["org.springframework.http.client.ClientHttpRequestFactory"] }, {"name":"requestInitializer","parameterTypes":["org.springframework.http.client.ClientHttpRequestInitializer"] }, {"name":"requestInitializers","parameterTypes":["java.util.function.Consumer"] }, {"name":"requestInterceptor","parameterTypes":["org.springframework.http.client.ClientHttpRequestInterceptor"] }, {"name":"requestInterceptors","parameterTypes":["java.util.function.Consumer"] }, {"name":"uriBuilderFactory","parameterTypes":["org.springframework.web.util.UriBuilderFactory"] }]
-},
-{
-  "name":"org.springframework.web.client.HttpClientErrorException"
 },
 {
   "name":"org.springframework.web.client.ResponseErrorHandler"
@@ -18083,12 +18598,6 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "methods":[{"name":"getEncoding","parameterTypes":[] }, {"name":"isForceRequestEncoding","parameterTypes":[] }, {"name":"isForceResponseEncoding","parameterTypes":[] }, {"name":"setEncoding","parameterTypes":["java.lang.String"] }, {"name":"setForceEncoding","parameterTypes":["boolean"] }, {"name":"setForceRequestEncoding","parameterTypes":["boolean"] }, {"name":"setForceResponseEncoding","parameterTypes":["boolean"] }]
-},
-{
-  "name":"org.springframework.web.filter.CompositeFilter"
-},
-{
-  "name":"org.springframework.web.filter.CompositeFilter$VirtualFilterChain"
 },
 {
   "name":"org.springframework.web.filter.DelegatingFilterProxy",

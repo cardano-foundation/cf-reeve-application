@@ -2,6 +2,7 @@ package org.cardanofoundation.lob.app;
 
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -37,6 +38,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
+import ch.qos.logback.classic.Logger;
+
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Duration;
@@ -58,6 +61,9 @@ import java.time.Duration;
 @Import({ LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class, LobServiceApp.RestClientConfig.class, LobServiceApp.RestClientConfig.class, SpringWebConfig.class })
 public class LobServiceApp {
 
+    @Value("${lob.blockchain_reader.lob_follower_base_url:http://localhost:9090/api}") 
+    String followerBaseUrl;
+
     public static void main(String[] args) {
         SpringApplication.run(LobServiceApp.class, args);
     }
@@ -67,6 +73,12 @@ public class LobServiceApp {
         return (args) -> {
             log.info("Lob Service started.");
         };
+    }
+
+    @PostConstruct
+    public void printConfig() {
+        log.info("********* follower url configured: {}", followerBaseUrl);
+        
     }
 
     @Configuration

@@ -13,6 +13,9 @@
       "name":"java.util.ImmutableCollections$AbstractImmutableMap"
     },
     {
+      "name":"java.util.ImmutableCollections$Map1"
+    },
+    {
       "name":"java.util.ImmutableCollections$MapN"
     },
     {

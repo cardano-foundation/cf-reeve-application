@@ -1,6 +1,7 @@
 plugins {
     id("org.springframework.boot") version "3.3.13"
     id("org.graalvm.buildtools.native") version "0.11.0"
+    id("org.hibernate.orm") version "6.5.2.Final"
 }
 val isKafkaEnabled: Boolean = System.getenv("KAFKA_ENABLED")?.toBooleanStrictOrNull() ?: true
 dependencies {
@@ -31,9 +32,25 @@ dependencies {
     }
 }
 
-// tasks.withType<org.springframework.boot.gradle.tasks.aot.ProcessAot> {
-//     args("--spring.profiles.active=dev--yaci-dev-kit,pre-prod-prod")
-// }
+tasks.withType<org.springframework.boot.gradle.tasks.aot.ProcessAot> {
+    args("--spring.profiles.active=dev--yaci-dev-kit")
+    environment("SPRING_KAFKA_ENABLED", "false")
+    environment("LOB_ACCOUNTING_REPORTING_CORE_ENABLED", "true")
+    environment("LOB_ORGANISATION_ENABLED", "true")
+    environment("LOB_BLOCKCHAIN_READER_ENABLED", "true")
+    environment("LOB_BLOCKCHAIN_PUBLISHER_ENABLED", "true")
+    environment("LOB_NETSUITE_ENABLED", "true")
+    environment("LOB_CSV_ENABLED", "true")
+    // args("--spring.profiles.active=dev--yaci-dev-kit,pre-prod-prod")
+}
+
+hibernate {
+    enhancement {
+        lazyInitialization(true)
+        dirtyTracking(true)
+        associationManagement(true)
+    }
+}
 
 graalvmNative {
     binaries {

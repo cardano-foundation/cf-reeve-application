@@ -35,6 +35,9 @@
         "pattern": "\\QMETA-INF/services/com.fasterxml.jackson.databind.Module\\E"
       },
       {
+        "pattern": "\\QMETA-INF/services/io.jsonwebtoken.io.Serializer\\E"
+      },
+      {
         "pattern": "\\QMETA-INF/services/io.swagger.v3.core.converter.ModelConverter\\E"
       },
       {
@@ -632,16 +635,16 @@
         "pattern": "\\Qjdk/proxy2/$Proxy284.class\\E"
       },
       {
-        "pattern": "\\Qjdk/proxy2/$Proxy286.class\\E"
-      },
-      {
         "pattern": "\\Qjdk/proxy2/$Proxy287.class\\E"
       },
       {
         "pattern": "\\Qjdk/proxy2/$Proxy288.class\\E"
       },
       {
-        "pattern": "\\Qjdk/proxy2/$Proxy290.class\\E"
+        "pattern": "\\Qjdk/proxy2/$Proxy289.class\\E"
+      },
+      {
+        "pattern": "\\Qjdk/proxy2/$Proxy291.class\\E"
       },
       {
         "pattern": "\\Qjndi.properties\\E"
@@ -728,7 +731,7 @@
         "pattern": "\\Qorg/cardanofoundation/lob/app.class\\E"
       },
       {
-        "pattern": "\\Qorg/cardanofoundation/lob/app/LobServiceApp$$Lambda/0x0000005001e34f18.class\\E"
+        "pattern": "\\Qorg/cardanofoundation/lob/app/LobServiceApp$$Lambda/0x0000005001eeace0.class\\E"
       },
       {
         "pattern": "\\Qorg/cardanofoundation/lob/app/LobServiceApp$$SpringCGLIB$$0.class\\E"
@@ -2039,6 +2042,21 @@
         "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/NotNullValidator.class\\E"
       },
       {
+        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/number/bound/decimal/AbstractDecimalMinValidator.class\\E"
+      },
+      {
+        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/number/bound/decimal/DecimalMinValidatorForBigDecimal.class\\E"
+      },
+      {
+        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/number/sign/PositiveOrZeroValidatorForInteger.class\\E"
+      },
+      {
+        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/number/sign/PositiveOrZeroValidatorForLong.class\\E"
+      },
+      {
+        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/number/sign/PositiveValidatorForBigDecimal.class\\E"
+      },
+      {
         "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/size/SizeValidatorForCollection.class\\E"
       },
       {
@@ -2138,7 +2156,7 @@
         "pattern": "\\Qorg/springdoc/core/configuration/SpringDocJavadocConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springdoc/core/configuration/SpringDocKotlinConfiguration$$Lambda/0x0000005001e9e8e8.class\\E"
+        "pattern": "\\Qorg/springdoc/core/configuration/SpringDocKotlinConfiguration$$Lambda/0x0000005001f4fc60.class\\E"
       },
       {
         "pattern": "\\Qorg/springdoc/core/configuration/SpringDocKotlinConfiguration.class\\E"
@@ -2435,7 +2453,7 @@
         "pattern": "\\Qorg/springframework/boot/ApplicationRunner.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/LazyInitializationExcludeFilter$$Lambda/0x0000005001eba2f0.class\\E"
+        "pattern": "\\Qorg/springframework/boot/LazyInitializationExcludeFilter$$Lambda/0x0000005001f6a860.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/LazyInitializationExcludeFilter.class\\E"
@@ -2489,7 +2507,7 @@
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/expose/IncludeExcludeEndpointFilter.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration$$Lambda/0x0000005001dfaea8.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration$$Lambda/0x0000005001eb4aa0.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration.class\\E"
@@ -2660,13 +2678,13 @@
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/JvmMetricsAutoConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000005001eb0cf8.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000005001f63560.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000005001eb0f18.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000005001f63780.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration$$Lambda/0x0000005001eb0ad8.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration$$Lambda/0x0000005001f63340.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration.class\\E"
@@ -2960,7 +2978,7 @@
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementChildContextConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$$Lambda/0x0000005001eafd90.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$$Lambda/0x0000005001f604d8.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$ApplicationContextFilterConfiguration.class\\E"
@@ -3281,10 +3299,10 @@
         "pattern": "\\Qorg/springframework/boot/autoconfigure/data/jpa/JpaRepositoriesRegistrar.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000005001e1cf98.class\\E"
+        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000005001ed2bf0.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000005001e1d8a8.class\\E"
+        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000005001ed3500.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration.class\\E"
@@ -3536,7 +3554,7 @@
         "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$CommonsDbcp2PoolDataSourceMetadataProviderConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration$$Lambda/0x000000500168b908.class\\E"
+        "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration$$Lambda/0x000000500169fb38.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration.class\\E"
@@ -4913,7 +4931,7 @@
         "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerExceptionResolverComposite.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerMappingIntrospector$$Lambda/0x0000005001e7fdb0.class\\E"
+        "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerMappingIntrospector$$Lambda/0x0000005001f34ee0.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerMappingIntrospector.class\\E"

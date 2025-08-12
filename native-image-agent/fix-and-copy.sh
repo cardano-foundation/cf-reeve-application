@@ -3,8 +3,8 @@
 native_image_agent_dest="../cf-application/src/main/resources/META-INF/native-image"
 resource_config_json="${native_image_agent_dest}/resource-config.json"
 
-# echo "copy agent files to cf-application resources"
-# cp -r META-INF/native-image/* $native_image_agent_dest
+echo "copy agent files to cf-application resources"
+cp -r META-INF/native-image/agent-pid1-20250812T082602Z.tmp10330781666270843769/* $native_image_agent_dest
 
 echo 'remove \QMETA-INF/services/org.hibernate.bytecode.spi.BytecodeProvider\E' "in $resource_config_json"
 echo "  https://github.com/spring-projects/spring-framework/issues/35118 for more information."
