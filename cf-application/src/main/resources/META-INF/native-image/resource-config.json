@@ -41,6 +41,9 @@
         "pattern": "\\QMETA-INF/services/jakarta.el.ExpressionFactory\\E"
       },
       {
+        "pattern": "\\QMETA-INF/services/jakarta.persistence.spi.PersistenceProvider\\E"
+      },
+      {
         "pattern": "\\QMETA-INF/services/jakarta.validation.ConstraintValidator\\E"
       },
       {
@@ -141,6 +144,9 @@
       },
       {
         "pattern": "\\QMETA-INF/services/org.slf4j.spi.SLF4JServiceProvider\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF/services/org.zalando.problem.spi.StackTraceProcessor\\E"
       },
       {
         "pattern": "\\QMETA-INF/spring-autoconfigure-metadata.properties\\E"
@@ -314,7 +320,7 @@
         "pattern": "\\Qdb/migration/postgresql/cf-reeve-db-migrations/common/CF/V1.0_200_1__lob_service_app_cf_netsuite_adapter_module.sql\\E"
       },
       {
-        "pattern": "\\Qdb/migration/postgresql/cf-reeve-db-migrations/common\\E"
+        "pattern": "\\Qdb/migration/postgresql/cf-reeve-db-migrations/common/CF\\E"
       },
       {
         "pattern": "\\Qdb/migration/postgresql/cf-reeve-db-migrations/dev/CF/V1.0_200_0__lob_service_app_cf_organisation_module.sql\\E"
@@ -323,7 +329,7 @@
         "pattern": "\\Qdb/migration/postgresql/cf-reeve-db-migrations/dev/CF/V1.0_200_2__lob_service_app_cf_setup_tables_dev.sql\\E"
       },
       {
-        "pattern": "\\Qdb/migration/postgresql/cf-reeve-db-migrations/dev\\E"
+        "pattern": "\\Qdb/migration/postgresql/cf-reeve-db-migrations/dev/CF\\E"
       },
       {
         "pattern": "\\Qdb/migration/postgresql/common/V1.0_100_1__lob_service_app_spring_data_envers_toolkit.sql\\E"
@@ -590,19 +596,13 @@
         "pattern": "\\Qjdk/proxy2/$Proxy258.class\\E"
       },
       {
-        "pattern": "\\Qjdk/proxy2/$Proxy259.class\\E"
-      },
-      {
-        "pattern": "\\Qjdk/proxy2/$Proxy263.class\\E"
+        "pattern": "\\Qjdk/proxy2/$Proxy260.class\\E"
       },
       {
         "pattern": "\\Qjdk/proxy2/$Proxy264.class\\E"
       },
       {
         "pattern": "\\Qjdk/proxy2/$Proxy265.class\\E"
-      },
-      {
-        "pattern": "\\Qjdk/proxy2/$Proxy266.class\\E"
       },
       {
         "pattern": "\\Qjdk/proxy2/$Proxy267.class\\E"
@@ -620,7 +620,13 @@
         "pattern": "\\Qjdk/proxy2/$Proxy271.class\\E"
       },
       {
-        "pattern": "\\Qjdk/proxy2/$Proxy275.class\\E"
+        "pattern": "\\Qjdk/proxy2/$Proxy272.class\\E"
+      },
+      {
+        "pattern": "\\Qjdk/proxy2/$Proxy273.class\\E"
+      },
+      {
+        "pattern": "\\Qjdk/proxy2/$Proxy277.class\\E"
       },
       {
         "pattern": "\\Qjdk/proxy2/$Proxy284.class\\E"
@@ -639,9 +645,6 @@
       },
       {
         "pattern": "\\Qjndi.properties\\E"
-      },
-      {
-        "pattern": "\\Qkafka/kafka-version.properties\\E"
       },
       {
         "pattern": "\\Qkotlin/Metadata.class\\E"
@@ -725,7 +728,7 @@
         "pattern": "\\Qorg/cardanofoundation/lob/app.class\\E"
       },
       {
-        "pattern": "\\Qorg/cardanofoundation/lob/app/LobServiceApp$$Lambda/0x0000008801e2e4c0.class\\E"
+        "pattern": "\\Qorg/cardanofoundation/lob/app/LobServiceApp$$Lambda/0x0000005001e34f18.class\\E"
       },
       {
         "pattern": "\\Qorg/cardanofoundation/lob/app/LobServiceApp$$SpringCGLIB$$0.class\\E"
@@ -1304,6 +1307,15 @@
         "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_publisher/domain/event/package-info.class\\E"
       },
       {
+        "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_publisher/job/ReportsDispatcherJob.class\\E"
+      },
+      {
+        "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_publisher/job/TransactionDispatcherJob.class\\E"
+      },
+      {
+        "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_publisher/job/WatchDogJob.class\\E"
+      },
+      {
         "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_publisher/package-info.class\\E"
       },
       {
@@ -1370,6 +1382,9 @@
         "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_publisher/service/event_handle.class\\E"
       },
       {
+        "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_publisher/service/event_handle/BlockchainPublisherEventHandler.class\\E"
+      },
+      {
         "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_publisher/service/event_handle/package-info.class\\E"
       },
       {
@@ -1397,7 +1412,7 @@
         "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_reader.class\\E"
       },
       {
-        "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_reader/BlockchainReaderPublicApiIF$Noop.class\\E"
+        "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_reader/BlockchainReaderPublicApi.class\\E"
       },
       {
         "pattern": "\\Qorg/cardanofoundation/lob/app/blockchain_reader/BlockchainReaderPublicApiIF.class\\E"
@@ -1454,6 +1469,9 @@
         "pattern": "\\Qorg/cardanofoundation/lob/app/csv_erp_adapter/config/CacheConfig.class\\E"
       },
       {
+        "pattern": "\\Qorg/cardanofoundation/lob/app/csv_erp_adapter/service/event_handle/CsvEventHandler.class\\E"
+      },
+      {
         "pattern": "\\Qorg/cardanofoundation/lob/app/csv_erp_adapter/service/event_handle/ReeveErpAdapter.class\\E"
       },
       {
@@ -1461,12 +1479,6 @@
       },
       {
         "pattern": "\\Qorg/cardanofoundation/lob/app/csv_erp_adapter/service/internal/TransactionConverter.class\\E"
-      },
-      {
-        "pattern": "\\Qorg/cardanofoundation/lob/app/kafka/consumer/AccountingCoreKafkaConsumer.class\\E"
-      },
-      {
-        "pattern": "\\Qorg/cardanofoundation/lob/app/kafka/publisher/AccountingCoreKafkaPublisher.class\\E"
       },
       {
         "pattern": "\\Qorg/cardanofoundation/lob/app/netsuite_altavia_adapter/config/\\E"
@@ -1524,6 +1536,9 @@
       },
       {
         "pattern": "\\Qorg/cardanofoundation/lob/app/netsuite_altavia_erp_adapter/service/event_handle.class\\E"
+      },
+      {
+        "pattern": "\\Qorg/cardanofoundation/lob/app/netsuite_altavia_erp_adapter/service/event_handle/NetSuiteEventHandler.class\\E"
       },
       {
         "pattern": "\\Qorg/cardanofoundation/lob/app/netsuite_altavia_erp_adapter/service/event_handle/package-info.class\\E"
@@ -2018,6 +2033,15 @@
         "pattern": "\\Qorg/hibernate/usertype/UserType.class\\E"
       },
       {
+        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/NotBlankValidator.class\\E"
+      },
+      {
+        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/NotNullValidator.class\\E"
+      },
+      {
+        "pattern": "\\Qorg/hibernate/validator/internal/constraintvalidators/bv/size/SizeValidatorForCollection.class\\E"
+      },
+      {
         "pattern": "\\Qorg/javers/core/JaversCore.class\\E"
       },
       {
@@ -2114,7 +2138,7 @@
         "pattern": "\\Qorg/springdoc/core/configuration/SpringDocJavadocConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springdoc/core/configuration/SpringDocKotlinConfiguration$$Lambda/0x0000008801eb6f20.class\\E"
+        "pattern": "\\Qorg/springdoc/core/configuration/SpringDocKotlinConfiguration$$Lambda/0x0000005001e9e8e8.class\\E"
       },
       {
         "pattern": "\\Qorg/springdoc/core/configuration/SpringDocKotlinConfiguration.class\\E"
@@ -2411,7 +2435,7 @@
         "pattern": "\\Qorg/springframework/boot/ApplicationRunner.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/LazyInitializationExcludeFilter$$Lambda/0x0000008801ed1160.class\\E"
+        "pattern": "\\Qorg/springframework/boot/LazyInitializationExcludeFilter$$Lambda/0x0000005001eba2f0.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/LazyInitializationExcludeFilter.class\\E"
@@ -2465,7 +2489,7 @@
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/expose/IncludeExcludeEndpointFilter.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration$$Lambda/0x0000008801df7660.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration$$Lambda/0x0000005001dfaea8.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration.class\\E"
@@ -2636,13 +2660,13 @@
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/JvmMetricsAutoConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000008801b0b3a0.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000005001eb0cf8.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000008801ec8440.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$$Lambda/0x0000005001eb0f18.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration$$Lambda/0x0000008801ec8220.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration$$Lambda/0x0000005001eb0ad8.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration.class\\E"
@@ -2936,7 +2960,7 @@
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementChildContextConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$$Lambda/0x0000008801ec22b8.class\\E"
+        "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$$Lambda/0x0000005001eafd90.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$ApplicationContextFilterConfiguration.class\\E"
@@ -3257,10 +3281,10 @@
         "pattern": "\\Qorg/springframework/boot/autoconfigure/data/jpa/JpaRepositoriesRegistrar.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000008801e165d0.class\\E"
+        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000005001e1cf98.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000008801e16ee0.class\\E"
+        "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration$$Lambda/0x0000005001e1d8a8.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration.class\\E"
@@ -3512,7 +3536,7 @@
         "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$CommonsDbcp2PoolDataSourceMetadataProviderConfiguration.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration$$Lambda/0x00000088016b6a38.class\\E"
+        "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration$$Lambda/0x000000500168b908.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration.class\\E"
@@ -4889,7 +4913,7 @@
         "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerExceptionResolverComposite.class\\E"
       },
       {
-        "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerMappingIntrospector$$Lambda/0x0000008801e97db0.class\\E"
+        "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerMappingIntrospector$$Lambda/0x0000005001e7fdb0.class\\E"
       },
       {
         "pattern": "\\Qorg/springframework/web/servlet/handler/HandlerMappingIntrospector.class\\E"
@@ -5159,6 +5183,12 @@
   },
   "bundles": [
     {
+      "name": "jakarta.servlet.LocalStrings",
+      "locales": [
+        ""
+      ]
+    },
+    {
       "name": "jakarta.servlet.http.LocalStrings",
       "locales": [
         ""
@@ -5166,6 +5196,12 @@
     },
     {
       "name": "org.apache.catalina.authenticator.LocalStrings",
+      "locales": [
+        ""
+      ]
+    },
+    {
+      "name": "org.apache.catalina.authenticator.jaspic.LocalStrings",
       "locales": [
         ""
       ]
@@ -5349,9 +5385,6 @@
       "locales": [
         ""
       ]
-    },
-    {
-      "name": "org.postgresql.translation.messages"
     }
   ]
 }

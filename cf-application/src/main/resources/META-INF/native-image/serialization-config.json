@@ -1,5 +1,23 @@
 {
   "types":[
+    {
+      "name":"java.lang.String"
+    },
+    {
+      "name":"java.util.CollSer"
+    },
+    {
+      "name":"java.util.HashMap"
+    },
+    {
+      "name":"java.util.ImmutableCollections$AbstractImmutableMap"
+    },
+    {
+      "name":"java.util.ImmutableCollections$MapN"
+    },
+    {
+      "name":"java.util.LinkedHashMap"
+    }
   ],
   "lambdaCapturingTypes":[
   ],
