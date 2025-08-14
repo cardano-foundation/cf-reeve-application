@@ -398,7 +398,7 @@ services:
 
   follower-app:
     restart: unless-stopped
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-follower-app:main
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-follower-app:release-1.1.0
     networks:
       - lob
     ports:
