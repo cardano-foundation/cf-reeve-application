@@ -10,9 +10,11 @@ spring:
     cleanOnValidationError: ${FLYWAY_CLEAN_ON_ERROR:true}
     locations:
       - classpath:db/migration/{vendor}/common
+      - classpath:db/migration/{vendor}/prod
       - classpath:db/migration/{vendor}/dev
       - classpath:db/migration/{vendor}/cf-reeve-db-migrations/common
       - classpath:db/migration/{vendor}/cf-reeve-db-migrations/prod
+      - classpath:db/migration/{vendor}/cf-reeve-db-migrations/dev
 logging:
   level:
     org.flywaydb: DEBUG
