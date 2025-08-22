@@ -26,6 +26,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -59,6 +60,7 @@ import java.time.Duration;
 @EnableAutoConfiguration
 @Slf4j
 @Import({ LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class, LobServiceApp.RestClientConfig.class, LobServiceApp.RestClientConfig.class, SpringWebConfig.class })
+@EnableAspectJAutoProxy
 public class LobServiceApp {
 
     @Value("${lob.blockchain_reader.lob_follower_base_url:http://localhost:9090/api}") 
