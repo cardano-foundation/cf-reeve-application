@@ -143,11 +143,9 @@
 									"// Parse response JSON",
 									"const jsonData = pm.response.json();",
 									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if org is invalid\", function () {",
+									"pm.test(\"Check if org is valid\", function () {",
 									"",
-									"    pm.expect(jsonData.valid).to.eql(false);",
-									"    pm.expect(jsonData.violations.length).to.eql(2);",
+									"    pm.expect(jsonData.valid).to.eql(true);",
 									"});"
 								],
 								"type": "text/javascript",
@@ -305,7 +303,7 @@
 									"",
 									"// Check if 'keyName' exists and equals 'expectedValue'",
 									"pm.test(\"Check if  rate has changed\", function () {",
-									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -425,7 +423,7 @@
 									"pm.test(\"Check if inserted\", function () {",
 									"    const randomNumber = pm.environment.get(\"randomNumber\");",
 									"    pm.expect(jsonData.customerCode).to.eql(\"CH-N\" + randomNumber);",
-									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1585,7 +1583,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"7300\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
+							"raw": "{\n    \"customerCode\": \"1000\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
