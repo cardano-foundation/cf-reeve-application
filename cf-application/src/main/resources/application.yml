@@ -158,6 +158,11 @@ lob:
     topics:
       report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
+    watchdog:
+      rollback:
+        grace:
+          period:
+            minutes: ${LOB_BLOCKCHAIN_PUBLISHER_WATCHDOG_ROLLBACK_GRACE_PERIOD_MINUTES:15}
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}

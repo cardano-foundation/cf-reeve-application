@@ -269,7 +269,7 @@ services:
 
   yaci-cli:
     restart: unless-stopped
-    image: bloxbean/yaci-cli:0.10.2
+    image: bloxbean/yaci-cli:0.11.0-beta1
     networks:
       - lob
     env_file:
@@ -281,7 +281,8 @@ services:
     ports:
       - "3001:3001"
       - "8081:8080"
-    entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
+      - "10000:10000"
+    entrypoint: "/app/yaci-cli create-node -o --start --enable-multi-node --stake-ratio-factor 10 --block-time 2"
 #    labels:
 #      - "traefik.enable=true"
 #      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
@@ -299,7 +300,7 @@ services:
 
   yaci-viewer:
     restart: unless-stopped
-    image: bloxbean/yaci-viewer:0.10.2
+    image: bloxbean/yaci-viewer:0.11.0-beta1
     ports:
       - "5173:5173"
     env_file:
