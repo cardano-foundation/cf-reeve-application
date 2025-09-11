@@ -111,6 +111,10 @@ services:
       LOB_SECURITY_CLAMAV_ENABLED: true
       LOB_SECURITY_CLAMAV_HOST: clamav
       LOB_SECURITY_CLAMAV_PORT: 3310
+      SECURITY_CSPPOLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' ${API_URL:-http://localhost:9000} ${KC_BASE_URL:-http://localhost:8080}; frame-src ${API_URL:-http://localhost:9000}"
+      SERVER_USEFORWARDHEADERS: true
+      SERVER_FORWARDHEADERSSTRATEGY: framework
+      OAUTH2_REDIRECT_URL: ${API_URL:-http://localhost:9000}/swagger-ui/oauth2-redirect.html
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     healthcheck:
@@ -141,6 +145,7 @@ services:
 
   clamav:
     image: clamav/clamav:1.4.2
+    restart: unless-stopped
     platform: linux/amd64
     ports:
       - "3310:3310"
