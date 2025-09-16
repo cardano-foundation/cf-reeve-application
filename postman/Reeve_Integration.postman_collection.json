@@ -303,7 +303,7 @@
 									"",
 									"// Check if 'keyName' exists and equals 'expectedValue'",
 									"pm.test(\"Check if  rate has changed\", function () {",
-									"    pm.expect(jsonData.rate).to.eql(\"0\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -423,7 +423,7 @@
 									"pm.test(\"Check if inserted\", function () {",
 									"    const randomNumber = pm.environment.get(\"randomNumber\");",
 									"    pm.expect(jsonData.customerCode).to.eql(\"CH-N\" + randomNumber);",
-									"    pm.expect(jsonData.rate).to.eql(\"0\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
 									"});"
 								],
 								"type": "text/javascript",
