@@ -1,3 +1,13 @@
+x-healthcheck: &healthcheck
+  interval: 2s
+  timeout: 3s
+  retries: 5
+  start_period: 2s
+
+x-python-env: &python-env
+  PYTHONUNBUFFERED: 1
+  PYTHONIOENCODING: UTF-8
+
 services:
 
   postgres:
@@ -73,6 +83,12 @@ services:
       LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
       LOB_NETSUITE_CLIENT_TOKEN_URL: ${LOB_NETSUITE_CLIENT_TOKEN_URL:-<enter value>}
       LOB_NETSUITE_CLIENT_RECORDSPERCALL: 1000
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED: true
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_URL: http://keria:3901
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_BOOTURL: http://keria:3903
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN: 0ADF2TpptgqcDE5IQUF1H
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME: identity
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE: agent
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
@@ -382,6 +398,23 @@ services:
       options:
         max-size: "200k"
         max-file: "100"
+  keria:
+    image: ${KERIA_IMAGE:-weboftrust/keria}:${KERIA_IMAGE_TAG:-0.2.0-dev6}
+    environment:
+      KERI_AGENT_CORS: 1
+      <<: *python-env
+    volumes:
+      - ./keri-config/keria.json:/keria/config/keri/cf/keria.json
+    command: start --config-dir /keria/config --config-file keria.json --name agent  # Adjusted command line
+    healthcheck:
+      test: wget --spider http://keria:3902/spec.yaml
+      <<: *healthcheck
+    ports:
+      - 3901:3901
+      - 3902:3902
+      - 3903:3903
+    networks:
+      - lob
 
 volumes:
   postgres-data:
