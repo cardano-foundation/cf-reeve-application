@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "639687ef-394d-4b27-924a-e6e2e4f258ba",
+		"_postman_id": "6e11bb3e-540f-4c56-a108-2ffb7fbe6d2d",
 		"name": "Reeve Integration",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "32834089"
@@ -303,7 +303,7 @@
 									"",
 									"// Check if 'keyName' exists and equals 'expectedValue'",
 									"pm.test(\"Check if  rate has changed\", function () {",
-									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -322,7 +322,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -381,7 +381,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N123\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N123\",\n    \"description\": \"description\",\n    \"rate\": \"0\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -423,7 +423,7 @@
 									"pm.test(\"Check if inserted\", function () {",
 									"    const randomNumber = pm.environment.get(\"randomNumber\");",
 									"    pm.expect(jsonData.customerCode).to.eql(\"CH-N\" + randomNumber);",
-									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -456,7 +456,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N{{randomNumber}}\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\",\n    \"active\": true\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N{{randomNumber}}\",\n    \"description\": \"description\",\n    \"rate\": \"0\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -529,7 +529,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\",\n    \"active\": true\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -638,7 +638,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"referenceCode\": \"1100\",\n    \"name\": \"New Postman Name\"\n}",
+							"raw": "{\n    \"referenceCode\": \"1100\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -697,7 +697,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"referenceCode\": \"11010101\",\n    \"name\": \"New Postman Name\"\n}",
+							"raw": "{\n    \"referenceCode\": \"11010101\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -954,7 +954,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"CF 000002 2023\",\n        \"name\": \"New Postman Name\"\n    }",
+							"raw": "{\n    \"customerCode\": \"CF 000002 2023\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1013,7 +1013,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"CF 000002 2023 Postman Unkown\",\n        \"name\": \"New Postman Name\"\n    }",
+							"raw": "{\n    \"customerCode\": \"CF 000002 2023 Postman Unkown\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1088,7 +1088,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"{{randomNumber}}\",\n        \"name\": \"New Postman Name\"\n    }",
+							"raw": "{\n    \"customerCode\": \"{{randomNumber}}\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1378,7 +1378,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"ADA\",\n        \"currencyId\": \"New Postman Name\"\n}",
+							"raw": "{\n    \"customerCode\": \"ADA\",\n    \"currencyId\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1453,7 +1453,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"{{randomNumber}}\",\n        \"currencyId\": \"New Postman Name\",\n        \"active\": true\n}",
+							"raw": "{\n    \"customerCode\": \"{{randomNumber}}\",\n    \"currencyId\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
