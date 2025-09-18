@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "639687ef-394d-4b27-924a-e6e2e4f258ba",
+		"_postman_id": "6e11bb3e-540f-4c56-a108-2ffb7fbe6d2d",
 		"name": "Reeve Integration",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "32834089"
@@ -303,7 +303,7 @@
 									"",
 									"// Check if 'keyName' exists and equals 'expectedValue'",
 									"pm.test(\"Check if  rate has changed\", function () {",
-									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -423,7 +423,7 @@
 									"pm.test(\"Check if inserted\", function () {",
 									"    const randomNumber = pm.environment.get(\"randomNumber\");",
 									"    pm.expect(jsonData.customerCode).to.eql(\"CH-N\" + randomNumber);",
-									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0\");",
 									"});"
 								],
 								"type": "text/javascript",
