@@ -290,7 +290,7 @@ services:
 
   yaci-cli:
     restart: unless-stopped
-    image: bloxbean/yaci-cli:0.10.2
+    image: bloxbean/yaci-cli:0.10.6
     networks:
       - lob
     env_file:
