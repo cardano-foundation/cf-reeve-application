@@ -320,7 +320,7 @@ services:
 
   yaci-viewer:
     restart: unless-stopped
-    image: bloxbean/yaci-viewer:0.10.2
+    image: bloxbean/yaci-viewer:0.10.6
     ports:
       - "5173:5173"
     env_file:
