@@ -1182,7 +1182,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -1197,7 +1198,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"debitReferenceCode\": \"1100\",\n    \"creditReferenceCode\": \"1100\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
+							"raw": "{\n    \"debitReferenceCode\": \"1100\",\n    \"creditReferenceCode\": \"1100\",\n    \"name\": \"New Postman Name\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1230,7 +1231,8 @@
 									""
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -1244,7 +1246,8 @@
 									"pm.environment.set(\"randomNumber\", randomNumber);"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -1259,7 +1262,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"debitReferenceCode\": \"1103\",\n    \"creditReferenceCode\": \"1103\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
+							"raw": "{\n    \"debitReferenceCode\": \"1103\",\n    \"creditReferenceCode\": \"1103\",\n    \"name\": \"New Postman Name\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2130,7 +2133,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -2144,13 +2148,34 @@
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"extractorType\": \"NETSUITE\",\n  \"dateFrom\": \"2013-01-02\",\n  \"dateTo\": \"2024-05-01\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "organisationId",
+									"value": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+									"type": "text"
+								},
+								{
+									"key": "extractorType",
+									"value": "CSV",
+									"type": "text"
+								},
+								{
+									"key": "dateFrom",
+									"value": "2013-01-02",
+									"type": "text"
+								},
+								{
+									"key": "dateTo",
+									"value": "2024-05-01",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/thkammer/Documents/dev/cardano/java/cf-lob-platform/docs/examples/transactions_csv_example.csv"
 								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/extraction",
