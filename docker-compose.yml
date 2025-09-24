@@ -426,6 +426,8 @@ services:
       <<: *healthcheck
     ports:
       - 7723:7723
+    networks:
+      - lob
   witness-demo:
     image: weboftrust/keri-witness-demo:1.1.0
     environment:
@@ -442,6 +444,8 @@ services:
       - 5645:5645
       - 5646:5646
       - 5647:5647
+    networks:
+      - lob
 
 volumes:
   postgres-data:
