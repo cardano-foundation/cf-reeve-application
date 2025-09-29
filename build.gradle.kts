@@ -15,8 +15,8 @@ subprojects {
     apply(plugin = "com.github.ben-manes.versions")
     apply(plugin = "info.solidsoft.pitest")
 
-    group = "de.cardanofoundation"
-    version = "1.1.0-SNAPSHOT"
+    group = "org.cardanofoundation"
+    version = "1.1.0"
 
     sourceSets {
         named("main") {
