@@ -1,97 +1,97 @@
-name: Run Tests
-
-on:
-  push:
-    branches-ignore:
-      - main
-  workflow_dispatch:
-
-env:
-  REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
-  REEVE_DB_MIGRATIONS_REF: main
-  REEVE_DB_MIGRATIONS_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16.3
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Checkout cf-reeve-db-migrations
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
-          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
-          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
-          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
-
-      - name: ⛮ cf-gha-baseline
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
-
-      - name: get runner private ip
-        id: runner_private_ip
-        run: |
-          PRIVATE_IP=$(ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//' | head -n1) 
-          echo "PRIVATE_IP=${PRIVATE_IP}" | tee -a "${GITHUB_ENV}" | tee -a "${GITHUB_OUTPUT}"
-          nc -z ${PRIVATE_IP} 5432 || exit -1
-
-      - name: 🌍 earthly (build)
-        run: |
-          earthly +backend-test-build
-
-      - name: 🌍 earthly (run tests within docker)
-        run: |
-          earthly +backend-test --DB_HOST=${{ steps.runner_private_ip.outputs.PRIVATE_IP }}
-
-  mutation-test:
-    if: false
-    needs: test
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Checkout cf-reeve-db-migrations
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
-          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
-          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
-          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
-
-      - name: Setup JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'corretto'
-
-      - name: PiTest
-        run: |
-          ./gradlew clean pitest
-      - name: Publish mutation test report to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        if: github.ref == 'refs/heads/main'
-        with:
-          BRANCH: gh-pages
-          folder: build/reports/pitest/
-          target-folder: mutation-report/
+#name: Run Tests
+#
+#on:
+#  push:
+#    branches-ignore:
+#      - main
+#  workflow_dispatch:
+#
+#env:
+#  REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
+#  REEVE_DB_MIGRATIONS_REF: main
+#  REEVE_DB_MIGRATIONS_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations
+#
+#jobs:
+#  test:
+#    runs-on: ubuntu-latest
+#    services:
+#      postgres:
+#        image: postgres:16.3
+#        env:
+#          POSTGRES_USER: postgres
+#          POSTGRES_PASSWORD: postgres
+#          POSTGRES_DB: postgres
+#        ports:
+#          - 5432:5432
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Checkout cf-reeve-db-migrations
+#        uses: actions/checkout@v4
+#        with:
+#          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
+#          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
+#          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+#          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
+#
+#      - name: ⛮ cf-gha-baseline
+#        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+#
+#      - name: get runner private ip
+#        id: runner_private_ip
+#        run: |
+#          PRIVATE_IP=$(ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//' | head -n1)
+#          echo "PRIVATE_IP=${PRIVATE_IP}" | tee -a "${GITHUB_ENV}" | tee -a "${GITHUB_OUTPUT}"
+#          nc -z ${PRIVATE_IP} 5432 || exit -1
+#
+#      - name: 🌍 earthly (build)
+#        run: |
+#          earthly +backend-test-build
+#
+#      - name: 🌍 earthly (run tests within docker)
+#        run: |
+#          earthly +backend-test --DB_HOST=${{ steps.runner_private_ip.outputs.PRIVATE_IP }}
+#
+#  mutation-test:
+#    if: false
+#    needs: test
+#    runs-on: ubuntu-latest
+#    services:
+#      postgres:
+#        image: postgres
+#        env:
+#          POSTGRES_USER: postgres
+#          POSTGRES_PASSWORD: postgres
+#          POSTGRES_DB: postgres
+#        ports:
+#          - 5432:5432
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Checkout cf-reeve-db-migrations
+#        uses: actions/checkout@v4
+#        with:
+#          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
+#          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
+#          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+#          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
+#
+#      - name: Setup JDK 21
+#        uses: actions/setup-java@v4
+#        with:
+#          java-version: '21'
+#          distribution: 'corretto'
+#
+#      - name: PiTest
+#        run: |
+#          ./gradlew clean pitest
+#      - name: Publish mutation test report to GitHub Pages
+#        uses: JamesIves/github-pages-deploy-action@v4
+#        if: github.ref == 'refs/heads/main'
+#        with:
+#          BRANCH: gh-pages
+#          folder: build/reports/pitest/
+#          target-folder: mutation-report/

@@ -15,8 +15,8 @@ subprojects {
     apply(plugin = "com.github.ben-manes.versions")
     apply(plugin = "info.solidsoft.pitest")
 
-    group = "de.cardanofoundation"
-    version = "1.0.1-SNAPSHOT"
+    group = "org.cardanofoundation"
+    version = "1.1.0"
 
     sourceSets {
         named("main") {
@@ -31,6 +31,14 @@ subprojects {
         mavenCentral()
         maven {
             url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+        }
+        
+        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL").orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
+        if (gitlabMavenRegistryUrl.isPresent()) {
+            maven {
+                name = "gitlab"
+                url = uri(gitlabMavenRegistryUrl)
+            }
         }
     }
 
@@ -47,7 +55,7 @@ subprojects {
     extra["springBootVersion"] = "3.3.3"
     extra["springCloudVersion"] = "2023.0.0"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["cfLobPlatformVersion"] = "1.0.0"
+    extra["cfLobPlatformVersion"] = "1.1.0"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
@@ -55,6 +63,11 @@ subprojects {
 
         implementation("org.javers:javers-core:7.6.1")
         implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
+
+        // testing
+        implementation("org.springframework.boot:spring-boot-starter-actuator")
+        implementation("io.micrometer:micrometer-core")
+        implementation("io.micrometer:micrometer-registry-prometheus")
 
         testCompileOnly("org.projectlombok:lombok:1.18.32")
         testAnnotationProcessor("org.projectlombok:lombok:1.18.32")

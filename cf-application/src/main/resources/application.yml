@@ -1,6 +1,16 @@
 server:
   port: ${SERVER_PORT:9000}
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    metrics:
+      enabled: true
+  metrics:
+    enable:
+      all: true
 spring:
   task:
     execution:
@@ -21,11 +31,18 @@ spring:
           json:
             trusted:
               packages: '*'
+        fetch:
+            max:
+                bytes: 15728640 # 15MB
       enable-auto-commit: false
       auto-commit-interval: 1000
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       retries: 0
+      properties:
+        max:
+          request:
+            size: 15728640 # 15MB
   rabbitmq:
     enabled: false
 
@@ -88,9 +105,13 @@ spring:
     spring.web.resources.add-mappings: false
     spring.mvc.throw-exception-if-no-handler-found: true
     # force charset in request and responses
-    servlet:
-      encoding:
-        force: true
+  servlet:
+    encoding:
+      force: true
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 
     exposure:
       include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,flyway,applicationmodules}
@@ -128,6 +149,7 @@ lob:
       reconcilation-started-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationStartedEvent
       reconcilation-chunk-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationChunkEvent
       reconcilation-finalisation-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationFinalisationEvent
+      validate-ingestion-response-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionResponseEvent
   organisation:
     enabled: ${LOB_ORGANISATION_ENABLED:true}
   blockchain_publisher:
@@ -150,6 +172,7 @@ lob:
         source: EXPLICIT
     topics:
       scheduled-ingestion-event: accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent
+      validate-ingestion-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent
       transaction-batch-created-event: accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent
       scheduled-reconcilation-event: accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent
       reconcilation-created-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent
@@ -161,13 +184,21 @@ lob:
       certificate-id: ${LOB_NETSUITE_CLIENT_CERTIFICATE_ID:<enter value>}
       recordspercall: ${LOB_NETSUITE_CLIENT_RECORDSPERCALL:10000}
       timeout-seconds: ${LOB_NETSUITE_CLIENT_TIMEOUT_SECONDS:300}
-
+  csv:
+    enabled: ${LOB_CSV_ENABLED:true}
+    delimiter: ${LOB_CSV_DELIMITER:,}
+    send-batch-size: ${LOB_CSV_SEND_BATCH_SIZE:100}
   l1:
     transaction:
       metadata:
         validation:
           enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
       metadata_label: ${LOB_L1_TRANSACTION_METADATA_LABEL:1447}
+  security:
+    clamav:
+      enabled: ${LOB_SECURITY_CLAMAV_ENABLED:false}
+      host: ${LOB_SECURITY_CLAMAV_HOST:localhost}
+      port: ${LOB_SECURITY_CLAMAV_PORT:3310}
 
 # yaci store
 store:

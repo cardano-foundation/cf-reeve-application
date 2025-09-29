@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchChunkEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchFailedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchStartedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionResponseEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationChunkEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationFailedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationFinalisationEvent;
@@ -37,6 +38,14 @@ public class NetsuiteKafkaPublisher {
     private String transactionBatchFailedEventTopic;
     @Value("${lob.accounting_reporting_core.topics.transaction-batch-started-event}")
     private String transactionBatchStartedEventTopic;
+    @Value("${lob.accounting_reporting_core.topics.validate-ingestion-response-event}")
+    private String validateIngestionResponseEventTopic;
+
+    @EventListener
+    public void handleValidateIngestionResponseEvent(ValidateIngestionResponseEvent event) {
+        log.info("Sending ValidateIngestionResponseEvent to Kafka: {}", event);
+        kafkaTemplate.send(validateIngestionResponseEventTopic, event);
+    }
 
     @EventListener
     public void handleReconcilationFailedEvent(ReconcilationFailedEvent event) {

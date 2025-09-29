@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchChunkEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchFailedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchStartedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionResponseEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.ReportsLedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationChunkEvent;
@@ -32,6 +33,12 @@ public class AccountingCoreKafkaConsumer {
     @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reports-ledger-updated-event}")
     public void listen(ReportsLedgerUpdatedEvent message) {
         log.info("Received ReportsLedgerUpdatedEvent from Kafka: {}", message);
+        applicationEventPublisher.publishEvent(message);
+    }
+
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.validate-ingestion-response-event}")
+    public void listen(ValidateIngestionResponseEvent message) {
+        log.info("Received ValidateIngestionResponseEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 

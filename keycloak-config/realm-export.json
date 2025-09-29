@@ -1,12 +1,14 @@
 [
   {
     "id": "master",
+    "sslRequired": "none",
     "enabled": true,
     "realm": "master",
-    "loginTheme": "reeve_v4"
+    "loginTheme": "reeve_v7"
   },
   {
     "realm": "reeve-master",
+    "sslRequired": "none",
     "enabled": true,
     "displayName": "Reeve",
     "browserSecurityHeaders": {

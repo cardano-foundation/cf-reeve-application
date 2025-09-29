@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -23,6 +24,12 @@ public class NetSuiteKafkaConsumer {
 
     @KafkaListener(topics = "${lob.netsuite.topics.scheduled-ingestion-event}")
     public void listen(ScheduledIngestionEvent message) {
+        applicationEventPublisher.publishEvent(message);
+    }
+
+    @KafkaListener(topics = "${lob.netsuite.topics.validate-ingestion-event}")
+    public void listen(ValidateIngestionEvent message) {
+        log.info("Received ValidateIngestionEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
