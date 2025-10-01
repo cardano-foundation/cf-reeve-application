@@ -2133,12 +2133,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-<<<<<<< HEAD
-								"packages": {}
-=======
 								"packages": {},
 								"requests": {}
->>>>>>> release/1.1.0
 							}
 						}
 					],
