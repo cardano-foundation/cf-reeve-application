@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "639687ef-394d-4b27-924a-e6e2e4f258ba",
+		"_postman_id": "6e11bb3e-540f-4c56-a108-2ffb7fbe6d2d",
 		"name": "Reeve Integration",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "32834089"
@@ -143,8 +143,7 @@
 									"// Parse response JSON",
 									"const jsonData = pm.response.json();",
 									"",
-									"// Check if 'keyName' exists and equals 'expectedValue'",
-									"pm.test(\"Check if org is invalid\", function () {",
+									"pm.test(\"Check if org is valid\", function () {",
 									"",
 									"    pm.expect(jsonData.valid).to.eql(false);",
 									"    pm.expect(jsonData.violations.length).to.eql(2);",
@@ -305,7 +304,7 @@
 									"",
 									"// Check if 'keyName' exists and equals 'expectedValue'",
 									"pm.test(\"Check if  rate has changed\", function () {",
-									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -324,7 +323,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -383,7 +382,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N123\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N123\",\n    \"description\": \"description\",\n    \"rate\": \"0\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -425,7 +424,7 @@
 									"pm.test(\"Check if inserted\", function () {",
 									"    const randomNumber = pm.environment.get(\"randomNumber\");",
 									"    pm.expect(jsonData.customerCode).to.eql(\"CH-N\" + randomNumber);",
-									"    pm.expect(jsonData.rate).to.eql(\"0E-7\");",
+									"    pm.expect(jsonData.rate).to.eql(\"0\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -458,7 +457,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N{{randomNumber}}\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N{{randomNumber}}\",\n    \"description\": \"description\",\n    \"rate\": \"0\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -531,7 +530,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0E-7\"\n}",
+							"raw": "{\n    \"customerCode\": \"CH-N\",\n    \"description\": \"description\",\n    \"rate\": \"0\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -640,7 +639,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"referenceCode\": \"1100\",\n    \"name\": \"New Postman Name\"\n}",
+							"raw": "{\n    \"referenceCode\": \"1100\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -699,7 +698,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"referenceCode\": \"11010101\",\n    \"name\": \"New Postman Name\"\n}",
+							"raw": "{\n    \"referenceCode\": \"11010101\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -956,7 +955,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"CF 000002 2023\",\n        \"name\": \"New Postman Name\"\n    }",
+							"raw": "{\n    \"customerCode\": \"CF 000002 2023\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1015,7 +1014,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"CF 000002 2023 Postman Unkown\",\n        \"name\": \"New Postman Name\"\n    }",
+							"raw": "{\n    \"customerCode\": \"CF 000002 2023 Postman Unkown\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1090,7 +1089,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"{{randomNumber}}\",\n        \"name\": \"New Postman Name\"\n    }",
+							"raw": "{\n    \"customerCode\": \"{{randomNumber}}\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1184,7 +1183,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -1199,7 +1199,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"debitReferenceCode\": \"1100\",\n    \"creditReferenceCode\": \"1100\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
+							"raw": "{\n    \"debitReferenceCode\": \"1100\",\n    \"creditReferenceCode\": \"1100\",\n    \"name\": \"New Postman Name\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1232,7 +1232,8 @@
 									""
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -1246,7 +1247,8 @@
 									"pm.environment.set(\"randomNumber\", randomNumber);"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -1261,7 +1263,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"debitReferenceCode\": \"1103\",\n    \"creditReferenceCode\": \"1103\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
+							"raw": "{\n    \"debitReferenceCode\": \"1103\",\n    \"creditReferenceCode\": \"1103\",\n    \"name\": \"New Postman Name\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1380,7 +1382,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"ADA\",\n        \"currencyId\": \"New Postman Name\"\n}",
+							"raw": "{\n    \"customerCode\": \"ADA\",\n    \"currencyId\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1455,7 +1457,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"customerCode\": \"{{randomNumber}}\",\n        \"currencyId\": \"New Postman Name\"\n}",
+							"raw": "{\n    \"customerCode\": \"{{randomNumber}}\",\n    \"currencyId\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1585,7 +1587,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customerCode\": \"7300\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
+							"raw": "{\n    \"customerCode\": \"1000\",\n    \"name\": \"New Postman Name\",\n    \"active\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2132,7 +2134,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -2146,13 +2149,34 @@
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"extractorType\": \"NETSUITE\",\n  \"dateFrom\": \"2013-01-02\",\n  \"dateTo\": \"2024-05-01\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "organisationId",
+									"value": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94",
+									"type": "text"
+								},
+								{
+									"key": "extractorType",
+									"value": "CSV",
+									"type": "text"
+								},
+								{
+									"key": "dateFrom",
+									"value": "2013-01-02",
+									"type": "text"
+								},
+								{
+									"key": "dateTo",
+									"value": "2024-05-01",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/thkammer/Documents/dev/cardano/java/cf-lob-platform/docs/examples/transactions_csv_example.csv"
 								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/extraction",
@@ -2838,6 +2862,65 @@
 								"api",
 								"v1",
 								"report-search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Generate Report Preview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check if response status code is 404 -- Currently we don't have any test reports",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Total is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.total).to.eql(1);",
+									"})",
+									"",
+									"pm.test(\"Profit for the Year is -800\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.report[0].profitForTheYear).to.eql('-800');",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"reportType\": \"INCOME_STATEMENT\",\n  \"intervalType\": \"YEAR\",\n  \"year\": 2024,\n  \"period\": 3,\n  \"preview\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/report-generate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"report-generate"
 							]
 						}
 					},
