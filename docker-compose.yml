@@ -41,6 +41,7 @@ services:
       VITE_KEYCLOAK_REALM: reeve-master
       VITE_KEYCLOAK_CLIENT_ID: webclient
       VITE_KEYCLOAK_REDIRECT_URL: ${FRONTEND_URL:-http://localhost:3000}/auth/login
+      VITE_PUBLIC_INTERFACE_OFF: ${VITE_PUBLIC_INTERFACE_OFF:-true}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend-http.entrypoints=web"

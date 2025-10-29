@@ -28,6 +28,7 @@ services:
       VITE_KEYCLOAK_URL: ${KC_FRONTEND_HOSTNAME:-http://localhost:8080}
       VITE_KEYCLOAK_REALM: cf-master
       VITE_KEYCLOAK_CLIENT_ID: webclient
+      VITE_PUBLIC_INTERFACE_OFF: ${VITE_PUBLIC_INTERFACE_OFF:-true}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend-http.entrypoints=web"
