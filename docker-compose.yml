@@ -87,7 +87,7 @@ services:
       LOB_BLOCKCHAIN_PUBLISHER_KERI_URL: http://keria:3901
       LOB_BLOCKCHAIN_PUBLISHER_KERI_BOOTURL: http://keria:3903
       LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN: 0ADF2TpptgqcDE5IQUF1H
-      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME: identity
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME: reeve
       LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE: agent
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
@@ -290,7 +290,7 @@ services:
 
   yaci-cli:
     restart: unless-stopped
-    image: bloxbean/yaci-cli:0.10.6
+    image: bloxbean/yaci-cli:0.11.0-beta1
     networks:
       - lob
     env_file:
@@ -302,7 +302,8 @@ services:
     ports:
       - "${YACI_DEVNET_EXPOSED_PORT:-3001}:3001"
       - "8081:8080"
-    entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
+      - 10000:10000
+    entrypoint: [ "/app/yaci-cli", "create-node", "--enable-multi-node", "--block-time", "2", "-o", "--start" ]
 #    labels:
 #      - "traefik.enable=true"
 #      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
@@ -320,14 +321,14 @@ services:
 
   yaci-viewer:
     restart: unless-stopped
-    image: bloxbean/yaci-viewer:0.10.6
+    image: bloxbean/yaci-viewer:0.11.0-beta1
     ports:
       - "5173:5173"
     env_file:
       - ./yaci-config/env
     environment:
       PUBLIC_INDEXER_BASE_URL: ${PUBLIC_INDEXER_BASE_URL:-http://yaci-cli:8080/api/v1}
-      PUBLIC_INDEXER_WS_URL: ${PUBLIC_INDEXER_WS_URL:-ws://localhost:8080/ws/liveblocks}
+      PUBLIC_INDEXER_WS_URL: ${PUBLIC_INDEXER_WS_URL:-ws://localhost:8081/ws/liveblocks}
     networks:
       - lob
     labels:
