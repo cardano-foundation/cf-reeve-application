@@ -400,6 +400,7 @@ services:
         max-file: "100"
   keria:
     image: ${KERIA_IMAGE:-weboftrust/keria}:${KERIA_IMAGE_TAG:-0.2.0-dev6}
+    restart: unless-stopped
     environment:
       KERI_AGENT_CORS: 1
       <<: *python-env
