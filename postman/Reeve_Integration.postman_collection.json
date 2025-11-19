@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6e11bb3e-540f-4c56-a108-2ffb7fbe6d2d",
+		"_postman_id": "b9750b2a-2de4-4e56-bdb7-2b37b526f705",
 		"name": "Reeve Integration",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "32834089"
@@ -2921,6 +2921,181 @@
 								"api",
 								"v1",
 								"report-generate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ReportingV2",
+			"item": [
+				{
+					"name": "GET All Reports",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reporting/reports?organisationId={{orgId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reporting",
+								"reports"
+							],
+							"query": [
+								{
+									"key": "organisationId",
+									"value": "{{orgId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET All Templates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reporting/templates?organisationId={{orgId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reporting",
+								"templates"
+							],
+							"query": [
+								{
+									"key": "organisationId",
+									"value": "{{orgId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Template",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organisationId\": \"{{orgId}}\",\n    \"name\": \"TestTemplate\",\n    \"description\": \"Description of the report\",\n    \"currencyId\": \"CHF\",\n    \"fields\": [\n        {\n            \"fieldName\": \"Field1\",\n            \"accumulated\": true,\n            \"accumulatedYearly\": false,\n            \"accumulatedPreviousYear\": false,\n            \"negated\": false,\n            \"childFields\": [\n                {\n                    \"fieldName\": \"Field2\",\n                    \"accumulated\": true,\n                    \"accumulatedYearly\": false,\n                    \"accumulatedPreviousYear\": false,\n                    \"negated\": false\n                }\n            ]\n        },\n        {\n            \"fieldName\": \"Field3\",\n            \"accumulated\": true,\n            \"accumulatedYearly\": false,\n            \"accumulatedPreviousYear\": false,\n            \"negated\": false\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reporting/templates",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reporting",
+								"templates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Report",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organisationId\": \"{{orgId}}\",\n    \"reportTemplateId\": 1,\n    \"name\": \"TestReport1\",\n    \"intervalType\": \"QUARTERLY\",\n    \"period\": 1,\n    \"year\": 2025,\n    \"fields\": [\n        {\n            \"templateFieldId\": 1,\n            \"value\": 15.0,\n            \"childFields\": [\n                {\n                    \"templateFieldId\": 2,\n                    \"value\": 20.0\n                }\n            ]\n        },\n        {\n            \"templateFieldId\": 3,\n            \"value\": 30.1\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reporting/reports",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reporting",
+								"reports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Report",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organisationId\": \"{{orgId}}\",\n    \"reportTemplateId\": 1,\n    \"name\": \"TestReport1\",\n    \"intervalType\": \"QUARTERLY\",\n    \"period\": 1,\n    \"year\": 2025,\n    \"fields\": [\n        {\n            \"templateFieldId\": 1,\n            \"value\": 15.0,\n            \"childFields\": [\n                {\n                    \"templateFieldId\": 2,\n                    \"value\": 20.0\n                }\n            ]\n        },\n        {\n            \"templateFieldId\": 3,\n            \"value\": 30.1\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reporting/reports/4",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reporting",
+								"reports",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Report 1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reporting/reports/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reporting",
+								"reports",
+								"1"
 							]
 						}
 					},
