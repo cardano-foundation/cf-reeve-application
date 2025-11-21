@@ -1,4 +1,4 @@
-name: Postman Tests
+name: e2e Tests
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ env:
   GITLAB_MAVEN_REGISTRY_URL: ${{ secrets.GITLAB_MAVEN_REGISTRY_URL }}
 
 jobs:
-  test:
+  postman:
     runs-on: ubuntu-latest
 
     steps:
@@ -49,3 +49,42 @@ jobs:
         run: |
           newman run postman/Reeve_Integration.postman_collection.json \
             --environment postman/Reeve_env.postman_environment.json
+
+  playwright:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Checkout cf-reeve-db-migrations
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
+          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
+          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
+
+      - name: Set up Docker Compose
+        run: |
+          docker compose build --build-arg GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
+          docker compose up -d
+          timeout 150 docker compose logs -f api || true
+      - name: Services health-check API
+        run: |
+          timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9000/swagger-ui/index.html)" != "200" ]]; do sleep 2;echo "."; done'
+          echo "API is up"
+          docker ps
+      - name: Services health-check Keycloak
+        run: |
+          timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/realms/master)" != "200" ]]; do sleep 2;echo "."; done'
+          echo "Keycloak is up"
+          docker ps
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24
+      - name: Install Playwright dependencies
+        working-directory: playwright
+        run: npm install
+      - name: Run Playwright e2e tests
+        run: npm run test
