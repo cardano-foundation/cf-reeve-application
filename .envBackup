@@ -1,9 +1,0 @@
-FRONTEND_DOCKER_TAG=main-2fe8cf0-GHRUN13677293659
-LOB_NETSUITE_CLIENT_CERTIFICATE_ID=1usWENQUY-8EXklv_iMoqCbUjgNgJkUYMGXJpyQXDUo
-# SandboxIntegration 7cf3fb8478dfa9563a4546a4d0c68c0f71ddd6763cd47e96e9248eef56cc9ff7
-#LOB_NETSUITE_CLIENT_CLIENT_ID=abfa657a8c2cc348f6412bc1813fb96cfe0b9512d4ce9b9d68af3edeead9f19a
-LOB_NETSUITE_CLIENT_CLIENT_ID=a0d5804eea0a5f2c21a9d7d2070437d4bbd1081c60fa596aae00e1671a031c8e
-LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH=/app/private_dev.pem
-LOCAL_PRIVATE_KEY_PATH=/Users/thkammer/private_dev.pem
-LOB_NETSUITE_CLIENT_TOKEN_URL=https://6766746-sb1.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token
-LOB_NETSUITE_CLIENT_URL=https://6766746-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=1282&deploy=1&searchname=restsearchtestOld&_is_text=true&recordspercall=1000000000
