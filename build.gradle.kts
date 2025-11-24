@@ -18,6 +18,7 @@ subprojects {
     group = "de.cardanofoundation"
     version = "1.2.0"
 
+
     sourceSets {
         named("main") {
             java {
