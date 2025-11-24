@@ -1,3 +1,13 @@
+x-healthcheck: &healthcheck
+  interval: 2s
+  timeout: 3s
+  retries: 5
+  start_period: 2s
+
+x-python-env: &python-env
+  PYTHONUNBUFFERED: 1
+  PYTHONIOENCODING: UTF-8
+
 services:
 
   postgres:
@@ -67,12 +77,18 @@ services:
       LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
       LOB_BLOCKCHAIN_READER_LOB_FOLLOWER_BASE_URL: http://follower-app:9090/api
       SPRING_KAFKA_ENABLED: true
-      LOB_NETSUITE_CLIENT_URL: ${LOB_NETSUITE_CLIENT_URL:-http://api:9000/api/mockresult}
+      LOB_NETSUITE_CLIENT_URL: ${LOB_NETSUITE_CLIENT_URL:-http://api:9000/api/v1/mockresult}
       LOB_NETSUITE_CLIENT_CERTIFICATE_ID: ${LOB_NETSUITE_CLIENT_CERTIFICATE_ID:-<enter value>}
       LOB_NETSUITE_CLIENT_CLIENT_ID: ${LOB_NETSUITE_CLIENT_CLIENT_ID:-<enter value>}
       LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
       LOB_NETSUITE_CLIENT_TOKEN_URL: ${LOB_NETSUITE_CLIENT_TOKEN_URL:-<enter value>}
       LOB_NETSUITE_CLIENT_RECORDSPERCALL: 1000
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED: true
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_URL: http://keria:3901
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_BOOTURL: http://keria:3903
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN: 0ADF2TpptgqcDE5IQUF1H
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME: identity
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE: agent
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
@@ -274,7 +290,7 @@ services:
 
   yaci-cli:
     restart: unless-stopped
-    image: bloxbean/yaci-cli:0.10.2
+    image: bloxbean/yaci-cli:0.10.6
     networks:
       - lob
     env_file:
@@ -284,7 +300,7 @@ services:
       - ./yaci-config/node.properties:/app/config/node.properties
       - yaci-data:/clusters
     ports:
-      - "3001:3001"
+      - "${YACI_DEVNET_EXPOSED_PORT:-3001}:3001"
       - "8081:8080"
     entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
 #    labels:
@@ -304,7 +320,7 @@ services:
 
   yaci-viewer:
     restart: unless-stopped
-    image: bloxbean/yaci-viewer:0.10.2
+    image: bloxbean/yaci-viewer:0.10.6
     ports:
       - "5173:5173"
     env_file:
@@ -358,7 +374,7 @@ services:
   traefik:
     profiles: [traefik]
     restart: unless-stopped
-    image: "traefik:v2.9"
+    image: "traefik:v3.6"
     container_name: "traefik"
     command:
       - "--log.level=DEBUG"
@@ -382,6 +398,24 @@ services:
       options:
         max-size: "200k"
         max-file: "100"
+  keria:
+    image: ${KERIA_IMAGE:-weboftrust/keria}:${KERIA_IMAGE_TAG:-0.2.0-dev6}
+    restart: unless-stopped
+    environment:
+      KERI_AGENT_CORS: 1
+      <<: *python-env
+    volumes:
+      - ./keri-config/keria.json:/keria/config/keri/cf/keria.json
+    command: start --config-dir /keria/config --config-file keria.json --name agent  # Adjusted command line
+    healthcheck:
+      test: wget --spider http://keria:3902/spec.yaml
+      <<: *healthcheck
+    ports:
+      - 3901:3901
+      - 3902:3902
+      - 3903:3903
+    networks:
+      - lob
 
 volumes:
   postgres-data:

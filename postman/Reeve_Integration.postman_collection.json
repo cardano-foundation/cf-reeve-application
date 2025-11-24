@@ -145,7 +145,8 @@
 									"",
 									"pm.test(\"Check if org is valid\", function () {",
 									"",
-									"    pm.expect(jsonData.valid).to.eql(true);",
+									"    pm.expect(jsonData.valid).to.eql(false);",
+									"    pm.expect(jsonData.violations.length).to.eql(2);",
 									"});"
 								],
 								"type": "text/javascript",

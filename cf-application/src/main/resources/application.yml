@@ -158,12 +158,21 @@ lob:
     topics:
       report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
+    keri:
+      enabled: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED:false}
+      url: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_URL:http://127.0.0.1:3901}
+      booturl: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_BOOTURL:http://127.0.0.1:3903}
+      metadata_label: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_METADATA_LABEL:1}
+      identifier:
+        bran: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN:0ADF2TpptgqcDE5IQUF1H}
+        name: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME:reeve}
+        role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}
   dispatching:
     strategy:
-      type: ${LOB_DISPATCHING_STRATEGY:DELAYED}
+      type: ${LOB_DISPATCHING_STRATEGY_TYPE:DELAYED}
 
   netsuite:
     enabled: ${LOB_NETSUITE_ENABLED:true}
