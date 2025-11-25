@@ -32,9 +32,9 @@ services:
     networks:
       - lob
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
-      PORT: 3000
+      PORT: "3000"
       VITE_API_URL: ${API_FRONTEND_HOSTNAME:-http://localhost:9000}
       VITE_ADMIN_EMAIL: access_reeve-support@cardanofoundation.org
       VITE_KEYCLOAK_URL: ${KC_FRONTEND_HOSTNAME:-http://localhost:8080}
