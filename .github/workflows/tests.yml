@@ -85,8 +85,10 @@ jobs:
           node-version: 24
       - name: Install Playwright dependencies
         working-directory: playwright
-        run: npm install
-      - name: Configure test
+        run: |
+          npm ci 
+          npx playwright install --with-deps
+      - name: Create .env file
         working-directory: playwright
         run: |
           echo "API_URL=http://localhost:9000/api/v1" >> .env
