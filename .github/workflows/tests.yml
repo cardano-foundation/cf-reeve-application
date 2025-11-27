@@ -86,6 +86,16 @@ jobs:
       - name: Install Playwright dependencies
         working-directory: playwright
         run: npm install
+      - name: Configure test
+        working-directory: playwright
+        run: |
+          echo "API_URL=http://localhost:9000/api/v1" >> .env
+          echo "LOGIN_URL=http://localhost:8080" >> .env
+          echo "MANAGER_USER={{ secret.PLAYWRIGHT_USER }}" >> .env
+          echo "MANAGER_PASSWORD={{ secrets.PLAYWRIGHT_PASSWORD }}" >> .env
+          echo "API_LOG_REQUEST=false" >> .env
+          echo "ORGANIZATION_ID={{ secrets.PLAYWRIGHT_ORGANIZATION_ID }}" >> .env
+          echo "CI=true" >> .env
       - name: Run Playwright e2e tests
         working-directory: playwright
         run: npm run test
