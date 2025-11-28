@@ -1,0 +1,13 @@
+name: Sync platform versions
+
+on:
+  repository_dispatch:
+
+jobs:
+  create-or-update-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: |
+          echo "triggered"
+          echo "payload: {{ github.event.client_payload.TRIGGERING_PAYLOAD }}"
