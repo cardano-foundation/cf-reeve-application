@@ -11,4 +11,22 @@ jobs:
       - name: test
         run: |
           echo "triggered"
-          echo "payload: {{ github.event.client_payload.TRIGGERING_PAYLOAD }}"
+          echo "payload: ${{ github.event.client_payload.TRIGGERING_PAYLOAD }}"
+          # VERSION=$(echo $PAYLOAD | jq -r .version)
+          # PR_NAME=$(echo $PAYLOAD | jq -r .prName)
+          # SOURCE_BRANCH=$(echo $PAYLOAD | jq -r .sourceBranch)
+          # TARGET_BRANCH=$(echo $PAYLOAD | jq -r .targetBranch)
+          # 
+          # # check if pr with source branch already exists
+          # if ! gh pr view $SOURCE_BRANCH
+          # then
+          #   gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
+          # else
+          #   # checkout pr
+          #   gh pr checkout $SOURCE_BRANCH
+          # fi
+
+          # sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"test-version\"|g" build.gradle.kts
+
+          # git commit -m "chore: bump platform version"
+          # git push
