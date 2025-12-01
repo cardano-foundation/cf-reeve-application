@@ -37,6 +37,8 @@ jobs:
           fi
           gh pr checkout $SOURCE_BRANCH
 
+          git pull
+
           sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"$VERSION\"|g" build.gradle.kts
 
           git add build.gradle.kts
