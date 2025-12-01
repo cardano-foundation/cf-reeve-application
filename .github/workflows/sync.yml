@@ -11,26 +11,26 @@ jobs:
     steps:
       - name: test
         run: |
-          echo "triggered"
-          echo "payload: ${{ github.event.client_payload.TRIGGERING_PAYLOAD }}"
-          VERSION=$(echo $PAYLOAD | jq -r .version)
-          PR_NAME=$(echo $PAYLOAD | jq -r .prName)
-          SOURCE_BRANCH=$(echo $PAYLOAD | jq -r .sourceBranch)
-          TARGET_BRANCH=$(echo $PAYLOAD | jq -r .targetBranch)
+          VERSION="${{ github.event.client_payload.TRIGGERING_PAYLOAD.version }}"
+          PR_NAME="${{ github.event.client_payload.TRIGGERING_PAYLOAD.prName }}"
+          SOURCE_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.sourceBranch }}"
+          TARGET_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.targetBranch }}"
 
-          VERSION_NEW="${{ github.event.client_payload.TRIGGERING_PAYLOAD.version }}"
-
-          echo "version direct access: $VERSION_NEW"
-
-          # check if pr with source branch already exists
-          if ! gh pr view $SOURCE_BRANCH
+          if ! git checkout -b $SOURCE_BRANCH 
           then
+            echo "Creating new branch $SOURCE_BRANCH"
+            git checkout $SOURCE_BRANCH
+          fi
+          # check if pr for SOURCE_BRANCH already exists
+          if ! gh pr view $SOURCE_BRANCH > /dev/null
+          then
+            echo "Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
             gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
           fi
           gh pr checkout $SOURCE_BRANCH
 
-          sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"test-version\"|g" build.gradle.kts
+          sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"$VERSION\"|g" build.gradle.kts
 
           git add build.gradle.kts
           git commit -m "chore: bump platform version"
-          git push
+          git push --dry-run
