@@ -4,7 +4,6 @@ on:
   repository_dispatch:
     types: 
      - cf-reeve-platform-pr
-  pull_request: 
 
 jobs:
   create-or-update-pr:
@@ -21,17 +20,17 @@ jobs:
 
           VERSION_NEW="${{ github.event.client_payload.TRIGGERING_PAYLOAD.version }}"
 
-          # 
-          # # check if pr with source branch already exists
-          # if ! gh pr view $SOURCE_BRANCH
-          # then
-          #   gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
-          # else
-          #   # checkout pr
-          #   gh pr checkout $SOURCE_BRANCH
-          # fi
+          echo "version direct access: $VERSION_NEW"
 
-          # sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"test-version\"|g" build.gradle.kts
+          # check if pr with source branch already exists
+          if ! gh pr view $SOURCE_BRANCH
+          then
+            gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
+          fi
+          gh pr checkout $SOURCE_BRANCH
 
-          # git commit -m "chore: bump platform version"
-          # git push
+          sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"test-version\"|g" build.gradle.kts
+
+          git add build.gradle.kts
+          git commit -m "chore: bump platform version"
+          git push
