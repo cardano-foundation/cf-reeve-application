@@ -24,23 +24,27 @@ jobs:
           SOURCE_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.sourceBranch }}"
           TARGET_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.targetBranch }}"
 
-          if ! git checkout -b $SOURCE_BRANCH 
+          echo "Checkout branch $SOURCE_BRANCH"
+          if ! git checkout $SOURCE_BRANCH 
           then
-            echo "Creating new branch $SOURCE_BRANCH"
-            git checkout $SOURCE_BRANCH
+            echo "Branch does not exist. Creating new branch $SOURCE_BRANCH"
+            git checkout -b $SOURCE_BRANCH
           fi
-          # check if pr for SOURCE_BRANCH already exists
+          echo "Check if PR for branch $SOURCE_BRANCH exists"
           if ! gh pr view $SOURCE_BRANCH > /dev/null
           then
-            echo "Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
+            echo "PR does not exist. Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
             gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
           fi
           gh pr checkout $SOURCE_BRANCH
 
+          echo "Pull latest changes"
           git pull
 
+          echo "Set platform version to $VERSION"
           sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"$VERSION\"|g" build.gradle.kts
 
+          echo "Commit and push new platform version"
           git add build.gradle.kts
           git commit -m "chore: bump platform version"
           git push --dry-run
