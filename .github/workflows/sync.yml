@@ -53,4 +53,4 @@ jobs:
           git add $BUILD_GRADLE_FILE
           git commit $BUILD_GRADLE_FILE -m "chore: Bump platform version to $VERSION (automated commit by gha run id $GITHUB_RUN_ID)"
 
-          git push origin $SOURCE_BRANCH --dry-run
+          git push origin $SOURCE_BRANCH
