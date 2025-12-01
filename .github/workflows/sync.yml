@@ -24,11 +24,13 @@ jobs:
           SOURCE_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.sourceBranch }}"
           TARGET_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.targetBranch }}"
 
+          echo "Fetch remote"
+          git fetch
           echo "Checkout branch $SOURCE_BRANCH"
           if ! git checkout $SOURCE_BRANCH 
           then
             echo "Branch does not exist. Creating new branch $SOURCE_BRANCH"
-            git checkout -b $SOURCE_BRANCH
+            git checkout --track $SOURCE_BRANCH
           fi
           echo "Check if PR for branch $SOURCE_BRANCH exists"
           if ! gh pr view $SOURCE_BRANCH > /dev/null
