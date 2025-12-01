@@ -16,6 +16,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
       - name: Update platform version
         run: |
@@ -23,9 +30,8 @@ jobs:
           PR_NAME="${{ github.event.client_payload.TRIGGERING_PAYLOAD.prName }}"
           SOURCE_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.sourceBranch }}"
           TARGET_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.targetBranch }}"
+          GITHUB_RUN_ID="${{ github.event.client_payload.TRIGGERING_GHRUNID }}"
 
-          echo "Fetch remote"
-          git fetch
           echo "Checkout branch $SOURCE_BRANCH"
           if ! git checkout $SOURCE_BRANCH 
           then
@@ -38,15 +44,13 @@ jobs:
             echo "PR does not exist. Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
             gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
           fi
-          gh pr checkout $SOURCE_BRANCH
 
-          echo "Pull latest changes"
-          git pull
-
+          BUILD_GRADLE_FILE=build.gradle.kts
           echo "Set platform version to $VERSION"
-          sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"$VERSION\"|g" build.gradle.kts
+          sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"$VERSION\"|g" $BUILD_GRADLE_FILE
 
           echo "Commit and push new platform version"
-          git add build.gradle.kts
-          git commit -m "chore: bump platform version"
-          git push --dry-run
+          git add $BUILD_GRADLE_FILE
+          git commit $BUILD_GRADLE_FILE -m "chore: Bump platform version to $VERSION (automated commit by gha run id $GITHUB_RUN_ID)"
+
+          git push origin $SOURCE_BRANCH --dry-run
