@@ -8,6 +8,11 @@ on:
 jobs:
   create-or-update-pr:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    permissions: 
+      pull-requests: write
+      contents: write
     steps:
       - name: test
         run: |
