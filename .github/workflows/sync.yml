@@ -14,7 +14,10 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - name: test
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update platform version
         run: |
           VERSION="${{ github.event.client_payload.TRIGGERING_PAYLOAD.version }}"
           PR_NAME="${{ github.event.client_payload.TRIGGERING_PAYLOAD.prName }}"
