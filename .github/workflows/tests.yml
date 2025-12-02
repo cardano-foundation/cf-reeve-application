@@ -1,0 +1,109 @@
+name: e2e Tests
+
+on:
+  pull_request:
+env:
+  REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
+  REEVE_DB_MIGRATIONS_REF: main
+  REEVE_DB_MIGRATIONS_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations
+  GITLAB_MAVEN_REGISTRY_URL: ${{ secrets.GITLAB_MAVEN_REGISTRY_URL }}
+
+jobs:
+  postman:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Checkout cf-reeve-db-migrations
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
+          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
+          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
+
+      - name: Set up Docker Compose
+        run: |
+          docker compose build --build-arg GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
+          docker compose up -d
+          timeout 150 docker compose logs -f api || true
+      - name: Services health-check API
+        run: |
+          timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9000/swagger-ui/index.html)" != "200" ]]; do sleep 2;echo "."; done'
+          echo "API is up"
+          docker ps
+      - name: Services health-check Keycloak
+        run: |
+          timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/realms/master)" != "200" ]]; do sleep 2;echo "."; done'
+          echo "Keycloak is up"
+          docker ps
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Newman (Postman CLI)
+        run: npm install -g newman
+      - name: Run Postman Collection with Environment
+        run: |
+          newman run postman/Reeve_Integration.postman_collection.json \
+            --environment postman/Reeve_env.postman_environment.json
+
+  playwright:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Checkout cf-reeve-db-migrations
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
+          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
+          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
+          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
+
+      - name: Set up Docker Compose
+        run: |
+          docker compose build --build-arg GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
+          docker compose up -d
+          timeout 150 docker compose logs -f api || true
+          
+      - name: Services health-check API
+        run: |
+          timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9000/swagger-ui/index.html)" != "200" ]]; do sleep 2;echo "."; done'
+          echo "API is up"
+          docker ps
+
+      - name: Services health-check Keycloak
+        run: |
+          timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/realms/master)" != "200" ]]; do sleep 2;echo "."; done'
+          echo "Keycloak is up"
+          docker ps
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24
+
+      - name: Install Playwright dependencies
+        working-directory: playwright
+        run: |
+          npm ci 
+          npx playwright install --with-deps
+
+      - name: Create .env file
+        working-directory: playwright
+        run: |
+          echo "API_URL=http://localhost:9000/api/v1" >> .env
+          echo "LOGIN_URL=http://localhost:8080" >> .env
+          echo "MANAGER_USER=${{ secrets.PLAYWRIGHT_USER }}" >> .env
+          echo "MANAGER_PASSWORD=${{ secrets.PLAYWRIGHT_PASSWORD }}" >> .env
+          echo "API_LOG_REQUEST=false" >> .env
+          echo "ORGANIZATION_ID=${{ secrets.PLAYWRIGHT_ORGANIZATION_ID }}" >> .env
+          echo "CI=true" >> .env
+
+      - name: Run Playwright e2e tests
+        working-directory: playwright
+        run: npm run test
