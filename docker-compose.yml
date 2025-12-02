@@ -32,9 +32,9 @@ services:
     networks:
       - lob
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
-      PORT: 3000
+      PORT: "3000"
       VITE_API_URL: ${API_FRONTEND_HOSTNAME:-http://localhost:9000}
       VITE_ADMIN_EMAIL: access_reeve-support@cardanofoundation.org
       VITE_KEYCLOAK_URL: ${KC_FRONTEND_HOSTNAME:-http://localhost:8080}
@@ -328,7 +328,7 @@ services:
       - ./yaci-config/env
     environment:
       PUBLIC_INDEXER_BASE_URL: ${PUBLIC_INDEXER_BASE_URL:-http://yaci-cli:8080/api/v1}
-      PUBLIC_INDEXER_WS_URL: ${PUBLIC_INDEXER_WS_URL:-ws://localhost:8080/ws/liveblocks}
+      PUBLIC_INDEXER_WS_URL: ${PUBLIC_INDEXER_WS_URL:-ws://localhost:8081/ws/liveblocks}
     networks:
       - lob
     labels:
@@ -375,7 +375,7 @@ services:
   traefik:
     profiles: [traefik]
     restart: unless-stopped
-    image: "traefik:v2.9"
+    image: "traefik:v3.6"
     container_name: "traefik"
     command:
       - "--log.level=DEBUG"
@@ -401,6 +401,7 @@ services:
         max-file: "100"
   keria:
     image: ${KERIA_IMAGE:-weboftrust/keria}:${KERIA_IMAGE_TAG:-0.2.0-dev6}
+    restart: unless-stopped
     environment:
       KERI_AGENT_CORS: 1
       <<: *python-env
