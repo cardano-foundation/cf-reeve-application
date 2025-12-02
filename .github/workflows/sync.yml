@@ -1,0 +1,57 @@
+name: Sync platform versions
+
+on:
+  repository_dispatch:
+    types: 
+     - cf-reeve-platform-pr
+
+jobs:
+  create-or-update-pr:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    permissions: 
+      pull-requests: write
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CF_REEVE_APPLICATION_REPO_PAT }}
+          fetch-depth: 0
+
+      - name: Setup git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Update platform version
+        run: |
+          VERSION="${{ github.event.client_payload.TRIGGERING_PAYLOAD.version }}"
+          PR_NAME="${{ github.event.client_payload.TRIGGERING_PAYLOAD.prName }}"
+          SOURCE_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.sourceBranch }}"
+          TARGET_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.targetBranch }}"
+          GITHUB_RUN_ID="${{ github.event.client_payload.TRIGGERING_GHRUNID }}"
+
+          echo "Checkout branch $SOURCE_BRANCH"
+          if ! git checkout $SOURCE_BRANCH 
+          then
+            echo "Branch does not exist. Creating new branch $SOURCE_BRANCH"
+            git checkout --track $SOURCE_BRANCH
+          fi
+          echo "Check if PR for branch $SOURCE_BRANCH exists"
+          if ! gh pr view $SOURCE_BRANCH > /dev/null
+          then
+            echo "PR does not exist. Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
+            gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
+          fi
+
+          BUILD_GRADLE_FILE=build.gradle.kts
+          echo "Set platform version to $VERSION"
+          sed -i -E "s|extra\[\"cfLobPlatformVersion\"\] = \".*\"|extra\[\"cfLobPlatformVersion\"\] = \"$VERSION\"|g" $BUILD_GRADLE_FILE
+
+          echo "Commit and push new platform version"
+          git add $BUILD_GRADLE_FILE
+          git commit $BUILD_GRADLE_FILE -m "chore: Bump platform version to $VERSION (automated commit by gha run id $GITHUB_RUN_ID)"
+
+          git push origin $SOURCE_BRANCH
