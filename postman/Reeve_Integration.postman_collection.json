@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b9750b2a-2de4-4e56-bdb7-2b37b526f705",
+		"_postman_id": "914d76a1-52a1-45cb-86fd-39ed5b478b6f",
 		"name": "Reeve Integration",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "32834089"
@@ -2930,7 +2930,10 @@
 					"name": "POST Create Report csv",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				}
@@ -3627,7 +3630,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/Users/thkammer/Documents/dev/cardano/java/cf-reeve-platform/docs/examples/reporting/incomeStatement_template_example.csv"
+									"src": "/Users/thkammer/Documents/dev/cardano/java/cf-reeve-platform/docs/examples/reporting/report_template_example.csv"
 								}
 							]
 						},
