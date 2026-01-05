@@ -37,7 +37,7 @@ jobs:
           if ! git checkout $SOURCE_BRANCH 
           then
             echo "Branch does not exist. Creating new branch $SOURCE_BRANCH"
-            git checkout --track $SOURCE_BRANCH
+            git checkout --track -b $SOURCE_BRANCH
           fi
           echo "Check if PR for branch $SOURCE_BRANCH exists"
           if ! gh pr view $SOURCE_BRANCH > /dev/null
