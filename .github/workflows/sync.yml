@@ -39,12 +39,6 @@ jobs:
             echo "Branch does not exist. Creating new branch $SOURCE_BRANCH"
             git checkout --track -b $SOURCE_BRANCH
           fi
-          echo "Check if PR for branch $SOURCE_BRANCH exists"
-          if ! gh pr view $SOURCE_BRANCH > /dev/null
-          then
-            echo "PR does not exist. Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
-            gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
-          fi
 
           BUILD_GRADLE_FILE=build.gradle.kts
           echo "Set platform version to $VERSION"
@@ -55,3 +49,10 @@ jobs:
           git commit $BUILD_GRADLE_FILE -m "chore: Bump platform version to $VERSION (automated commit by gha run id $GITHUB_RUN_ID)"
 
           git push origin $SOURCE_BRANCH
+
+          echo "Check if PR for branch $SOURCE_BRANCH exists"
+          if ! gh pr view $SOURCE_BRANCH > /dev/null
+          then
+            echo "PR does not exist. Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
+            gh pr create --title "$PR_NAME" --body "" --base $SOURCE_BRANCH --head $TARGET_BRANCH
+          fi
