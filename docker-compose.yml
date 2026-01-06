@@ -69,6 +69,7 @@ services:
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: false
+      LOB_REPORTING_V2_ENABLED: false
       LOB_ORGANISATION_ENABLED: false
       LOB_BLOCKCHAIN_READER_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
@@ -119,6 +120,7 @@ services:
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
       LOB_ORGANISATION_ENABLED: true
+      LOB_REPORTING_V2_ENABLED: true
       LOB_BLOCKCHAIN_READER_ENABLED: false
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: false
       LOB_NETSUITE_ENABLED: false
