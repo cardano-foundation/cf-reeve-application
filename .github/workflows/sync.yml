@@ -54,7 +54,8 @@ jobs:
           fi
 
           echo "Check if PR for branch $SOURCE_BRANCH exists"
-          if ! gh pr view $SOURCE_BRANCH > /dev/null
+          PR_STATE=$(gh pr view $SOURCE_BRANCH --json state --jq '.state')
+          if [ $PR_STATE ] || [ $PR_STATE != "OPEN" ]
           then
             echo "PR does not exist. Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
             gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
