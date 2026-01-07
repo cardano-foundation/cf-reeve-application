@@ -37,7 +37,7 @@ jobs:
           if ! git checkout $SOURCE_BRANCH 
           then
             echo "Branch does not exist. Creating new branch $SOURCE_BRANCH"
-            git checkout --track -b $SOURCE_BRANCH
+            git checkout --track -b $SOURCE_BRANCH $TARGET_BRANCH
           fi
 
           BUILD_GRADLE_FILE=build.gradle.kts
