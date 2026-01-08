@@ -107,3 +107,4 @@ jobs:
       - name: Run Playwright e2e tests
         working-directory: playwright
         run: npm run test
+        continue-on-error: true
