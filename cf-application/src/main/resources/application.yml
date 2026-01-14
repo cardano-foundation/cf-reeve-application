@@ -158,6 +158,7 @@ lob:
     topics:
       report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
+      tx-rollback-event: accounting_reporting_core.domain.event.ledger.TxRollbackEvent
     keri:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED:false}
       url: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_URL:http://127.0.0.1:3901}
