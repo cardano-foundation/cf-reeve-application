@@ -30,7 +30,13 @@ subprojects {
         mavenLocal()
         mavenCentral()
         maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+            name = "Central Portal Snapshots"
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+
+            // Only search this repository for the specific dependency
+            content {
+                includeModule("org.cardanofoundation", "signify")
+            }
         }
         
         val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL").orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
