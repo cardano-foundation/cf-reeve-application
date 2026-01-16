@@ -47,6 +47,7 @@ export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
 ./gradlew clean bootRun # to start the api container
 ```
 
+
 ### Things to tweak if needed
 - Keycloak can be disabled by setting `KEYCLOAK_ENABLED=false` in the `.env` file or in the docker-compose file 
 - To test the api swagger set the following two environment variables in the `.env` file or in the docker-compose file:
