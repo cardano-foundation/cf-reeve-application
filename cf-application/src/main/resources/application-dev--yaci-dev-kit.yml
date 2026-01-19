@@ -21,9 +21,7 @@ logging:
 lob:
   cardano:
     network: ${LOB_CARDANO_NETWORK:DEV}
-  blockchain_publisher:
-    dispatcher:
-      lock_timeout:PT1M:
+
   dispatching_strategy:
     type: ${LOB_DISPATCHING_STRATEGY_TYPE:IMMEDIATE}
 
