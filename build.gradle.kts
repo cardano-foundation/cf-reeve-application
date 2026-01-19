@@ -30,13 +30,7 @@ subprojects {
         mavenLocal()
         mavenCentral()
         maven {
-            name = "Central Portal Snapshots"
-            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
-
-            // Only search this repository for the specific dependency
-            content {
-                includeModule("org.cardanofoundation", "signify")
-            }
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
         }
         
         val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL").orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
@@ -61,7 +55,7 @@ subprojects {
     extra["springBootVersion"] = "3.3.3"
     extra["springCloudVersion"] = "2023.0.0"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["cfLobPlatformVersion"] = "1.3.0-PR509-f60be62-GHRUN21000666846"
+    extra["cfLobPlatformVersion"] = "1.3.0"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
