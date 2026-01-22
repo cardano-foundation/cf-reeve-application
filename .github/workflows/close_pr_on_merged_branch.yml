@@ -1,0 +1,51 @@
+name: Close platform PR after merge
+
+on:
+  repository_dispatch:
+    types:
+      - cf-reeve-platform-pr-merged
+
+jobs:
+  close-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents:  read
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Extract branch
+        run: |
+          # echo "SOURCE_BRANCH=${{ github.event.client_payload.sourceBranch }}" >> $GITHUB_ENV
+
+      - name: Skip protected branches
+        id: check_branch
+        run:  |
+          if [[ "$SOURCE_BRANCH" == "main" || "$SOURCE_BRANCH" == "release/"* ]]; then
+            echo "Protected branch $SOURCE_BRANCH – skipping"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Verify GitHub CLI auth
+        run: |
+          gh auth status
+      - name: Find PR by branch
+        if: steps.check_branch.outputs.skip != 'true'
+        id: find_pr
+        run: |
+          PR_NUMBER=$(gh pr list \
+            --repo ${{ github.repository }} \
+            --state open \
+            --head "$SOURCE_BRANCH" \
+            --json number \
+            --jq '.[0].number')
+
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+
+      - name:  Close PR
+        if: steps.check_branch.outputs.skip != 'true' && env.PR_NUMBER != ''
+        run: |
+          echo "Closing PR #$PR_NUMBER for branch $SOURCE_BRANCH"
+          gh pr close "$PR_NUMBER" \
+            --repo ${{ github.repository }} \
+            --comment "Closed automatically because the platform PR was merged."
