@@ -20,7 +20,7 @@ jobs:
       pull-requests: write
       contents:  read
     env:
-      GH_TOKEN: ${{ secrets. CF_REEVE_APPLICATION_REPO_PAT }}
+      GH_TOKEN: ${{ github.token }}
 
     steps:
       - name: Extract branch
