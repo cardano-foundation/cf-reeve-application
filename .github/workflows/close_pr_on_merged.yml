@@ -20,7 +20,7 @@ jobs:
       pull-requests: write
       contents:  read
     env:
-      GH_TOKEN: ${{ secrets.CF_REEVE_APPLICATION_REPO_PAT }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Extract branch
@@ -35,7 +35,9 @@ jobs:
             echo "Protected branch $SOURCE_BRANCH – skipping"
             echo "skip=true" >> $GITHUB_OUTPUT
           fi
-
+      - name: Verify GitHub CLI auth
+        run: |
+          gh auth status
       - name: Find PR by branch
         if: steps.check_branch.outputs.skip != 'true'
         id: find_pr
