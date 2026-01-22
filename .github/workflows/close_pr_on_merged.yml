@@ -9,10 +9,9 @@ on:
       sourceBranch:
         required: true
         type: string
-  on:
-    push:
-      branches:
-        - feat/LOB-1866-BE-Close-reeve-application-PRs-from-gha-trigger
+  push:
+    branches:
+      - feat/LOB-1866-BE-Close-reeve-application-PRs-from-gha-trigger
 jobs:
   close-pr:
     runs-on: ubuntu-latest
