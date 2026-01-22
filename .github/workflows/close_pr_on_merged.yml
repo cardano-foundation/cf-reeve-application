@@ -4,34 +4,44 @@ on:
   repository_dispatch:
     types:
       - cf-reeve-platform-pr-merged
+  workflow_dispatch:
+    inputs:
+      sourceBranch:
+        required:  true
+        type: string
   push:
     branches:
       - feat/LOB-1866-BE-Close-reeve-application-PRs-from-gha-trigger
+
 jobs:
   close-pr:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      contents: read
+      contents:  read
     env:
-      GH_TOKEN: ${{ secrets.CF_REEVE_APPLICATION_REPO_PAT }}
+      GH_TOKEN: ${{ secrets. CF_REEVE_APPLICATION_REPO_PAT }}
 
     steps:
       - name: Extract branch
         run: |
-          # echo "SOURCE_BRANCH=${{ github.event.client_payload.sourceBranch || github.event.inputs.sourceBranch }}" >> $GITHUB_ENV
+          # echo "SOURCE_BRANCH=${{ github.event.client_payload. sourceBranch || github.event.inputs.sourceBranch }}" >> $GITHUB_ENV
           echo "SOURCE_BRANCH=chore/test-pr-deletion-workflow" >> $GITHUB_ENV
+
       - name: Skip protected branches
-        run: |
-          if [[ "$SOURCE_BRANCH" == "main" || "$SOURCE_BRANCH" == release/* ]]; then
+        id: check_branch
+        run:  |
+          if [[ "$SOURCE_BRANCH" == "main" || "$SOURCE_BRANCH" == "release/"* ]]; then
             echo "Protected branch $SOURCE_BRANCH – skipping"
-            exit 0
+            echo "skip=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Find PR by branch
+        if: steps.check_branch.outputs.skip != 'true'
         id: find_pr
         run: |
           PR_NUMBER=$(gh pr list \
+            --repo ${{ github.repository }} \
             --state open \
             --head "$SOURCE_BRANCH" \
             --json number \
@@ -39,9 +49,10 @@ jobs:
 
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
 
-      - name: Close PR
-        if: env.PR_NUMBER != ''
+      - name:  Close PR
+        if: steps.check_branch.outputs.skip != 'true' && env.PR_NUMBER != ''
         run: |
           echo "Closing PR #$PR_NUMBER for branch $SOURCE_BRANCH"
-          gh pr close "$PR_NUMBER" --comment \
-            "Closed automatically because the platform PR was merged."
+          gh pr close "$PR_NUMBER" \
+            --repo ${{ github.repository }} \
+            --comment "Closed automatically because the platform PR was merged."
