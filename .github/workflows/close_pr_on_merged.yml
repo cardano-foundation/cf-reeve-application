@@ -4,7 +4,11 @@ on:
   repository_dispatch:
     types:
       - cf-reeve-platform-pr-merged
-
+  workflow_dispatch:
+    inputs:
+      sourceBranch:
+        required: true
+        type: string
 jobs:
   close-pr:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
     steps:
       - name: Extract branch
         run: |
-          echo "SOURCE_BRANCH=${{ github.event.client_payload.sourceBranch }}" >> $GITHUB_ENV
+          echo "SOURCE_BRANCH=${{ github.event.client_payload.sourceBranch || github.event.inputs.sourceBranch }}" >> $GITHUB_ENV
 
       - name: Skip protected branches
         run: |
