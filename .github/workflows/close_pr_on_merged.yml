@@ -4,12 +4,6 @@ on:
   repository_dispatch:
     types:
       - cf-reeve-platform-pr-merged
-  workflow_dispatch:
-    inputs:
-      sourceBranch:
-        required: true
-        type: string
-        description: for test purposes
   push:
     branches:
       - feat/LOB-1866-BE-Close-reeve-application-PRs-from-gha-trigger
@@ -25,8 +19,8 @@ jobs:
     steps:
       - name: Extract branch
         run: |
-          echo "SOURCE_BRANCH=${{ github.event.client_payload.sourceBranch || github.event.inputs.sourceBranch }}" >> $GITHUB_ENV
-
+          # echo "SOURCE_BRANCH=${{ github.event.client_payload.sourceBranch || github.event.inputs.sourceBranch }}" >> $GITHUB_ENV
+          echo "SOURCE_BRANCH=chore/test-pr-deletion-workflow" >> $GITHUB_ENV
       - name: Skip protected branches
         run: |
           if [[ "$SOURCE_BRANCH" == "main" || "$SOURCE_BRANCH" == release/* ]]; then
