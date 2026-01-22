@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "9f81f0a4-f206-4fbb-b3c2-ae7cc8186659",
+    "_postman_id": "fd9586ce-3afc-4145-9107-a87e88843eda",
     "name": "Reeve Integration",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "32834089"
@@ -1363,7 +1363,7 @@
                   "",
                   "// Check if 'keyName' exists and equals 'expectedValue'",
                   "pm.test(\"Check if  name has changed\", function () {",
-                  "    pm.expect(jsonData.currencyId).to.eql(\"New Postman Name\");",
+                  "    pm.expect(jsonData.isoCode).to.eql(\"New Postman Name\");",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -1424,8 +1424,8 @@
                   "// Check if 'keyName' exists and equals 'expectedValue'",
                   "pm.test(\"Check if inserted\", function () {",
                   "    const randomNumber = pm.environment.get(\"randomNumber\");",
-                  "    pm.expect(jsonData.customerCode).to.eql(\"\"+randomNumber);",
-                  "    pm.expect(jsonData.currencyId).to.eql(\"New Postman Name\");",
+                  "    pm.expect(jsonData.code).to.eql(\"\"+randomNumber);",
+                  "    pm.expect(jsonData.isoCode).to.eql(\"New Postman Name\");",
                   "});"
                 ],
                 "type": "text/javascript",
