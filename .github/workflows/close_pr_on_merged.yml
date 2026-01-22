@@ -9,6 +9,7 @@ on:
       sourceBranch:
         required: true
         type: string
+        description: for test purposes
   push:
     branches:
       - feat/LOB-1866-BE-Close-reeve-application-PRs-from-gha-trigger
