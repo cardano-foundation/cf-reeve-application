@@ -61,7 +61,7 @@ subprojects {
     extra["springBootVersion"] = "3.3.3"
     extra["springCloudVersion"] = "2023.0.0"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["cfLobPlatformVersion"] = "1.3.0-PR509-2422068-GHRUN21279277037"
+    extra["cfLobPlatformVersion"] = "1.3.0-PR534-faff105-GHRUN21282036758"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
