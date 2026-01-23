@@ -31,7 +31,7 @@ jobs:
           fi
 
       - name:  Close PR
-        if: steps.check_branch.outputs.skip != 'true' && env.PR_NUMBER != ''
+        if: steps.check_branch.outputs.skip != 'true'
         run: |
           echo "Closing PR #$PR_NUMBER for branch $SOURCE_BRANCH"
           gh pr close $SOURCE_BRANCH \
