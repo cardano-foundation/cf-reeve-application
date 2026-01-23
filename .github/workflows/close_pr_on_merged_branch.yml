@@ -35,4 +35,5 @@ jobs:
         run: |
           echo "Closing PR #$PR_NUMBER for branch $SOURCE_BRANCH"
           gh pr close $SOURCE_BRANCH \
+            --repo ${{ github.repository }} \
             --comment "Closed automatically because the platform PR was merged."
