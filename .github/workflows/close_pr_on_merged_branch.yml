@@ -4,6 +4,9 @@ on:
   repository_dispatch:
     types:
       - cf-reeve-platform-pr-merged
+  push:
+    branches:
+      - feat/close-branch-after-pr-merged-in-platform
 
 jobs:
   close-pr:
