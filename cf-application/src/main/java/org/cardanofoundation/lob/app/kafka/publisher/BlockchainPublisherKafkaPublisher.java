@@ -19,7 +19,7 @@ public class BlockchainPublisherKafkaPublisher {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     @Value("${lob.accounting_reporting_core.topics.tx-ledger-updated-event}")
     private String txLedgerUpdatedEventTopic;
-    @Value("${lob.accounting_reporting_core.topics.reports-ledger-updated-event}")
+    @Value("${lob.reporting.topics.reports-ledger-updated-event}")
     private String reportsLedgerUpdatedEventTopic;
 
     @EventListener

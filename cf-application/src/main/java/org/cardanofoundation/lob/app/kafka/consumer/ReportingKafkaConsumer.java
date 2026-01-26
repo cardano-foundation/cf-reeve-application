@@ -16,7 +16,7 @@ public class ReportingKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @KafkaListener(topics = "${lob.reporting.reports-ledger-updated-event}")
+    @KafkaListener(topics = "${lob.reporting.topics.reports-ledger-updated-event}")
     public void listen(ReportsLedgerUpdatedEvent message) {
         log.info("Received ReportsLedgerUpdatedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
