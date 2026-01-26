@@ -26,24 +26,18 @@ jobs:
           git config --global user.name "github-actions[bot]"
 
       - name: Update platform version
+        env:
+          VERSION: "${{ github.event.client_payload.TRIGGERING_PAYLOAD.version }}"
+          PR_NAME: "${{ github.event.client_payload.TRIGGERING_PAYLOAD.prName }}"
+          SOURCE_BRANCH: "${{ github.event.client_payload.TRIGGERING_PAYLOAD.sourceBranch }}"
+          TARGET_BRANCH: "${{ github.event.client_payload.TRIGGERING_PAYLOAD.targetBranch }}"
+          GITHUB_RUN_ID: "${{ github.event.client_payload.TRIGGERING_GHRUNID }}"
         run: |
-          VERSION="${{ github.event.client_payload.TRIGGERING_PAYLOAD.version }}"
-          PR_NAME="${{ github.event.client_payload.TRIGGERING_PAYLOAD.prName }}"
-          SOURCE_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.sourceBranch }}"
-          TARGET_BRANCH="${{ github.event.client_payload.TRIGGERING_PAYLOAD.targetBranch }}"
-          GITHUB_RUN_ID="${{ github.event.client_payload.TRIGGERING_GHRUNID }}"
-
           echo "Checkout branch $SOURCE_BRANCH"
           if ! git checkout $SOURCE_BRANCH 
           then
             echo "Branch does not exist. Creating new branch $SOURCE_BRANCH"
-            git checkout --track $SOURCE_BRANCH
-          fi
-          echo "Check if PR for branch $SOURCE_BRANCH exists"
-          if ! gh pr view $SOURCE_BRANCH > /dev/null
-          then
-            echo "PR does not exist. Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
-            gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
+            git checkout --track -b $SOURCE_BRANCH "origin/${TARGET_BRANCH}"
           fi
 
           BUILD_GRADLE_FILE=build.gradle.kts
@@ -52,6 +46,17 @@ jobs:
 
           echo "Commit and push new platform version"
           git add $BUILD_GRADLE_FILE
-          git commit $BUILD_GRADLE_FILE -m "chore: Bump platform version to $VERSION (automated commit by gha run id $GITHUB_RUN_ID)"
+          if git commit $BUILD_GRADLE_FILE -m "chore: Bump platform version to $VERSION (automated commit by gha run id $GITHUB_RUN_ID)"
+          then
+            git push origin $SOURCE_BRANCH
+          else
+            echo "No changes detected"
+          fi
 
-          git push origin $SOURCE_BRANCH
+          echo "Check if PR for branch $SOURCE_BRANCH exists"
+          PR_STATE=$(gh pr view $SOURCE_BRANCH --json state --jq '.state' || echo "")
+          if [ "$PR_STATE" != "OPEN" ]
+          then
+            echo "PR does not exist. Creating new PR \"$PR_NAME\" from $SOURCE_BRANCH to $TARGET_BRANCH"
+            gh pr create --title "$PR_NAME" --body "" --base $TARGET_BRANCH --head $SOURCE_BRANCH
+          fi

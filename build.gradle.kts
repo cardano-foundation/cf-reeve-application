@@ -16,7 +16,7 @@ subprojects {
     apply(plugin = "info.solidsoft.pitest")
 
     group = "de.cardanofoundation"
-    version = "1.3.0"
+    version = "1.4.0"
 
     sourceSets {
         named("main") {
@@ -38,8 +38,9 @@ subprojects {
                 includeModule("org.cardanofoundation", "signify")
             }
         }
-        
-        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL").orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
+
+        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL")
+            .orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
         if (gitlabMavenRegistryUrl.isPresent()) {
             maven {
                 name = "gitlab"
@@ -61,7 +62,7 @@ subprojects {
     extra["springBootVersion"] = "3.3.3"
     extra["springCloudVersion"] = "2023.0.0"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["cfLobPlatformVersion"] = "1.4.0-PR537-d42d178-GHRUN21356965534"
+    extra["cfLobPlatformVersion"] = "1.3.0-PR509-28d567b-GHRUN21284182979"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
