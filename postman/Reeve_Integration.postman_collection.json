@@ -3,7 +3,8 @@
     "_postman_id": "fd9586ce-3afc-4145-9107-a87e88843eda",
     "name": "Reeve Integration",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "32834089"
+    "_exporter_id": "32834089",
+    "_collection_link": "https://go.postman.co/collection/32834089-fd9586ce-3afc-4145-9107-a87e88843eda?source=collection_link"
   },
   "item": [
     {
@@ -1993,119 +1994,6 @@
                 "v1",
                 "reconcile",
                 "trigger"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Dashboards",
-      "item": [
-        {
-          "name": "GET Metrics",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Check if response status code is 200",
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// Parse response JSON",
-                  "const jsonData = pm.response.json();",
-                  "",
-                  "// Check if 'keyName' exists and equals 'expectedValue'",
-                  "pm.test(\"Check if array contains elements\", function () {",
-                  "    pm.expect(jsonData).to.be.an('array');",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "{{base_url}}/api/v1/metrics/dashboards/{{orgId}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "metrics",
-                "dashboards",
-                "{{orgId}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "POST Save Dashboards",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Check if response status code is 200",
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"dashboards\": [\n    {\n      \"id\": 0,\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"charts\": [\n        {\n          \"width\": 0,\n          \"height\": 0,\n          \"metric\": \"BALANCE_SHEET\",\n          \"subMetric\": \"ASSET_CATEGORIES\",\n          \"xpos\": 0,\n          \"ypos\": 0\n        }\n      ]\n    }\n  ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/v1/metrics/saveDashboard",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "metrics",
-                "saveDashboard"
               ]
             }
           },
