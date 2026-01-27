@@ -141,7 +141,7 @@ lob:
       duration: ${LOB_ACCOUNTING_REPORTING_CORE_DEBOUNCE_DURATION:PT10S}
     topics:
       tx-ledger-updated-event: accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent
-      reports-ledger-updated-event: accounting_reporting_core.domain.event.ledger.ReportsLedgerUpdatedEvent
+
       transaction-batch-failed-event: accounting_reporting_core.domain.event.extraction.TransactionBatchFailedEvent
       transaction-batch-started-event: accounting_reporting_core.domain.event.extraction.TransactionBatchStartedEvent
       transaction-batch-chunk-event: accounting_reporting_core.domain.event.extraction.TransactionBatchChunkEvent
@@ -170,10 +170,11 @@ lob:
         bran: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN:0ADF2TpptgqcDE5IQUF1H}
         name: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME:reeve}
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
-  reporting_v2:
-    enabled: ${LOB_REPORTING_V2_ENABLED:true}
+  reporting:
+    enabled: ${LOB_REPORTING_ENABLED:true}
     topics:
       publish-report-event: reporting.dto.events.PublishReportEvent
+      reports-ledger-updated-event: reporting.dto.events.ReportsLedgerUpdatedEvent
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}
