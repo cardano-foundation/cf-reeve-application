@@ -13,7 +13,7 @@ jobs:
       contents:  read
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      SOURCE_BRANCH: "${{ github.event.client_payload.SOURCE_BRANCH }}"
+      SOURCE_BRANCH: "${{ github.event.client_payload.TRIGGERING_PAYLOAD.SOURCE_BRANCH }}"
 
     steps:
       - name: Validate source branch
