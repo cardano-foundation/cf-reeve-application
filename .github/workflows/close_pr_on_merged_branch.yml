@@ -13,12 +13,11 @@ jobs:
       contents:  read
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SOURCE_BRANCH: "${{ github.event.client_payload.SOURCE_BRANCH }}"
 
     steps:
       - name: Skip protected branches
         id: check_branch
-        env:
-          SOURCE_BRANCH: "${{ github.event.client_payload.sourceBranch }}"
         run:  |
           if [[ "$SOURCE_BRANCH" == "main" || "$SOURCE_BRANCH" == "release/"* ]]; then
             echo "Protected branch $SOURCE_BRANCH – skipping"
@@ -28,7 +27,7 @@ jobs:
       - name:  Close PR
         if: steps.check_branch.outputs.skip != 'true'
         run: |
-          echo "Closing PR #$PR_NUMBER for branch $SOURCE_BRANCH"
+          echo "Closing PR for branch $SOURCE_BRANCH"
           gh pr close $SOURCE_BRANCH \
             --repo ${{ github.repository }} \
             --comment "Closed automatically because the platform PR was merged."
