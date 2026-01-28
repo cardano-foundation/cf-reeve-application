@@ -153,20 +153,27 @@ lob:
   organisation:
     enabled: ${LOB_ORGANISATION_ENABLED:true}
   blockchain_publisher:
+    rollback:
+      enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED:false}
     enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:true}
     maxDelay: ${LOB_BLOCKCHAIN_PUBLISHER_MAX_DELAY:PT5M}
     topics:
       report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
+      tx-rollback-event: accounting_reporting_core.domain.event.ledger.TxRollbackEvent
     keri:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED:false}
       url: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_URL:http://127.0.0.1:3901}
       booturl: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_BOOTURL:http://127.0.0.1:3903}
-      metadata_label: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_METADATA_LABEL:1}
+      metadata_label: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_METADATA_LABEL:170}
       identifier:
         bran: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN:0ADF2TpptgqcDE5IQUF1H}
         name: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME:reeve}
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
+  reporting_v2:
+    enabled: ${LOB_REPORTING_V2_ENABLED:true}
+    topics:
+      publish-report-event: reporting.dto.events.PublishReportEvent
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}

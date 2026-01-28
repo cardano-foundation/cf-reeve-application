@@ -33,4 +33,5 @@ public class BlockchainPublisherKafkaPublisher {
         log.info("Sending ReportsLedgerUpdatedEvent to Kafka: {}", event);
         kafkaTemplate.send(reportsLedgerUpdatedEventTopic, event);
     }
+
 }

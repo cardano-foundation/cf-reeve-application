@@ -32,15 +32,16 @@ services:
     networks:
       - lob
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
-      PORT: 3000
+      PORT: "3000"
       VITE_API_URL: ${API_FRONTEND_HOSTNAME:-http://localhost:9000}
       VITE_ADMIN_EMAIL: access_reeve-support@cardanofoundation.org
       VITE_KEYCLOAK_URL: ${KC_FRONTEND_HOSTNAME:-http://localhost:8080}
       VITE_KEYCLOAK_REALM: reeve-master
       VITE_KEYCLOAK_CLIENT_ID: webclient
       VITE_KEYCLOAK_REDIRECT_URL: ${FRONTEND_URL:-http://localhost:3000}/auth/login
+      VITE_PUBLIC_INTERFACE_OFF: ${VITE_PUBLIC_INTERFACE_OFF:-true}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend-http.entrypoints=web"
@@ -68,12 +69,14 @@ services:
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: false
+      LOB_REPORTING_V2_ENABLED: false
       LOB_ORGANISATION_ENABLED: false
       LOB_BLOCKCHAIN_READER_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
       LOB_NETSUITE_ENABLED: true
       LOB_CSV_ENABLED: true
       SERVER_PORT: 9001
+      LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED: false
       LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
       LOB_BLOCKCHAIN_READER_LOB_FOLLOWER_BASE_URL: http://follower-app:9090/api
       SPRING_KAFKA_ENABLED: true
@@ -83,12 +86,13 @@ services:
       LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
       LOB_NETSUITE_CLIENT_TOKEN_URL: ${LOB_NETSUITE_CLIENT_TOKEN_URL:-<enter value>}
       LOB_NETSUITE_CLIENT_RECORDSPERCALL: 1000
-      LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED: true
-      LOB_BLOCKCHAIN_PUBLISHER_KERI_URL: http://keria:3901
-      LOB_BLOCKCHAIN_PUBLISHER_KERI_BOOTURL: http://keria:3903
-      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN: 0ADF2TpptgqcDE5IQUF1H
-      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME: identity
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED:-true}
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_URL: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_URL:-http://keria:3901}
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_BOOTURL: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_BOOTURL:-http://keria:3903}
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN:-0ADF2TpptgqcDE5IQUF1H}
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME:-identity}
       LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE: agent
+      LOB_BLOCKCHAIN_PUBLISHER_KERI_METADATA_LABEL: 170
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
@@ -118,6 +122,8 @@ services:
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
       LOB_ORGANISATION_ENABLED: true
+      LOB_REPORTING_V2_ENABLED: true
+      LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED: false
       LOB_BLOCKCHAIN_READER_ENABLED: false
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: false
       LOB_NETSUITE_ENABLED: false
@@ -327,7 +333,7 @@ services:
       - ./yaci-config/env
     environment:
       PUBLIC_INDEXER_BASE_URL: ${PUBLIC_INDEXER_BASE_URL:-http://yaci-cli:8080/api/v1}
-      PUBLIC_INDEXER_WS_URL: ${PUBLIC_INDEXER_WS_URL:-ws://localhost:8080/ws/liveblocks}
+      PUBLIC_INDEXER_WS_URL: ${PUBLIC_INDEXER_WS_URL:-ws://localhost:8081/ws/liveblocks}
     networks:
       - lob
     labels:
