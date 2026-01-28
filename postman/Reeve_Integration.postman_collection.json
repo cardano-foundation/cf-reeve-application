@@ -1364,7 +1364,7 @@
                   "",
                   "// Check if 'keyName' exists and equals 'expectedValue'",
                   "pm.test(\"Check if  name has changed\", function () {",
-                  "    pm.expect(jsonData.currencyId).to.eql(\"New Postman Name\");",
+                  "    pm.expect(jsonData.isoCode).to.eql(\"New Postman Name\");",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -1425,8 +1425,8 @@
                   "// Check if 'keyName' exists and equals 'expectedValue'",
                   "pm.test(\"Check if inserted\", function () {",
                   "    const randomNumber = pm.environment.get(\"randomNumber\");",
-                  "    pm.expect(jsonData.customerCode).to.eql(\"\"+randomNumber);",
-                  "    pm.expect(jsonData.currencyId).to.eql(\"New Postman Name\");",
+                  "    pm.expect(jsonData.code).to.eql(\"\"+randomNumber);",
+                  "    pm.expect(jsonData.isoCode).to.eql(\"New Postman Name\");",
                   "});"
                 ],
                 "type": "text/javascript",
