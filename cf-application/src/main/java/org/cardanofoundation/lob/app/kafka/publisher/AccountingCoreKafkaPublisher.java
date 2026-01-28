@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TxRollbackEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +37,8 @@ public class AccountingCoreKafkaPublisher {
     // Blockchain Publisher Topics
     @Value("${lob.blockchain_publisher.topics.transaction-ledger-update-commander}")
     private String transactionLedgerUpdateCommanderTopic;
-    @Value("${lob.blockchain_publisher.topics.report-ledger-update-command}")
-    private String reportLedgerUpdateCommandTopic;
+    @Value("${lob.blockchain_publisher.topics.tx-rollback-event}")
+    private String txRollbackEvent;
 
     @EventListener
     public void handleScheduledIngestionEvent(ScheduledIngestionEvent event) {
@@ -77,9 +77,9 @@ public class AccountingCoreKafkaPublisher {
     }
 
     @EventListener
-    public void handleReportLedgerUpdateCommandEvent(ReportLedgerUpdateCommand event) {
-        log.info("Sending ReportLedgerUpdateCommand to Kafka: {}", event);
-        kafkaTemplate.send(reportLedgerUpdateCommandTopic, event);
+    public void handleTxRollbackEvent(TxRollbackEvent event) {
+        log.info("Sending TxRollbackEvent to Kafka: {}", event);
+        kafkaTemplate.send(txRollbackEvent, event);
     }
 
 }
