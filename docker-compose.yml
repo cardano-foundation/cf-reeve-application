@@ -12,7 +12,7 @@ services:
 
   postgres:
     restart: unless-stopped
-    image: postgres:16.3
+    image: postgres:17
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres

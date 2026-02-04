@@ -27,7 +27,17 @@ subprojects {
     }
 
     repositories {
-        mavenLocal()
+        val repoPath = project.findProperty("localRepo").toString()
+        val repoFile = file(repoPath)
+        if (repoFile.exists() && repoFile.isDirectory) {
+            maven {
+                url = repoFile.toURI()
+            }
+            println("Using validated local repo: ${repoFile.absolutePath}")
+        } else {
+            logger.warn("Custom repo path '$repoPath' is invalid. Falling back to default.")
+            mavenLocal()
+        }
         mavenCentral()
         maven {
             name = "Central Portal Snapshots"
@@ -61,7 +71,8 @@ subprojects {
     extra["springBootVersion"] = "3.3.3"
     extra["springCloudVersion"] = "2023.0.0"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["cfLobPlatformVersion"] = "1.3.0-PR509-dfde6a6-GHRUN21662557709"
+    extra["flyway.version"] = "10.20.1"
+    extra["cfLobPlatformVersion"] = "1.3.0-PR547-7ae42ac-GHRUN21672119195"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
