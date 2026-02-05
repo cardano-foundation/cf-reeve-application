@@ -65,6 +65,7 @@ services:
       # Only used for dev and mocking netsuit
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
+      LOB_CARDANO_NETWORK: ${LOB_CARDANO_NETWORK:-DEV}
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
@@ -77,6 +78,7 @@ services:
       LOB_CSV_ENABLED: true
       SERVER_PORT: 9001
       LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED: false
+      LOB_DISPATCHING_STRATEGY_TYPE: IMMEDIATE
       LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
       LOB_BLOCKCHAIN_READER_LOB_FOLLOWER_BASE_URL: http://follower-app:9090/api
       SPRING_KAFKA_ENABLED: true
@@ -420,6 +422,23 @@ services:
       - 3901:3901
       - 3902:3902
       - 3903:3903
+    networks:
+      - lob
+
+  witness-demo:
+    image: weboftrust/keri:1.1.26
+    environment:
+      <<: *python-env
+    healthcheck:
+      test: curl -f http://localhost:5642/oobi
+      <<: *healthcheck
+    entrypoint:
+      - kli
+    command:
+      - witness
+      - demo
+    volumes:
+      - ./keri-config/witness-demo:/keripy/scripts/keri/cf/main
     networks:
       - lob
 
