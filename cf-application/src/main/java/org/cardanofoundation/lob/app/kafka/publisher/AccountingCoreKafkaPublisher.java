@@ -7,6 +7,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extr
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand;
+import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TxRollbackEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,8 @@ public class AccountingCoreKafkaPublisher {
     private String transactionLedgerUpdateCommanderTopic;
     @Value("${lob.blockchain_publisher.topics.report-ledger-update-command}")
     private String reportLedgerUpdateCommandTopic;
+    @Value("${lob.blockchain_publisher.topics.tx-rollback-event}")
+    private String txRollbackEvent;
 
     @EventListener
     public void handleScheduledIngestionEvent(ScheduledIngestionEvent event) {
@@ -80,6 +83,12 @@ public class AccountingCoreKafkaPublisher {
     public void handleReportLedgerUpdateCommandEvent(ReportLedgerUpdateCommand event) {
         log.info("Sending ReportLedgerUpdateCommand to Kafka: {}", event);
         kafkaTemplate.send(reportLedgerUpdateCommandTopic, event);
+    }
+
+    @EventListener
+    public void handleTxRollbackEvent(TxRollbackEvent event) {
+        log.info("Sending TxRollbackEvent to Kafka: {}", event);
+        kafkaTemplate.send(txRollbackEvent, event);
     }
 
 }
