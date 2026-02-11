@@ -16,8 +16,7 @@ subprojects {
     apply(plugin = "info.solidsoft.pitest")
 
     group = "de.cardanofoundation"
-    version = "1.2.0"
-
+    version = "1.4.0"
 
     sourceSets {
         named("main") {
@@ -28,13 +27,30 @@ subprojects {
     }
 
     repositories {
-        mavenLocal()
+        val repoPath = project.findProperty("localRepo").toString()
+        val repoFile = file(repoPath)
+        if (repoFile.exists() && repoFile.isDirectory) {
+            maven {
+                url = repoFile.toURI()
+            }
+            println("Using validated local repo: ${repoFile.absolutePath}")
+        } else {
+            logger.warn("Custom repo path '$repoPath' is invalid. Falling back to default.")
+            mavenLocal()
+        }
         mavenCentral()
         maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+            name = "Central Portal Snapshots"
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+
+            // Only search this repository for the specific dependency
+            content {
+                includeModule("org.cardanofoundation", "signify")
+            }
         }
-        
-        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL").orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
+
+        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL")
+            .orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
         if (gitlabMavenRegistryUrl.isPresent()) {
             maven {
                 name = "gitlab"
@@ -56,7 +72,8 @@ subprojects {
     extra["springBootVersion"] = "3.3.3"
     extra["springCloudVersion"] = "2023.0.0"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["cfLobPlatformVersion"] = "1.2.0"
+    extra["flyway.version"] = "10.20.1"
+    extra["cfLobPlatformVersion"] = "1.4.0-PR536-e8e9ccb-GHRUN21913986275"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
