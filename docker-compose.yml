@@ -168,7 +168,7 @@ services:
         max-file: "100"
 
   clamav:
-    image: clamav/clamav:1.4.2
+    image: clamav/clamav:1.5.1
     restart: unless-stopped
     platform: linux/amd64
     ports:
