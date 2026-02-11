@@ -12,7 +12,7 @@ services:
 
   postgres:
     restart: unless-stopped
-    image: postgres:16.3
+    image: postgres:17
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -65,6 +65,7 @@ services:
       # Only used for dev and mocking netsuit
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
+      LOB_CARDANO_NETWORK: ${LOB_CARDANO_NETWORK:-DEV}
       DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
@@ -77,6 +78,7 @@ services:
       LOB_CSV_ENABLED: true
       SERVER_PORT: 9001
       LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED: false
+      LOB_DISPATCHING_STRATEGY_TYPE: IMMEDIATE
       LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
       LOB_BLOCKCHAIN_READER_LOB_FOLLOWER_BASE_URL: http://follower-app:9090/api
       SPRING_KAFKA_ENABLED: true
@@ -166,7 +168,7 @@ services:
         max-file: "100"
 
   clamav:
-    image: clamav/clamav:1.4.2
+    image: clamav/clamav:1.5.1
     restart: unless-stopped
     platform: linux/amd64
     ports:
@@ -178,6 +180,7 @@ services:
       retries: 5
     networks:
       - lob
+
   keycloak:
     restart: unless-stopped
     image: quay.io/keycloak/keycloak:26.0
@@ -242,38 +245,26 @@ services:
         max-size: "200k"
         max-file: "100"
 
-  zookeeper:
-    restart: unless-stopped
-    image: confluentinc/cp-zookeeper:7.9.2
-    networks:
-      - lob
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "100"
-
   kafka:
     restart: unless-stopped
-    image: confluentinc/cp-kafka:7.9.2
+    image: apache/kafka:4.1.1
     networks:
       - lob
-    depends_on:
-      - zookeeper
     ports:
       - "9092:9092"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://localhost:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
       KAFKA_MESSAGE_MAX_BYTES: 15728640 # 15MB
       KAFKA_REPLICA_FETCH_MAX_BYTES: 15728640 # 15MB
+
   follower-app:
     restart: unless-stopped
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-reeve-follower-app:release-1.1.0
@@ -420,6 +411,23 @@ services:
       - 3901:3901
       - 3902:3902
       - 3903:3903
+    networks:
+      - lob
+
+  witness-demo:
+    image: weboftrust/keri:1.1.26
+    environment:
+      <<: *python-env
+    healthcheck:
+      test: curl -f http://localhost:5642/oobi
+      <<: *healthcheck
+    entrypoint:
+      - kli
+    command:
+      - witness
+      - demo
+    volumes:
+      - ./keri-config/witness-demo:/keripy/scripts/keri/cf/main
     networks:
       - lob
 
