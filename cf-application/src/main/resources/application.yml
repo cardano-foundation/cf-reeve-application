@@ -137,6 +137,12 @@ lob:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
   accounting_reporting_core:
     enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:true}
+    jobs:
+      unstuck:
+        enabled: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_ENABLED:true}
+        delay: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_DELAY:PT30M}
+        initial_delay: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_INITIAL_DELAY:PT1M}
+        stuck_delay: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_STUCK_DELAY:PT10M}
     debounce:
       duration: ${LOB_ACCOUNTING_REPORTING_CORE_DEBOUNCE_DURATION:PT10S}
     topics:
@@ -160,6 +166,7 @@ lob:
     topics:
       report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
+      transaction-status-request-event: accounting_reporting_core.domain.event.ledger.TransactionStatusRequestEvent
       tx-rollback-event: accounting_reporting_core.domain.event.ledger.TxRollbackEvent
     keri:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED:false}

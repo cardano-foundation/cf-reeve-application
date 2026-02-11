@@ -27,7 +27,17 @@ subprojects {
     }
 
     repositories {
-        mavenLocal()
+        val repoPath = project.findProperty("localRepo").toString()
+        val repoFile = file(repoPath)
+        if (repoFile.exists() && repoFile.isDirectory) {
+            maven {
+                url = repoFile.toURI()
+            }
+            println("Using validated local repo: ${repoFile.absolutePath}")
+        } else {
+            logger.warn("Custom repo path '$repoPath' is invalid. Falling back to default.")
+            mavenLocal()
+        }
         mavenCentral()
         maven {
             name = "Central Portal Snapshots"
