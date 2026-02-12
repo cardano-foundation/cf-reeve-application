@@ -6,9 +6,6 @@ import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.assistance.AccountingPeriodCalculator;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.SystemExtractionParametersFactory;
-import org.cardanofoundation.lob.app.accounting_reporting_core.service.internal.TransactionRepositoryGateway;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.*;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.NetSuiteClient;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType;
@@ -19,6 +16,8 @@ import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.Ing
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.*;
 import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
+import org.cardanofoundation.lob.app.organisation.util.AccountingPeriodCalculator;
+import org.cardanofoundation.lob.app.organisation.util.SystemExtractionParametersFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -36,10 +35,10 @@ import java.util.function.Function;
 import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType.*;
 
 @Configuration
-@ComponentScan(basePackages = {
-        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.config",
-        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.service"
-})
+//@ComponentScan(basePackages = {
+//        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.config",
+//        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.service"
+//})
 @Slf4j
 public class CFConfig {
 
@@ -67,12 +66,6 @@ public class CFConfig {
     @Bean
     public ExtractionParametersFilteringService extractionParametersFilteringService() {
         return new ExtractionParametersFilteringService();
-    }
-
-    @Bean
-    public SystemExtractionParametersFactory systemExtractionParametersFactory(OrganisationPublicApiIF organisationPublicApiIF,
-                                                                               AccountingPeriodCalculator accountPeriodService) {
-        return new SystemExtractionParametersFactory(organisationPublicApiIF, accountPeriodService);
     }
 
     @Bean("netsuite_adapter.TransactionConverter")
