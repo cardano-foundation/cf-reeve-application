@@ -47,7 +47,7 @@ import org.cardanofoundation.lob.app.support.spring_web.SpringWebConfig;
                              "org.cardanofoundation.lob"
                            } )
 @ComponentScan(basePackages = {
-        "org.cardanofoundation.lob.app"
+        "org.cardanofoundation.lob.app.config"
 })
 @EnableTransactionManagement
 @EnableAsync
