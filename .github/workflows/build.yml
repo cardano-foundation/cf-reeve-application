@@ -41,7 +41,7 @@ jobs:
           path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
 
       - name: ⛮ cf-gha-baseline
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@pipx/fix
         id: cf-gha-baseline
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
