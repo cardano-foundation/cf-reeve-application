@@ -71,6 +71,8 @@ services:
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: false
       LOB_REPORTING_ENABLED: false
+      LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
+      LOB_INDEXER_URL: ${LOB_INDEXER_URL:-https://indexer.dev.reeve.cf-deployments.org}
       LOB_ORGANISATION_ENABLED: false
       LOB_BLOCKCHAIN_READER_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
@@ -125,6 +127,8 @@ services:
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
       LOB_ORGANISATION_ENABLED: true
       LOB_REPORTING_ENABLED: true
+      LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
+      LOB_INDEXER_URL: ${LOB_INDEXER_URL:-https://indexer.dev.reeve.cf-deployments.org}
       LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED: false
       LOB_BLOCKCHAIN_READER_ENABLED: false
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: false
