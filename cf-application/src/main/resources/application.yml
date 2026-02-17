@@ -133,11 +133,11 @@ spring:
 lob:
   # Default path is for Docker
   mock-result-path: ${LOB_MOCK_RESULT_PATH:/app/cf-application/src/main/resources/db/migrations/postgresql/cf-reeve-db-migrations/NetSuiteIngestionMock.json}
-  onchain-indexer:
-    enabled: ${LOB_ONCHAIN_INDEXER_ENABLED:true}
-    base-url: ${LOB_ONCHAIN_INDEXER_BASE_URL:http://localhost:9002/}
-    connect-timeout: ${LOB_ONCHAIN_INDEXER_CONNECT_TIMEOUT:5000}
-    read-timeout: ${LOB_ONCHAIN_INDEXER_READ_TIMEOUT:30000}
+  indexer:
+    enabled: ${LOB_INDEXER_ENABLED:true}
+    url: ${LOB_INDEXER_BASE_URL:http://localhost:9002/}
+    connect-timeout: ${LOB_INDEXER_CONNECT_TIMEOUT:5000}
+    read-timeout: ${LOB_INDEXER_READ_TIMEOUT:30000}
   blockchain_reader:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
   accounting_reporting_core:
