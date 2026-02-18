@@ -1,6 +1,11 @@
 name: e2e Tests
 
 on:
+  push:
+    branches:
+      - 'feat/*'
+      - 'fix/*'
+      - 'chore/*'
   pull_request:
 env:
   REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
