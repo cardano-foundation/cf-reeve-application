@@ -15,15 +15,12 @@ import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.Ing
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.IngestionRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.*;
-import org.cardanofoundation.lob.app.organisation.OrganisationPublicApiIF;
-import org.cardanofoundation.lob.app.organisation.util.AccountingPeriodCalculator;
 import org.cardanofoundation.lob.app.organisation.util.SystemExtractionParametersFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 import org.zalando.problem.Problem;
@@ -35,11 +32,8 @@ import java.util.function.Function;
 import static org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType.*;
 
 @Configuration
-//@ComponentScan(basePackages = {
-//        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.config",
-//        "org.cardanofoundation.lob.app.netsuite_altavia_adapter.service"
-//})
 @Slf4j
+@ConditionalOnProperty(value = "lob.netsuite.enabled", havingValue = "true", matchIfMissing = true)
 public class CFConfig {
 
     private final static String NETSUITE_CONNECTOR_ID = "fEU237r9rqAPEGEFY1yr";
@@ -134,7 +128,6 @@ public class CFConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "lob.netsuite.enabled", havingValue = "true", matchIfMissing = true)
     public NetSuiteEventHandler netSuiteEventHandler(NetSuiteExtractionService netSuiteExtractionService,
                                                      NetSuiteReconcilationService netSuiteReconcilationService) {
         return new NetSuiteEventHandler(netSuiteExtractionService, netSuiteReconcilationService);

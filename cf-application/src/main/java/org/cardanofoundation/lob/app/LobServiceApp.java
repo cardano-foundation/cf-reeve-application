@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.time.Duration;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.config.CFConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -52,7 +53,7 @@ scanBasePackages = {"org.cardanofoundation.lob.app.config", "org.cardanofoundati
 //@ImportRuntimeHints(org.cardanofoundation.lob.app.LobServiceApp.Hints.class)
 //@EnableAutoConfiguration
 @Slf4j
-@Import({ LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class, LobServiceApp.RestClientConfig.class, LobServiceApp.RestClientConfig.class, SpringWebConfig.class })
+@Import({ CFConfig.class, LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class, LobServiceApp.RestClientConfig.class, LobServiceApp.RestClientConfig.class, SpringWebConfig.class })
 public class LobServiceApp {
 
     public static void main(String[] args) {
