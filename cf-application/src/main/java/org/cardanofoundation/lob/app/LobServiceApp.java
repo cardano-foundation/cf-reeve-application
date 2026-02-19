@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.time.Duration;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.config.CFConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -40,21 +41,19 @@ import org.javers.core.JaversBuilder;
 import org.cardanofoundation.lob.app.support.javers.LOBBigDecimalComparator;
 import org.cardanofoundation.lob.app.support.spring_web.SpringWebConfig;
 
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
+@SpringBootApplication(exclude = { ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class },
+scanBasePackages = {"org.cardanofoundation.lob.app.config", "org.cardanofoundation.lob.app.kafka"})
 @EnableJpaRepositories( { "org.cardanofoundation.lob" } )
 @EntityScan(basePackages = { "org.cardanofoundation.lob.app.support.web_support.internal",
                              "org.cardanofoundation.lob.app.support.audit_support.internal",
                              "org.cardanofoundation.lob"
                            } )
-@ComponentScan(basePackages = {
-        "org.cardanofoundation.lob.app"
-})
 @EnableTransactionManagement
 @EnableAsync
 //@ImportRuntimeHints(org.cardanofoundation.lob.app.LobServiceApp.Hints.class)
-@EnableAutoConfiguration
+//@EnableAutoConfiguration
 @Slf4j
-@Import({ LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class, LobServiceApp.RestClientConfig.class, LobServiceApp.RestClientConfig.class, SpringWebConfig.class })
+@Import({ CFConfig.class, LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class, LobServiceApp.RestClientConfig.class, LobServiceApp.RestClientConfig.class, SpringWebConfig.class })
 public class LobServiceApp {
 
     public static void main(String[] args) {
