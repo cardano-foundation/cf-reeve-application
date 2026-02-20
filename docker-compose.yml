@@ -72,7 +72,7 @@ services:
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: false
       LOB_REPORTING_ENABLED: false
       LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
-      LOB_INDEXER_URL: ${LOB_INDEXER_URL:-https://indexer.dev.reeve.cf-deployments.org}
+      LOB_INDEXER_URL: ${LOB_INDEXER_URL:-http://reeve-verifier-backend:9000}
       LOB_ORGANISATION_ENABLED: false
       LOB_BLOCKCHAIN_READER_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
@@ -128,7 +128,7 @@ services:
       LOB_ORGANISATION_ENABLED: true
       LOB_REPORTING_ENABLED: true
       LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
-      LOB_INDEXER_URL: ${LOB_INDEXER_URL:-https://indexer.dev.reeve.cf-deployments.org}
+      LOB_INDEXER_URL: ${LOB_INDEXER_URL:-http://reeve-verifier-backend:9000}
       LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED: false
       LOB_BLOCKCHAIN_READER_ENABLED: false
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: false
@@ -268,6 +268,16 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
       KAFKA_MESSAGE_MAX_BYTES: 15728640 # 15MB
       KAFKA_REPLICA_FETCH_MAX_BYTES: 15728640 # 15MB
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: "no"
+    ports:
+      - "19000:9000"
+    networks:
+      - lob
+    environment:
+      KAFKA_BROKERCONNECT: "1@kafka:9092"
 
   follower-app:
     restart: unless-stopped
