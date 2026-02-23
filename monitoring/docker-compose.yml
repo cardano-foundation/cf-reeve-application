@@ -1,19 +1,48 @@
-version: '3.7'
+version: '3.8' # Daha güncel ve kararlı versiyon
 
 services:
   prometheus:
     image: prom/prometheus:v2.44.0
     container_name: prometheus
+    restart: unless-stopped
     ports:
       - "9091:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro # Read-only güvenlik için
+      - prometheus_data:/prometheus # Veri kalıcılığı için volume
+    networks:
+      - monitoring_network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/console_templates'
 
   grafana:
     image: grafana/grafana:9.5.2
     container_name: grafana
+    restart: unless-stopped
     ports:
       - "3003:3000"
-    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin} # Güvenlik: Harici şifre yönetimi
+      - GF_USERS_ALLOW_SIGN_UP=false # Güvenlik: Dışarıdan kayıtları kapat
     volumes:
-      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - grafana_data:/var/lib/grafana # Dashboard ve kullanıcıların silinmemesi için
+    networks:
+      - monitoring_network
+    depends_on:
+      - prometheus
+
+
+
+networks:
+  monitoring_network:
+    driver: bridge # Servisleri izole ederek dış dünyadan saklar
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
