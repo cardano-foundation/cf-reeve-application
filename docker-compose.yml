@@ -13,6 +13,7 @@ services:
   postgres:
     restart: unless-stopped
     image: postgres:17
+    hostname: postgres-reeve
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -23,7 +24,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - lob
+      - db
 
   frontend:
     profiles: [frontend]
@@ -66,7 +67,7 @@ services:
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/json/NetSuiteIngestionMock.json
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       LOB_CARDANO_NETWORK: ${LOB_CARDANO_NETWORK:-DEV}
-      DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
+      DB_URL: ${DB_USER:-jdbc:postgresql://postgres-reeve:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: false
@@ -101,6 +102,7 @@ services:
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     networks:
       - lob
+      - db
     ports:
       - "9001:9001"
     volumes:
@@ -121,7 +123,7 @@ services:
       LOB_CORS_ALLOWED_ORIGINS: ${LOB_CORS_ALLOWED_ORIGINS:-http://localhost:3000}
       LOB_MOCK_RESULT_PATH: /app/cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations/NetSuiteIngestionMock.json
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
-      DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres}
+      DB_URL: ${DB_USER:-jdbc:postgresql://postgres-reeve:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
@@ -153,6 +155,7 @@ services:
       start_period: 20s
     networks:
       - lob
+      - db
     ports:
       - "9000:9000"
     labels:
@@ -206,7 +209,7 @@ services:
       KC_HTTP_PORT: ${KC_HTTP_PORT:-8080}
       KC_HTTPS_PORT: ${KC_HTTP_PORT:-8443}
       KC_DB: ${KC_DB:-postgres}
-      KC_DB_URL_HOST: ${KC_DB_URL_HOST:-postgres}
+      KC_DB_URL_HOST: ${KC_DB_URL_HOST:-postgres-reeve}
       KC_DB_URL_PORT: ${KC_DB_URL_PORT:-5432}
       KC_DB_USERNAME: ${KC_DB_USERNAME:-postgres}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD:-postgres}
@@ -453,3 +456,5 @@ volumes:
 networks:
   lob:
     name: lob
+  db:
+    name: db
