@@ -2,14 +2,16 @@ package org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.converto
 
 import io.vavr.control.Either;
 import lombok.val;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.zalando.problem.Problem;
 
 import java.util.function.Function;
 
-public class VatConvertor implements Function<String, Either<Problem, String>> {
+public class VatConvertor implements Function<String, Either<ProblemDetail, String>> {
 
     @Override
-    public Either<Problem, String> apply(String s) {
+    public Either<ProblemDetail, String> apply(String s) {
         val split = s.split(":");
 
         if (split.length == 1) {
@@ -19,12 +21,10 @@ public class VatConvertor implements Function<String, Either<Problem, String>> {
         if (split.length == 2) {
             return Either.right(split[1].trim());
         }
-
-        return Either.left(Problem.builder()
-                .withTitle("INVALID_VAT")
-                .withDetail("Invalid vat code")
-                .with("vat", s)
-                .build());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid vat code");
+        problemDetail.setTitle("INVALID_VAT");
+        problemDetail.setProperty("vat", s);
+        return Either.left(problemDetail);
     }
 
 }
