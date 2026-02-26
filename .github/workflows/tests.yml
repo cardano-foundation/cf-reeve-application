@@ -14,7 +14,19 @@ env:
   GITLAB_MAVEN_REGISTRY_URL: ${{ secrets.GITLAB_MAVEN_REGISTRY_URL }}
 
 jobs:
+  # Delay job for push events - gives PR workflow priority
+  wait-for-pr:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - run: sleep 30
+
   postman:
+    needs: wait-for-pr
+    if: always() && (github.event_name == 'pull_request' || needs.wait-for-pr.result == 'success')
+    concurrency:
+      group: tests-${{ github.ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
 
     steps:
@@ -56,6 +68,11 @@ jobs:
             --environment postman/Reeve_env.postman_environment.json
 
   playwright:
+    needs: wait-for-pr
+    if: always() && (github.event_name == 'pull_request' || needs.wait-for-pr.result == 'success')
+    concurrency:
+      group: tests-${{ github.ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
 
     steps:
