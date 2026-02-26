@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.client.RestClient;
 import org.zalando.problem.Problem;
 
@@ -145,7 +146,7 @@ public class CFConfig {
 
     @Bean
     public PreprocessorService preprocessorService() {
-        val fieldProcessors = new HashMap<FieldType, Function<String, Either<Problem, String>>>();
+        val fieldProcessors = new HashMap<FieldType, Function<String, Either<ProblemDetail, String>>>();
         fieldProcessors.put(COST_CENTER, new CostCenterConvertor());
         fieldProcessors.put(PROJECT, new ProjectConvertor());
         fieldProcessors.put(CHART_OF_ACCOUNT, new AccountNumberConvertor());
