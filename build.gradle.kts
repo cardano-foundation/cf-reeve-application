@@ -74,6 +74,7 @@ subprojects {
     extra["jMoleculesVersion"] = "2023.1.0"
     extra["testcontainers.version"] = "1.21.4"
     extra["cfLobPlatformVersion"] = "1.4.0-PR536-a3eae9f-GHRUN22453456396"
+    extra["flyway.version"] = "10.20.1"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
