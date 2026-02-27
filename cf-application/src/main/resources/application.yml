@@ -139,9 +139,9 @@ lob:
     connect-timeout: ${LOB_INDEXER_CONNECT_TIMEOUT:5000}
     read-timeout: ${LOB_INDEXER_READ_TIMEOUT:30000}
   blockchain_reader:
-    enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:true}
+    enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:false}
   accounting_reporting_core:
-    enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:true}
+    enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:false}
     jobs:
       unstuck:
         enabled: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_ENABLED:true}
@@ -162,11 +162,11 @@ lob:
       reconcilation-finalisation-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationFinalisationEvent
       validate-ingestion-response-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionResponseEvent
   organisation:
-    enabled: ${LOB_ORGANISATION_ENABLED:true}
+    enabled: ${LOB_ORGANISATION_ENABLED:false}
   blockchain_publisher:
     rollback:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED:false}
-    enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:true}
+    enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:false}
     maxDelay: ${LOB_BLOCKCHAIN_PUBLISHER_MAX_DELAY:PT5M}
     topics:
       report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
@@ -183,7 +183,7 @@ lob:
         name: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME:reeve}
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
   reporting:
-    enabled: ${LOB_REPORTING_ENABLED:true}
+    enabled: ${LOB_REPORTING_ENABLED:false}
     topics:
       publish-report-event: reporting.dto.events.PublishReportEvent
       reports-ledger-updated-event: reporting.dto.events.ReportsLedgerUpdatedEvent
@@ -195,7 +195,7 @@ lob:
       type: ${LOB_DISPATCHING_STRATEGY_TYPE:DELAYED}
 
   netsuite:
-    enabled: ${LOB_NETSUITE_ENABLED:true}
+    enabled: ${LOB_NETSUITE_ENABLED:false}
     financial:
       period:
         source: EXPLICIT
@@ -214,7 +214,7 @@ lob:
       recordspercall: ${LOB_NETSUITE_CLIENT_RECORDSPERCALL:10000}
       timeout-seconds: ${LOB_NETSUITE_CLIENT_TIMEOUT_SECONDS:300}
   csv:
-    enabled: ${LOB_CSV_ENABLED:true}
+    enabled: ${LOB_CSV_ENABLED:false}
     delimiter: ${LOB_CSV_DELIMITER:,}
     send-batch-size: ${LOB_CSV_SEND_BATCH_SIZE:100}
   l1:
