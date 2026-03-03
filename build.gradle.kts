@@ -73,7 +73,7 @@ subprojects {
     extra["springCloudVersion"] = "2025.0.1"
     extra["jMoleculesVersion"] = "2023.1.0"
     extra["testcontainers.version"] = "1.21.4"
-    extra["cfLobPlatformVersion"] = "1.4.0-PR592-c80a31a-GHRUN22617299118"
+    extra["cfLobPlatformVersion"] = "1.4.0-PR592-78e16e2-GHRUN22618032838"
     extra["flyway.version"] = "10.20.1"
 
     dependencies {
