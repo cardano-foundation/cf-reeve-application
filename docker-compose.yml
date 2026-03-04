@@ -18,7 +18,7 @@ services:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 10
       start_period: 30s
     environment:
       - POSTGRES_USER=postgres
