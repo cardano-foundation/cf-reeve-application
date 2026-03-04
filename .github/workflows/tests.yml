@@ -53,6 +53,10 @@ jobs:
           newman run postman/Reeve_Integration.postman_collection.json \
             --environment postman/Reeve_env.postman_environment.json
 
+      - name: Clean up Docker
+        if: always()
+        run: docker compose down -v
+
   playwright:
     runs-on: ubuntu-latest
 
@@ -106,3 +110,7 @@ jobs:
         working-directory: playwright
         run: npm run test
         continue-on-error: true
+
+      - name: Clean up Docker
+        if: always()
+        run: docker compose down -v
