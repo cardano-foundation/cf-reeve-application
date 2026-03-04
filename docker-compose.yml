@@ -14,6 +14,12 @@ services:
     restart: unless-stopped
     image: postgres:17
     hostname: postgres-reeve
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -61,6 +67,9 @@ services:
     restart: unless-stopped
     build:
       context: .
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
@@ -100,6 +109,12 @@ services:
       LOB_BLOCKCHAIN_PUBLISHER_KERI_METADATA_LABEL: 170
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/9001'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
     networks:
       - lob
     ports:
@@ -116,6 +131,9 @@ services:
     restart: unless-stopped
     build:
       context: .
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
@@ -191,8 +209,10 @@ services:
     image: quay.io/keycloak/keycloak:26.0
     command: start-dev --import-realm
     depends_on:
-      - postgres
-      - keycloak-theme-setup
+      postgres:
+        condition: service_healthy
+      keycloak-theme-setup:
+        condition: service_completed_successfully
     networks:
       - lob
     environment:
@@ -253,6 +273,11 @@ services:
   kafka:
     restart: unless-stopped
     image: apache/kafka:4.1.1
+    healthcheck:
+      test: /opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server kafka:9092 || exit 1
+      interval: 1s
+      timeout: 60s
+      retries: 60
     networks:
       - lob
     ports:
