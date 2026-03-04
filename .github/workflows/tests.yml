@@ -31,7 +31,12 @@ jobs:
       - name: Set up Docker Compose
         run: |
           docker compose build --build-arg GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
-          docker compose up -d --wait --quiet-pull
+          if ! docker compose up -d --wait --quiet-pull
+          then
+            # retry once to give postgres another chance
+            docker compose up -d --wait --quiet-pull
+          fi
+
           # debugging
           docker compose logs api
           docker ps
@@ -65,7 +70,12 @@ jobs:
       - name: Set up Docker Compose
         run: |
           docker compose build --build-arg GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
-          docker compose up -d --wait --quiet-pull
+          if ! docker compose up -d --wait --quiet-pull
+          then
+            # retry once to give postgres another chance
+            docker compose up -d --wait --quiet-pull
+          fi
+
           # debugging
           docker compose logs api
           docker ps

@@ -15,11 +15,10 @@ services:
     image: postgres:17
     hostname: postgres-reeve
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "127.0.0.1", "-d", "postgres"]
       interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 45s
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
