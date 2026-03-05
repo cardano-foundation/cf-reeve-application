@@ -38,7 +38,7 @@ jobs:
           fi
 
           # debugging
-          docker compose logs api
+          docker compose logs api --tail 500
           docker ps
 
       - name: Set up Node.js
@@ -81,7 +81,7 @@ jobs:
           fi
 
           # debugging
-          docker compose logs api
+          docker compose logs api --tail 500
           docker ps
 
       - name: Set up Node.js
