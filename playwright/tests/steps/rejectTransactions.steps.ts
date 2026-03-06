@@ -30,3 +30,19 @@ Then(/^the transaction should be now in invalid status by "([^"]*)" reason$/, as
     const transactionDetails = await transactionApiResponse.json()
     await (await rejectTransactionValidator()).validateTransactionWithInvalidStatus(transactionDetails, reason)
 });
+Given(/^And the user wants to rejects the transaction by incorrect amount$/, async ({request, ctx}) => {
+    ctx.transaction.rejectTransactionData = await ( await rejectTransactionBuilder(ctx.transaction.batchDetails))
+        .createRejectTransactionPayloadWithReason(RejectionCode.INCORRECT_AMOUNT)
+});
+Given(/^And the user wants to rejects the transaction by incorrect vat code$/, async ({request, ctx}) => {
+    ctx.transaction.rejectTransactionData = await ( await rejectTransactionBuilder(ctx.transaction.batchDetails))
+        .createRejectTransactionPayloadWithReason(RejectionCode.INCORRECT_VAT_CODE)
+});
+Given(/^And the user wants to rejects the transaction by incorrect currency$/, async ({request, ctx}) => {
+    ctx.transaction.rejectTransactionData = await ( await rejectTransactionBuilder(ctx.transaction.batchDetails))
+        .createRejectTransactionPayloadWithReason(RejectionCode.INCORRECT_CURRENCY)
+});
+Given(/^And the user wants to rejects the transaction by incorrect project$/, async ({request, ctx}) => {
+    ctx.transaction.rejectTransactionData = await ( await rejectTransactionBuilder(ctx.transaction.batchDetails))
+        .createRejectTransactionPayloadWithReason(RejectionCode.INCORRECT_PROJECT)
+});
