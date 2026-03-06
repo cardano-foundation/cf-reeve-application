@@ -46,3 +46,18 @@ Given(/^And the user wants to rejects the transaction by incorrect project$/, as
     ctx.transaction.rejectTransactionData = await ( await rejectTransactionBuilder(ctx.transaction.batchDetails))
         .createRejectTransactionPayloadWithReason(RejectionCode.INCORRECT_PROJECT)
 });
+Given(/^And the user wants to rejects the transaction by review parent cost center$/, async ({request, ctx}) => {
+    ctx.transaction.rejectTransactionData = await ( await rejectTransactionBuilder(ctx.transaction.batchDetails))
+        .createRejectTransactionPayloadWithReason(RejectionCode.REVIEW_PARENT_COST_CENTER)
+});
+Then(/^the transaction should be now in pending status by "([^"]*)" reason$/, async ({request, ctx},reason) => {
+    const transactionApiResponse = await (await reeveService(request))
+        .getTransactionById(ctx.auth.authToken, ctx.transaction.rejectTransactionResponse.transactionId)
+    expect(transactionApiResponse.status()).toEqual(HttpStatusCodes.success)
+    const transactionDetails = await transactionApiResponse.json()
+    await (await rejectTransactionValidator()).validateTransactionWithPendingStatus(transactionDetails, reason)
+});
+Given(/^And the user wants to rejects the transaction by review parent project code$/, async ({request, ctx}) => {
+    ctx.transaction.rejectTransactionData = await ( await rejectTransactionBuilder(ctx.transaction.batchDetails))
+        .createRejectTransactionPayloadWithReason(RejectionCode.REVIEW_PARENT_PROJECT_CODE)
+});
