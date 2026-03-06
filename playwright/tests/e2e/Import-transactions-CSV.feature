@@ -28,3 +28,24 @@ Feature: Users can import transactions into Reeve with a CSV file, system valida
     And system get the validation request
     When system get import request
     Then the system should create the transaction with pending status by "CHART_OF_ACCOUNT_NOT_FOUND"
+
+  Scenario: Import transaction in invalid status by unbalanced transaction
+    Given Manager user wants to import a transaction with a CSV file
+    And the transaction amounts are not balanced
+    And system get the validation request
+    When system get import request
+    Then the system should create the transaction with invalid status by "UNBALANCED_TRANSACTION"
+
+  Scenario: Import transaction in invalid status by missing tx number
+    Given Manager user wants to import a transaction with a CSV file
+    And the transaction number is missing in the CSV file
+    And system get the validation request
+    When system get import request
+    Then the system should create the transaction with invalid status by "TX_INTERNAL_NUMBER_MUST_BE_PRESENT"
+
+  Scenario: Import transaction in invalid status by missing debit code
+    Given Manager user wants to import a transaction with a CSV file
+    And the transaction debit code is missing in the CSV file
+    And system get the validation request
+    When system get import request
+    Then the system should create the transaction with invalid status by "ACCOUNT_CODE_DEBIT_IS_EMPTY"

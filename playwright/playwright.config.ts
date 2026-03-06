@@ -6,7 +6,10 @@ import "dotenv/config";
 
 const testDir = defineBddConfig({
   features: './tests/e2e',
-  steps: './tests/steps'
+  steps: [
+      './tests/steps',
+      './utils/playwright-bdd-fixtures.ts'
+  ]
 });
 export default defineConfig({
   /* Indicates where the test steps definition are */

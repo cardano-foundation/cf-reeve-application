@@ -14,7 +14,7 @@ import {
     ChartOfAccountsDto,
     DebitAndCreditAccounts
 } from "../api/dtos/chartOfAccountsDto";
-import {TransactionPendingStatus} from "./transaction-pending-status";
+import {TransactionPendingInvalidStatus} from "./transaction-pending-invalid-status";
 
 export async function transactionsBuilder(request: APIRequestContext, authToken: string) {
     const createCSVTransactionReadyToApprove = async (transactionDataToImport: TransactionItemCsvDto[]) => {
@@ -28,6 +28,13 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
         const rows = await createPendingTransactionData(transactionDataToImport, pendingReason);
         const fileName = "Pending-" + Math.random().toString(36).substring(2, 2 + 8) + ".csv";
         return await saveCSV(columns, rows, fileName)
+    }
+    const createCSVTransactionInvalid = async (transactionDataToImport: TransactionItemCsvDto[], invalidReason: string) => {
+        const columns = await getTransactionCSVHeaders();
+        const rows = await createInvalidTransactionData(transactionDataToImport, invalidReason);
+        const fileName = "Invalid-" + Math.random().toString(36).substring(2, 2 + 8) + ".csv";
+        return await saveCSV(columns, rows, fileName)
+
     }
     const getTransactionCSVHeaders = async () => {
         try {
@@ -81,6 +88,23 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
         rows.push(Object.values(creditTxItem))
         return rows
     }
+    const createInvalidTransactionData = async (transactionDataToImport: TransactionItemCsvDto[], invalidReason: string) => {
+        const transactionCommonData = await getTransactionCommonData()
+        const amountForTxItem = (Math.floor(Math.random() * 100000) + 1).toString();
+        const eventCodes = await getEventCodes();
+        const debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
+        const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
+            true, debitAndCreditAccounts)
+        const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
+            false, debitAndCreditAccounts);
+        await setInvalidReason(debitTxItem, creditTxItem,invalidReason);
+        transactionDataToImport.push(debitTxItem);
+        transactionDataToImport.push(creditTxItem);
+        const rows: string[][] = [];
+        rows.push(Object.values(debitTxItem));
+        rows.push(Object.values(creditTxItem))
+        return rows
+    }
     const getTransactionCommonData = async () => {
         const txNumber = "TEST-" + Math.random().toString(36).substring(2, 2 + 8);
         const txDate = getDateInThePast(2, true);
@@ -95,17 +119,30 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
         return transactionItemCommonData
     }
     const setPendingReason = async (transactionItem: TransactionItemCsvDto, pendingReason: string) => {
-        if(pendingReason == TransactionPendingStatus.COST_CENTER_DATA_NOT_FOUND){
+        if(pendingReason == TransactionPendingInvalidStatus.COST_CENTER_DATA_NOT_FOUND){
             transactionItem.TxCostCenter = Math.random().toString(36).substring(2, 2 + 8);
         }
-        if(pendingReason == TransactionPendingStatus.VAT_DATA_NOT_FOUND){
+        if(pendingReason == TransactionPendingInvalidStatus.VAT_DATA_NOT_FOUND){
             transactionItem.VatCode = Math.random().toString(36).substring(2, 2 + 8);
         }
-        if(pendingReason == TransactionPendingStatus.CHART_OF_ACCOUNT_NOT_FOUND){
+        if(pendingReason == TransactionPendingInvalidStatus.CHART_OF_ACCOUNT_NOT_FOUND){
             transactionItem.DebitCode = Math.random().toString(36).substring(2, 2 + 8);
         }
     }
-
+    const setInvalidReason = async (debitTransactionItem: TransactionItemCsvDto, creditTransactionItem: TransactionItemCsvDto,
+                                    invalidReason: string) => {
+        if(invalidReason == TransactionPendingInvalidStatus.UNBALANCED_TRANSACTION){
+            debitTransactionItem.AmountLcyDebit += 1000;
+            debitTransactionItem.AmountFcyDebit += 1000;
+        }
+        if(invalidReason == TransactionPendingInvalidStatus.TX_INTERNAL_NUMBER_MUST_BE_PRESENT){
+            debitTransactionItem.TxNumber = "";
+            creditTransactionItem.TxNumber= "";
+        }
+        if(invalidReason == TransactionPendingInvalidStatus.ACCOUNT_CODE_DEBIT_IS_EMPTY){
+            debitTransactionItem.DebitCode = "";
+        }
+    }
     const getTransactionType = async () => {
         const transactionTypeResponse = await (await reeveService(request))
             .getTransactionTypes(authToken);
@@ -222,7 +259,8 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
 
     return {
         createReadyToApproveTransaction: createCSVTransactionReadyToApprove,
-        createCSVTransactionPending
+        createCSVTransactionPending,
+        createCSVTransactionInvalid
     }
 
 }
