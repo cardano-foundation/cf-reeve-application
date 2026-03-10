@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@ConditionalOnProperty(value = {"lob.reporting_v2.enabled", "spring.kafka.enabled"}, havingValue = "true")
+@ConditionalOnProperty(value = {"lob.reporting.enabled", "spring.kafka.enabled"}, havingValue = "true")
 public class ReportingKafkaPublisher {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Value("${lob.reporting_v2.topics.publish-report-event}")
+    @Value("${lob.reporting.topics.publish-report-event}")
     private String publishReportEventTopic;
 
     @EventListener

@@ -59,6 +59,24 @@ export async function reeveService(request: APIRequestContext) {
         }).not.toBeNull();
         return batchId
     }
+    const getNewBatchByDocumentNumber = async (authToken: string, status: string, documentNumber: string) => {
+        let batchesResponse: APIResponse;
+        let batchesAfterImport: BatchData;
+        let batchId: BatchResponse;
+        await expect.poll(async () => {
+            batchesResponse = await (await reeveService(request)).getBatchesByStatus(authToken,
+                status);
+            batchesAfterImport = await batchesResponse.json()
+            let batchesIdAfterImport = batchesAfterImport.batchs.map(batch => batch.id);
+            batchId = await findBatchWithDocumentNumber(batchesIdAfterImport,documentNumber,authToken);
+            return batchId
+        },{
+            message: "The new Batch was not created: ",
+            intervals: [1_000, 2_000, 10_000],
+            timeout: 280_000
+        }).not.toBeNull();
+        return batchId
+    }
 
     const getBatchById = async (authToken: string, batchId: string) => {
         return await reeveApi(request).batchById(authToken, batchId)
@@ -73,6 +91,16 @@ export async function reeveService(request: APIRequestContext) {
         }
         return null;
     }
+    const findBatchWithDocumentNumber = async (batchesIdAfterImport: string[], documentNumber: string, authToken: string) => {
+        for (const batchId of batchesIdAfterImport) {
+            const batchDetailsResponse: BatchResponse = await (await getBatchById(authToken, batchId)).json();
+            if (batchDetailsResponse.transactions[0].items[0].documentNum == documentNumber){
+                return batchDetailsResponse
+            }
+        }
+        return null;
+    }
+
 
     return {
         loginToReeve,
@@ -84,7 +112,8 @@ export async function reeveService(request: APIRequestContext) {
         importTransactionCsvFile,
         getBatchesByStatus,
         getNewBatch,
-        getBatchById
+        getBatchById,
+        getNewBatchByDocumentNumber
     };
 
 }

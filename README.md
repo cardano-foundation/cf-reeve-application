@@ -29,7 +29,6 @@ This will start the following services:
 - `yaci-viewer`: The frontend to access the Yaci DevKit like an explorer
 - `keycloak`: The identity provider used by the cf-lob-platform
 - `kafka`: The message broker used by the cf-lob-platform
-- `zookeeper`: The coordination service used by the message broker
 
 ## How to develop
 Start the application stack as described above. Then you can stop containers you are currently working on.
