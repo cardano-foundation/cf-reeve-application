@@ -4,6 +4,7 @@ import {Batch, BatchData} from "../dtos/batchsDto";
 import {BatchesStatusCodes} from "../api-helpers/batches-status-codes";
 import {BatchResponse} from "../dtos/batchDto";
 import {log} from "../../utils/logger";
+import {RejectTransactionDto} from "../dtos/RejectTransactionDto";
 
 let managerUser = process.env.MANAGER_USER as string;
 let managerPassword = process.env.MANAGER_PASSWORD as string;
@@ -100,8 +101,12 @@ export async function reeveService(request: APIRequestContext) {
         }
         return null;
     }
-
-
+    const rejectTransaction = async (authToken: string, transactionToReject: RejectTransactionDto) => {
+        return await reeveApi(request).rejectTransaction(authToken, transactionToReject)
+    }
+    const getTransactionById = async (authToken: string, transactionId: string) => {
+        return await reeveApi(request).getTransactionById(authToken, transactionId)
+    }
     return {
         loginToReeve,
         loginManager,
@@ -113,7 +118,9 @@ export async function reeveService(request: APIRequestContext) {
         getBatchesByStatus,
         getNewBatch,
         getBatchById,
-        getNewBatchByDocumentNumber
+        getNewBatchByDocumentNumber,
+        rejectTransaction,
+        getTransactionById
     };
 
 }

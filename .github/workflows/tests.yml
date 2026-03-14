@@ -106,6 +106,22 @@ jobs:
         run: npm run test
         continue-on-error: true
 
+      - name: Upload E2E Tests Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-playwright-report
+          path: ./playwright/playwright-report
+          retention-days: 30
+
+      - name: Publish E2E Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: E2E Tests Report
+          path: ./playwright/test-results/results.xml
+          reporter: java-junit
+
       - name: Clean up Docker
         if: always()
         run: docker compose down -v
