@@ -48,6 +48,7 @@ subprojects {
                 includeModule("org.cardanofoundation", "signify")
             }
         }
+        maven { url = uri("https://jitpack.io") }
 
         val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL")
             .orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
@@ -87,6 +88,7 @@ subprojects {
         implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("io.micrometer:micrometer-core")
         implementation("io.micrometer:micrometer-registry-prometheus")
+        implementation("com.github.ipfs:java-ipfs-http-client:v1.3.3")
 
         testCompileOnly("org.projectlombok:lombok:1.18.32")
         testAnnotationProcessor("org.projectlombok:lombok:1.18.32")

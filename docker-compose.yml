@@ -434,6 +434,7 @@ services:
       options:
         max-size: "200k"
         max-file: "100"
+
   keria:
     image: ${KERIA_IMAGE:-weboftrust/keria}:${KERIA_IMAGE_TAG:-0.2.0-dev6}
     restart: unless-stopped
@@ -469,7 +470,6 @@ services:
       - ./keri-config/witness-demo:/keripy/scripts/keri/cf/main
     networks:
       - lob
-
 volumes:
   postgres-data:
   keycloak-providers:
