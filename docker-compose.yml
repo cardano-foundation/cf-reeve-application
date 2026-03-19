@@ -25,7 +25,7 @@ services:
       - POSTGRES_DB=postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - ./init-scripts/create_databases.sql:/docker-entrypoint-initdb.d/create_databases.sql
     ports:
       - "5432:5432"
     networks:
