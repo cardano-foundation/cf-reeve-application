@@ -1,7 +1,7 @@
 x-healthcheck: &healthcheck
   interval: 2s
   timeout: 3s
-  retries: 5
+  retries: 10
   start_period: 2s
 
 x-python-env: &python-env
