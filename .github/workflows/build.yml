@@ -32,14 +32,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Checkout cf-reeve-db-migrations
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
-          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
-          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
-          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
-
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         id: cf-gha-baseline
