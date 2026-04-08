@@ -16,7 +16,7 @@ subprojects {
     apply(plugin = "info.solidsoft.pitest")
 
     group = "de.cardanofoundation"
-    version = "1.4.3"
+    version = "1.6.0"
 
     sourceSets {
         named("main") {
