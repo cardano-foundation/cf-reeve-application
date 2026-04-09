@@ -48,8 +48,11 @@ subprojects {
                 includeModule("org.cardanofoundation", "signify")
             }
         }
-        
-        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL").orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
+        // ipfs client
+        maven { url = uri("https://jitpack.io") }
+
+        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL")
+            .orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
         if (gitlabMavenRegistryUrl.isPresent()) {
             maven {
                 name = "gitlab"
@@ -68,18 +71,18 @@ subprojects {
         }
     }
 
-    extra["springBootVersion"] = "3.3.3"
-    extra["springCloudVersion"] = "2023.0.0"
+    extra["springBootVersion"] = "3.5.8"
+    extra["springCloudVersion"] = "2025.0.1"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["flyway.version"] = "10.20.1"
-    extra["cfLobPlatformVersion"] = "1.3.1"
+    extra["testcontainers.version"] = "1.21.4"
+    extra["cfLobPlatformVersion"] = "1.5.0-PR621-15e5c89-GHRUN24129724732"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
         annotationProcessor("org.projectlombok:lombok:1.18.32")
 
         implementation("org.javers:javers-core:7.6.1")
-        implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
+        implementation("org.apache.httpcomponents.client5:httpclient5:5.5")
 
         // testing
         implementation("org.springframework.boot:spring-boot-starter-actuator")

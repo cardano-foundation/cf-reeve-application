@@ -31,6 +31,7 @@ jobs:
           # debugging
           docker compose logs api --tail 500
           docker ps
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -42,6 +43,10 @@ jobs:
         run: |
           newman run postman/Reeve_Integration.postman_collection.json \
             --environment postman/Reeve_env.postman_environment.json
+
+      - name: Clean up Docker
+        if: always()
+        run: docker compose down -v
 
   playwright:
     runs-on: ubuntu-latest
@@ -62,10 +67,8 @@ jobs:
           docker compose build --build-arg GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
           docker compose up -d --wait --quiet-pull
 
-      - name: Services health-check Keycloak
-        run: |
-          timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/realms/master)" != "200" ]]; do sleep 2;echo "."; done'
-          echo "Keycloak is up"
+          # debugging
+          docker compose logs api --tail 500
           docker ps
 
       - name: Set up Node.js
