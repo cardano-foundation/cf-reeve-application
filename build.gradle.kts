@@ -16,7 +16,7 @@ subprojects {
     apply(plugin = "info.solidsoft.pitest")
 
     group = "de.cardanofoundation"
-    version = "1.5.0"
+    version = "1.6.0"
 
     sourceSets {
         named("main") {
@@ -48,10 +48,8 @@ subprojects {
                 includeModule("org.cardanofoundation", "signify")
             }
         }
-        maven { url = uri("https://jitpack.io") }
-
-        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL")
-            .orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
+        
+        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL").orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
         if (gitlabMavenRegistryUrl.isPresent()) {
             maven {
                 name = "gitlab"
@@ -70,25 +68,23 @@ subprojects {
         }
     }
 
-    extra["springBootVersion"] = "3.5.8"
-    extra["springCloudVersion"] = "2025.0.1"
+    extra["springBootVersion"] = "3.3.3"
+    extra["springCloudVersion"] = "2023.0.0"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["testcontainers.version"] = "1.21.4"
-    extra["cfLobPlatformVersion"] = "1.5.0-PR612-f54802f-GHRUN23151177335"
     extra["flyway.version"] = "10.20.1"
+    extra["cfLobPlatformVersion"] = "1.3.1"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
         annotationProcessor("org.projectlombok:lombok:1.18.32")
 
         implementation("org.javers:javers-core:7.6.1")
-        implementation("org.apache.httpcomponents.client5:httpclient5:5.5")
+        implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
 
         // testing
         implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("io.micrometer:micrometer-core")
         implementation("io.micrometer:micrometer-registry-prometheus")
-        implementation("com.github.ipfs:java-ipfs-http-client:v1.3.3")
 
         testCompileOnly("org.projectlombok:lombok:1.18.32")
         testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
