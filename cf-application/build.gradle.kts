@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot") version "3.3.0"
+    id("org.springframework.boot") version "3.5.8"
 }
 val isKafkaEnabled: Boolean = System.getenv("KAFKA_ENABLED")?.toBooleanStrictOrNull() ?: true
 dependencies {
@@ -26,6 +26,12 @@ dependencies {
     implementation("org.cardanofoundation:cf-lob-platform-csv_erp_adapter:${property("cfLobPlatformVersion")}")
     implementation("org.cardanofoundation:cf-lob-platform-blockchain_publisher:${property("cfLobPlatformVersion")}")
     implementation("org.cardanofoundation:cf-lob-platform-accounting_reporting_core:${property("cfLobPlatformVersion")}")
+    implementation("org.cardanofoundation:cf-lob-platform-reporting:${property("cfLobPlatformVersion")}")
+}
+
+
+tasks.bootJar {
+    archiveClassifier = "all"
 }
 
 

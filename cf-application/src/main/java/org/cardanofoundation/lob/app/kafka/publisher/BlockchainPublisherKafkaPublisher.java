@@ -2,8 +2,8 @@ package org.cardanofoundation.lob.app.kafka.publisher;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.ReportsLedgerUpdatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent;
+import org.cardanofoundation.lob.app.reporting.dto.events.ReportsLedgerUpdatedEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
@@ -19,7 +19,7 @@ public class BlockchainPublisherKafkaPublisher {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     @Value("${lob.accounting_reporting_core.topics.tx-ledger-updated-event}")
     private String txLedgerUpdatedEventTopic;
-    @Value("${lob.accounting_reporting_core.topics.reports-ledger-updated-event}")
+    @Value("${lob.reporting.topics.reports-ledger-updated-event}")
     private String reportsLedgerUpdatedEventTopic;
 
     @EventListener
@@ -33,4 +33,5 @@ public class BlockchainPublisherKafkaPublisher {
         log.info("Sending ReportsLedgerUpdatedEvent to Kafka: {}", event);
         kafkaTemplate.send(reportsLedgerUpdatedEventTopic, event);
     }
+
 }

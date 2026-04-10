@@ -16,7 +16,7 @@ subprojects {
     apply(plugin = "info.solidsoft.pitest")
 
     group = "de.cardanofoundation"
-    version = "1.2.0"
+    version = "1.4.3"
 
     sourceSets {
         named("main") {
@@ -27,13 +27,32 @@ subprojects {
     }
 
     repositories {
-        mavenLocal()
+        val repoPath = project.findProperty("localRepo").toString()
+        val repoFile = file(repoPath)
+        if (repoFile.exists() && repoFile.isDirectory) {
+            maven {
+                url = repoFile.toURI()
+            }
+            println("Using validated local repo: ${repoFile.absolutePath}")
+        } else {
+            logger.warn("Custom repo path '$repoPath' is invalid. Falling back to default.")
+            mavenLocal()
+        }
         mavenCentral()
         maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+            name = "Central Portal Snapshots"
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+
+            // Only search this repository for the specific dependency
+            content {
+                includeModule("org.cardanofoundation", "signify")
+            }
         }
-        
-        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL").orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
+        // ipfs client
+        maven { url = uri("https://jitpack.io") }
+
+        val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL")
+            .orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
         if (gitlabMavenRegistryUrl.isPresent()) {
             maven {
                 name = "gitlab"
@@ -52,17 +71,19 @@ subprojects {
         }
     }
 
-    extra["springBootVersion"] = "3.3.3"
-    extra["springCloudVersion"] = "2023.0.0"
+    extra["springBootVersion"] = "3.5.8"
+    extra["springCloudVersion"] = "2025.0.1"
     extra["jMoleculesVersion"] = "2023.1.0"
-    extra["cfLobPlatformVersion"] = "1.2.0-release-1.2.0-c2da158-GHRUN18776920543"
+    extra["testcontainers.version"] = "1.21.4"
+    extra["cfLobPlatformVersion"] = "1.5.0-PR615-4650c3d-GHRUN24129847225"
+    extra["flyway.version"] = "10.20.1"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
         annotationProcessor("org.projectlombok:lombok:1.18.32")
 
         implementation("org.javers:javers-core:7.6.1")
-        implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
+        implementation("org.apache.httpcomponents.client5:httpclient5:5.5")
 
         // testing
         implementation("org.springframework.boot:spring-boot-starter-actuator")
