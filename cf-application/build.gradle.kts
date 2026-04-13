@@ -33,8 +33,3 @@ dependencies {
 tasks.bootJar {
     archiveClassifier = "all"
 }
-
-
-tasks.bootJar {
-    archiveClassifier = "all"
-}
