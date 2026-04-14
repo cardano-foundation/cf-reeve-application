@@ -6,9 +6,6 @@ on:
       - main
       - develop
       - 'release/*'
-      - 'feat/**'
-      - 'fix/**'
-      - 'chore/**'
     tags:
       - '[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
@@ -30,21 +27,13 @@ jobs:
     permissions:
       contents: write
       packages: write
-    runs-on: arc-runner-set
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Checkout cf-reeve-db-migrations
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.REEVE_DB_MIGRATIONS_REPO }}
-          ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
-          ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
-          path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
-
       - name: ⛮ cf-gha-baseline
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@fix/pipx
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         id: cf-gha-baseline
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

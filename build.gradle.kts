@@ -16,7 +16,7 @@ subprojects {
     apply(plugin = "info.solidsoft.pitest")
 
     group = "de.cardanofoundation"
-    version = "1.4.3"
+    version = "1.6.0"
 
     sourceSets {
         named("main") {
@@ -75,8 +75,7 @@ subprojects {
     extra["springCloudVersion"] = "2025.0.1"
     extra["jMoleculesVersion"] = "2023.1.0"
     extra["testcontainers.version"] = "1.21.4"
-    extra["cfLobPlatformVersion"] = "1.5.0-PR615-4650c3d-GHRUN24129847225"
-    extra["flyway.version"] = "10.20.1"
+    extra["cfLobPlatformVersion"] = "1.6.0-PR615-502861f-GHRUN24191489389"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
