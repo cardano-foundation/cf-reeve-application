@@ -33,7 +33,6 @@ public class CustomBusinessRulesConfig {
         this.validator = validator;
         this.organisationPublicApi = organisationPublicApi;
         this.currencyRepository = currencyRepository;
-        log.info("\n\n###########################################################################\nCustomBusinessRulesConfig created - Cardano rules DISABLED\n");
     }
 
     @Bean
@@ -48,7 +47,6 @@ public class CustomBusinessRulesConfig {
     @Bean
     @Qualifier("defaultBusinessRulesProcessor")
     public BusinessRulesPipelineProcessor defaultBusinessRulesProcessor() {
-        log.info("\n\n###########################################################################\nCardano rules DISABLED - building custom defaultBusinessRulesProcessor\n");
 
         val pipelineTasks = new ArrayList<PipelineTask>();
 
