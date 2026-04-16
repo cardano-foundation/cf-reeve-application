@@ -48,6 +48,8 @@ subprojects {
                 includeModule("org.cardanofoundation", "signify")
             }
         }
+        // ipfs client
+        maven { url = uri("https://jitpack.io") }
 
         val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL")
             .orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
