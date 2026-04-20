@@ -1,4 +1,4 @@
-import {APIResponse, expect} from '@playwright/test';
+import {expect} from '@playwright/test';
 import {Given, When, Then} from "../../utils/playwright-bdd-fixtures";
 import {reeveService} from "../../api/reeve-api/reeve.service";
 import {HttpStatusCodes} from "../../api/api-helpers/http-status-codes";
