@@ -60,6 +60,8 @@ public class CustomBusinessRulesConfig {
         pipelineTasks.add(new DefaultPipelineTask(List.of(
                 new AmountsFcyCheckTaskItem(),
                 new AmountsLcyCheckTaskItem(),
+                new AmountLcyBalanceZerosOutCheckTaskItem(),
+                new AmountFcyBalanceZerosOutCheckTaskItem(),
                 new JournalAccountCreditEnrichmentTaskItem(organisationPublicApi)
         )));
         pipelineTasks.add(new DefaultPipelineTask(List.of(
