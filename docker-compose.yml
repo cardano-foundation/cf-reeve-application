@@ -1,5 +1,5 @@
 x-healthcheck: &healthcheck
-  interval: 2s
+  interval: 5s
   timeout: 3s
   retries: 10
   start_period: 2s
