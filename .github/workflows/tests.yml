@@ -2,6 +2,12 @@ name: e2e Tests
 
 on:
   pull_request:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 env:
   REEVE_DB_MIGRATIONS_REPO: cardano-foundation/cf-reeve-db-migrations
   REEVE_DB_MIGRATIONS_REF: main
@@ -81,6 +87,7 @@ jobs:
         run: |
           npm ci 
           npx playwright install --with-deps
+          npm install -g allure-commandline
 
       - name: Create .env file
         working-directory: playwright
@@ -97,6 +104,36 @@ jobs:
         working-directory: playwright
         run: npm run test
         continue-on-error: true
+
+      - name: Load Test Report history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Copy Test Report history
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p playwright/allure-results/history
+          cp -r gh-pages/allure-report/history/* playwright/allure-results/history/ 2>/dev/null || true
+
+      - name: Generate New Test Report
+        if: always()
+        run: |
+          npm install -g allure-commandline
+          allure generate playwright/allure-results --clean -o allure-report
+
+      - name: Deploy Test Report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
+          destination_dir: allure-report
+          keep_files: true
 
       - name: Clean up Docker
         if: always()

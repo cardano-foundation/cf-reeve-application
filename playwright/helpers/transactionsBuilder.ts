@@ -11,7 +11,6 @@ import {EventCodesDto, ReferenceCodePair} from "../api/dtos/eventCodesDto";
 import {
     AccountCodeAndNamePair,
     AccountRefCodePair,
-    ChartOfAccountsDto,
     DebitAndCreditAccounts
 } from "../api/dtos/chartOfAccountsDto";
 import {TransactionPendingInvalidStatus} from "./transaction-pending-invalid-status";
