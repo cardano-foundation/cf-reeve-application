@@ -1,0 +1,114 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: tests/e2e/Import-transactions-CSV.feature.spec.js >> Users can import transactions into Reeve with a CSV file, system validates the structure file >> Import transaction in pending status by unknown VAT code
+- Location: .features-gen/tests/e2e/Import-transactions-CSV.feature.spec.js:22:7
+
+# Error details
+
+```
+Error: The expected pending reason is wrong
+
+expect(received).toEqual(expected) // deep equality
+
+Expected: "VAT_DATA_NOT_FOUND"
+Received: "CHART_OF_ACCOUNT_NOT_FOUND"
+```
+
+# Test source
+
+```ts
+  1  | import {TransactionItemCsvDto} from "../api/dtos/transactionItemCsvDto";
+  2  | import {BatchResponse, TransactionItem} from "../api/dtos/batchDto";
+  3  | import {expect} from "@playwright/test";
+  4  | import {log} from "../utils/logger";
+  5  | import {BatchesStatusCodes} from "../api/api-helpers/batches-status-codes";
+  6  | import {TransactionPendingInvalidStatus} from "../helpers/transaction-pending-invalid-status";
+  7  | 
+  8  | export async function transactionValidator() {
+  9  |     const validateImportedTxWithStatus = async (transactionCsvData: TransactionItemCsvDto[],
+  10 |                                             importedBatchDetails: BatchResponse, transactionStatus: string) => {
+  11 |         const debitCsvItem: TransactionItemCsvDto = await extractCsvTxItem(transactionCsvData, true);
+  12 |         const creditCsvItem: TransactionItemCsvDto = await extractCsvTxItem(transactionCsvData, false);
+  13 |         const txItems = importedBatchDetails.transactions[0].items
+  14 |         const txDebitItem = txItems.find(tx =>
+  15 |             tx.accountDebitCode ==  debitCsvItem.DebitCode)
+  16 |         const txCreditItem = txItems.find(tx =>
+  17 |         tx.accountDebitCode == creditCsvItem.DebitCode)
+  18 |         if(transactionStatus == BatchesStatusCodes.APPROVE){
+  19 |             expect(importedBatchDetails.batchStatistics.approve, "Imported batch should have transaction in ready to approve status ")
+  20 |                 .toEqual(importedBatchDetails.totalTransactionsCount)
+  21 |         }
+  22 |         if(transactionStatus == BatchesStatusCodes.PENDING){
+  23 |             expect(importedBatchDetails.batchStatistics.pending, "Imported batch should have transaction in pending status ")
+  24 |                 .toEqual(importedBatchDetails.totalTransactionsCount)
+  25 |         }
+  26 |         if(transactionStatus == BatchesStatusCodes.INVALID){
+  27 |             expect(importedBatchDetails.batchStatistics.invalid, "Imported batch should have transaction in invalid status ")
+  28 |                 .toEqual(importedBatchDetails.totalTransactionsCount)
+  29 |         }
+  30 |         expect(importedBatchDetails.transactions[0].items.length, "The sent transaction items are not the same imported in the system ")
+  31 |             .toEqual(transactionCsvData.length)
+  32 |         expect(importedBatchDetails.transactions[0].internalTransactionNumber, "The transaction number is not the same that was sent")
+  33 |             .toEqual(transactionCsvData[0].TxNumber)
+  34 |         expect(importedBatchDetails.transactions[0].transactionType,"The transaction type is not the same that was sent")
+  35 |             .toEqual(transactionCsvData[0].TxType)
+  36 |         await validateTxItem(txDebitItem, debitCsvItem, true);
+  37 |         await validateTxItem(txCreditItem, creditCsvItem, false);
+  38 |     }
+  39 |     const validateTxItem = async (txItem: TransactionItem, txCsvItem: TransactionItemCsvDto, isDebit: boolean) => {
+  40 |         expect(txItem.accountDebitCode, "The sent debit code is not the same imported in the system")
+  41 |             .toEqual(txCsvItem.DebitCode);
+  42 |         expect(txItem.accountCreditCode, "The sent credit code is not the same imported in the system")
+  43 |             .toEqual(txCsvItem.CreditCode);
+  44 |         expect(txItem.documentNum, "The sent document number is not the same imported in the system")
+  45 |             .toEqual(txCsvItem.DocumentName)
+  46 |         if(isDebit == true){
+  47 |             expect(txItem.amountLcy, "The LCY amount in debit item is not the same imported in the system")
+  48 |                 .toEqual(parseFloat(txCsvItem.AmountLcyDebit))
+  49 |         }else {
+  50 |             expect(Math.abs(txItem.amountLcy), "The LCY amount in credit item is not the same imported in the system")
+  51 |                 .toEqual(parseFloat(txCsvItem.AmountLcyCredit))
+  52 |         }
+  53 |     }
+  54 |     const validatePendingCondition = async (importedBatchDetails: BatchResponse, expectedReason: string) => {
+  55 |         expect(importedBatchDetails.transactions[0].violations[0].code, "The expected pending reason is wrong")
+> 56 |             .toEqual(expectedReason)
+     |              ^ Error: The expected pending reason is wrong
+  57 |     }
+  58 |     const validateInvalidCondition = async (importedBatchDetails: BatchResponse, expectedReason: string) => {
+  59 |         if(expectedReason == TransactionPendingInvalidStatus.UNBALANCED_TRANSACTION){
+  60 |             expect(importedBatchDetails.transactions[0].violations).toEqual(
+  61 |                 expect.arrayContaining([
+  62 |                     expect.objectContaining({code: TransactionPendingInvalidStatus.FCY_BALANCE_MUST_BE_ZERO}),
+  63 |                     expect.objectContaining({code: TransactionPendingInvalidStatus.LCY_BALANCE_MUST_BE_ZERO})
+  64 |                 ])
+  65 |             )
+  66 |         }else {
+  67 |             expect(importedBatchDetails.transactions[0].violations[0].code, "The expected invalid reason is wrong")
+  68 |                 .toEqual(expectedReason)
+  69 |         }
+  70 |     }
+  71 |     const extractCsvTxItem = async (transactionCsvData: TransactionItemCsvDto[], isDebit: boolean) => {
+  72 |         return transactionCsvData.find(tx => {
+  73 |             let amount: number
+  74 |             if(isDebit == true){
+  75 |                 amount = parseFloat(tx.AmountLcyDebit);
+  76 |                 return !isNaN(amount) && amount > 0;
+  77 |             }
+  78 |             amount = parseFloat(tx.AmountLcyCredit);
+  79 |             return !isNaN(amount) && amount > 0
+  80 |         })
+  81 |     }
+  82 |     return {
+  83 |         validateImportedTxWithStatus,
+  84 |         validatePendingCondition,
+  85 |         validateInvalidCondition
+  86 |     }
+  87 | }
+```
