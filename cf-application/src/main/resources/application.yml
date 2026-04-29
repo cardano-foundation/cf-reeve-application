@@ -142,6 +142,8 @@ lob:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:false}
   accounting_reporting_core:
     enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:false}
+    rules:
+      cardano_rules: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_CARDANO_RULES:true}
     jobs:
       unstuck:
         enabled: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_ENABLED:true}
