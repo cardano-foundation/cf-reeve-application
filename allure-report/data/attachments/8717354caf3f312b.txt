@@ -1,0 +1,25 @@
+[2026-05-07T10:39:44.799] [INFO] default - Request URL: http://localhost:8080/realms/reeve-master/protocol/openid-connect/token
+[2026-05-07T10:39:44.799] [INFO] default - Response status: 200
+[2026-05-07T10:39:44.816] [INFO] default - Request URL: http://localhost:9000/api/v1/transaction-types
+[2026-05-07T10:39:44.816] [INFO] default - Response status: 200
+[2026-05-07T10:39:44.839] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/event-codes
+[2026-05-07T10:39:44.840] [INFO] default - Response status: 200
+[2026-05-07T10:39:44.889] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/chart-of-accounts
+[2026-05-07T10:39:44.889] [INFO] default - Response status: 200
+[2026-05-07T10:39:44.940] [INFO] default - Request URL: http://localhost:9000/api/v1/extraction/validation
+[2026-05-07T10:39:44.940] [INFO] default - Response status: 200
+[2026-05-07T10:39:44.960] [INFO] default - Request URL: http://localhost:9000/api/v1/extraction
+[2026-05-07T10:39:44.960] [INFO] default - Response status: 202
+✓ File successfully deleted
+[2026-05-07T10:39:44.999] [INFO] default - Request URL: http://localhost:9000/api/v1/batches
+[2026-05-07T10:39:44.999] [INFO] default - Response status: 200
+[2026-05-07T10:39:45.035] [INFO] default - Request URL: http://localhost:9000/api/v1/batches/TEST_Invalid_88116d14723a4ab4a67636a7d6463d84f0c6f7adf61aba32c04
+[2026-05-07T10:39:45.035] [INFO] default - Response status: 200
+[2026-05-07T10:39:46.052] [INFO] default - Request URL: http://localhost:9000/api/v1/batches
+[2026-05-07T10:39:46.052] [INFO] default - Response status: 200
+[2026-05-07T10:39:48.069] [INFO] default - Request URL: http://localhost:9000/api/v1/batches
+[2026-05-07T10:39:48.069] [INFO] default - Response status: 200
+[2026-05-07T10:39:58.091] [INFO] default - Request URL: http://localhost:9000/api/v1/batches
+[2026-05-07T10:39:58.091] [INFO] default - Response status: 200
+[2026-05-07T10:39:58.118] [INFO] default - Request URL: http://localhost:9000/api/v1/batches/7a688370ad6b2996e3f300ead879d43529d498bdcb7bcd8cc47d7197981cce13
+[2026-05-07T10:39:58.118] [INFO] default - Response status: 200
