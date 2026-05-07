@@ -1,12 +1,8 @@
 import {APIResponse, expect} from '@playwright/test';
 import {faker} from "@faker-js/faker";
-import {createBdd} from 'playwright-bdd';
-import {reeveApi} from "../../api/reeve-api/reeve.api";
+import {Given, When, Then} from "../../utils/playwright-bdd-fixtures";
 import {reeveService} from "../../api/reeve-api/reeve.service";
-import {log} from "../../utils/logger";
 import {HttpStatusCodes} from "../../api/api-helpers/http-status-codes";
-
-const {Given, When, Then} = createBdd();
 
 let userName: string;
 let password: string;

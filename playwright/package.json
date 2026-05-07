@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "npx bddgen && npx playwright test --project='api-tests'"
+    "test": "npx bddgen && npx playwright test --project='api-tests'",
+    "allure:serve": "allure serve allure-results",
+    "allure:generate": "allure generate allure-results --clean -o allure-report",
+    "allure:open": "allure open allure-report",
+    "test:report": "npx bddgen && (npx playwright test --project='api-tests' || true) && npx allure serve allure-results"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.59.1",
     "@types/node": "^24.3.0",
+    "allure-playwright": "^3.7.1",
     "playwright-bdd": "^8.4.1"
   },
   "dependencies": {

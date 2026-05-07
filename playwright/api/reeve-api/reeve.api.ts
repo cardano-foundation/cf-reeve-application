@@ -5,6 +5,7 @@ import * as Endpoints from "../api-helpers/enpoints";
 import {getDateInThePast} from "../../utils/dateGenerator";
 import * as fs from "fs";
 import * as path from "node:path";
+import {RejectTransactionDto} from "../dtos/RejectTransactionDto";
 
 export function reeveApi(request: APIRequestContext) {
     let logApiResponse = process.env.API_LOG_REQUEST == "true"
@@ -156,6 +157,35 @@ export function reeveApi(request: APIRequestContext) {
             logApiResponse
         )
     }
+    const rejectTransaction = async (authToken: string, transactionToReject: RejectTransactionDto) => {
+        return BaseApi.postData(
+            request,
+            Endpoints.Reeve.Transactions.Reject,
+            transactionToReject,
+            {
+                Accept: "*/*",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Content-Type": "application/json",
+                Authorization: authToken
+            },
+            {},
+            logApiResponse
+        )
+    }
+    const getTransactionById = async (authToken: string, transactionId: string) => {
+        return BaseApi.getData(
+            request,
+            Endpoints.Reeve.Transactions.transactionById.replace(":txId", transactionId),
+            {},
+            {
+                Accept: "*/*",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Content-Type": "application/json",
+                Authorization: authToken
+            },
+            logApiResponse
+        )
+    }
     return {
         loginReeve,
         transactionTypes,
@@ -164,6 +194,8 @@ export function reeveApi(request: APIRequestContext) {
         validateTransactionCsvFile,
         importTransactionCsvFile,
         batchesByStatus,
-        batchById
+        batchById,
+        rejectTransaction,
+        getTransactionById
     };
 }

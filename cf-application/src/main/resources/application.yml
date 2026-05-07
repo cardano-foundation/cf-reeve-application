@@ -164,6 +164,15 @@ lob:
   organisation:
     enabled: ${LOB_ORGANISATION_ENABLED:false}
   blockchain_publisher:
+    ipfs:
+      enabled: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED:false}
+      local:
+        enabled: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_LOCAL_ENABLED:false}
+        node: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_LOCAL_NODE:127.0.0.1:5001}
+      blockfrost:
+        enabled: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED:false}
+        url: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_URL:https://ipfs.blockfrost.io/api/v0/ipfs/add}
+        project-id: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID:DUMMY_KEY}
     rollback:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED:false}
     enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:false}
