@@ -1,0 +1,10 @@
+[2026-05-08T15:46:08.262] [INFO] default - Request URL: http://localhost:8080/realms/reeve-master/protocol/openid-connect/token
+[2026-05-08T15:46:08.265] [INFO] default - Response status: 200
+[2026-05-08T15:47:14.402] [INFO] default - Request URL: http://localhost:9000/api/v1/transaction-types
+[2026-05-08T15:47:14.402] [INFO] default - Response status: 200
+[2026-05-08T15:47:14.534] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/event-codes
+[2026-05-08T15:47:14.534] [INFO] default - Response status: 200
+[2026-05-08T15:47:14.754] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/chart-of-accounts
+[2026-05-08T15:47:14.754] [INFO] default - Response status: 200
+[2026-05-08T15:47:24.938] [INFO] default - Request URL: http://localhost:9000/api/v1/extraction/validation
+[2026-05-08T15:47:24.938] [INFO] default - Response status: 400
