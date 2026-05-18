@@ -179,8 +179,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend-http.entrypoints=web"
-      - "traefik.http.routers.backend-http.rule=Host(`${API_HOSTNAME:-api.example.com}`)"
-      - "traefik.http.routers.backend-https.rule=Host(`${API_HOSTNAME:-api.example.com}`)"
+      - "traefik.http.routers.backend-http.rule=Host(`${API_HOSTNAME:-api.example.com}`) && (PathPrefix(`/api/v1`) || PathPrefix(`/swagger-ui`) || PathPrefix(`/v3/api-docs`))"
+      - "traefik.http.routers.backend-https.rule=Host(`${API_HOSTNAME:-api.example.com}`) && (PathPrefix(`/api/v1`) || PathPrefix(`/swagger-ui`) || PathPrefix(`/v3/api-docs`))"
       - "traefik.http.routers.backend-https.entrypoints=websecure"
       - "traefik.http.routers.backend-https.tls=true"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
