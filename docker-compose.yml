@@ -75,7 +75,7 @@ services:
       LOB_MOCK_RESULT_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations/NetSuiteIngestionMock.json
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev--yaci-dev-kit}
       LOB_CARDANO_NETWORK: ${LOB_CARDANO_NETWORK:-DEV}
-      DB_URL: ${DB_USER:-jdbc:postgresql://postgres-reeve:5432/postgres}
+      DB_URL: ${DB_URL:-jdbc:postgresql://postgres-reeve:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: false
@@ -142,7 +142,7 @@ services:
       LOB_CORS_ALLOWED_ORIGINS: ${LOB_CORS_ALLOWED_ORIGINS:-http://localhost:3000}
       LOB_MOCK_RESULT_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations/NetSuiteIngestionMock.json
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev--yaci-dev-kit}
-      DB_URL: ${DB_USER:-jdbc:postgresql://postgres-reeve:5432/postgres}
+      DB_URL: ${DB_URL:-jdbc:postgresql://postgres-reeve:5432/postgres}
       KC_BASE_URL: ${KC_BASE_URL:-http://keycloak:8080}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
@@ -316,7 +316,7 @@ services:
       - "9090:9090"
     environment:
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
-      DB_URL: ${DB_USER:-jdbc:postgresql://postgres:5432/postgres?currentSchema=lob_follower_service}
+      DB_URL: ${DB_URL:-jdbc:postgresql://postgres-reeve:5432/postgres?currentSchema=lob_follower_service}
       LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
       STORE_CARDANO_HOST: ${STORE_CARDANO_HOST:-yaci-cli}
       STORE_CARDANO_PORT: ${STORE_CARDANO_PORT:-3001}
