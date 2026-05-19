@@ -12,7 +12,7 @@ management:
     health:
       show-details: when-authorized
     threaddump:
-      enabled: false
+      access: none
 
 lob:
   netsuite:
