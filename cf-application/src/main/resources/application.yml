@@ -4,10 +4,28 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,flyway}
   endpoint:
     metrics:
-      enabled: true
+      access: read_only
+    health:
+      show-details: ${MANAGEMENT_ENDPOINT_SHOW_DETAILS:when-authorized}
+      probes:
+        enabled: true
+    env:
+      enabled: false
+    configprops:
+      enabled: false
+    heapdump:
+      enabled: false
+    mappings:
+      enabled: false
+    loggers:
+      enabled: false
+    conditions:
+      enabled: false
+    beans:
+      enabled: false
   metrics:
     enable:
       all: true
@@ -253,17 +271,6 @@ store:
   blocks.epoch-calculation-enabled: false
 
 apiPrefix: ${API_PREFIX:/yaci-api}
-
-endpoints:
-  health:
-    enabled: ${HEALTH_ENABLED:true}
-  management:
-  endpoints:
-    web:
-      exposure:
-        include: ${WEB_EXPOSURE_INCLUDE:health,info,prometheus,metrics,scheduledtasks,flyway}
-    health:
-      show-details: ${MANAGEMENT_ENDPOINT_SHOW_DETAILS:always}
 
 keycloak:
   enabled: true
