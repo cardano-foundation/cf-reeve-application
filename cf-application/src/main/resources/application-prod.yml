@@ -19,3 +19,9 @@ lob:
     financial:
       period:
         source: IMPLICIT
+
+logging:
+ level:
+   org.apache.kafka.clients.consumer.ConsumerConfig: WARN
+   org.apache.kafka.clients.producer.ProducerConfig: WARN
+

@@ -48,11 +48,8 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         # KIP-848: Use the new consumer group protocol for incremental cooperative rebalancing.
-        # This avoids the stop-the-world rebalances of the classic protocol.
+        # This replaces the classic stop-the-world rebalances.
         group.protocol: consumer
-        # Static group membership: assign a stable instance id (derived from the pod hostname)
-        # so that restarted consumers reclaim their partitions without triggering a rebalance.
-        group.instance.id: ${CONSUMER_INSTANCE_ID:${HOSTNAME:unknown}}
         partition.assignment.strategy: org.apache.kafka.clients.consumer.CooperativeStickyAssignor
         spring:
           json:
@@ -224,6 +221,7 @@ lob:
     enabled: ${LOB_REPORTING_ENABLED:false}
     consumer-group: lob-consumer-reporting
     topics:
+      publish-report-event: reporting.dto.events.PublishReportEvent
       reports-ledger-updated-event: reporting.dto.events.ReportsLedgerUpdatedEvent
   cors:
     allowed:
@@ -239,6 +237,7 @@ lob:
         source: EXPLICIT
     consumer-group: lob-consumer-netsuite
     topics:
+      scheduled-ingestion-event: accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent
       validate-ingestion-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent
       transaction-batch-created-event: accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent
       scheduled-reconcilation-event: accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent
