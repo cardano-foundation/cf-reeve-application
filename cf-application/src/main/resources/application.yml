@@ -50,7 +50,6 @@ spring:
         # KIP-848: Use the new consumer group protocol for incremental cooperative rebalancing.
         # This replaces the classic stop-the-world rebalances.
         group.protocol: consumer
-        partition.assignment.strategy: org.apache.kafka.clients.consumer.CooperativeStickyAssignor
         spring:
           json:
             trusted:
