@@ -13,19 +13,19 @@ management:
       probes:
         enabled: true
     env:
-      enabled: false
+      access: none
     configprops:
-      enabled: false
+      access: none
     heapdump:
-      enabled: false
+      access: none
     mappings:
-      enabled: false
+      access: none
     loggers:
-      enabled: false
+      access: none
     conditions:
-      enabled: false
+      access: none
     beans:
-      enabled: false
+      access: none
   metrics:
     enable:
       all: true
@@ -41,10 +41,15 @@ spring:
     enabled: true
     bootstrap-servers: kafka:9092
     consumer:
-      group-id: lob-consumer
+      # No global group-id — each @KafkaListener gets its own group to avoid
+      # cross-topic rebalance storms during rolling updates.
+      # group-id must be set explicitly on each @KafkaListener or via per-module properties.
       auto-offset-reset: latest
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
+        # KIP-848: Use the new consumer group protocol for incremental cooperative rebalancing.
+        # This replaces the classic stop-the-world rebalances.
+        group.protocol: consumer
         spring:
           json:
             trusted:
@@ -56,8 +61,9 @@ spring:
       auto-commit-interval: 1000
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      retries: 0
+      retries: 5
       properties:
+        enable.idempotence: true
         max:
           request:
             size: 15728640 # 15MB
@@ -168,6 +174,7 @@ lob:
         stuck_delay: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_STUCK_DELAY:PT10M}
     debounce:
       duration: ${LOB_ACCOUNTING_REPORTING_CORE_DEBOUNCE_DURATION:PT10S}
+    consumer-group: lob-consumer-accounting-core
     topics:
       tx-ledger-updated-event: accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent
 
@@ -195,8 +202,8 @@ lob:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED:false}
     enabled: ${LOB_BLOCKCHAIN_PUBLISHER_ENABLED:false}
     maxDelay: ${LOB_BLOCKCHAIN_PUBLISHER_MAX_DELAY:PT5M}
+    consumer-group: lob-consumer-blockchain-publisher
     topics:
-      report-ledger-update-command: accounting_reporting_core.domain.event.ledger.ReportLedgerUpdateCommand
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
       transaction-status-request-event: accounting_reporting_core.domain.event.ledger.TransactionStatusRequestEvent
       tx-rollback-event: accounting_reporting_core.domain.event.ledger.TxRollbackEvent
@@ -211,6 +218,7 @@ lob:
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
   reporting:
     enabled: ${LOB_REPORTING_ENABLED:false}
+    consumer-group: lob-consumer-reporting
     topics:
       publish-report-event: reporting.dto.events.PublishReportEvent
       reports-ledger-updated-event: reporting.dto.events.ReportsLedgerUpdatedEvent
@@ -226,6 +234,7 @@ lob:
     financial:
       period:
         source: EXPLICIT
+    consumer-group: lob-consumer-netsuite
     topics:
       scheduled-ingestion-event: accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent
       validate-ingestion-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent

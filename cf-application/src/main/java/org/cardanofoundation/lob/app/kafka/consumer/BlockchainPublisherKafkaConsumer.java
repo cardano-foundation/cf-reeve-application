@@ -19,25 +19,25 @@ public class BlockchainPublisherKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @KafkaListener(topics = "${lob.blockchain_publisher.topics.transaction-ledger-update-commander}")
+    @KafkaListener(topics = "${lob.blockchain_publisher.topics.transaction-ledger-update-commander}", groupId = "${lob.blockchain_publisher.consumer-group}")
     public void listen(TransactionLedgerUpdateCommand message) {
         log.info("Received LedgerUpdateCommand from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.reporting.topics.publish-report-event}")
+    @KafkaListener(topics = "${lob.reporting.topics.publish-report-event}", groupId = "${lob.blockchain_publisher.consumer-group}")
     public void listen(PublishReportEvent message) {
         log.info("Received PublishReportEvent from Kafa: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.blockchain_publisher.topics.tx-rollback-event}")
+    @KafkaListener(topics = "${lob.blockchain_publisher.topics.tx-rollback-event}", groupId = "${lob.blockchain_publisher.consumer-group}")
     public void listen(TxRollbackEvent message) {
         log.info("Received TxRollbackEvent from Kafa: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.blockchain_publisher.topics.transaction-status-request-event}")
+    @KafkaListener(topics = "${lob.blockchain_publisher.topics.transaction-status-request-event}", groupId = "${lob.blockchain_publisher.consumer-group}")
     public void listen(TransactionStatusRequestEvent message) {
         log.info("Received TransactionStatusRequestEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
