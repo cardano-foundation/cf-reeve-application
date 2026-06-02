@@ -166,6 +166,28 @@ lob:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:false}
   accounting_reporting_core:
     enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:false}
+    rules:
+      sanity_check_fields: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_SANITY_CHECK_FIELDS:true}
+      transaction_type_unknown: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_TRANSACTION_TYPE_UNKNOWN:true}
+      discard_zero_balance_tx_items: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DISCARD_ZERO_BALANCE_TX_ITEMS:true}
+      amounts_fcy_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNTS_FCY_CHECK:true}
+      amounts_lcy_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNTS_LCY_CHECK:true}
+      amount_lcy_balance_zeros_out_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNT_LCY_BALANCE_ZEROS_OUT_CHECK:true}
+      amount_fcy_balance_zeros_out_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNT_FCY_BALANCE_ZEROS_OUT_CHECK:true}
+      journal_account_credit_enrichment: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_JOURNAL_ACCOUNT_CREDIT_ENRICHMENT:true}
+      organisation_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_ORGANISATION_CONVERSION:true}
+      document_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DOCUMENT_CONVERSION:true}
+      cost_center_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_COST_CENTER_CONVERSION:true}
+      project_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_PROJECT_CONVERSION:true}
+      account_event_codes_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_ACCOUNT_EVENT_CODES_CONVERSION:true}
+      discard_same_account_code: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DISCARD_SAME_ACCOUNT_CODE:true}
+      tx_items_amounts_summing: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_TX_ITEMS_AMOUNTS_SUMMING:true}
+      amounts_lcy_after_summing_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNTS_LCY_AFTER_SUMMING_CHECK:true}
+      account_code_debit_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_ACCOUNT_CODE_DEBIT_CHECK:true}
+      account_code_credit_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_ACCOUNT_CODE_CREDIT_CHECK:true}
+      document_must_be_present: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DOCUMENT_MUST_BE_PRESENT:true}
+      check_if_all_tx_items_are_erased: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_CHECK_IF_ALL_TX_ITEMS_ARE_ERASED:true}
+      net_off_credit_debit: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_NET_OFF_CREDIT_DEBIT:true}
     jobs:
       unstuck:
         enabled: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_ENABLED:true}
