@@ -22,30 +22,30 @@ public class NetSuiteKafkaConsumer {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "${lob.netsuite.topics.scheduled-ingestion-event}")
+    @KafkaListener(topics = "${lob.netsuite.topics.scheduled-ingestion-event}", groupId = "${lob.netsuite.consumer-group}")
     public void listen(ScheduledIngestionEvent message) {
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.netsuite.topics.validate-ingestion-event}")
+    @KafkaListener(topics = "${lob.netsuite.topics.validate-ingestion-event}", groupId = "${lob.netsuite.consumer-group}")
     public void listen(ValidateIngestionEvent message) {
         log.info("Received ValidateIngestionEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.netsuite.topics.transaction-batch-created-event}")
+    @KafkaListener(topics = "${lob.netsuite.topics.transaction-batch-created-event}", groupId = "${lob.netsuite.consumer-group}")
     public void listen(TransactionBatchCreatedEvent message) {
         log.info("Received TransactionBatchCreatedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.netsuite.topics.scheduled-reconcilation-event}")
+    @KafkaListener(topics = "${lob.netsuite.topics.scheduled-reconcilation-event}", groupId = "${lob.netsuite.consumer-group}")
     public void listen(ScheduledReconcilationEvent message) {
         log.info("Received ScheduledReconcilationEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.netsuite.topics.reconcilation-created-event}")
+    @KafkaListener(topics = "${lob.netsuite.topics.reconcilation-created-event}", groupId = "${lob.netsuite.consumer-group}")
     public void listen(ReconcilationCreatedEvent message) {
         log.info("Received ReconcilationCreatedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
