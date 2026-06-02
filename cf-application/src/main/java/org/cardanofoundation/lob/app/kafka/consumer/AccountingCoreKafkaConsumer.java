@@ -24,54 +24,54 @@ public class AccountingCoreKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.tx-ledger-updated-event}", groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.tx-ledger-updated-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(TxsLedgerUpdatedEvent message) {
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.validate-ingestion-response-event}")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.validate-ingestion-response-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(ValidateIngestionResponseEvent message) {
         log.info("Received ValidateIngestionResponseEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.transaction-batch-failed-event}")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.transaction-batch-failed-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(TransactionBatchFailedEvent message) {
         log.info("Received TransactionBatchFailedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.transaction-batch-started-event}")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.transaction-batch-started-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(TransactionBatchStartedEvent message) {
         log.info("Received TransactionBatchStartedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.transaction-batch-chunk-event}")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.transaction-batch-chunk-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(TransactionBatchChunkEvent message) {
         log.info("Received TransactionBatchChunkEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-failed-event}")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-failed-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(ReconcilationFailedEvent message) {
         log.info("Received ReconcilationFailedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-started-event}")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-started-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(ReconcilationStartedEvent message) {
         log.info("Received ReconcilationStartedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-chunk-event}")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-chunk-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(ReconcilationChunkEvent message) {
         log.info("Received ReconcilationChunkEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-finalisation-event}")
+    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.reconcilation-finalisation-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(ReconcilationFinalisationEvent message) {
         log.info("Received ReconcilationFinalisationEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);

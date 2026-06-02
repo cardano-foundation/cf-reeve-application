@@ -1,7 +1,9 @@
-import { defineConfig, devices } from '@playwright/test';
+import {defineConfig} from '@playwright/test';
+import {Status} from "allure-js-commons";
 import {defineBddConfig} from "playwright-bdd";
 
 import "dotenv/config";
+import * as os from "node:os";
 
 
 const testDir = defineBddConfig({
@@ -15,6 +17,44 @@ export default defineConfig({
   /* Indicates where the test steps definition are */
   testDir,
 
+  reporter: [
+    ["line"],
+    [
+      "allure-playwright",
+      {
+        resultsDir: "allure-results",
+        detail: true,
+        suiteTitle: true,
+        links: {
+          issue: {
+            nameTemplate: "Issue #%s",
+            urlTemplate: "https://issues.example.com/%s",
+          },
+          tms: {
+            nameTemplate: "TMS #%s",
+            urlTemplate: "https://tms.example.com/%s",
+          },
+          jira: {
+            urlTemplate: (v) => `https://jira.example.com/browse/${v}`,
+          },
+        },
+        categories: [
+          {
+            name: "foo",
+            messageRegex: "bar",
+            traceRegex: "baz",
+            matchedStatuses: [Status.FAILED, Status.BROKEN],
+          },
+        ],
+        environmentInfo: {
+          os_platform: os.platform(),
+          os_release: os.release(),
+          os_version: os.version(),
+          node_version: process.version,
+        },
+      },
+    ],
+  ],
 
   timeout: 120_000,
 
@@ -23,12 +63,9 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 1,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Configure projects for major browsers */
   projects: [
     {
       name: "api-tests",

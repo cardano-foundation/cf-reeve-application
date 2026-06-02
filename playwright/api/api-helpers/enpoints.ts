@@ -10,6 +10,9 @@ export class Reeve {
         }
     };
     static Transactions = class {
+        public static get Reject() {
+            return `${Reeve.BASE_URL}/transaction/reject`
+        }
         public static get Types() {
             return `${Reeve.BASE_URL}/transaction-types`
         }
@@ -18,6 +21,9 @@ export class Reeve {
         }
         public static get Validation() {
             return `${Reeve.Transactions.Extraction}/validation`
+        }
+        public static get transactionById() {
+            return `${Reeve.BASE_URL}/transactions/:txId`
         }
     }
     static Organization = class {

@@ -4,6 +4,7 @@ import {Batch, BatchData} from "../dtos/batchsDto";
 import {BatchesStatusCodes} from "../api-helpers/batches-status-codes";
 import {BatchResponse} from "../dtos/batchDto";
 import {log} from "../../utils/logger";
+import {RejectTransactionDto} from "../dtos/RejectTransactionDto";
 
 let managerUser = process.env.MANAGER_USER as string;
 let managerPassword = process.env.MANAGER_PASSWORD as string;
@@ -45,12 +46,14 @@ export async function reeveService(request: APIRequestContext) {
         let batchesResponse: APIResponse;
         let batchesAfterImport: BatchData;
         let batchId: BatchResponse;
+        const visitedBatchIds = new Set<string>();
         await expect.poll(async () => {
             batchesResponse = await (await reeveService(request)).getBatchesByStatus(authToken,
                 status);
             batchesAfterImport = await batchesResponse.json()
-            let batchesIdAfterImport = batchesAfterImport.batchs.map(batch => batch.id);
-            batchId = await findBatchWithTxNumber(batchesIdAfterImport,txNumber,authToken);
+            const allBatchIds = batchesAfterImport.batchs.map(batch => batch.id);
+            const newBatchIds = allBatchIds.filter(id => !visitedBatchIds.has(id));
+            batchId = await findBatchWithTxNumber(newBatchIds,txNumber,authToken,visitedBatchIds);
             return batchId
         },{
             message: "The new Batch was not created: ",
@@ -63,13 +66,14 @@ export async function reeveService(request: APIRequestContext) {
         let batchesResponse: APIResponse;
         let batchesAfterImport: BatchData;
         let batchId: BatchResponse;
+        const visitedBatchIds = new Set<string>();
         await expect.poll(async () => {
-            batchesResponse = await (await reeveService(request)).getBatchesByStatus(authToken,
-                status);
+            batchesResponse = await (await reeveService(request)).getBatchesByStatus(authToken, status);
             batchesAfterImport = await batchesResponse.json()
-            let batchesIdAfterImport = batchesAfterImport.batchs.map(batch => batch.id);
-            batchId = await findBatchWithDocumentNumber(batchesIdAfterImport,documentNumber,authToken);
-            return batchId
+            const allBatchIds = batchesAfterImport.batchs.map(batch => batch.id);
+            const newBatchIds = allBatchIds.filter(id => !visitedBatchIds.has(id));
+            batchId = await findBatchWithDocumentNumber(newBatchIds, documentNumber, authToken, visitedBatchIds);
+            return batchId;
         },{
             message: "The new Batch was not created: ",
             intervals: [1_000, 2_000, 10_000],
@@ -82,26 +86,34 @@ export async function reeveService(request: APIRequestContext) {
         return await reeveApi(request).batchById(authToken, batchId)
     }
 
-    const findBatchWithTxNumber = async (batchesIdAfterImport: string[], txNumber: string, authToken: string) => {
+    const findBatchWithTxNumber = async (batchesIdAfterImport: string[], txNumber: string, authToken: string,
+                                         visitedBatchIds: Set<string>) => {
         for (const batchId of batchesIdAfterImport) {
             const batchDetailsResponse: BatchResponse = await (await getBatchById(authToken, batchId)).json();
+            visitedBatchIds.add(batchId);
             if (batchDetailsResponse.transactions[0].internalTransactionNumber == txNumber){
                 return batchDetailsResponse
             }
         }
         return null;
     }
-    const findBatchWithDocumentNumber = async (batchesIdAfterImport: string[], documentNumber: string, authToken: string) => {
+    const findBatchWithDocumentNumber = async (batchesIdAfterImport: string[], documentNumber: string, authToken: string,
+                                               visitedBatchIds: Set<string>) => {
         for (const batchId of batchesIdAfterImport) {
             const batchDetailsResponse: BatchResponse = await (await getBatchById(authToken, batchId)).json();
+            visitedBatchIds.add(batchId);
             if (batchDetailsResponse.transactions[0].items[0].documentNum == documentNumber){
                 return batchDetailsResponse
             }
         }
         return null;
     }
-
-
+    const rejectTransaction = async (authToken: string, transactionToReject: RejectTransactionDto) => {
+        return await reeveApi(request).rejectTransaction(authToken, transactionToReject)
+    }
+    const getTransactionById = async (authToken: string, transactionId: string) => {
+        return await reeveApi(request).getTransactionById(authToken, transactionId)
+    }
     return {
         loginToReeve,
         loginManager,
@@ -113,7 +125,9 @@ export async function reeveService(request: APIRequestContext) {
         getBatchesByStatus,
         getNewBatch,
         getBatchById,
-        getNewBatchByDocumentNumber
+        getNewBatchByDocumentNumber,
+        rejectTransaction,
+        getTransactionById
     };
 
 }
