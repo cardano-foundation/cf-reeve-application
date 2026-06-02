@@ -16,7 +16,7 @@ subprojects {
     apply(plugin = "info.solidsoft.pitest")
 
     group = "de.cardanofoundation"
-    version = "1.5.0"
+    version = "1.6.0"
 
     sourceSets {
         named("main") {
@@ -48,6 +48,8 @@ subprojects {
                 includeModule("org.cardanofoundation", "signify")
             }
         }
+        // ipfs client
+        maven { url = uri("https://jitpack.io") }
 
         val gitlabMavenRegistryUrl = providers.environmentVariable("GITLAB_MAVEN_REGISTRY_URL")
             .orElse(providers.gradleProperty("gitlabMavenRegistryUrl"))
