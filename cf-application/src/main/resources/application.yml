@@ -240,12 +240,12 @@ lob:
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
   reporting:
     enabled: ${LOB_REPORTING_ENABLED:false}
-  funding:
-    enabled: ${LOB_FUNDING_ENABLED:true}
     consumer-group: lob-consumer-reporting
     topics:
       publish-report-event: reporting.dto.events.PublishReportEvent
       reports-ledger-updated-event: reporting.dto.events.ReportsLedgerUpdatedEvent
+  funding:
+    enabled: ${LOB_FUNDING_ENABLED:true}
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}
