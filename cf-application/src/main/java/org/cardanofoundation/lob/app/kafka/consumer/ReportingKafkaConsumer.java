@@ -2,7 +2,7 @@ package org.cardanofoundation.lob.app.kafka.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardanofoundation.lob.app.reporting.dto.events.ReportsLedgerUpdatedEvent;
+import org.cardanofoundation.lob.app.blockchain_common.domain.LedgerUpdatedEvent;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -17,7 +17,7 @@ public class ReportingKafkaConsumer {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @KafkaListener(topics = "${lob.reporting.topics.reports-ledger-updated-event}", groupId = "${lob.reporting.consumer-group}")
-    public void listen(ReportsLedgerUpdatedEvent message) {
+    public void listen(LedgerUpdatedEvent message) {
         log.info("Received ReportsLedgerUpdatedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
