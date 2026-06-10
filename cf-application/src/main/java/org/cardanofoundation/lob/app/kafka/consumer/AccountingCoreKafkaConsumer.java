@@ -24,7 +24,7 @@ public class AccountingCoreKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @KafkaListener(topics = "${lob.accounting_reporting_core.topics.tx-ledger-updated-event}", groupId = "${lob.accounting_reporting_core.consumer-group}")
+    @KafkaListener(topics = "${lob.blockchain_publisher.topics.ledger-update-command}", groupId = "${lob.accounting_reporting_core.consumer-group}")
     public void listen(LedgerUpdatedEvent message) {
         applicationEventPublisher.publishEvent(message);
     }
