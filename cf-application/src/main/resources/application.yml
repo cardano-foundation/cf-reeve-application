@@ -198,8 +198,6 @@ lob:
       duration: ${LOB_ACCOUNTING_REPORTING_CORE_DEBOUNCE_DURATION:PT10S}
     consumer-group: lob-consumer-accounting-core
     topics:
-      tx-ledger-updated-event: accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent
-
       transaction-batch-failed-event: accounting_reporting_core.domain.event.extraction.TransactionBatchFailedEvent
       transaction-batch-started-event: accounting_reporting_core.domain.event.extraction.TransactionBatchStartedEvent
       transaction-batch-chunk-event: accounting_reporting_core.domain.event.extraction.TransactionBatchChunkEvent
@@ -229,6 +227,7 @@ lob:
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
       transaction-status-request-event: accounting_reporting_core.domain.event.ledger.TransactionStatusRequestEvent
       tx-rollback-event: accounting_reporting_core.domain.event.ledger.TxRollbackEvent
+      ledger-update-command: blockchain_common.domain.LedgerUpdateEvent
     keri:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED:false}
       url: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_URL:http://127.0.0.1:3901}
@@ -238,14 +237,24 @@ lob:
         bran: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN:0ADF2TpptgqcDE5IQUF1H}
         name: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME:reeve}
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
+  transaction:
+    ipfs:
+      enabled: ${LOB_TRANSACTION_IPFS_ENABLED:false}
   reporting:
     enabled: ${LOB_REPORTING_ENABLED:false}
     consumer-group: lob-consumer-reporting
     topics:
       publish-report-event: reporting.dto.events.PublishReportEvent
-      reports-ledger-updated-event: reporting.dto.events.ReportsLedgerUpdatedEvent
   funding:
     enabled: ${LOB_FUNDING_ENABLED:true}
+    ipfs:
+      enabled: ${LOB_FUNDING_IPFS_ENABLED:false}
+    publish:
+      fixed_delay: ${LOB_FUNDING_PUBLISH_FIXED_DELAY:PT10S}
+      initial_delay: ${LOB_FUNDING_PUBLISH_INITIAL_DELAY:PT10S}
+      batch_size: ${LOB_FUNDING_PUBLISH_BATCH_SIZE:100}
+    topics:
+      spending-events-publish-command: funding.domain.events.SpendingEventsPublishCommand
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}

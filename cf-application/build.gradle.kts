@@ -28,6 +28,7 @@ dependencies {
     implementation("org.cardanofoundation:cf-lob-platform-accounting_reporting_core:${property("cfLobPlatformVersion")}")
     implementation("org.cardanofoundation:cf-lob-platform-reporting:${property("cfLobPlatformVersion")}")
     implementation("org.cardanofoundation:cf-lob-platform-funding:${property("cfLobPlatformVersion")}")
+    implementation("org.cardanofoundation:cf-lob-platform-blockchain_common:${property("cfLobPlatformVersion")}")
 }
 
 
