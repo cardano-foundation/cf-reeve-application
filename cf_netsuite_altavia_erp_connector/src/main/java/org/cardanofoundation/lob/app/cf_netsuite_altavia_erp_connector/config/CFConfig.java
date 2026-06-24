@@ -24,7 +24,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.client.RestClient;
-import org.zalando.problem.Problem;
 
 import java.time.Clock;
 import java.util.HashMap;
