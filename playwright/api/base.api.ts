@@ -79,7 +79,8 @@ export const postData = async (
     return returnLoggedResponse(
         await request.post(endpoint,{
             headers,
-            data
+            data,
+            params
         }),
         endpoint,
         data,

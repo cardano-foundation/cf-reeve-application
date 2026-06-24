@@ -1,5 +1,5 @@
 import {saveCSV} from "../utils/csvFileGenerator";
-import * as fs from "fs";
+import {TxCSVHeader} from "./transactionCSVProperties";
 import {log} from "../utils/logger";
 import {APIRequestContext, expect} from "@playwright/test";
 import {reeveService} from "../api/reeve-api/reeve.service";
@@ -35,16 +35,7 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
         return await saveCSV(columns, rows, fileName)
 
     }
-    const getTransactionCSVHeaders = async () => {
-        try {
-            const headers = await fs.promises.readFile('../playwright/utils/transactionCSVHeaders.txt', 'utf-8')
-            return headers
-                .split(',')
-                .map(header => header.trim())
-        } catch (error) {
-            log.error("Error trying to read file: ", error);
-        }
-    }
+    const getTransactionCSVHeaders = () => Object.values(TxCSVHeader);
 
     /**
      * Create a transaction with just two transactions items,
@@ -131,8 +122,8 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
     const setInvalidReason = async (debitTransactionItem: TransactionItemCsvDto, creditTransactionItem: TransactionItemCsvDto,
                                     invalidReason: string) => {
         if(invalidReason == TransactionPendingInvalidStatus.UNBALANCED_TRANSACTION){
-            debitTransactionItem.AmountLcyDebit += 1000;
-            debitTransactionItem.AmountFcyDebit += 1000;
+            debitTransactionItem.AmountLcyDebit = (Number(debitTransactionItem.AmountLcyDebit) + 1000).toString();
+            debitTransactionItem.AmountFcyDebit = (Number(debitTransactionItem.AmountFcyDebit) + 1000).toString();
         }
         if(invalidReason == TransactionPendingInvalidStatus.TX_INTERNAL_NUMBER_MUST_BE_PRESENT){
             debitTransactionItem.TxNumber = "";
@@ -170,33 +161,23 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
      */
     const getDebitAndCreditAccounts = async (eventCodes: ReferenceCodePair[]) => {
         const chartOfAccounts: AccountRefCodePair[] = await getChartOfAccounts();
-        let index = 0;
-        let accountsMatch: boolean = false;
         let debitAccounts: AccountCodeAndNamePair[] | null;
         let creditAccounts: AccountCodeAndNamePair[] | null;
-        while (accountsMatch == false) {
-            if (eventCodes[index].debitReferenceCode != eventCodes[index].creditReferenceCode) {
-                debitAccounts = chartOfAccounts.filter(chartOfAccount =>
-                    chartOfAccount.referenceCode === eventCodes[index].debitReferenceCode)
-                    .map(chartOfAccount => ({
-                        accountCode: chartOfAccount.accountCode,
-                        accountName: chartOfAccount.accountName
-                    }));
+        for (const eventCode of eventCodes) {
+            if (eventCode.debitReferenceCode !== eventCode.creditReferenceCode) {
+                debitAccounts = chartOfAccounts
+                    .filter(account => account.referenceCode === eventCode.debitReferenceCode)
+                    .map(account => ({ accountCode: account.accountCode, accountName: account.accountName }));
                 if (debitAccounts.length >= 1) {
-                    creditAccounts = chartOfAccounts.filter(chartOfAccount =>
-                        chartOfAccount.referenceCode === eventCodes[index].creditReferenceCode
-                        && chartOfAccount.accountCode !== debitAccounts[0].accountCode)
-                        .map(chartOfAccount => ({
-                            accountCode: chartOfAccount.accountCode,
-                            accountName: chartOfAccount.accountName
-                        }));
+                    creditAccounts = chartOfAccounts
+                        .filter(account => account.referenceCode === eventCode.creditReferenceCode
+                            && account.accountCode !== debitAccounts[0].accountCode)
+                        .map(account => ({ accountCode: account.accountCode, accountName: account.accountName }));
                 }
-                if (creditAccounts != null) {
-                    accountsMatch = true;
-                }
+                if (creditAccounts != null) break;
             }
-            index++;
         }
+        if (!creditAccounts) throw new Error("No valid debit/credit account pair found in event codes");
         const debitAndCreditAccounts: DebitAndCreditAccounts = {
             debitAccounts: debitAccounts,
             creditAccounts: creditAccounts

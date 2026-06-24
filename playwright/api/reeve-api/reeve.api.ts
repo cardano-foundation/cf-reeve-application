@@ -62,7 +62,9 @@ export function reeveApi(request: APIRequestContext) {
         return BaseApi.getData(
             request,
             Endpoints.Reeve.Organization.ChartOfAccounts.replace(":orgId", organizationId),
-            {},
+            {
+                active: true
+            },
             {
                 Accept: "*/*",
                 "Accept-Encoding": "gzip, deflate, br",
