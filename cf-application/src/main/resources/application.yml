@@ -166,6 +166,28 @@ lob:
     enabled: ${LOB_BLOCKCHAIN_READER_ENABLED:false}
   accounting_reporting_core:
     enabled: ${LOB_ACCOUNTING_REPORTING_CORE_ENABLED:false}
+    rules:
+      sanity_check_fields: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_SANITY_CHECK_FIELDS:true}
+      transaction_type_unknown: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_TRANSACTION_TYPE_UNKNOWN:true}
+      discard_zero_balance_tx_items: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DISCARD_ZERO_BALANCE_TX_ITEMS:true}
+      amounts_fcy_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNTS_FCY_CHECK:true}
+      amounts_lcy_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNTS_LCY_CHECK:true}
+      amount_lcy_balance_zeros_out_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNT_LCY_BALANCE_ZEROS_OUT_CHECK:true}
+      amount_fcy_balance_zeros_out_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNT_FCY_BALANCE_ZEROS_OUT_CHECK:true}
+      journal_account_credit_enrichment: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_JOURNAL_ACCOUNT_CREDIT_ENRICHMENT:true}
+      organisation_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_ORGANISATION_CONVERSION:true}
+      document_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DOCUMENT_CONVERSION:true}
+      cost_center_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_COST_CENTER_CONVERSION:true}
+      project_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_PROJECT_CONVERSION:true}
+      account_event_codes_conversion: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_ACCOUNT_EVENT_CODES_CONVERSION:true}
+      discard_same_account_code: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DISCARD_SAME_ACCOUNT_CODE:true}
+      tx_items_amounts_summing: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_TX_ITEMS_AMOUNTS_SUMMING:true}
+      amounts_lcy_after_summing_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_AMOUNTS_LCY_AFTER_SUMMING_CHECK:true}
+      account_code_debit_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_ACCOUNT_CODE_DEBIT_CHECK:true}
+      account_code_credit_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_ACCOUNT_CODE_CREDIT_CHECK:true}
+      document_must_be_present: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DOCUMENT_MUST_BE_PRESENT:true}
+      check_if_all_tx_items_are_erased: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_CHECK_IF_ALL_TX_ITEMS_ARE_ERASED:true}
+      net_off_credit_debit: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_NET_OFF_CREDIT_DEBIT:true}
     jobs:
       unstuck:
         enabled: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_ENABLED:true}
@@ -176,8 +198,6 @@ lob:
       duration: ${LOB_ACCOUNTING_REPORTING_CORE_DEBOUNCE_DURATION:PT10S}
     consumer-group: lob-consumer-accounting-core
     topics:
-      tx-ledger-updated-event: accounting_reporting_core.domain.event.ledger.TxsLedgerUpdatedEvent
-
       transaction-batch-failed-event: accounting_reporting_core.domain.event.extraction.TransactionBatchFailedEvent
       transaction-batch-started-event: accounting_reporting_core.domain.event.extraction.TransactionBatchStartedEvent
       transaction-batch-chunk-event: accounting_reporting_core.domain.event.extraction.TransactionBatchChunkEvent
@@ -207,6 +227,7 @@ lob:
       transaction-ledger-update-commander: accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand
       transaction-status-request-event: accounting_reporting_core.domain.event.ledger.TransactionStatusRequestEvent
       tx-rollback-event: accounting_reporting_core.domain.event.ledger.TxRollbackEvent
+      ledger-update-command: blockchain_common.domain.LedgerUpdateEvent
     keri:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED:false}
       url: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_URL:http://127.0.0.1:3901}
@@ -216,12 +237,24 @@ lob:
         bran: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN:0ADF2TpptgqcDE5IQUF1H}
         name: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME:reeve}
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
+  transaction:
+    ipfs:
+      enabled: ${LOB_TRANSACTION_IPFS_ENABLED:false}
   reporting:
     enabled: ${LOB_REPORTING_ENABLED:false}
     consumer-group: lob-consumer-reporting
     topics:
       publish-report-event: reporting.dto.events.PublishReportEvent
-      reports-ledger-updated-event: reporting.dto.events.ReportsLedgerUpdatedEvent
+  funding:
+    enabled: ${LOB_FUNDING_ENABLED:true}
+    ipfs:
+      enabled: ${LOB_FUNDING_IPFS_ENABLED:false}
+    publish:
+      fixed_delay: ${LOB_FUNDING_PUBLISH_FIXED_DELAY:PT10S}
+      initial_delay: ${LOB_FUNDING_PUBLISH_INITIAL_DELAY:PT10S}
+      batch_size: ${LOB_FUNDING_PUBLISH_BATCH_SIZE:100}
+    topics:
+      spending-events-publish-command: funding.domain.events.SpendingEventsPublishCommand
   cors:
     allowed:
       origins: ${LOB_CORS_ALLOWED_ORIGINS:http://localhost:3000}

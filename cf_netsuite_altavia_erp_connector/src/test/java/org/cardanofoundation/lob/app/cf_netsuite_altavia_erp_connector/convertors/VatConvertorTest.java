@@ -3,6 +3,7 @@ package org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.converto
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ProblemDetail;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +37,7 @@ public class VatConvertorTest {
         val problem = result.getLeft();
         assertThat(problem.getTitle()).isEqualTo("INVALID_VAT");
         assertThat(problem.getDetail()).isEqualTo("Invalid vat code");
-        assertThat(problem.getParameters()).containsEntry("vat", vatCode);
+        assertThat(problem.getProperties()).containsEntry("vat", vatCode);
     }
 
     @Test
