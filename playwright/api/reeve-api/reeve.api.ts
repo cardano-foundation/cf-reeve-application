@@ -6,6 +6,7 @@ import {getDateInThePast} from "../../utils/dateGenerator";
 import * as fs from "fs";
 import * as path from "node:path";
 import {RejectTransactionDto} from "../dtos/RejectTransactionDto";
+import {UpdateCostCenterDto} from "../dtos/costCenterDto";
 
 export function reeveApi(request: APIRequestContext) {
     let logApiResponse = process.env.API_LOG_REQUEST == "true"
@@ -69,6 +70,36 @@ export function reeveApi(request: APIRequestContext) {
                 Accept: "*/*",
                 "Accept-Encoding": "gzip, deflate, br",
                 "Content-Type": "application/x-www-form-urlencoded",
+                Authorization: authToken
+            },
+            logApiResponse
+        )
+    }
+
+    const getCostCenters = async (organizationId: string, authToken: string) => {
+        return BaseApi.getData(
+            request,
+            Endpoints.Reeve.Organization.CostCenters.replace(":orgId", organizationId),
+            {},
+            {
+                Accept: "*/*",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Content-Type": "application/json",
+                Authorization: authToken
+            },
+            logApiResponse
+        )
+    }
+
+    const updateCostCenter = async (organizationId: string, authToken: string, costCenter: UpdateCostCenterDto) => {
+        return BaseApi.putData(
+            request,
+            Endpoints.Reeve.Organization.CostCenters.replace(":orgId", organizationId),
+            costCenter,
+            {
+                Accept: "*/*",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Content-Type": "application/json",
                 Authorization: authToken
             },
             logApiResponse
@@ -159,6 +190,20 @@ export function reeveApi(request: APIRequestContext) {
             logApiResponse
         )
     }
+    const reprocessBatch = async (authToken: string, batchId: string) => {
+        return BaseApi.getData(
+            request,
+            Endpoints.Reeve.Batches.Reprocess.replace(":batchId", batchId),
+            {},
+            {
+                Accept: "application/json",
+                "Accept-Encoding": "gzip, deflate, br",
+                Authorization: authToken
+            },
+            logApiResponse
+        )
+    }
+
     const rejectTransaction = async (authToken: string, transactionToReject: RejectTransactionDto) => {
         return BaseApi.postData(
             request,
@@ -193,10 +238,13 @@ export function reeveApi(request: APIRequestContext) {
         transactionTypes,
         eventCodes,
         chartOfAccounts,
+        getCostCenters,
+        updateCostCenter,
         validateTransactionCsvFile,
         importTransactionCsvFile,
         batchesByStatus,
         batchById,
+        reprocessBatch,
         rejectTransaction,
         getTransactionById
     };

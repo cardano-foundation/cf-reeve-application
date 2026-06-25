@@ -68,6 +68,23 @@ export const postFormData = async (
         isBodyNotSecret
     );
 }
+export const putData = async (
+    request: APIRequestContext,
+    endpoint: string,
+    data?: {[key: string]: any},
+    headers?: {[key: string]: string},
+    isBodyNotSecret = true
+) => {
+    return returnLoggedResponse(
+        await request.put(endpoint, {
+            headers,
+            data
+        }),
+        endpoint,
+        data,
+        isBodyNotSecret
+    )
+}
 export const postData = async (
     request: APIRequestContext,
     endpoint: string,

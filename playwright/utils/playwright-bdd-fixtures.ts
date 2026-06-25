@@ -18,9 +18,15 @@ interface TransactionContext {
 
 }
 
+interface CostCenterContext {
+    costCenterCode?: string;
+    costCenterName?: string;
+}
+
 interface ScenarioContext {
     auth: AuthContext
     transaction: TransactionContext
+    costCenter: CostCenterContext
 }
 
 export const test = base.extend<{ ctx: ScenarioContext }>({
@@ -31,7 +37,8 @@ export const test = base.extend<{ ctx: ScenarioContext }>({
             },
             transaction: {
                 transactionDataToImport: []
-            }
+            },
+            costCenter: {}
         });
     }
 });

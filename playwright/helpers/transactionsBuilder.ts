@@ -28,6 +28,24 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
         const fileName = "Pending-" + Math.random().toString(36).substring(2, 2 + 8) + ".csv";
         return await saveCSV(columns, rows, fileName)
     }
+    const createCSVTransactionPendingByCostCenter = async (transactionDataToImport: TransactionItemCsvDto[], costCenterCode: string) => {
+        const columns = getTransactionCSVHeaders();
+        const transactionCommonData = await getTransactionCommonData();
+        const amountForTxItem = (Math.floor(Math.random() * 100000) + 1).toString();
+        const eventCodes = await getEventCodes();
+        const debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
+        const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem, true, debitAndCreditAccounts);
+        debitTxItem.TxCostCenter = costCenterCode;
+        const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem, false, debitAndCreditAccounts);
+        transactionDataToImport.push(debitTxItem);
+        transactionDataToImport.push(creditTxItem);
+        const rows: string[][] = [];
+        rows.push(Object.values(debitTxItem));
+        rows.push(Object.values(creditTxItem));
+        const fileName = "Pending-" + Math.random().toString(36).substring(2, 2 + 8) + ".csv";
+        return await saveCSV(columns, rows, fileName);
+    }
+
     const createCSVTransactionInvalid = async (transactionDataToImport: TransactionItemCsvDto[], invalidReason: string) => {
         const columns = await getTransactionCSVHeaders();
         const rows = await createInvalidTransactionData(transactionDataToImport, invalidReason);
@@ -240,6 +258,7 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
     return {
         createReadyToApproveTransaction: createCSVTransactionReadyToApprove,
         createCSVTransactionPending,
+        createCSVTransactionPendingByCostCenter,
         createCSVTransactionInvalid
     }
 

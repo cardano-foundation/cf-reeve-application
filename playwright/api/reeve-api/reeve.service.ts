@@ -5,6 +5,7 @@ import {BatchesStatusCodes} from "../api-helpers/batches-status-codes";
 import {BatchResponse} from "../dtos/batchDto";
 import {log} from "../../utils/logger";
 import {RejectTransactionDto} from "../dtos/RejectTransactionDto";
+import {UpdateCostCenterDto} from "../dtos/costCenterDto";
 
 let managerUser = process.env.MANAGER_USER as string;
 let managerPassword = process.env.MANAGER_PASSWORD as string;
@@ -28,6 +29,14 @@ export async function reeveService(request: APIRequestContext) {
 
     const getChartOfAccounts = async (authToken: string) => {
         return await reeveApi(request).chartOfAccounts(organizationId, authToken);
+    }
+
+    const getCostCenters = async (authToken: string) => {
+        return await reeveApi(request).getCostCenters(organizationId, authToken);
+    }
+
+    const updateCostCenter = async (authToken: string, costCenter: UpdateCostCenterDto) => {
+        return await reeveApi(request).updateCostCenter(organizationId, authToken, costCenter);
     }
 
     const validateTransactionCsvFile = async (authToken: string, transactionFile: string) => {
@@ -89,6 +98,10 @@ export async function reeveService(request: APIRequestContext) {
 
     const getNewBatchByDocumentNumber = async (authToken: string, status: string, documentNumber: string) =>
         pollForNewBatch(authToken, status, batch => batch.transactions[0].items[0].documentNum == documentNumber);
+    const reprocessBatch = async (authToken: string, batchId: string) => {
+        return await reeveApi(request).reprocessBatch(authToken, batchId);
+    }
+
     const rejectTransaction = async (authToken: string, transactionToReject: RejectTransactionDto) => {
         return await reeveApi(request).rejectTransaction(authToken, transactionToReject)
     }
@@ -101,12 +114,15 @@ export async function reeveService(request: APIRequestContext) {
         getTransactionTypes,
         getEventCodes,
         getChartOfAccounts,
+        getCostCenters,
+        updateCostCenter,
         validateTransactionCsvFile,
         importTransactionCsvFile,
         getBatchesByStatus,
         getNewBatch,
         getBatchById,
         getNewBatchByDocumentNumber,
+        reprocessBatch,
         rejectTransaction,
         getTransactionById
     };
