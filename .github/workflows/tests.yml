@@ -85,8 +85,7 @@ jobs:
       - name: Install Playwright dependencies
         working-directory: playwright
         run: |
-          npm ci 
-          npx playwright install --with-deps
+          npm ci
           npm install -g allure-commandline
 
       - name: Create .env file
