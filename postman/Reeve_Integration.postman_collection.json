@@ -2110,7 +2110,7 @@
                   "    pm.execution.setNextRequest(null); // stop",
                   "}",
                   "",
-                  "// \u2705 Basic tests",
+                  "// ✅ Basic tests",
                   "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});"
@@ -3641,7 +3641,7 @@
           "response": []
         },
         {
-          "name": "POST Create SPENDING event (all features \u2014 subproject + multi-milestone + items)",
+          "name": "POST Create SPENDING event (all features — subproject + multi-milestone + items)",
           "event": [
             {
               "listen": "test",
