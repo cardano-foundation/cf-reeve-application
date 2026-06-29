@@ -19,11 +19,11 @@ function readResults(filename) {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-const initialResults = readResults('results-initial.json');
+const initialResults = readResults('results-initial.json') || readResults('results.json');
 const retryResults = readResults('results-retry.json');
 
 if (!initialResults) {
-    console.error('No initial results found. Run tests first.');
+    console.error('No test results found. Run tests first.');
     process.exit(1);
 }
 

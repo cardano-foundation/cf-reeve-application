@@ -104,6 +104,11 @@ jobs:
         run: npm run test
         continue-on-error: true
 
+      - name: Debug - List test results directory
+        if: always()
+        working-directory: playwright
+        run: ls -la test-results/ 2>&1 || echo "test-results/ directory not found"
+
       - name: Save initial test results
         if: always()
         working-directory: playwright
@@ -140,7 +145,7 @@ jobs:
 
           This PR can be merged — the quality threshold has been met (**${{ steps.threshold.outputs.pass_rate }}%**). However, some tests failed and required retries. Please review the failing tests before merging.
 
-          [View full test report](https://cardano-foundation.github.io/cf-reeve-application/allure-report)"
+          [View full test report](https://cardano-foundation.github.io/cf-reeve-application/allure-report) - give some seconds for the report to be updated with the latest results."
 
       - name: Load Test Report history
         uses: actions/checkout@v3
