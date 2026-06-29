@@ -11,24 +11,27 @@ const THRESHOLD = parseFloat(
     process.argv.find(a => a.startsWith('--threshold='))?.split('=')[1] || '80'
 );
 
-const RESULTS_DIR = path.join(__dirname, '..', 'test-results');
+const PLAYWRIGHT_DIR = path.join(__dirname, '..');
+const RESULTS_DIR = path.join(PLAYWRIGHT_DIR, 'test-results');
 
-function readResults(filename) {
-    const filePath = path.join(RESULTS_DIR, filename);
+function readResults(filePath) {
     if (!fs.existsSync(filePath)) return null;
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-const initialResults = readResults('results-initial.json') || readResults('results.json');
-const retryResults = readResults('results-retry.json');
+const initialResults =
+    readResults(path.join(PLAYWRIGHT_DIR, 'results-initial.json')) ||
+    readResults(path.join(RESULTS_DIR, 'results.json'));
+const retryResults = readResults(path.join(PLAYWRIGHT_DIR, 'results-retry.json'));
 
 if (!initialResults) {
     console.error('No test results found. Run tests first.');
     process.exit(1);
 }
 
-const total = initialResults.stats.total - initialResults.stats.skipped;
-const passedInitial = initialResults.stats.expected + initialResults.stats.flaky;
+const { expected = 0, unexpected = 0, flaky = 0 } = initialResults.stats;
+const total = expected + unexpected + flaky;
+const passedInitial = expected + flaky;
 
 let finalPassed = passedInitial;
 
