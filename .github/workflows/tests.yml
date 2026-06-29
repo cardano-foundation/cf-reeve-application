@@ -106,11 +106,13 @@ jobs:
 
       - name: Save initial test results
         if: always()
-        run: cp playwright/test-results/results.json playwright/test-results/results-initial.json 2>/dev/null || true
+        working-directory: playwright
+        run: cp test-results/results.json test-results/results-initial.json 2>/dev/null || true
 
       - name: Clear results before retry
         if: always()
-        run: rm -f playwright/test-results/results.json
+        working-directory: playwright
+        run: rm -f test-results/results.json
 
       - name: Retry failed Playwright e2e tests
         working-directory: playwright
@@ -119,7 +121,8 @@ jobs:
 
       - name: Save retry test results
         if: always()
-        run: cp playwright/test-results/results.json playwright/test-results/results-retry.json 2>/dev/null || true
+        working-directory: playwright
+        run: cp test-results/results.json test-results/results-retry.json 2>/dev/null || true
 
       - name: Check quality threshold
         id: threshold
