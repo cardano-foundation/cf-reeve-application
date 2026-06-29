@@ -13,6 +13,9 @@ export class Reeve {
         public static get Reject() {
             return `${Reeve.BASE_URL}/transaction/reject`
         }
+        public static get Approve() {
+            return `${Reeve.BASE_URL}/transactions/approve`
+        }
         public static get Types() {
             return `${Reeve.BASE_URL}/transaction-types`
         }

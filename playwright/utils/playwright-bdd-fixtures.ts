@@ -2,6 +2,7 @@ import {test as base, createBdd} from 'playwright-bdd';
 import {TransactionItemCsvDto} from "../api/dtos/transactionItemCsvDto";
 import {BatchResponse} from "../api/dtos/batchDto";
 import {RejectTransactionDto, RejectTransactionResponseDto} from "../api/dtos/RejectTransactionDto";
+import {UpdateChartOfAccountsDto} from "../api/dtos/chartOfAccountsDto";
 
 interface AuthContext {
     authToken: string;
@@ -23,10 +24,15 @@ interface CostCenterContext {
     costCenterName?: string;
 }
 
+interface ChartOfAccountContext {
+    updateDto?: UpdateChartOfAccountsDto;
+}
+
 interface ScenarioContext {
     auth: AuthContext
     transaction: TransactionContext
     costCenter: CostCenterContext
+    chartOfAccount: ChartOfAccountContext
 }
 
 export const test = base.extend<{ ctx: ScenarioContext }>({
@@ -38,7 +44,8 @@ export const test = base.extend<{ ctx: ScenarioContext }>({
             transaction: {
                 transactionDataToImport: []
             },
-            costCenter: {}
+            costCenter: {},
+            chartOfAccount: {}
         });
     }
 });

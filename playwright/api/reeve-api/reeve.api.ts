@@ -7,6 +7,8 @@ import * as fs from "fs";
 import * as path from "node:path";
 import {RejectTransactionDto} from "../dtos/RejectTransactionDto";
 import {UpdateCostCenterDto} from "../dtos/costCenterDto";
+import {ApproveTransactionDto} from "../dtos/approveTransactionDto";
+import {UpdateChartOfAccountsDto} from "../dtos/chartOfAccountsDto";
 
 export function reeveApi(request: APIRequestContext) {
     let logApiResponse = process.env.API_LOG_REQUEST == "true"
@@ -59,13 +61,13 @@ export function reeveApi(request: APIRequestContext) {
         )
     }
 
-    const chartOfAccounts = async (organizationId: string, authToken: string) => {
+    const chartOfAccounts = async (organizationId: string, authToken: string, customerCode?: string) => {
+        const params: Record<string, any> = { active: true };
+        if (customerCode) params.customerCode = customerCode;
         return BaseApi.getData(
             request,
             Endpoints.Reeve.Organization.ChartOfAccounts.replace(":orgId", organizationId),
-            {
-                active: true
-            },
+            params,
             {
                 Accept: "*/*",
                 "Accept-Encoding": "gzip, deflate, br",
@@ -99,6 +101,20 @@ export function reeveApi(request: APIRequestContext) {
             {
                 Accept: "*/*",
                 "Accept-Encoding": "gzip, deflate, br",
+                "Content-Type": "application/json",
+                Authorization: authToken
+            },
+            logApiResponse
+        )
+    }
+
+    const updateChartOfAccounts = async (organizationId: string, authToken: string, chartOfAccount: UpdateChartOfAccountsDto) => {
+        return BaseApi.putData(
+            request,
+            Endpoints.Reeve.Organization.ChartOfAccounts.replace(":orgId", organizationId),
+            chartOfAccount,
+            {
+                Accept: "application/json",
                 "Content-Type": "application/json",
                 Authorization: authToken
             },
@@ -204,6 +220,21 @@ export function reeveApi(request: APIRequestContext) {
         )
     }
 
+    const approveTransaction = async (authToken: string, approvePayload: ApproveTransactionDto) => {
+        return BaseApi.postData(
+            request,
+            Endpoints.Reeve.Transactions.Approve,
+            approvePayload,
+            {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: authToken
+            },
+            {},
+            logApiResponse
+        )
+    }
+
     const rejectTransaction = async (authToken: string, transactionToReject: RejectTransactionDto) => {
         return BaseApi.postData(
             request,
@@ -240,11 +271,13 @@ export function reeveApi(request: APIRequestContext) {
         chartOfAccounts,
         getCostCenters,
         updateCostCenter,
+        updateChartOfAccounts,
         validateTransactionCsvFile,
         importTransactionCsvFile,
         batchesByStatus,
         batchById,
         reprocessBatch,
+        approveTransaction,
         rejectTransaction,
         getTransactionById
     };

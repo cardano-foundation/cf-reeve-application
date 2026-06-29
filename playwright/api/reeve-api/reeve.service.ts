@@ -6,6 +6,7 @@ import {BatchResponse} from "../dtos/batchDto";
 import {log} from "../../utils/logger";
 import {RejectTransactionDto} from "../dtos/RejectTransactionDto";
 import {UpdateCostCenterDto} from "../dtos/costCenterDto";
+import {UpdateChartOfAccountsDto} from "../dtos/chartOfAccountsDto";
 
 let managerUser = process.env.MANAGER_USER as string;
 let managerPassword = process.env.MANAGER_PASSWORD as string;
@@ -27,8 +28,8 @@ export async function reeveService(request: APIRequestContext) {
         return await reeveApi(request).eventCodes(organizationId, authToken);
     }
 
-    const getChartOfAccounts = async (authToken: string) => {
-        return await reeveApi(request).chartOfAccounts(organizationId, authToken);
+    const getChartOfAccounts = async (authToken: string, customerCode?: string) => {
+        return await reeveApi(request).chartOfAccounts(organizationId, authToken, customerCode);
     }
 
     const getCostCenters = async (authToken: string) => {
@@ -37,6 +38,10 @@ export async function reeveService(request: APIRequestContext) {
 
     const updateCostCenter = async (authToken: string, costCenter: UpdateCostCenterDto) => {
         return await reeveApi(request).updateCostCenter(organizationId, authToken, costCenter);
+    }
+
+    const updateChartOfAccounts = async (authToken: string, chartOfAccount: UpdateChartOfAccountsDto) => {
+        return await reeveApi(request).updateChartOfAccounts(organizationId, authToken, chartOfAccount);
     }
 
     const validateTransactionCsvFile = async (authToken: string, transactionFile: string) => {
@@ -102,6 +107,13 @@ export async function reeveService(request: APIRequestContext) {
         return await reeveApi(request).reprocessBatch(authToken, batchId);
     }
 
+    const approveTransaction = async (authToken: string, batchDetails: BatchResponse) => {
+        return await reeveApi(request).approveTransaction(authToken, {
+            organisationId: batchDetails.organisationId,
+            transactionIds: batchDetails.transactions.map(tx => ({ id: tx.id }))
+        });
+    }
+
     const rejectTransaction = async (authToken: string, transactionToReject: RejectTransactionDto) => {
         return await reeveApi(request).rejectTransaction(authToken, transactionToReject)
     }
@@ -116,6 +128,7 @@ export async function reeveService(request: APIRequestContext) {
         getChartOfAccounts,
         getCostCenters,
         updateCostCenter,
+        updateChartOfAccounts,
         validateTransactionCsvFile,
         importTransactionCsvFile,
         getBatchesByStatus,
@@ -123,6 +136,7 @@ export async function reeveService(request: APIRequestContext) {
         getBatchById,
         getNewBatchByDocumentNumber,
         reprocessBatch,
+        approveTransaction,
         rejectTransaction,
         getTransactionById
     };
