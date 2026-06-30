@@ -3531,6 +3531,9 @@
                 "exec": [
                   "pm.test(\"Status code is 409 (event already exists)\", function () {",
                   "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Error carries SPENDING_EVENT_ALREADY_EXISTS title\", function () {",
+                  "    pm.expect(pm.response.json().error.title).to.eql(\"SPENDING_EVENT_ALREADY_EXISTS\");",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -4062,6 +4065,9 @@
                 "exec": [
                   "pm.test(\"Status code is 409\", function () {",
                   "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"ProblemDetail carries SPENDING_EVENT_ALREADY_PUBLISHED title\", function () {",
+                  "    pm.expect(pm.response.json().title).to.eql(\"SPENDING_EVENT_ALREADY_PUBLISHED\");",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -4319,6 +4325,9 @@
                 "exec": [
                   "pm.test(\"Status code is 409 (already exists)\", function () {",
                   "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Error carries PROJECT_ALREADY_EXISTS title\", function () {",
+                  "    pm.expect(pm.response.json().error.title).to.eql(\"PROJECT_ALREADY_EXISTS\");",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -4843,6 +4852,9 @@
                 "exec": [
                   "pm.test(\"Status code is 404 (milestone not in this project)\", function () {",
                   "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test(\"Error carries MILESTONE_NOT_FOUND title\", function () {",
+                  "    pm.expect(pm.response.json().error.title).to.eql(\"MILESTONE_NOT_FOUND\");",
                   "});"
                 ],
                 "type": "text/javascript",
