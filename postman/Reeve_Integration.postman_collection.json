@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "84976694-3932-42d3-a481-be9375b70e78",
+    "_postman_id": "8cc36bf6-547e-4d04-9c75-f2463b706eb6",
     "name": "Reeve Integration",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "9953617"
@@ -4274,7 +4274,8 @@
                   "if (json.projectId) { pm.environment.set(\"fundingProjectId\", json.projectId); }"
                 ],
                 "type": "text/javascript",
-                "packages": {}
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -4294,7 +4295,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"fundingId\": \"GRANT-PM-001\",\n  \"externalProjectId\": \"PROJ-PM\",\n  \"projectTitle\": \"PM Project\",\n  \"totalAmount\": \"300000.00\",\n  \"currency\": \"USD\",\n  \"milestones\": [\n    {\n      \"externalMilestoneId\": \"MS-PM-1\",\n      \"milestoneTitle\": \"PM Milestone 1\",\n      \"milestoneAmount\": \"100000.00\",\n      \"currency\": \"USD\",\n      \"milestoneDate\": \"2025-12-31\"\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"fundingId\": \"GRANT-PM-001\",\n  \"externalProjectId\": \"PROJ-PM\",\n  \"projectTitle\": \"PM Project\",\n  \"totalAmount\": \"300000.00\",\n  \"currency\": \"USD\",\n  \"milestones\": [\n    {\n      \"externalMilestoneId\": \"MS-PM-1\",\n      \"milestoneTitle\": \"PM Milestone 1\",\n      \"milestoneAmount\": \"100000.00\",\n      \"currency\": \"USD\",\n      \"milestoneDate\": \"2027-12-31\"\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4674,6 +4675,301 @@
                 "funding",
                 "projects",
                 "{{fundingDeletableProjectId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Funding Sub-projects",
+      "item": [
+        {
+          "name": "POST Create parent project (no milestones)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "if (json.projectId) { pm.environment.set(\"fundingParentProjectId\", json.projectId); }"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"fundingId\": \"GRANT-SUB-P\",\n  \"externalProjectId\": \"PROJ-SUB-PARENT\",\n  \"projectTitle\": \"Sub Parent\",\n  \"totalAmount\": \"500000.00\",\n  \"currency\": \"USD\",\n  \"milestones\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create child project (no milestones)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "if (json.projectId) { pm.environment.set(\"fundingChildProjectId\", json.projectId); }"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"fundingId\": \"GRANT-SUB-C\",\n  \"externalProjectId\": \"PROJ-SUB-CHILD\",\n  \"projectTitle\": \"Sub Child\",\n  \"totalAmount\": \"100000.00\",\n  \"currency\": \"USD\",\n  \"milestones\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Assign child as sub-project of parent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Parent project id is set on the child\", function () {",
+                  "    pm.expect(pm.response.json().parentProjectId).to.eql(pm.environment.get(\"fundingParentProjectId\"));",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parentProjectId\": \"{{fundingParentProjectId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects/{{fundingChildProjectId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects",
+                "{{fundingChildProjectId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Add milestone to a project with sub-projects (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error carries MILESTONE_NOT_ALLOWED_WITH_SUBPROJECTS title\", function () {",
+                  "    pm.expect(pm.response.json().error.title).to.eql(\"MILESTONE_NOT_ALLOWED_WITH_SUBPROJECTS\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"externalMilestoneId\": \"MS-SUB-1\",\n  \"milestoneTitle\": \"Sub Milestone\",\n  \"milestoneAmount\": \"50000.00\",\n  \"currency\": \"USD\",\n  \"milestoneDate\": \"2027-12-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects/{{fundingParentProjectId}}/milestones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects",
+                "{{fundingParentProjectId}}",
+                "milestones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Assign project under a project that has milestones (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// {{fundingProjectId}} is the PM Project, created with milestone MS-PM-1",
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error carries SUBPROJECT_NOT_ALLOWED_WITH_MILESTONES title\", function () {",
+                  "    pm.expect(pm.response.json().error.title).to.eql(\"SUBPROJECT_NOT_ALLOWED_WITH_MILESTONES\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parentProjectId\": \"{{fundingProjectId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects/{{fundingChildProjectId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects",
+                "{{fundingChildProjectId}}"
               ]
             }
           },
