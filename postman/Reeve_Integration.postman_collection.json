@@ -3679,7 +3679,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"SPENDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"currency\": \"USD\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-CD\",\n      \"externalProjectId\": \"PROJ-CD\",\n      \"projectTitle\": \"Project CD\",\n      \"totalAmount\": \"100000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Milestone 1\",\n            \"milestoneAmount\": \"50000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-09-30\"\n          },\n          \"allocatedAmount\": \"50000.00\",\n          \"category\": \"Personnel\",\n          \"vendor\": \"Vendor AB\",\n          \"amountRcy\": \"50000.00\",\n          \"fxRate\": \"1.10\",\n          \"amountFcy\": \"55000.00\",\n          \"currency\": \"EUR\",\n          \"spendDate\": \"2027-05-01\",\n          \"notes\": \"Invoice #INV-2027-001\"\n        }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"SPENDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"currency\": \"USD\",\n  \"category\": \"Personnel\",\n  \"vendor\": \"Vendor AB\",\n  \"amountRcy\": \"50000.00\",\n  \"fxRate\": \"1.10\",\n  \"amountFcy\": \"55000.00\",\n  \"spendCurrency\": \"EUR\",\n  \"spendDate\": \"2027-05-01\",\n  \"notes\": \"Invoice #INV-2027-001\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-CD\",\n      \"externalProjectId\": \"PROJ-CD\",\n      \"projectTitle\": \"Project CD\",\n      \"totalAmount\": \"100000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Milestone 1\",\n            \"milestoneAmount\": \"50000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-09-30\"\n          },\n          \"allocatedAmount\": \"50000.00\"\n        }\n      ]\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3702,7 +3702,7 @@
           "response": []
         },
         {
-          "name": "POST Create SPENDING event (all features — subproject + multi-milestone + items)",
+          "name": "POST Create SPENDING event (all features — subproject + multi-milestone + event spend)",
           "event": [
             {
               "listen": "test",
@@ -3762,7 +3762,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"SPENDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"currency\": \"USD\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-GH\",\n      \"externalProjectId\": \"PROJ-GH\",\n      \"projectTitle\": \"Project GH\",\n      \"totalAmount\": \"300000.00\",\n      \"currency\": \"USD\",\n      \"subProject\": {\n        \"subProjectId\": \"WP-1\",\n        \"projectTitle\": \"Work Package 1\"\n      },\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Deliverable 1 \\u2013 Design\",\n            \"milestoneAmount\": \"50000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-06-30\"\n          },\n          \"allocatedAmount\": \"50000.00\",\n          \"category\": \"Personnel\",\n          \"vendor\": \"Vendor AB\",\n          \"amountRcy\": \"50000.00\",\n          \"fxRate\": \"1.10\",\n          \"amountFcy\": \"55000.00\",\n          \"currency\": \"EUR\",\n          \"spendDate\": \"2027-05-01\",\n          \"notes\": \"Invoice #INV-2027-001\"\n        },\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-002\",\n            \"milestoneTitle\": \"Deliverable 2 \\u2013 Implementation\",\n            \"milestoneAmount\": \"100000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-09-30\"\n          },\n          \"allocatedAmount\": \"100000.00\",\n          \"category\": \"Personnel\",\n          \"vendor\": \"Vendor AB\",\n          \"amountRcy\": \"100000.00\",\n          \"fxRate\": \"1.10\",\n          \"amountFcy\": \"110000.00\",\n          \"currency\": \"EUR\",\n          \"spendDate\": \"2027-05-01\",\n          \"notes\": \"Invoice #INV-2027-001\"\n        },\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-003\",\n            \"milestoneTitle\": \"Deliverable 3 \\u2013 Audit & Closeout\",\n            \"milestoneAmount\": \"50000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-12-31\"\n          },\n          \"allocatedAmount\": \"50000.00\",\n          \"category\": \"Personnel\",\n          \"vendor\": \"Vendor AB\",\n          \"amountRcy\": \"50000.00\",\n          \"fxRate\": \"1.10\",\n          \"amountFcy\": \"55000.00\",\n          \"currency\": \"EUR\",\n          \"spendDate\": \"2027-05-01\",\n          \"notes\": \"Invoice #INV-2027-001\"\n        }\n      ]\n    }\n  ],\n  \"fundingHash\": \"spend-all-features-hash-001\"\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"SPENDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"currency\": \"USD\",\n  \"category\": \"Personnel\",\n  \"vendor\": \"Vendor AB\",\n  \"amountRcy\": \"200000.00\",\n  \"fxRate\": \"1.10\",\n  \"amountFcy\": \"220000.00\",\n  \"spendCurrency\": \"EUR\",\n  \"spendDate\": \"2027-05-01\",\n  \"notes\": \"Invoice #INV-2027-001\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-GH\",\n      \"externalProjectId\": \"PROJ-GH\",\n      \"projectTitle\": \"Project GH\",\n      \"totalAmount\": \"300000.00\",\n      \"currency\": \"USD\",\n      \"subProject\": {\n        \"subProjectId\": \"WP-1\",\n        \"projectTitle\": \"Work Package 1\"\n      },\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Deliverable 1 \u2013 Design\",\n            \"milestoneAmount\": \"50000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-06-30\"\n          },\n          \"allocatedAmount\": \"50000.00\"\n        },\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-002\",\n            \"milestoneTitle\": \"Deliverable 2 \u2013 Implementation\",\n            \"milestoneAmount\": \"100000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-09-30\"\n          },\n          \"allocatedAmount\": \"100000.00\"\n        },\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-003\",\n            \"milestoneTitle\": \"Deliverable 3 \u2013 Audit & Closeout\",\n            \"milestoneAmount\": \"50000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-12-31\"\n          },\n          \"allocatedAmount\": \"50000.00\"\n        }\n      ]\n    }\n  ],\n  \"fundingHash\": \"spend-all-features-hash-001\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4381,6 +4381,65 @@
           "response": []
         },
         {
+          "name": "POST Create sub-project under existing parent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Attached to the given parent\", function () {",
+                  "    pm.expect(json.parentProjectId).to.eql(pm.environment.get(\"fundingTreeProjectId\"));",
+                  "});",
+                  "// Depends on \"POST Create project tree\" having populated fundingTreeProjectId (a milestone-free parent)."
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"externalProjectId\": \"WP-STANDALONE\",\n  \"projectTitle\": \"Standalone Work Package\",\n  \"totalAmount\": \"15000.00\",\n  \"currency\": \"USD\",\n  \"parentProjectId\": \"{{fundingTreeProjectId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "POST Create project - duplicate (409)",
           "event": [
             {
@@ -4510,6 +4569,9 @@
                   "    pm.expect(json.milestones).to.be.an(\"array\");",
                   "    pm.expect(json.subProjects).to.be.an(\"array\");",
                   "    pm.expect(json.events).to.be.an(\"array\");",
+                  "});",
+                  "pm.test(\"Project has calculated spentAmount\", function () {",
+                  "    pm.expect(pm.response.json().spentAmount).to.exist;",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -5174,6 +5236,9 @@
                   "",
                   "pm.test(\"Milestone id matches\", function () {",
                   "    pm.expect(pm.response.json().milestoneId).to.eql(pm.environment.get(\"fundingMilestoneId\"));",
+                  "});",
+                  "pm.test(\"Milestone has calculated spentAmount\", function () {",
+                  "    pm.expect(pm.response.json().spentAmount).to.exist;",
                   "});"
                 ],
                 "type": "text/javascript",
