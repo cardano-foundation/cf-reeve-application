@@ -3465,6 +3465,10 @@
                   "    pm.expect(json.eventType).to.eql(\"FUNDING\");",
                   "});",
                   "",
+                  "pm.test(\"Event date is set\", function () {",
+                  "    pm.expect(json.eventDate).to.eql(\"2027-01-15\");",
+                  "});",
+                  "",
                   "pm.test(\"Has at least one allocation\", function () {",
                   "    pm.expect(json.projectAllocations).to.be.an(\"array\").with.length.greaterThan(0);",
                   "});",
@@ -3500,7 +3504,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"2736ff28abc1234567890abcdef\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-AB\",\n      \"externalProjectId\": \"PROJ-AB\",\n      \"projectTitle\": \"Project AB\",\n      \"totalAmount\": \"200000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Milestone 1\",\n            \"milestoneAmount\": \"100000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-12-31\"\n          },\n          \"allocatedAmount\": \"100000.00\"\n        }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"2736ff28abc1234567890abcdef\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"eventDate\": \"2027-01-15\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-AB\",\n      \"externalProjectId\": \"PROJ-AB\",\n      \"projectTitle\": \"Project AB\",\n      \"totalAmount\": \"200000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Milestone 1\",\n            \"milestoneAmount\": \"100000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-12-31\"\n          },\n          \"allocatedAmount\": \"100000.00\"\n        }\n      ]\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3557,7 +3561,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"2736ff28abc1234567890abcdef\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-AB\",\n      \"externalProjectId\": \"PROJ-AB\",\n      \"projectTitle\": \"Project AB\",\n      \"totalAmount\": \"200000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Milestone 1\",\n            \"milestoneAmount\": \"100000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-12-31\"\n          },\n          \"allocatedAmount\": \"100000.00\"\n        }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"2736ff28abc1234567890abcdef\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"eventDate\": \"2027-01-15\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-AB\",\n      \"externalProjectId\": \"PROJ-AB\",\n      \"projectTitle\": \"Project AB\",\n      \"totalAmount\": \"200000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Milestone 1\",\n            \"milestoneAmount\": \"100000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-12-31\"\n          },\n          \"allocatedAmount\": \"100000.00\"\n        }\n      ]\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3615,7 +3619,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-002\",\n  \"fundingHash\": \"9a1b2c3d4e5f6789\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"allocations\": [\n    {\n      \"externalProjectId\": \"PROJ-AB\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\"\n          },\n          \"allocatedAmount\": \"50000.00\"\n        }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-002\",\n  \"fundingHash\": \"9a1b2c3d4e5f6789\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"eventDate\": \"2027-01-15\",\n  \"allocations\": [\n    {\n      \"externalProjectId\": \"PROJ-AB\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\"\n          },\n          \"allocatedAmount\": \"50000.00\"\n        }\n      ]\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3673,7 +3677,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"funding-proj-sub-tree-hash-001\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-ROOT\",\n      \"externalProjectId\": \"PROJ-ROOT\",\n      \"projectTitle\": \"Project root\",\n      \"totalAmount\": \"200000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [],\n      \"subProjects\": [\n        {\n          \"externalProjectId\": \"SUB-1\",\n          \"projectTitle\": \"Project leaf 1\",\n          \"fundingId\": \"GRANT-2025-001-SUB1\",\n          \"totalAmount\": \"200000.00\",\n          \"currency\": \"USD\",\n          \"milestones\": [\n            {\n              \"milestone\": {\n                \"externalMilestoneId\": \"MS-001\",\n                \"milestoneTitle\": \"Milestone 1\",\n                \"milestoneAmount\": \"100000.00\",\n                \"currency\": \"USD\",\n                \"milestoneDate\": \"2027-12-31\"\n              },\n              \"allocatedAmount\": \"100000.00\"\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"funding-proj-sub-tree-hash-001\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"eventDate\": \"2027-01-15\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-ROOT\",\n      \"externalProjectId\": \"PROJ-ROOT\",\n      \"projectTitle\": \"Project root\",\n      \"totalAmount\": \"200000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [],\n      \"subProjects\": [\n        {\n          \"externalProjectId\": \"SUB-1\",\n          \"projectTitle\": \"Project leaf 1\",\n          \"fundingId\": \"GRANT-2025-001-SUB1\",\n          \"totalAmount\": \"200000.00\",\n          \"currency\": \"USD\",\n          \"milestones\": [\n            {\n              \"milestone\": {\n                \"externalMilestoneId\": \"MS-001\",\n                \"milestoneTitle\": \"Milestone 1\",\n                \"milestoneAmount\": \"100000.00\",\n                \"currency\": \"USD\",\n                \"milestoneDate\": \"2027-12-31\"\n              },\n              \"allocatedAmount\": \"100000.00\"\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3715,7 +3719,7 @@
                   "pm.test(\"Event carries the spend detail\", function () {",
                   "    pm.expect(json.amountFcy).to.exist;",
                   "    pm.expect(json.amountRcy).to.exist;",
-                  "    pm.expect(json.spendDate).to.exist;",
+                  "    pm.expect(json.eventDate).to.exist;",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -3739,7 +3743,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"SPENDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"currency\": \"USD\",\n  \"category\": \"Personnel\",\n  \"vendor\": \"Vendor AB\",\n  \"amountRcy\": \"50000.00\",\n  \"fxRate\": \"1.10\",\n  \"amountFcy\": \"55000.00\",\n  \"spendCurrency\": \"EUR\",\n  \"spendDate\": \"2027-05-01\",\n  \"notes\": \"Invoice #INV-2027-001\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-CD\",\n      \"externalProjectId\": \"PROJ-CD\",\n      \"projectTitle\": \"Project CD\",\n      \"totalAmount\": \"100000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Milestone 1\",\n            \"milestoneAmount\": \"50000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-09-30\"\n          },\n          \"allocatedAmount\": \"50000.00\"\n        }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"SPENDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"currency\": \"USD\",\n  \"category\": \"Personnel\",\n  \"vendor\": \"Vendor AB\",\n  \"amountRcy\": \"50000.00\",\n  \"fxRate\": \"1.10\",\n  \"amountFcy\": \"55000.00\",\n  \"spendCurrency\": \"EUR\",\n  \"eventDate\": \"2027-05-01\",\n  \"notes\": \"Invoice #INV-2027-001\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-CD\",\n      \"externalProjectId\": \"PROJ-CD\",\n      \"projectTitle\": \"Project CD\",\n      \"totalAmount\": \"100000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Milestone 1\",\n            \"milestoneAmount\": \"50000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-09-30\"\n          },\n          \"allocatedAmount\": \"50000.00\"\n        }\n      ]\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3796,7 +3800,7 @@
                   "pm.test(\"Event carries the spend detail\", function () {",
                   "    pm.expect(json.amountFcy).to.exist;",
                   "    pm.expect(json.amountRcy).to.exist;",
-                  "    pm.expect(json.spendDate).to.exist;",
+                  "    pm.expect(json.eventDate).to.exist;",
                   "});",
                   "",
                   "if (json.eventId) {",
@@ -3824,7 +3828,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"SPENDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"currency\": \"USD\",\n  \"category\": \"Personnel\",\n  \"vendor\": \"Vendor AB\",\n  \"amountRcy\": \"200000.00\",\n  \"fxRate\": \"1.10\",\n  \"amountFcy\": \"220000.00\",\n  \"spendCurrency\": \"EUR\",\n  \"spendDate\": \"2027-05-01\",\n  \"notes\": \"Invoice #INV-2027-001\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-GH\",\n      \"externalProjectId\": \"PROJ-GH\",\n      \"projectTitle\": \"Project GH\",\n      \"totalAmount\": \"300000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [],\n      \"subProjects\": [\n        {\n          \"externalProjectId\": \"WP-1\",\n          \"projectTitle\": \"Work Package 1\",\n          \"totalAmount\": \"250000.00\",\n          \"currency\": \"USD\",\n          \"milestones\": [\n            {\n              \"milestone\": {\n                \"externalMilestoneId\": \"MS-001\",\n                \"milestoneTitle\": \"Deliverable 1 \u2013 Design\",\n                \"milestoneAmount\": \"50000.00\",\n                \"currency\": \"USD\",\n                \"milestoneDate\": \"2027-06-30\"\n              },\n              \"allocatedAmount\": \"50000.00\"\n            },\n            {\n              \"milestone\": {\n                \"externalMilestoneId\": \"MS-002\",\n                \"milestoneTitle\": \"Deliverable 2 \u2013 Implementation\",\n                \"milestoneAmount\": \"100000.00\",\n                \"currency\": \"USD\",\n                \"milestoneDate\": \"2027-09-30\"\n              },\n              \"allocatedAmount\": \"100000.00\"\n            },\n            {\n              \"milestone\": {\n                \"externalMilestoneId\": \"MS-003\",\n                \"milestoneTitle\": \"Deliverable 3 \u2013 Audit & Closeout\",\n                \"milestoneAmount\": \"50000.00\",\n                \"currency\": \"USD\",\n                \"milestoneDate\": \"2027-12-31\"\n              },\n              \"allocatedAmount\": \"50000.00\"\n            }\n          ]\n        }\n      ]\n    }\n  ],\n  \"fundingHash\": \"spend-all-features-hash-001\"\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"SPENDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"currency\": \"USD\",\n  \"category\": \"Personnel\",\n  \"vendor\": \"Vendor AB\",\n  \"amountRcy\": \"200000.00\",\n  \"fxRate\": \"1.10\",\n  \"amountFcy\": \"220000.00\",\n  \"spendCurrency\": \"EUR\",\n  \"eventDate\": \"2027-05-01\",\n  \"notes\": \"Invoice #INV-2027-001\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-GH\",\n      \"externalProjectId\": \"PROJ-GH\",\n      \"projectTitle\": \"Project GH\",\n      \"totalAmount\": \"300000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [],\n      \"subProjects\": [\n        {\n          \"externalProjectId\": \"WP-1\",\n          \"projectTitle\": \"Work Package 1\",\n          \"totalAmount\": \"250000.00\",\n          \"currency\": \"USD\",\n          \"milestones\": [\n            {\n              \"milestone\": {\n                \"externalMilestoneId\": \"MS-001\",\n                \"milestoneTitle\": \"Deliverable 1 \u2013 Design\",\n                \"milestoneAmount\": \"50000.00\",\n                \"currency\": \"USD\",\n                \"milestoneDate\": \"2027-06-30\"\n              },\n              \"allocatedAmount\": \"50000.00\"\n            },\n            {\n              \"milestone\": {\n                \"externalMilestoneId\": \"MS-002\",\n                \"milestoneTitle\": \"Deliverable 2 \u2013 Implementation\",\n                \"milestoneAmount\": \"100000.00\",\n                \"currency\": \"USD\",\n                \"milestoneDate\": \"2027-09-30\"\n              },\n              \"allocatedAmount\": \"100000.00\"\n            },\n            {\n              \"milestone\": {\n                \"externalMilestoneId\": \"MS-003\",\n                \"milestoneTitle\": \"Deliverable 3 \u2013 Audit & Closeout\",\n                \"milestoneAmount\": \"50000.00\",\n                \"currency\": \"USD\",\n                \"milestoneDate\": \"2027-12-31\"\n              },\n              \"allocatedAmount\": \"50000.00\"\n            }\n          ]\n        }\n      ]\n    }\n  ],\n  \"fundingHash\": \"spend-all-features-hash-001\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3859,6 +3863,10 @@
                   "",
                   "pm.test(\"Event type is REFUND\", function () {",
                   "    pm.expect(pm.response.json().eventType).to.eql(\"REFUND\");",
+                  "});",
+                  "",
+                  "pm.test(\"Event date is set\", function () {",
+                  "    pm.expect(pm.response.json().eventDate).to.eql(\"2027-01-15\");",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -3882,7 +3890,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"REFUND\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"refund-tx-hash-abc123\",\n  \"currency\": \"USD\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-EF\",\n      \"externalProjectId\": \"PROJ-EF\",\n      \"projectTitle\": \"Project EF\",\n      \"totalAmount\": \"80000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Final Milestone\",\n            \"milestoneAmount\": \"80000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-03-31\"\n          },\n          \"allocatedAmount\": \"5000.00\"\n        }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"REFUND\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"refund-tx-hash-abc123\",\n  \"currency\": \"USD\",\n  \"eventDate\": \"2027-01-15\",\n  \"allocations\": [\n    {\n      \"fundingId\": \"GRANT-2025-001-EF\",\n      \"externalProjectId\": \"PROJ-EF\",\n      \"projectTitle\": \"Project EF\",\n      \"totalAmount\": \"80000.00\",\n      \"currency\": \"USD\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\",\n            \"milestoneTitle\": \"Final Milestone\",\n            \"milestoneAmount\": \"80000.00\",\n            \"currency\": \"USD\",\n            \"milestoneDate\": \"2027-03-31\"\n          },\n          \"allocatedAmount\": \"5000.00\"\n        }\n      ]\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4049,7 +4057,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"updated-hash-abc\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"allocations\": [\n    {\n      \"externalProjectId\": \"PROJ-AB\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\"\n          },\n          \"allocatedAmount\": \"100000.00\"\n        }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"{{orgId}}\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"fundingHash\": \"updated-hash-abc\",\n  \"fundingEntity\": \"Cardano Foundation\",\n  \"currency\": \"USD\",\n  \"eventDate\": \"2027-01-15\",\n  \"allocations\": [\n    {\n      \"externalProjectId\": \"PROJ-AB\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"externalMilestoneId\": \"MS-001\"\n          },\n          \"allocatedAmount\": \"100000.00\"\n        }\n      ]\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
