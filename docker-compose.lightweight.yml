@@ -1,21 +1,33 @@
 # ============================================================================
 # Reeve lightweight deployment
 # ----------------------------------------------------------------------------
-# A trimmed-down version of docker-compose.yml for local testing:
+# A trimmed-down version of docker-compose.yml for local testing and
+# lightweigt small deployments:
 #   * API + Publisher run as a SINGLE container (single JVM) with all module
 #     flags enabled. Inter-module communication happens in-process via Spring
 #     ApplicationEvents, so Kafka is disabled entirely (no kafka / kafdrop).
-#   * ClamAV is omitted - it is NOT a hard dependency. ClamAVService no-ops
-#     (returns "safe") when lob.security.clamav.enabled=false (the default).
+#   * ClamAV is omitted - it is NOT a hard dependency.
 #   * KERI is disabled (lob.blockchain_publisher.keri.enabled=false) so the
 #     heavy keria + witness-demo containers are not needed. Flip it back to
 #     true and re-add those services if you need the KERI identifier layer.
-#   * Traefik/Caddy are omitted (plain port mappings are used instead).
 #
 # Kept: postgres, keycloak (+ theme setup), frontend, follower-app,
 #       yaci-cli, yaci-viewer (the Yaci DevKit).
 #
 # Usage:
+#   docker compose -f docker-compose.lightweight.yml up -d --build
+#
+# Yaci Devnet (yaci-cli + yaci-viewer) runs behind the "yaci-devnet" profile
+# and is OFF by default. Enable it for local testing against a local devnet:
+#   docker compose -f docker-compose.lightweight.yml --profile yaci-devnet up -d --build
+# (or: export COMPOSE_PROFILES=yaci-devnet)
+#
+# Running WITHOUT the profile: the default LOB_BLOCKFROST_URL /
+# STORE_CARDANO_HOST values point at yaci-cli, so override them to target a
+# real network, e.g.:
+#   LOB_BLOCKFROST_URL=https://blockfrost-preprod.cardano.org/api/v1/ \
+#   STORE_CARDANO_HOST=preprod-node.world.dev.cardano.org \
+#   STORE_CARDANO_PORT=30000 \
 #   docker compose -f docker-compose.lightweight.yml up -d --build
 #
 # Notes:
@@ -147,7 +159,7 @@ services:
       LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED: false
       # --- dispatching + reader/publisher wiring ---
       LOB_DISPATCHING_STRATEGY_TYPE: IMMEDIATE
-      LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
+      LOB_BLOCKFROST_URL: ${LOB_BLOCKFROST_URL:-http://yaci-cli:8080/api/v1/}
       LOB_BLOCKCHAIN_READER_LOB_FOLLOWER_BASE_URL: http://follower-app:9090/api
       # NetSuite client points at the mock endpoint served by this same container
       LOB_NETSUITE_CLIENT_URL: ${LOB_NETSUITE_CLIENT_URL:-http://localhost:9000/api/v1/mockresult}
@@ -218,7 +230,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev--yaci-dev-kit
       DB_URL: ${DB_URL:-jdbc:postgresql://postgres-reeve:5432/postgres?currentSchema=lob_follower_service}
-      LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
+      LOB_BLOCKFROST_URL: ${LOB_BLOCKFROST_URL:-http://yaci-cli:8080/api/v1/}
       STORE_CARDANO_HOST: ${STORE_CARDANO_HOST:-yaci-cli}
       STORE_CARDANO_PORT: ${STORE_CARDANO_PORT:-3001}
       STORE_CARDANO_PROTOCOL_MAGIC: ${STORE_CARDANO_PROTOCOL_MAGIC:-42}
@@ -232,6 +244,8 @@ services:
   yaci-cli:
     restart: unless-stopped
     image: bloxbean/yaci-cli:0.10.6
+    # Optional: only started with --profile yaci-devnet (see header)
+    profiles: ["yaci-devnet"]
     networks:
       - lob
     env_file:
@@ -253,6 +267,8 @@ services:
   yaci-viewer:
     restart: unless-stopped
     image: bloxbean/yaci-viewer:0.10.6
+    # Optional: only started with --profile yaci-devnet (see header)
+    profiles: ["yaci-devnet"]
     ports:
       - "5173:5173"
     env_file:
