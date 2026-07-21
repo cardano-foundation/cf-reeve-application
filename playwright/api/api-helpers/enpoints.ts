@@ -13,6 +13,9 @@ export class Reeve {
         public static get Reject() {
             return `${Reeve.BASE_URL}/transaction/reject`
         }
+        public static get Approve() {
+            return `${Reeve.BASE_URL}/transactions/approve`
+        }
         public static get Types() {
             return `${Reeve.BASE_URL}/transaction-types`
         }
@@ -36,6 +39,9 @@ export class Reeve {
         public static get ChartOfAccounts() {
             return `${Reeve.Organization.Base}/:orgId/chart-of-accounts`
         }
+        public static get CostCenters() {
+            return `${Reeve.Organization.Base}/:orgId/cost-centers`
+        }
     }
     static Batches = class {
         public static get Batches() {
@@ -43,6 +49,9 @@ export class Reeve {
         }
         public static get BatchById() {
             return `${Reeve.Batches.Batches}/:batchId`
+        }
+        public static get Reprocess() {
+            return `${Reeve.Batches.Batches}/reprocess/:batchId`
         }
     }
 }

@@ -4,7 +4,6 @@ import io.vavr.control.Either;
 import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.zalando.problem.Problem;
 
 import java.util.function.Function;
 

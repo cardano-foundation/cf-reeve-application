@@ -31,8 +31,18 @@ export async function commonTestActions(request: APIRequestContext) {
         return newBatchAfterImport
     }
 
+    const importAndGetPendingBatch = async (authToken: string, csvFile: string, txNumber: string) => {
+        const validateResponse = await (await reeveService(request)).validateTransactionCsvFile(authToken, csvFile);
+        expect(validateResponse.status()).toEqual(HttpStatusCodes.success);
+        const importTxCsvResponse = await (await reeveService(request)).importTransactionCsvFile(authToken, csvFile);
+        expect(importTxCsvResponse.status()).toEqual(HttpStatusCodes.RequestAccepted);
+        await deleteFile(csvFile);
+        return await (await reeveService(request)).getNewBatch(authToken, BatchesStatusCodes.PENDING, txNumber);
+    }
+
     return {
         loginUser,
-        importReadyToApproveTx
+        importReadyToApproveTx,
+        importAndGetPendingBatch
     }
 }

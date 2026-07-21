@@ -18,7 +18,7 @@ export enum TxCSVHeader {
     TxCurrency = "Currency",
     VatRate = "VAT Rate",
     VatCode = "VAT Code",
-    TxCostCenter = "CostCenterCode",
+    TxCostCenter = "Cost Center Code",
     CounterParty = "Counterparty Code",
     CounterpartyName = "Counterparty Name"
 }
