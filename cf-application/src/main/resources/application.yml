@@ -237,6 +237,30 @@ lob:
         bran: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_BRAN:0ADF2TpptgqcDE5IQUF1H}
         name: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME:reeve}
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
+  document_vault:
+    enabled: ${LOB_DOCUMENT_VAULT_ENABLED:false}
+    dispatch:
+      fixed_delay: ${LOB_DOCUMENT_VAULT_DISPATCH_FIXED_DELAY:PT1M}
+      initial_delay: ${LOB_DOCUMENT_VAULT_DISPATCH_INITIAL_DELAY:PT10S}
+      batch-size: ${LOB_DOCUMENT_VAULT_DISPATCH_BATCH_SIZE:50}
+  # Wallet-driven KERI/Veridian attestation (CIP-170) for document_vault publishes.
+  # Independent of the legacy backend-driven lob.blockchain-publisher.keri above — both can coexist.
+  keri-attestation:
+    enabled: ${LOB_KERI_ATTESTATION_ENABLED:false}
+    keria:
+      url: ${LOB_KERI_ATTESTATION_KERIA_URL:http://127.0.0.1:3901}
+      boot-url: ${LOB_KERI_ATTESTATION_KERIA_BOOTURL:http://127.0.0.1:3903}
+      bran: ${LOB_KERI_ATTESTATION_KERIA_BRAN:}
+    identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation-agent}
+    credential-policy:
+      # Comma-separated lists: acceptable leaf-credential schema SAIDs / trusted chain-root AIDs
+      schema-saids: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
+      trusted-root-aids: ${LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS:}
+      schema-base-url: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:https://cred-issuance.demo.idw-sandboxes.cf-deployments.org/oobi}
+    ceremony-ttl: ${LOB_KERI_ATTESTATION_CEREMONY_TTL:PT1H}
+    freeze-max-age: ${LOB_KERI_ATTESTATION_FREEZE_MAX_AGE:PT24H}
+    remotesign-timeout: ${LOB_KERI_ATTESTATION_REMOTESIGN_TIMEOUT:PT3M}
+    auth-begin-confirmations: ${LOB_KERI_ATTESTATION_AUTH_BEGIN_CONFIRMATIONS:3}
   transaction:
     ipfs:
       enabled: ${LOB_TRANSACTION_IPFS_ENABLED:false}
