@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TransactionLedgerUpdateCommand;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TransactionStatusRequestEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.ledger.TxRollbackEvent;
+import org.cardanofoundation.lob.app.funding.domain.events.SpendingEventsPublishCommand;
 import org.cardanofoundation.lob.app.reporting.dto.events.PublishReportEvent;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,6 +41,12 @@ public class BlockchainPublisherKafkaConsumer {
     @KafkaListener(topics = "${lob.blockchain_publisher.topics.transaction-status-request-event}", groupId = "${lob.blockchain_publisher.consumer-group}")
     public void listen(TransactionStatusRequestEvent message) {
         log.info("Received TransactionStatusRequestEvent from Kafka: {}", message);
+        applicationEventPublisher.publishEvent(message);
+    }
+
+    @KafkaListener(topics = "${lob.funding.topics.spending-events-publish-command}", groupId = "${lob.blockchain_publisher.consumer-group}")
+    public void listen(SpendingEventsPublishCommand message) {
+        log.info("Received SpendingEventsPublishCommand from Kafa: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 

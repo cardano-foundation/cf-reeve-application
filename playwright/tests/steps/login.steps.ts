@@ -7,14 +7,14 @@ import {HttpStatusCodes} from "../../api/api-helpers/http-status-codes";
 let userName: string;
 let password: string;
 let loginResponse: APIResponse;
-Given(/^Manager user wants to login into Reeve$/, async ({page}) => {
+Given(/^Manager user wants to login into Reeve$/, async () => {
     userName = process.env.MANAGER_USER as string;
     password = process.env.MANAGER_PASSWORD as string;
 });
 When(/^system get the login request$/, async ({request}) => {
     loginResponse = await (await reeveService(request)).loginToReeve(userName, password)
 });
-Then(/^system should return success login response with authorization token$/, async ({page}) => {
+Then(/^system should return success login response with authorization token$/, async () => {
     expect(loginResponse.status()).toEqual(HttpStatusCodes.success)
     const authToken = (await loginResponse.json()).access_token
     const tokenType = (await loginResponse.json()).token_type
