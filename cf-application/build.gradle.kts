@@ -30,6 +30,11 @@ dependencies {
     implementation("org.cardanofoundation:cf-lob-platform-funding:${property("cfLobPlatformVersion")}")
     implementation("org.cardanofoundation:cf-lob-platform-blockchain_common:${property("cfLobPlatformVersion")}")
     implementation("org.cardanofoundation:cf-lob-platform-keri_attestation:${property("cfLobPlatformVersion")}")
+    // Declared explicitly rather than inherited transitively through blockchain_publisher, which is
+    // losing its document_vault / keri_attestation dependencies — that would otherwise silently drop
+    // document_vault and blockchain_reader off the classpath.
+    implementation("org.cardanofoundation:cf-lob-platform-document_vault:${property("cfLobPlatformVersion")}")
+    implementation("org.cardanofoundation:cf-lob-platform-blockchain_reader:${property("cfLobPlatformVersion")}")
 }
 
 
