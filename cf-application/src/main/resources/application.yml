@@ -253,6 +253,13 @@ lob:
       fixed_delay: ${LOB_DOCUMENT_VAULT_DISPATCH_FIXED_DELAY:PT1M}
       initial_delay: ${LOB_DOCUMENT_VAULT_DISPATCH_INITIAL_DELAY:PT10S}
       batch-size: ${LOB_DOCUMENT_VAULT_DISPATCH_BATCH_SIZE:50}
+    # Upload limits enforced by VaultDocumentService and WrappedRecordService.
+    max-document-bytes: ${LOB_DOCUMENT_VAULT_MAX_DOCUMENT_BYTES:10485760}
+    max-slots: ${LOB_DOCUMENT_VAULT_MAX_SLOTS:64}
+    max-record-bytes: ${LOB_DOCUMENT_VAULT_MAX_RECORD_BYTES:8192}
+    # DocumentRetentionJob purges DRAFT envelopes older than retention-days; 0 disables it.
+    retention-days: ${LOB_DOCUMENT_VAULT_RETENTION_DAYS:0}
+    retention-cron: "${LOB_DOCUMENT_VAULT_RETENTION_CRON:0 0 3 * * *}"
   # Wallet-driven KERI/Veridian attestation (CIP-170) for document_vault publishes.
   # Independent of the legacy backend-driven lob.blockchain-publisher.keri above — both can coexist.
   keri-attestation:
@@ -265,7 +272,7 @@ lob:
       # Veridian wallet pairings (inbound IPEX notifications stop arriving). Mirrors the stable default
       # the blockchain-publisher KERI identifier uses above. Override per-deployment via the env var.
       bran: ${LOB_KERI_ATTESTATION_KERIA_BRAN:0A98gEaYge5XlagRM9okY}
-      identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation}
+    identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation}
     credential-policy:
       # Comma-separated lists: acceptable leaf-credential schema SAIDs / trusted chain-root AIDs
       schema-saids: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
@@ -273,8 +280,22 @@ lob:
       schema-base-url: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:https://cred-issuance.demo.idw-sandboxes.cf-deployments.org/oobi}
     ceremony-ttl: ${LOB_KERI_ATTESTATION_CEREMONY_TTL:PT1H}
     freeze-max-age: ${LOB_KERI_ATTESTATION_FREEZE_MAX_AGE:PT24H}
+    # How long a wallet step may wait, and how often the agent's notification queue is polled while
+    # waiting for the wallet's reply.
     remotesign-timeout: ${LOB_KERI_ATTESTATION_REMOTESIGN_TIMEOUT:PT3M}
-    auth-begin-confirmations: ${LOB_KERI_ATTESTATION_AUTH_BEGIN_CONFIRMATIONS:3}
+    notification-poll-interval: ${LOB_KERI_ATTESTATION_NOTIFICATION_POLL_INTERVAL:PT1.5S}
+    # Retry cadence for reading a wallet's KEL key state after an ATTEST request.
+    key-state-retry-initial-delay: ${LOB_KERI_ATTESTATION_KEY_STATE_RETRY_INITIAL_DELAY:PT2S}
+    key-state-retry-interval: ${LOB_KERI_ATTESTATION_KEY_STATE_RETRY_INTERVAL:PT3S}
+    limits:
+      max-active-ceremonies-per-user: ${LOB_KERI_ATTESTATION_LIMITS_MAX_ACTIVE_CEREMONIES_PER_USER:3}
+      step-cooldown: ${LOB_KERI_ATTESTATION_LIMITS_STEP_COOLDOWN:PT10S}
+    # CeremonyCleanupJob: how often it sweeps, how long a ceremony may sit at AUTH_BEGIN_SUBMITTED,
+    # and the grace added on top of a waiting step's own timeout before it is failed as stale.
+    cleanup:
+      fixed_delay: ${LOB_KERI_ATTESTATION_CLEANUP_FIXED_DELAY:PT10M}
+    auth-begin-rollback-window: ${LOB_KERI_ATTESTATION_AUTH_BEGIN_ROLLBACK_WINDOW:PT30M}
+    step-timeout-grace: ${LOB_KERI_ATTESTATION_STEP_TIMEOUT_GRACE:PT2M}
   transaction:
     ipfs:
       enabled: ${LOB_TRANSACTION_IPFS_ENABLED:false}
