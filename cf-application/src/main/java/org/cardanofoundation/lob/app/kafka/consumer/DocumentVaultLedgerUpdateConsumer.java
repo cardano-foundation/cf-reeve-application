@@ -30,7 +30,7 @@ public class DocumentVaultLedgerUpdateConsumer {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @KafkaListener(topics = "${lob.blockchain_publisher.topics.ledger-update-command}",
-            groupId = "${lob.document_vault.consumer-group}")
+            groupId = "${lob.document_vault.ledger-update-consumer-group}")
     public void listen(LedgerUpdatedEvent message) {
         // DocumentLedgerUpdateHandler guards on the DOCUMENT discriminator and returns early for the
         // rest, so republishing every ledger update onto the local bus is correct, not wasteful.

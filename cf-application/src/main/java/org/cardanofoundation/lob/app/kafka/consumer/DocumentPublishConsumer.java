@@ -30,7 +30,7 @@ public class DocumentPublishConsumer {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @KafkaListener(topics = "${lob.document_vault.topics.document-publish-command}",
-            groupId = "${lob.document_vault.consumer-group}")
+            groupId = "${lob.document_vault.publish-command-consumer-group}")
     public void listen(DocumentPublishCommand message) {
         log.info("Received DocumentPublishCommand from Kafka for document: {}", message.documentId());
         applicationEventPublisher.publishEvent(message);

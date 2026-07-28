@@ -239,9 +239,12 @@ lob:
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
   document_vault:
     enabled: ${LOB_DOCUMENT_VAULT_ENABLED:false}
-    # Its own consumer group: two listeners sharing a group on one topic split its partitions rather
-    # than each receiving every record, which is a live defect elsewhere in this file's topology.
-    consumer-group: lob-consumer-document-vault
+    # One group PER LISTENER, not one per module. Two members of the same group subscribing to
+    # different topic sets is a rebalance anti-pattern, and two sharing a group on the SAME topic split
+    # its partitions rather than each receiving every record (a live defect elsewhere in this file).
+    # These two listeners also run in different services, so they must never be group-mates.
+    publish-command-consumer-group: lob-consumer-document-publish
+    ledger-update-consumer-group: lob-consumer-document-vault-ledger
     topics:
       # Raised by document_vault on the api service, consumed by blockchain_publisher on the publisher
       # service. Without this the two tiers cannot exchange a publish at all.
@@ -262,7 +265,7 @@ lob:
       # Veridian wallet pairings (inbound IPEX notifications stop arriving). Mirrors the stable default
       # the blockchain-publisher KERI identifier uses above. Override per-deployment via the env var.
       bran: ${LOB_KERI_ATTESTATION_KERIA_BRAN:0A98gEaYge5XlagRM9okY}
-    identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation}
+      identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation}
     credential-policy:
       # Comma-separated lists: acceptable leaf-credential schema SAIDs / trusted chain-root AIDs
       schema-saids: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
