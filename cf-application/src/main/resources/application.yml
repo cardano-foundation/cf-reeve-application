@@ -239,6 +239,13 @@ lob:
         role: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE:agent}
   document_vault:
     enabled: ${LOB_DOCUMENT_VAULT_ENABLED:false}
+    # Its own consumer group: two listeners sharing a group on one topic split its partitions rather
+    # than each receiving every record, which is a live defect elsewhere in this file's topology.
+    consumer-group: lob-consumer-document-vault
+    topics:
+      # Raised by document_vault on the api service, consumed by blockchain_publisher on the publisher
+      # service. Without this the two tiers cannot exchange a publish at all.
+      document-publish-command: blockchain_common.domain.events.DocumentPublishCommand
     dispatch:
       fixed_delay: ${LOB_DOCUMENT_VAULT_DISPATCH_FIXED_DELAY:PT1M}
       initial_delay: ${LOB_DOCUMENT_VAULT_DISPATCH_INITIAL_DELAY:PT10S}
