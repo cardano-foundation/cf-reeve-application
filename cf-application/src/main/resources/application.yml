@@ -264,6 +264,15 @@ lob:
   # Independent of the legacy backend-driven lob.blockchain-publisher.keri above — both can coexist.
   keri-attestation:
     enabled: ${LOB_KERI_ATTESTATION_ENABLED:false}
+    # One group PER LISTENER. keri_attestation raises the AUTH_BEGIN publish command on the api
+    # service and consumes the resulting ledger update there; blockchain_publisher consumes the
+    # command on the publisher service.
+    publish-command-consumer-group: lob-consumer-auth-begin-publish
+    ledger-update-consumer-group: lob-consumer-keri-attestation-ledger
+    topics:
+      # Raised by keri_attestation on the api service, consumed by blockchain_publisher on the
+      # publisher service. This module owns no wallet, so without this an AUTH_BEGIN is never published.
+      auth-begin-publish-command: blockchain_common.domain.events.AuthBeginPublishCommand
     keria:
       url: ${LOB_KERI_ATTESTATION_KERIA_URL:http://127.0.0.1:3901}
       boot-url: ${LOB_KERI_ATTESTATION_KERIA_BOOTURL:http://127.0.0.1:3903}
@@ -272,7 +281,7 @@ lob:
       # Veridian wallet pairings (inbound IPEX notifications stop arriving). Mirrors the stable default
       # the blockchain-publisher KERI identifier uses above. Override per-deployment via the env var.
       bran: ${LOB_KERI_ATTESTATION_KERIA_BRAN:0A98gEaYge5XlagRM9okY}
-    identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation}
+    identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation-2}
     credential-policy:
       # Comma-separated lists: acceptable leaf-credential schema SAIDs / trusted chain-root AIDs
       schema-saids: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
@@ -294,6 +303,14 @@ lob:
     # and the grace added on top of a waiting step's own timeout before it is failed as stale.
     cleanup:
       fixed_delay: ${LOB_KERI_ATTESTATION_CLEANUP_FIXED_DELAY:PT10M}
+    # KeriNotificationCleanupJob prunes the agent's notification queue. Notifications are otherwise
+    # deleted only on a successful step, so failed attempts accumulate and every wait pages a longer
+    # queue. Deletion is by AGE only: retention must stay comfortably above ceremony-ttl, since that
+    # is what makes it provable that nothing is still waiting on a pruned notification.
+    notification-retention: ${LOB_KERI_ATTESTATION_NOTIFICATION_RETENTION:PT24H}
+    notification-cleanup:
+      fixed_delay: ${LOB_KERI_ATTESTATION_NOTIFICATION_CLEANUP_FIXED_DELAY:PT1H}
+      initial_delay: ${LOB_KERI_ATTESTATION_NOTIFICATION_CLEANUP_INITIAL_DELAY:PT5M}
     auth-begin-rollback-window: ${LOB_KERI_ATTESTATION_AUTH_BEGIN_ROLLBACK_WINDOW:PT30M}
     step-timeout-grace: ${LOB_KERI_ATTESTATION_STEP_TIMEOUT_GRACE:PT2M}
   transaction:
