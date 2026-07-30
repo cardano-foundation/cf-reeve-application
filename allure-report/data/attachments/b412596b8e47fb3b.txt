@@ -1,0 +1,17 @@
+[2026-07-30T23:52:07.023] [INFO] default - Request URL: http://localhost:8080/realms/reeve-master/protocol/openid-connect/token
+[2026-07-30T23:52:07.024] [INFO] default - Response status: 200
+[2026-07-30T23:52:07.042] [INFO] default - Request URL: http://localhost:9000/api/v1/transaction-types
+[2026-07-30T23:52:07.042] [INFO] default - Response status: 200
+[2026-07-30T23:52:07.059] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/event-codes
+[2026-07-30T23:52:07.059] [INFO] default - Response status: 200
+[2026-07-30T23:52:07.106] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/chart-of-accounts
+[2026-07-30T23:52:07.106] [INFO] default - Response status: 200
+[2026-07-30T23:52:07.163] [INFO] default - Request URL: http://localhost:9000/api/v1/extraction/validation
+[2026-07-30T23:52:07.163] [INFO] default - Response status: 200
+[2026-07-30T23:52:07.187] [INFO] default - Request URL: http://localhost:9000/api/v1/extraction
+[2026-07-30T23:52:07.187] [INFO] default - Response status: 202
+✓ File successfully deleted
+[2026-07-30T23:52:07.210] [INFO] default - Request URL: http://localhost:9000/api/v1/batches
+[2026-07-30T23:52:07.210] [INFO] default - Response status: 200
+[2026-07-30T23:52:07.226] [INFO] default - Request URL: http://localhost:9000/api/v1/batches/2f5f95a6c1cca4cb92dad6e4ddac6ca4582f1c2dfe94113b587f4a7ee4751aef
+[2026-07-30T23:52:07.227] [INFO] default - Response status: 400
