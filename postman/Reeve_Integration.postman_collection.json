@@ -2429,7 +2429,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/transactions/{{transactionId}}",
+              "raw": "{{base_url}}/api/v1/transactions/{{transactionId}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -2438,6 +2438,12 @@
                 "v1",
                 "transactions",
                 "{{transactionId}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -2639,7 +2645,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/batches/{{batchId}}",
+              "raw": "{{base_url}}/api/v1/batches/{{batchId}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -2648,6 +2654,12 @@
                 "v1",
                 "batches",
                 "{{batchId}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -2688,7 +2700,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/batches/reprocess/{{batchId}}",
+              "raw": "{{base_url}}/api/v1/batches/reprocess/{{batchId}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -2698,6 +2710,12 @@
                 "batches",
                 "reprocess",
                 "{{batchId}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -3659,6 +3677,278 @@
           "response": []
         },
         {
+          "name": "POST Create Milestone",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Milestone ID is stored in environment variable\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"dummyMilestone\", jsonData.milestoneId);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"externalMilestoneId\": \"MS-1\",\n  \"milestoneTitle\": \"Milestone AB\",\n  \"milestoneAmount\": 50000.00,\n  \"currency\": \"USD\",\n  \"milestoneDate\": \"2025-06-30\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects/{{dummyProject}}/milestones?organisationId={{orgId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects",
+                "{{dummyProject}}",
+                "milestones"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET List Milestones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects/{{dummyProject}}/milestones?organisationId={{orgId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects",
+                "{{dummyProject}}",
+                "milestones"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Milestone Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Check response contains milestoneId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.milestoneId).to.eql(pm.environment.get(\"dummyMilestone\"));",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects/{{dummyProject}}/milestones/{{dummyMilestone}}?organisationId={{orgId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects",
+                "{{dummyProject}}",
+                "milestones",
+                "{{dummyMilestone}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Milestone",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"milestoneTitle\": \"Updated Milestone Name\",\n  \"milestoneAmount\": 75000.00,\n  \"currency\": \"USD\",\n  \"milestoneDate\": \"2025-09-30\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects/{{dummyProject}}/milestones/{{dummyMilestone}}?organisationId={{orgId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects",
+                "{{dummyProject}}",
+                "milestones",
+                "{{dummyMilestone}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Milestone",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/projects/{{dummyProject}}/milestones/{{dummyMilestone}}?organisationId={{orgId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "projects",
+                "{{dummyProject}}",
+                "milestones",
+                "{{dummyMilestone}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "POST Create Spending Event",
           "event": [
             {
@@ -3831,6 +4121,206 @@
                 "events",
                 "{{dummySpendingEvent}}",
                 "publish"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Bulk Import Funding CSV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "dryRun",
+                  "value": "false",
+                  "type": "text"
+                },
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": "/Users/thkammer/Documents/dev/cardano/java/cf-lob-platform/docs/examples/funding/project_bulk_import_example.csv"
+                },
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": "/Users/thkammer/Documents/dev/cardano/java/cf-lob-platform/docs/examples/funding/milestone_bulk_import_example.csv"
+                },
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": "/Users/thkammer/Documents/dev/cardano/java/cf-lob-platform/docs/examples/funding/event_bulk_import_example.csv"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/bulk-import",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "bulk-import"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Download Bulk Import Template - Projects",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/bulk-import/templates/PROJECTS",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "bulk-import",
+                "templates",
+                "PROJECTS"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Download Bulk Import Template - Milestones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/bulk-import/templates/MILESTONES",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "bulk-import",
+                "templates",
+                "MILESTONES"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Download Bulk Import Template - Events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/funding/bulk-import/templates/EVENTS",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "funding",
+                "bulk-import",
+                "templates",
+                "EVENTS"
               ]
             }
           },
