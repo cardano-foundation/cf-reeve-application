@@ -5,6 +5,16 @@ services:
       LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_IPFS_LOCAL_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_IPFS_LOCAL_NODE: ipfs-node:5001
+      # Blockfrost is the default in docker-compose.yml; point both tiers at the local node instead.
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED: false
+  api:
+    environment:
+      # The attestation ceremony names the CID here (only-hash, nothing stored), so this tier needs a
+      # node too — and it must be the SAME node the publisher pins to, or the two disagree on the CID.
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED: true
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_LOCAL_ENABLED: true
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_LOCAL_NODE: ipfs-node:5001
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED: false
   ipfs:
     restart: unless-stopped
     image: ipfs/kubo:v0.40.1

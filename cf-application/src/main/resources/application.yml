@@ -283,10 +283,43 @@ lob:
       bran: ${LOB_KERI_ATTESTATION_KERIA_BRAN:0A98gEaYge5XlagRM9okY}
     identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation-2}
     credential-policy:
-      # Comma-separated lists: acceptable leaf-credential schema SAIDs / trusted chain-root AIDs
-      schema-saids: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
+      # DEPRECATED for one release, superseded by credential-schemas below — which records the trust
+      # model PER schema instead of assuming one for all of them. Left unset on purpose: if
+      # credential-schemas is absent and these are set, the registry synthesises CHAINED entries and
+      # warns. schema-base-url is NOT deprecated and is still read.
+      schema-saids: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:}
       trusted-root-aids: ${LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS:}
       schema-base-url: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:https://cred-issuance.demo.idw-sandboxes.cf-deployments.org/oobi}
+    # Which credential schemas this deployment accepts, and who may issue them. Adding one is a
+    # configuration change, not a code change. CredentialSchemaRegistry VALIDATES THIS AT STARTUP and
+    # refuses to boot on a problem, so a deployment cannot come up looking healthy while trusting anyone.
+    #
+    #   trust-model: CHAINED    -> the issuance chain must terminate at one of trusted-roots (vLEI shape)
+    #   trust-model: STANDALONE -> the credential's own issuer must be one of trusted-issuers
+    #
+    # Foundation Employee is configured and live: its issuer AID and OOBI are known, so the entry
+    # ships active. The OOBI is what lets the agent ask that issuer's registry whether a credential is
+    # still issued — configuring the AID without it would leave every verification unable to answer,
+    # and failing closed.
+    #
+    # vLEI is left commented out because its GLEIF root AID is deployment-specific and has no safe
+    # default. Uncommenting it with a blank trusted-roots would REFUSE TO START, on purpose: a schema
+    # with no trust anchors reads as "trust anyone".
+    credential-schemas:
+      - said: ${LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID:EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
+        name: "Foundation Employee"
+        trust-model: STANDALONE
+        trusted-roots: []
+        trusted-issuers:
+          - ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1}
+        oobis: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:https://keria-ext.dev.idw-sandboxes.cf-deployments.org/oobi/EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1/agent/EFjYeBVmKSZ0eJXkNZqLAlPPiDaRds3V2iH_COkxIs4x}
+    # - said: ${LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID:EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao}
+    #   name: "vLEI Legal Entity"
+    #   trust-model: CHAINED
+    #   trusted-roots:
+    #     - ${LOB_KERI_ATTESTATION_VLEI_GLEIF_ROOT_AID:}
+    #   trusted-issuers: []
+    #   oobis: ${LOB_KERI_ATTESTATION_VLEI_OOBIS:}
     ceremony-ttl: ${LOB_KERI_ATTESTATION_CEREMONY_TTL:PT1H}
     freeze-max-age: ${LOB_KERI_ATTESTATION_FREEZE_MAX_AGE:PT24H}
     # How long a wallet step may wait, and how often the agent's notification queue is polled while

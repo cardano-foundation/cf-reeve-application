@@ -127,9 +127,22 @@ services:
       LOB_KERI_ATTESTATION_KERIA_BOOTURL: ${LOB_KERI_ATTESTATION_KERIA_BOOTURL:-https://keria-boot.dev.idw-sandboxes.cf-deployments.org}
       LOB_KERI_ATTESTATION_KERIA_BRAN: ${LOB_KERI_ATTESTATION_KERIA_BRAN:-0A98gEaYge5XlagRM9okY}
       LOB_KERI_ATTESTATION_IDENTIFIER_NAME: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:-reeve-attestation}
-      LOB_KERI_ATTESTATION_SCHEMA_SAIDS: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:-EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
+      # Deprecated for one release, superseded by the per-schema entries below. Unset by default.
+      LOB_KERI_ATTESTATION_SCHEMA_SAIDS: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:-}
       LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS: ${LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS:-}
       LOB_KERI_ATTESTATION_SCHEMA_BASE_URL: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:-https://cred-issuance.demo.idw-sandboxes.cf-deployments.org/oobi}
+      # Accepted credential schemas and their trust anchors. Foundation Employee is configured live —
+      # its issuer AID and the OOBI that lets the agent reach that issuer's registry. Without the OOBI
+      # the agent cannot ask whether a credential is still issued, and verification fails closed.
+      # Only read when LOB_KERI_ATTESTATION_ENABLED=true.
+      LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID: ${LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID:-EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
+      LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID: ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:-EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1}
+      LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:-https://keria-ext.dev.idw-sandboxes.cf-deployments.org/oobi/EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1/agent/EFjYeBVmKSZ0eJXkNZqLAlPPiDaRds3V2iH_COkxIs4x}
+      # vLEI stays unset: its GLEIF root AID is deployment-specific and there is no safe default. The
+      # entry is commented out in application.yml; enabling it with a blank root refuses to start.
+      LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID: ${LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID:-EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao}
+      LOB_KERI_ATTESTATION_VLEI_GLEIF_ROOT_AID: ${LOB_KERI_ATTESTATION_VLEI_GLEIF_ROOT_AID:-}
+      LOB_KERI_ATTESTATION_VLEI_OOBIS: ${LOB_KERI_ATTESTATION_VLEI_OOBIS:-}
     working_dir: /app
     entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     healthcheck:
@@ -180,9 +193,22 @@ services:
       LOB_KERI_ATTESTATION_KERIA_BOOTURL: ${LOB_KERI_ATTESTATION_KERIA_BOOTURL:-https://keria-boot.dev.idw-sandboxes.cf-deployments.org}
       LOB_KERI_ATTESTATION_KERIA_BRAN: ${LOB_KERI_ATTESTATION_KERIA_BRAN:-0A98gEaYge5XlagRM9okY}
       LOB_KERI_ATTESTATION_IDENTIFIER_NAME: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:-reeve-attestation-2}
-      LOB_KERI_ATTESTATION_SCHEMA_SAIDS: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:-EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
+      # Deprecated for one release, superseded by the per-schema entries below. Unset by default.
+      LOB_KERI_ATTESTATION_SCHEMA_SAIDS: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:-}
       LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS: ${LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS:-}
       LOB_KERI_ATTESTATION_SCHEMA_BASE_URL: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:-https://cred-issuance.demo.idw-sandboxes.cf-deployments.org/oobi}
+      # Accepted credential schemas and their trust anchors. Foundation Employee is configured live —
+      # its issuer AID and the OOBI that lets the agent reach that issuer's registry. Without the OOBI
+      # the agent cannot ask whether a credential is still issued, and verification fails closed.
+      # Only read when LOB_KERI_ATTESTATION_ENABLED=true.
+      LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID: ${LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID:-EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
+      LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID: ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:-EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1}
+      LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:-https://keria-ext.dev.idw-sandboxes.cf-deployments.org/oobi/EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1/agent/EFjYeBVmKSZ0eJXkNZqLAlPPiDaRds3V2iH_COkxIs4x}
+      # vLEI stays unset: its GLEIF root AID is deployment-specific and there is no safe default. The
+      # entry is commented out in application.yml; enabling it with a blank root refuses to start.
+      LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID: ${LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID:-EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao}
+      LOB_KERI_ATTESTATION_VLEI_GLEIF_ROOT_AID: ${LOB_KERI_ATTESTATION_VLEI_GLEIF_ROOT_AID:-}
+      LOB_KERI_ATTESTATION_VLEI_OOBIS: ${LOB_KERI_ATTESTATION_VLEI_OOBIS:-}
       LOB_KERI_ATTESTATION_CEREMONY_TTL: ${LOB_KERI_ATTESTATION_CEREMONY_TTL:-PT1H}
       LOB_KERI_ATTESTATION_FREEZE_MAX_AGE: ${LOB_KERI_ATTESTATION_FREEZE_MAX_AGE:-PT24H}
       LOB_KERI_ATTESTATION_REMOTESIGN_TIMEOUT: ${LOB_KERI_ATTESTATION_REMOTESIGN_TIMEOUT:-PT3M}
@@ -197,6 +223,9 @@ services:
       LOB_KERI_ATTESTATION_NOTIFICATION_CLEANUP_INITIAL_DELAY: ${LOB_KERI_ATTESTATION_NOTIFICATION_CLEANUP_INITIAL_DELAY:-PT5M}
       LOB_KERI_ATTESTATION_AUTH_BEGIN_ROLLBACK_WINDOW: ${LOB_KERI_ATTESTATION_AUTH_BEGIN_ROLLBACK_WINDOW:-PT30M}
       LOB_KERI_ATTESTATION_STEP_TIMEOUT_GRACE: ${LOB_KERI_ATTESTATION_STEP_TIMEOUT_GRACE:-PT2M}
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED:-true}
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED:-true}
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID:-ipfsJrP4wskyTOLTnqZ9Bd8lslYv0tuy17bX}
       LOB_DOCUMENT_VAULT_ENABLED: true
       LOB_DOCUMENT_VAULT_MAX_DOCUMENT_BYTES: ${LOB_DOCUMENT_VAULT_MAX_DOCUMENT_BYTES:-10485760}
       LOB_DOCUMENT_VAULT_MAX_SLOTS: ${LOB_DOCUMENT_VAULT_MAX_SLOTS:-64}
