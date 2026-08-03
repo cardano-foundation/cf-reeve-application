@@ -69,6 +69,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    scale: ${PUBLISHER_REPLICAS:-1}
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
@@ -121,7 +122,7 @@ services:
     networks:
       - lob
     ports:
-      - "9001:9001"
+      - "${PUBLISHER_EXPOSE_PORT-9001}:9001"
     volumes:
       - ./:/app/
       - ${LOCAL_PRIVATE_KEY_PATH:-./certs/dummy.pem}:${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
@@ -137,6 +138,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    scale: ${API_REPLICAS:-1}
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
@@ -150,7 +152,7 @@ services:
       LOB_ORGANISATION_ENABLED: true
       LOB_REPORTING_ENABLED: true
       LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
-      LOB_INDEXER_URL: ${LOB_INDEXER_URL:-http://reeve-verifier-backend:9000}
+      LOB_INDEXER_URL: ${LOB_INDEXER_URL:-http://reeve-indexer-api:9000}
       LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_ROLLBACK_ENABLED:-false}
       LOB_BLOCKCHAIN_READER_ENABLED: false
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: false
@@ -177,7 +179,7 @@ services:
     networks:
       - lob
     ports:
-      - "9000:9000"
+      - "${API_EXPOSE_PORT-9000}:9000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend-http.entrypoints=web"
@@ -185,6 +187,7 @@ services:
       - "traefik.http.routers.backend-https.rule=Host(`${API_HOSTNAME:-api.example.com}`) && (PathPrefix(`/api/v1`) || PathPrefix(`/swagger-ui`) || PathPrefix(`/v3/api-docs`))"
       - "traefik.http.routers.backend-https.entrypoints=websecure"
       - "traefik.http.routers.backend-https.tls=true"
+      - "traefik.http.services.backend.loadbalancer.server.port=9000"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
     volumes:
       - ./:/app/
@@ -346,15 +349,15 @@ services:
       - "${YACI_DEVNET_EXPOSED_PORT:-3001}:3001"
       - "8081:8080"
     entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
-#      - "traefik.http.routers.yaci-bf-http.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
-#      - "traefik.http.routers.yaci-bf-https.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
-#      - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
-#      - "traefik.http.routers.yaci-bf-https.tls=true"
-#      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=8080"
-#      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
+      - "traefik.http.routers.yaci-bf-http.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+      - "traefik.http.routers.yaci-bf-https.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+      - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
+      - "traefik.http.routers.yaci-bf-https.tls=true"
+      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
     logging:
       driver: "json-file"
       options:
@@ -387,32 +390,32 @@ services:
         max-size: "200k"
         max-file: "100"
 
-  caddy:
-    profiles: [traefik]
-    restart: unless-stopped
-    container_name: "caddy"
-    image: caddy:latest
-    networks:
-      - lob
-    ports:
-      - "10080:80"
-      - "10443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
-      - "traefik.http.routers.yaci-bf-http.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
-      - "traefik.http.routers.yaci-bf-https.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
-      - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
-      - "traefik.http.routers.yaci-bf-https.tls=true"
-      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=80"
-      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "100"
+  # caddy:
+  #   profiles: [traefik]
+  #   restart: unless-stopped
+  #   container_name: "caddy"
+  #   image: caddy:latest
+  #   networks:
+  #     - lob
+  #   ports:
+  #     - "10080:80"
+  #     - "10443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.yaci-bf-http.entrypoints=web"
+  #     - "traefik.http.routers.yaci-bf-http.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+  #     - "traefik.http.routers.yaci-bf-https.rule=host(`${YACI_BLOCKFROST_HOSTNAME:-yaci-blockfrost.example.com}`)"
+  #     - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
+  #     - "traefik.http.routers.yaci-bf-https.tls=true"
+  #     - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=80"
+  #     - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "200k"
+  #       max-file: "100"
 
   traefik:
     profiles: [traefik]
