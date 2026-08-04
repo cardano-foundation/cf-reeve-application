@@ -32,7 +32,13 @@ This will start the following services:
 
 ## Multi-replica configuration
 
-Use [`.envMultiReplica`](.envMultiReplica) to run multiple API and publisher replicas locally. Empty exposed-port values let Docker Compose allocate a port per replica; access the application through Traefik at [http://reeve.localhost](http://reeve.localhost).
+Use [`.envMultiReplica`](.envMultiReplica) to run multiple API and publisher replicas locally:
+
+```bash
+docker compose --env-file .envMultiReplica --profile frontend --profile traefik up -d --build
+```
+
+Empty exposed-port values let Docker Compose allocate a port per replica; access the application through Traefik at [http://reeve.localhost](http://reeve.localhost).
 
 ## How to develop
 Start the application stack as described above. Then you can stop containers you are currently working on.
