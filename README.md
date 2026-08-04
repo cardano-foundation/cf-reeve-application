@@ -35,7 +35,7 @@ This will start the following services:
 Use [`.envMultiReplica`](.envMultiReplica) to run multiple API and publisher replicas locally:
 
 ```bash
-docker compose --env-file .envMultiReplica --profile frontend --profile traefik up -d --build
+docker compose --env-file .envMultiReplica --profile frontend --profile traefik up -d
 ```
 
 Empty exposed-port values let Docker Compose allocate a port per replica; access the application through Traefik at [http://reeve.localhost](http://reeve.localhost).
