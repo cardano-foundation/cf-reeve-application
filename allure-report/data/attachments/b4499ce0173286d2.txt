@@ -1,0 +1,21 @@
+[2026-08-04T19:02:48.434] [INFO] default - Request URL: http://localhost:8080/realms/reeve-master/protocol/openid-connect/token
+[2026-08-04T19:02:48.435] [INFO] default - Response status: 200
+[2026-08-04T19:02:48.506] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/cost-centers
+[2026-08-04T19:02:48.507] [INFO] default - Response status: 200
+[2026-08-04T19:02:48.551] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/cost-centers
+[2026-08-04T19:02:48.552] [INFO] default - Response status: 200
+[2026-08-04T19:02:48.581] [INFO] default - Request URL: http://localhost:9000/api/v1/transaction-types
+[2026-08-04T19:02:48.582] [INFO] default - Response status: 200
+[2026-08-04T19:02:48.604] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/event-codes
+[2026-08-04T19:02:48.604] [INFO] default - Response status: 200
+[2026-08-04T19:02:48.634] [INFO] default - Request URL: http://localhost:9000/api/v1/organisations/75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94/chart-of-accounts
+[2026-08-04T19:02:48.634] [INFO] default - Response status: 200
+[2026-08-04T19:02:48.712] [INFO] default - Request URL: http://localhost:9000/api/v1/extraction/validation
+[2026-08-04T19:02:48.712] [INFO] default - Response status: 200
+[2026-08-04T19:02:48.757] [INFO] default - Request URL: http://localhost:9000/api/v1/extraction
+[2026-08-04T19:02:48.757] [INFO] default - Response status: 202
+✓ File successfully deleted
+[2026-08-04T19:02:48.830] [INFO] default - Request URL: http://localhost:9000/api/v1/batches
+[2026-08-04T19:02:48.830] [INFO] default - Response status: 200
+[2026-08-04T19:02:48.851] [INFO] default - Request URL: http://localhost:9000/api/v1/batches/a904a96c006049e21ee8229794d8458df415e9198cf7f61f426c037dca37c22b
+[2026-08-04T19:02:48.851] [INFO] default - Response status: 400
