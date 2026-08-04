@@ -30,6 +30,16 @@ This will start the following services:
 - `keycloak`: The identity provider used by the cf-lob-platform
 - `kafka`: The message broker used by the cf-lob-platform
 
+## Multi-replica configuration
+
+Use [`.envMultiReplica`](.envMultiReplica) to run multiple API and publisher replicas locally:
+
+```bash
+docker compose --env-file .envMultiReplica --profile frontend --profile traefik up -d
+```
+
+Empty exposed-port values let Docker Compose allocate a port per replica; access the application through Traefik at [http://reeve.localhost](http://reeve.localhost).
+
 ## How to develop
 Start the application stack as described above. Then you can stop containers you are currently working on.
 An example you are working on the `cf-lob-platform` repository and the `accounting_reporting_core` module:

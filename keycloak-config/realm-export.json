@@ -131,11 +131,15 @@
         "protocol": "openid-connect",
         "redirectUris": [
           "http://localhost:9000/*",
-          "http://localhost:3000/*"
+          "http://api.reeve.localhost/*",
+          "http://localhost:3000/*",
+          "http://reeve.localhost/*"
         ],
         "webOrigins": [
           "http://localhost:9000",
-          "http://localhost:3000"
+          "http://api.reeve.localhost",
+          "http://localhost:3000",
+          "http://reeve.localhost"
         ],
         "adminUrl": "http://localhost:8080",
         "rootUrl": "http://localhost:3000",
