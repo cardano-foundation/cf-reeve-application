@@ -32,6 +32,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # always login to pull docker hardened images
+      - name: Docker Login (hub.docker.com)
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        with:
+          username: ${{ secrets.HUB_DOCKER_COM_USER }}
+          password: ${{ secrets.HUB_DOCKER_COM_PASS }}
+
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         id: cf-gha-baseline
