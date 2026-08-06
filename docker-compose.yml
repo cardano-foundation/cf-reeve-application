@@ -35,6 +35,9 @@ services:
     profiles: [frontend]
     restart: unless-stopped
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-lob-frontend:${FRONTEND_DOCKER_TAG:-main}
+    read_only: true
+    tmpfs:
+      - /tmp
     networks:
       - lob
     ports:
@@ -70,6 +73,9 @@ services:
       postgres:
         condition: service_healthy
     scale: ${PUBLISHER_REPLICAS:-1}
+    read_only: true
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,mode=1777,size=64m
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
@@ -138,6 +144,9 @@ services:
       postgres:
         condition: service_healthy
     scale: ${API_REPLICAS:-1}
+    read_only: true
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,mode=1777,size=64m
     environment:
       KEYCLOAK_ENABLED: true
       # Only used for dev and mocking netsuit
