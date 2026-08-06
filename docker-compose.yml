@@ -112,9 +112,8 @@ services:
       LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED:-false}
       LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID:-DUMMY_KEY}
     working_dir: /app
-    entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     healthcheck:
-      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/9001'"]
+      test: ["CMD", "java", "-jar", "/healthcheck.jar", "9001"]
       interval: 30s
       timeout: 10s
       retries: 8
@@ -169,9 +168,8 @@ services:
       SERVER_FORWARDHEADERSSTRATEGY: framework
       OAUTH2_REDIRECT_URL: ${API_URL:-http://localhost:9000}/swagger-ui/oauth2-redirect.html
     working_dir: /app
-    entrypoint: ${ENTRYPOINT:-java --enable-preview -jar /app.jar}
     healthcheck:
-      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/9000'"]
+      test: ["CMD", "java", "-jar", "/healthcheck.jar", "9000"]
       interval: 30s
       timeout: 10s
       retries: 8
