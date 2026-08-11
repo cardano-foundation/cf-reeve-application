@@ -169,4 +169,6 @@ jobs:
 
       - name: Clean up Docker
         if: always()
-        run: docker compose down -v
+        run: |
+          docker compose logs follower-app --tail 100
+          docker compose down -v

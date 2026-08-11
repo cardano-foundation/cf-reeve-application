@@ -337,9 +337,10 @@ services:
       LOB_UTXO_FILTER_ADDRESSES: ${LOB_UTXO_FILTER_ADDRESSES:-addr_test1qppcuzs25ghufz2mzg37hcm77px4matwz2hz072z4ms7umqasylaf2uure0h5dw6zmm4ctnxfm0m9gf8lst6fflthlhq5hrg7w}
     healthcheck:
       test: ["CMD", "java", "-jar", "/healthcheck.jar", "9090"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      interval: 30s
+      timeout: 10s
+      retries: 8
+      start_period: 20s
     logging:
       driver: "json-file"
       options:
