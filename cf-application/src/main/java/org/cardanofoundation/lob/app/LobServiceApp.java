@@ -24,6 +24,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
@@ -46,11 +47,23 @@ scanBasePackages = {"org.cardanofoundation.lob.app.config", "org.cardanofoundati
                              "org.cardanofoundation.lob"
                            } )
 @EnableTransactionManagement
+@EnableMethodSecurity
 @EnableAsync
 //@ImportRuntimeHints(org.cardanofoundation.lob.app.LobServiceApp.Hints.class)
 //@EnableAutoConfiguration
 @Slf4j
-@Import({ CFConfig.class, LobServiceApp.CacheConfig.class, LobServiceApp.MetricsConfig.class, LobServiceApp.SchedulerConfig.class, LobServiceApp.TimeConfig.class, LobServiceApp.JaversConfig.class, LobServiceApp.RestClientConfig.class, LobServiceApp.RestClientConfig.class, SpringWebConfig.class })
+@Import({
+        CFConfig.class,
+        LobServiceApp.CacheConfig.class,
+        LobServiceApp.MetricsConfig.class,
+        LobServiceApp.SchedulerConfig.class,
+        LobServiceApp.TimeConfig.class,
+        LobServiceApp.JaversConfig.class,
+        LobServiceApp.RestClientConfig.class,
+        LobServiceApp.RestClientConfig.class,
+        SpringWebConfig.class,
+        SwaggerSecurityConfig.class
+})
 public class LobServiceApp {
 
     public static void main(String[] args) {
