@@ -69,4 +69,7 @@ The backend uses Spring Boot's OAuth2 resource-server configuration. Docker Comp
 
 Override these variables when using a different OpenID Connect provider or externally hosted realm. The local realm emits the `reeve-api` audience and a flat `roles` claim so Spring Boot can perform issuer, audience, and authority validation without a custom JWT decoder.
 
-Keycloak's startup import skips realms that already exist. Existing development databases must have the new `reeve-api` client and protocol mappers applied, or the local realm must be recreated before testing these settings.
+Keycloak's startup import skips realms that already exist. Apply the non-destructive, idempotent migrations to an existing `reeve-master` realm while Keycloak is running:
+
+- Declarative `keycloak-config-cli` configuration and manual command: [`keycloak-migrations/keycloak-config-cli/`](keycloak-migrations/keycloak-config-cli/)
+
