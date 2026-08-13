@@ -62,7 +62,7 @@ scanBasePackages = {"org.cardanofoundation.lob.app.config", "org.cardanofoundati
         LobServiceApp.RestClientConfig.class,
         LobServiceApp.RestClientConfig.class,
         SpringWebConfig.class,
-        SwaggerSecurityConfig.class
+        PublicSecurityConfig.class
 })
 public class LobServiceApp {
 

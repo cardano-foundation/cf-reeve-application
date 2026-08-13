@@ -5,14 +5,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
 @Configuration(proxyBeanMethods = false)
-public class SwaggerSecurityConfig {
+public class PublicSecurityConfig {
 
     @Bean
-    WebSecurityCustomizer swaggerWebSecurityCustomizer() {
+    WebSecurityCustomizer publicWebSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/v3/api-docs",
-                "/v3/api-docs/**");
+                "/v3/api-docs/**",
+                "/actuator/health",
+                "/actuator/health/liveness",
+                "/actuator/health/readiness");
     }
 }
