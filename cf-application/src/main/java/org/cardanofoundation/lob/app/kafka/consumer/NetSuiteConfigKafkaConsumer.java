@@ -25,8 +25,16 @@ public class NetSuiteConfigKafkaConsumer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    /**
+     * Overrides the global {@code auto-offset-reset: latest}. This group is new, so on first
+     * deployment it has no committed offsets; with {@code latest} it would silently skip every
+     * configuration record produced before its first partition assignment — exactly the records
+     * written during a rollout. Configuration events are idempotent (guarded by revision), so
+     * replaying from the beginning is safe and losing one is not.
+     */
     @KafkaListener(topics = "${lob.netsuite.topics.netsuite-config-upserted}",
-            groupId = "${lob.netsuite.config-consumer-group}")
+            groupId = "${lob.netsuite.config-consumer-group}",
+            properties = {"auto.offset.reset=earliest"})
     public void listen(NetSuiteConfigUpsertedEvent message) {
         log.info("Received NetSuiteConfigUpsertedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);

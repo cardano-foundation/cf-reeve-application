@@ -50,10 +50,11 @@ public class CFConfig {
                                                          SecretCipher secretCipher,
                                                          ObjectMapper objectMapper,
                                                          @Qualifier("netsuiteRestClient") RestClient restClient,
-                                                         @Value("${lob.netsuite.client.recordspercall}") int recordsPerCall
+                                                         @Value("${lob.netsuite.client.recordspercall}") int recordsPerCall,
+                                                         Clock clock
     ) {
         log.info("Creating NetSuite client registry (per-organisation credentials)");
-        return new NetSuiteClientRegistry(netSuiteConfigRepository, secretCipher, objectMapper, restClient, recordsPerCall);
+        return new NetSuiteClientRegistry(netSuiteConfigRepository, secretCipher, objectMapper, restClient, recordsPerCall, clock);
     }
 
     @Bean
