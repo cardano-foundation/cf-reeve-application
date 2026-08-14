@@ -208,6 +208,14 @@ lob:
       validate-ingestion-response-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionResponseEvent
   organisation:
     enabled: ${LOB_ORGANISATION_ENABLED:false}
+    consumer-group: lob-consumer-organisation
+    topics:
+      netsuite-config-applied: organisation.domain.event.netsuite.NetSuiteConfigAppliedEvent
+  security:
+    config-encryption:
+      # Base64 of exactly 32 bytes. Required wherever the organisation or netsuite module runs.
+      # Changing it makes every stored NetSuite configuration undecryptable.
+      key: ${LOB_CONFIG_ENCRYPTION_KEY:}
   blockchain_publisher:
     ipfs:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED:false}
@@ -274,12 +282,12 @@ lob:
       transaction-batch-created-event: accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent
       scheduled-reconcilation-event: accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent
       reconcilation-created-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent
+      netsuite-config-upserted: organisation.domain.event.netsuite.NetSuiteConfigUpsertedEvent
     client:
-      token-url: ${LOB_NETSUITE_CLIENT_TOKEN_URL:<enter value>}
-      private-key-file-path: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:<enter value>}
-      url: ${LOB_NETSUITE_CLIENT_URL:<enter value>}
-      client-id: ${LOB_NETSUITE_CLIENT_CLIENT_ID:<enter value>}
-      certificate-id: ${LOB_NETSUITE_CLIENT_CERTIFICATE_ID:<enter value>}
+      # Credentials are no longer configured here. They are stored per organisation in
+      # netsuite_adapter_organisation_config and administered through
+      # POST/PUT /api/v1/organisations/{orgId}/netsuite-configuration.
+      # Only operator-level tuning remains global.
       recordspercall: ${LOB_NETSUITE_CLIENT_RECORDSPERCALL:10000}
       timeout-seconds: ${LOB_NETSUITE_CLIENT_TIMEOUT_SECONDS:300}
   csv:

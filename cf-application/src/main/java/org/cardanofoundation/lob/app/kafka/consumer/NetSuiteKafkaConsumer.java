@@ -12,6 +12,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extr
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent;
+import org.cardanofoundation.lob.app.organisation.domain.event.netsuite.NetSuiteConfigUpsertedEvent;
 
 @Service
 @Slf4j
@@ -48,6 +49,12 @@ public class NetSuiteKafkaConsumer {
     @KafkaListener(topics = "${lob.netsuite.topics.reconcilation-created-event}", groupId = "${lob.netsuite.consumer-group}")
     public void listen(ReconcilationCreatedEvent message) {
         log.info("Received ReconcilationCreatedEvent from Kafka: {}", message);
+        applicationEventPublisher.publishEvent(message);
+    }
+
+    @KafkaListener(topics = "${lob.netsuite.topics.netsuite-config-upserted}", groupId = "${lob.netsuite.consumer-group}")
+    public void listen(NetSuiteConfigUpsertedEvent message) {
+        log.info("Received NetSuiteConfigUpsertedEvent from Kafka: {}", message);
         applicationEventPublisher.publishEvent(message);
     }
 

@@ -90,6 +90,9 @@ services:
       LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
       LOB_INDEXER_URL: ${LOB_INDEXER_URL:-http://reeve-indexer-api:9000}
       LOB_ORGANISATION_ENABLED: false
+      # Required on every service running the organisation or netsuite module:
+      # the organisation tier encrypts NetSuite keys, the netsuite tier decrypts them.
+      LOB_CONFIG_ENCRYPTION_KEY: ${LOB_CONFIG_ENCRYPTION_KEY:-}
       LOB_BLOCKCHAIN_READER_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
       LOB_NETSUITE_ENABLED: true
@@ -101,11 +104,6 @@ services:
       LOB_BLOCKFROST_URL: http://yaci-cli:8080/api/v1/
       LOB_BLOCKCHAIN_READER_LOB_FOLLOWER_BASE_URL: http://follower-app:9090/api
       SPRING_KAFKA_ENABLED: true
-      LOB_NETSUITE_CLIENT_URL: ${LOB_NETSUITE_CLIENT_URL:-http://api:9000/api/v1/mockresult}
-      LOB_NETSUITE_CLIENT_CERTIFICATE_ID: ${LOB_NETSUITE_CLIENT_CERTIFICATE_ID:-<enter value>}
-      LOB_NETSUITE_CLIENT_CLIENT_ID: ${LOB_NETSUITE_CLIENT_CLIENT_ID:-<enter value>}
-      LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
-      LOB_NETSUITE_CLIENT_TOKEN_URL: ${LOB_NETSUITE_CLIENT_TOKEN_URL:-<enter value>}
       LOB_NETSUITE_CLIENT_RECORDSPERCALL: 1000
       LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_ENABLED:-true}
       LOB_BLOCKCHAIN_PUBLISHER_KERI_URL: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_URL:-http://keria:3901}
@@ -130,7 +128,6 @@ services:
       - "${PUBLISHER_EXPOSE_PORT-9001}:9001"
     volumes:
       - ./:/app/
-      - ${LOCAL_PRIVATE_KEY_PATH:-./certs/dummy.pem}:${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:-/tmp/dummy.pem}
     logging:
       driver: "json-file"
       options:
@@ -158,6 +155,9 @@ services:
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
       LOB_ORGANISATION_ENABLED: true
+      # Required on every service running the organisation or netsuite module:
+      # the organisation tier encrypts NetSuite keys, the netsuite tier decrypts them.
+      LOB_CONFIG_ENCRYPTION_KEY: ${LOB_CONFIG_ENCRYPTION_KEY:-}
       LOB_REPORTING_ENABLED: true
       LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
       LOB_INDEXER_URL: ${LOB_INDEXER_URL:-http://reeve-indexer-api:9000}
