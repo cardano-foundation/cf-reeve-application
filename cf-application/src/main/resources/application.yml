@@ -211,11 +211,6 @@ lob:
     consumer-group: lob-consumer-organisation
     topics:
       netsuite-config-applied: organisation.domain.event.netsuite.NetSuiteConfigAppliedEvent
-  security:
-    config-encryption:
-      # Base64 of exactly 32 bytes. Required wherever the organisation or netsuite module runs.
-      # Changing it makes every stored NetSuite configuration undecryptable.
-      key: ${LOB_CONFIG_ENCRYPTION_KEY:}
   blockchain_publisher:
     ipfs:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED:false}
@@ -276,6 +271,9 @@ lob:
       period:
         source: EXPLICIT
     consumer-group: lob-consumer-netsuite
+    # Separate group: the main netsuite group is shared with CSV-only workers, which cannot
+    # apply a configuration and would consume-and-discard these records.
+    config-consumer-group: lob-consumer-netsuite-config
     topics:
       scheduled-ingestion-event: accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent
       validate-ingestion-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent
@@ -301,6 +299,10 @@ lob:
           enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
       metadata_label: ${LOB_L1_TRANSACTION_METADATA_LABEL:1447}
   security:
+    config-encryption:
+      # Base64 of exactly 32 bytes. Required wherever the organisation or netsuite module runs.
+      # Changing it makes every stored NetSuite configuration undecryptable.
+      key: ${LOB_CONFIG_ENCRYPTION_KEY:}
     clamav:
       enabled: ${LOB_SECURITY_CLAMAV_ENABLED:false}
       host: ${LOB_SECURITY_CLAMAV_HOST:localhost}
