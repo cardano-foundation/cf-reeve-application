@@ -314,7 +314,7 @@ lob:
     config-encryption:
       # Base64 of exactly 32 bytes. Required wherever the organisation or netsuite module runs.
       # Changing it makes every stored NetSuite configuration undecryptable.
-      key: ${LOB_CONFIG_ENCRYPTION_KEY:}
+      key: ${LOB_CONFIG_ENCRYPTION_KEY:z1koba0yG77CXzWsoDOrUpQq3tBgEKWtcbjH4/vCI/k=}
     roles:
       auditor: ${LOB_SECURITY_ROLES_AUDITOR:reeve_auditor}
       manager: ${LOB_SECURITY_ROLES_MANAGER:reeve_account_manager}

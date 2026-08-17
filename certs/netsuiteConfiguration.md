@@ -63,7 +63,8 @@ no longer reads it from disk.
 
 ## Entering the configuration
 
-In the frontend go to **Settings → NetSuite Configuration** (visible to `reeve_admin` only) and
+In the frontend go to **Settings → NetSuite Configuration** (visible to `reeve_admin` and
+`reeve_account_manager`, the same roles that may edit organisation details) and
 supply the base URL, token URL, client ID, certificate ID and the contents of `private.pem`.
 
 Or call the API directly:

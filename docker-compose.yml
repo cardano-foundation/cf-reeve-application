@@ -97,7 +97,7 @@ services:
       LOB_ORGANISATION_ENABLED: false
       # Required on every service running the organisation or netsuite module:
       # the organisation tier encrypts NetSuite keys, the netsuite tier decrypts them.
-      LOB_CONFIG_ENCRYPTION_KEY: ${LOB_CONFIG_ENCRYPTION_KEY:-}
+      LOB_CONFIG_ENCRYPTION_KEY: ${LOB_CONFIG_ENCRYPTION_KEY:-z1koba0yG77CXzWsoDOrUpQq3tBgEKWtcbjH4/vCI/k=}
       LOB_BLOCKCHAIN_READER_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
       LOB_NETSUITE_ENABLED: true
@@ -170,7 +170,7 @@ services:
       LOB_ORGANISATION_ENABLED: true
       # Required on every service running the organisation or netsuite module:
       # the organisation tier encrypts NetSuite keys, the netsuite tier decrypts them.
-      LOB_CONFIG_ENCRYPTION_KEY: ${LOB_CONFIG_ENCRYPTION_KEY:-}
+      LOB_CONFIG_ENCRYPTION_KEY: ${LOB_CONFIG_ENCRYPTION_KEY:-z1koba0yG77CXzWsoDOrUpQq3tBgEKWtcbjH4/vCI/k=}
       LOB_REPORTING_ENABLED: true
       LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
       LOB_INDEXER_URL: ${LOB_INDEXER_URL:-http://reeve-indexer-api:9000}
