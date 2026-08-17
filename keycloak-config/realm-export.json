@@ -126,6 +126,18 @@
     ],
     "clients": [
       {
+        "clientId": "reeve-api",
+        "name": "Reeve API",
+        "enabled": true,
+        "protocol": "openid-connect",
+        "bearerOnly": true,
+        "standardFlowEnabled": false,
+        "implicitFlowEnabled": false,
+        "directAccessGrantsEnabled": false,
+        "serviceAccountsEnabled": false,
+        "publicClient": false
+      },
+      {
         "clientId": "webclient",
         "enabled": true,
         "protocol": "openid-connect",
@@ -194,6 +206,33 @@
             "config": {
               "introspection.token.claim": "true",
               "access.token.claim": "true"
+            }
+          },
+          {
+            "id": "4c3a88be-dff5-4d56-a40c-94ea9013f6ab",
+            "name": "reeve api audience",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-audience-mapper",
+            "consentRequired": false,
+            "config": {
+              "included.client.audience": "reeve-api",
+              "introspection.token.claim": "true",
+              "access.token.claim": "true"
+            }
+          },
+          {
+            "id": "278b4e47-bf90-478a-8064-fc445a7e9e6d",
+            "name": "spring security roles",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-usermodel-realm-role-mapper",
+            "consentRequired": false,
+            "config": {
+              "user.attribute": "foo",
+              "introspection.token.claim": "true",
+              "access.token.claim": "true",
+              "claim.name": "roles",
+              "jsonType.label": "String",
+              "multivalued": "true"
             }
           },
           {

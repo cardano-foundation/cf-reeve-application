@@ -1,5 +1,6 @@
 dependencies {
-    implementation("org.zalando:problem-spring-web-starter:0.29.1")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("io.vavr:vavr:0.10.4")
 
     implementation("org.cardanofoundation:cf-lob-platform-accounting_reporting_core:${property("cfLobPlatformVersion")}")
