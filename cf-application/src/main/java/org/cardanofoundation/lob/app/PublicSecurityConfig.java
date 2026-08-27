@@ -16,6 +16,7 @@ public class PublicSecurityConfig {
                 "/v3/api-docs/**",
                 "/actuator/health",
                 "/actuator/health/liveness",
+                "/api/v1/mockresult",
                 "/actuator/health/readiness");
     }
 }
