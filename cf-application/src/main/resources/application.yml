@@ -147,6 +147,18 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_ISSUER_URI:http://localhost:8080/realms/reeve-master}
+          jwk-set-uri: ${OAUTH2_JWK_SET_URI:http://localhost:8080/realms/reeve-master/protocol/openid-connect/certs}
+          jws-algorithms: ${OAUTH2_JWS_ALGORITHMS:RS256}
+          audiences: ${OAUTH2_AUDIENCE:reeve-api}
+          authorities-claim-name: ${OAUTH2_AUTHORITIES_CLAIM_NAME:roles}
+          authority-prefix: ${OAUTH2_AUTHORITY_PREFIX:ROLE_}
+          principal-claim-name: ${OAUTH2_PRINCIPAL_CLAIM_NAME:preferred_username}
+
   health:
     enabled: ${HEALTH_ENABLED:true}
 
@@ -208,6 +220,9 @@ lob:
       validate-ingestion-response-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionResponseEvent
   organisation:
     enabled: ${LOB_ORGANISATION_ENABLED:false}
+    consumer-group: lob-consumer-organisation
+    topics:
+      netsuite-config-applied: organisation.domain.event.netsuite.NetSuiteConfigAppliedEvent
   blockchain_publisher:
     ipfs:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED:false}
@@ -268,18 +283,21 @@ lob:
       period:
         source: EXPLICIT
     consumer-group: lob-consumer-netsuite
+    # Separate group: the main netsuite group is shared with CSV-only workers, which cannot
+    # apply a configuration and would consume-and-discard these records.
+    config-consumer-group: lob-consumer-netsuite-config
     topics:
       scheduled-ingestion-event: accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent
       validate-ingestion-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent
       transaction-batch-created-event: accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent
       scheduled-reconcilation-event: accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent
       reconcilation-created-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent
+      netsuite-config-upserted: organisation.domain.event.netsuite.NetSuiteConfigUpsertedEvent
     client:
-      token-url: ${LOB_NETSUITE_CLIENT_TOKEN_URL:<enter value>}
-      private-key-file-path: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:<enter value>}
-      url: ${LOB_NETSUITE_CLIENT_URL:<enter value>}
-      client-id: ${LOB_NETSUITE_CLIENT_CLIENT_ID:<enter value>}
-      certificate-id: ${LOB_NETSUITE_CLIENT_CERTIFICATE_ID:<enter value>}
+      # Credentials are no longer configured here. They are stored per organisation in
+      # netsuite_adapter_organisation_config and administered through
+      # POST/PUT /api/v1/organisations/{orgId}/netsuite-configuration.
+      # Only operator-level tuning remains global.
       recordspercall: ${LOB_NETSUITE_CLIENT_RECORDSPERCALL:10000}
       timeout-seconds: ${LOB_NETSUITE_CLIENT_TIMEOUT_SECONDS:300}
   csv:
@@ -293,6 +311,15 @@ lob:
           enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
       metadata_label: ${LOB_L1_TRANSACTION_METADATA_LABEL:1447}
   security:
+    config-encryption:
+      # Base64 of exactly 32 bytes. Required wherever the organisation or netsuite module runs.
+      # Changing it makes every stored NetSuite configuration undecryptable.
+      key: ${LOB_CONFIG_ENCRYPTION_KEY:z1koba0yG77CXzWsoDOrUpQq3tBgEKWtcbjH4/vCI/k=}
+    roles:
+      auditor: ${LOB_SECURITY_ROLES_AUDITOR:reeve_auditor}
+      manager: ${LOB_SECURITY_ROLES_MANAGER:reeve_account_manager}
+      accountant: ${LOB_SECURITY_ROLES_ACCOUNTANT:reeve_accountant}
+      admin: ${LOB_SECURITY_ROLES_ADMIN:reeve_admin}
     clamav:
       enabled: ${LOB_SECURITY_CLAMAV_ENABLED:false}
       host: ${LOB_SECURITY_CLAMAV_HOST:localhost}
@@ -314,28 +341,12 @@ store:
 
 apiPrefix: ${API_PREFIX:/yaci-api}
 
-keycloak:
-  enabled: true
-  base-url: ${KC_BASE_URL:http://localhost:8080}
-  realm: reeve-master
-  public-client: true
-  resource: webclient
-  bearer-only: true
-  principal-attribute: preferred_username
-  token-url: ${keycloak.base-url}/realms/${keycloak.realm}/protocol/openid-connect/token
-  cert-url: ${keycloak.base-url}/realms/${keycloak.realm}/protocol/openid-connect/certs
-  authorization-url: ${keycloak.base-url}/realms/${keycloak.realm}/protocol/openid-connect/auth
-  roles:
-    auditor: reeve_auditor
-    manager: reeve_account_manager
-    accountant: reeve_accountant
-    admin: reeve_admin
 springdoc:
-  api-docs.enabled: true
+  api-docs.enabled: ${SPRINGDOC_API_DOCS_ENABLED:true}
   swagger-ui:
+    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:true}
+    path: ${SPRINGDOC_SWAGGER_UI_PATH:/swagger-ui.html}
     oauth:
       client-id: webclient
       realm: reeve-master
     oauth2-redirect-url: ${OAUTH2_REDIRECT_URL:http://localhost:9000/swagger-ui/oauth2-redirect.html}
-security:
-  csp-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:8080; frame-src http://localhost:8080"
