@@ -1,3 +1,5 @@
+import org.gradle.jvm.tasks.Jar
+
 plugins {
     id("org.springframework.boot") version "3.5.8"
 }
@@ -10,6 +12,7 @@ dependencies {
     //implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
     // Kafka
     if(isKafkaEnabled) {
@@ -31,6 +34,24 @@ dependencies {
     implementation("org.cardanofoundation:cf-lob-platform-blockchain_common:${property("cfLobPlatformVersion")}")
 }
 
+
+val healthcheckMainClass = "org.cardanofoundation.lob.app.healthcheck.Healthcheck"
+
+val healthcheckJar by tasks.registering(Jar::class) {
+    dependsOn(tasks.named("classes"))
+    archiveBaseName.set("healthcheck")
+    archiveVersion.set("")
+    from(sourceSets.main.get().output) {
+        include(healthcheckMainClass.replace('.', '/') + ".class")
+    }
+    manifest {
+        attributes["Main-Class"] = healthcheckMainClass
+    }
+}
+
+tasks.named("assemble") {
+    dependsOn(healthcheckJar)
+}
 
 tasks.bootJar {
     archiveClassifier = "all"
