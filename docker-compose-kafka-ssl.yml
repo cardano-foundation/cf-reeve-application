@@ -132,7 +132,7 @@ services:
       - ${LOCAL_KAFKA_CLIENT_SSL_TRUSTSTORE_PATH:-./certs/ssl/kafka.client.truststore.jks}:/etc/kafka/secrets/kafka.truststore.jks
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.0
+    image: quay.io/keycloak/keycloak:26.7
     command: start-dev --import-realm
     depends_on:
       - postgres

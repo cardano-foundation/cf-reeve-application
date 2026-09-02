@@ -72,7 +72,7 @@ services:
 
   keycloak:
     restart: unless-stopped
-    image: quay.io/keycloak/keycloak:26.0
+    image: quay.io/keycloak/keycloak:26.7
     command: start-dev --import-realm
     depends_on:
       postgres:
