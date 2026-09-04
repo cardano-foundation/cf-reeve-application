@@ -322,7 +322,9 @@ services:
       KAFKA_REPLICA_FETCH_MAX_BYTES: 15728640 # 15MB
 
   kafdrop:
-    image: obsidiandynamics/kafdrop
+    image: obsidiandynamics/kafdrop:4.2.0
+    profiles:
+      - kafdrop
     restart: "no"
     ports:
       - "19000:9000"
