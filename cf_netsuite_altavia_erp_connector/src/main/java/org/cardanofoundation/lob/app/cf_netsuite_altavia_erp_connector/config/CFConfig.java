@@ -7,15 +7,17 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.lob.app.accounting_reporting_core.repository.AccountingCoreTransactionRepository;
 import org.cardanofoundation.lob.app.cf_netsuite_altavia_erp_connector.convertors.*;
-import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.client.NetSuiteClient;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FieldType;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.domain.core.FinancialPeriodSource;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.CodesMappingRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.IngestionBodyRepository;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.IngestionRepository;
+import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.repository.NetSuiteConfigRepository;
+import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteConfigEventHandler;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.*;
 import org.cardanofoundation.lob.app.organisation.util.SystemExtractionParametersFactory;
+import org.cardanofoundation.lob.app.support.crypto.SecretCipher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -38,18 +40,34 @@ public class CFConfig {
 
     private final static String NETSUITE_CONNECTOR_ID = "fEU237r9rqAPEGEFY1yr";
 
+    /**
+     * Per-organisation NetSuite clients, built lazily from the configuration stored in
+     * netsuite_adapter_organisation_config. Replaces the former single application-wide
+     * NetSuiteClient built from LOB_NETSUITE_CLIENT_* environment variables.
+     */
     @Bean
-    public NetSuiteClient netSuiteClient(ObjectMapper objectMapper,
-                                         @Qualifier("netsuiteRestClient") RestClient restClient,
-                                         @Value("${lob.netsuite.client.url}") String url,
-                                         @Value("${lob.netsuite.client.token-url}") String tokenUrl,
-                                         @Value("${lob.netsuite.client.private-key-file-path}") String privateKeyFilePath,
-                                         @Value("${lob.netsuite.client.client-id}") String clientId,
-                                         @Value("${lob.netsuite.client.certificate-id}") String certificateId,
-                                         @Value("${lob.netsuite.client.recordspercall}") int recordsPerCall
+    public NetSuiteClientRegistry netSuiteClientRegistry(NetSuiteConfigRepository netSuiteConfigRepository,
+                                                         SecretCipher secretCipher,
+                                                         ObjectMapper objectMapper,
+                                                         @Qualifier("netsuiteRestClient") RestClient restClient,
+                                                         @Value("${lob.netsuite.client.recordspercall}") int recordsPerCall,
+                                                         Clock clock
     ) {
-        log.info("Creating NetSuite client with url: {}", url);
-        return new NetSuiteClient(objectMapper, restClient, url, tokenUrl, privateKeyFilePath, certificateId, clientId, recordsPerCall);
+        log.info("Creating NetSuite client registry (per-organisation credentials)");
+        return new NetSuiteClientRegistry(netSuiteConfigRepository, secretCipher, objectMapper, restClient, recordsPerCall, clock);
+    }
+
+    @Bean
+    public NetSuiteConfigService netSuiteConfigService(NetSuiteConfigRepository netSuiteConfigRepository,
+                                                       NetSuiteClientRegistry netSuiteClientRegistry,
+                                                       Clock clock) {
+        return new NetSuiteConfigService(netSuiteConfigRepository, netSuiteClientRegistry, clock);
+    }
+
+    @Bean
+    public NetSuiteConfigEventHandler netSuiteConfigEventHandler(NetSuiteConfigService netSuiteConfigService,
+                                                                 ApplicationEventPublisher applicationEventPublisher) {
+        return new NetSuiteConfigEventHandler(netSuiteConfigService, applicationEventPublisher);
     }
 
     @Bean
@@ -79,7 +97,7 @@ public class CFConfig {
 
     @Bean
     public NetSuiteExtractionService netSuiteExtractionService(IngestionRepository ingestionRepository,
-                                                               NetSuiteClient netSuiteClient,
+                                                               NetSuiteClientRegistry netSuiteClientRegistry,
                                                                TransactionConverter transactionConverter,
                                                                ApplicationEventPublisher eventPublisher,
                                                                SystemExtractionParametersFactory extractionParametersFactory,
@@ -90,7 +108,7 @@ public class CFConfig {
     ) {
         return new NetSuiteExtractionService(
                 ingestionRepository,
-                netSuiteClient,
+                netSuiteClientRegistry,
                 transactionConverter,
                 eventPublisher,
                 extractionParametersFactory,
@@ -104,7 +122,7 @@ public class CFConfig {
 
     @Bean
     public NetSuiteReconcilationService netsuiteReconcilationService(IngestionRepository ingestionRepository,
-                                                                     NetSuiteClient netSuiteClient,
+                                                                     NetSuiteClientRegistry netSuiteClientRegistry,
                                                                      TransactionConverter transactionConverter,
                                                                      ApplicationEventPublisher eventPublisher,
                                                                      ExtractionParametersFilteringService parametersFilteringService,
@@ -115,7 +133,7 @@ public class CFConfig {
     ) {
         return new NetSuiteReconcilationService(
                 ingestionRepository,
-                netSuiteClient,
+                netSuiteClientRegistry,
                 transactionConverter,
                 parametersFilteringService,
                 netSuiteParser,

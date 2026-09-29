@@ -16,7 +16,7 @@ subprojects {
     apply(plugin = "info.solidsoft.pitest")
 
     group = "de.cardanofoundation"
-    version = "1.7.0"
+    version = "1.8.0"
 
     sourceSets {
         named("main") {
@@ -46,6 +46,7 @@ subprojects {
             // Only search this repository for the specific dependency
             content {
                 includeModule("org.cardanofoundation", "signify")
+                includeModule("id.veridian", "signify")
             }
         }
         // ipfs client
@@ -75,7 +76,7 @@ subprojects {
     extra["springCloudVersion"] = "2025.0.1"
     extra["jMoleculesVersion"] = "2023.1.0"
     extra["testcontainers.version"] = "1.21.4"
-    extra["cfLobPlatformVersion"] = "1.7.0-PR666-12d7d42-GHRUN30624203850"
+    extra["cfLobPlatformVersion"] = "1.8.0"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")

@@ -26,5 +26,6 @@ Given(/^Manager user wants to login into Reeve with wrong credentials$/, async (
     password = faker.string.sample()
 });
 Then(/^system should reject access$/, async () => {
-    expect(loginResponse.status()).toEqual(HttpStatusCodes.Unauthorized)
+    expect(loginResponse.status()).toEqual(HttpStatusCodes.BadRequest)
+    expect((await loginResponse.json()).error).toEqual("invalid_grant")
 });

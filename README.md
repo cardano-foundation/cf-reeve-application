@@ -30,6 +30,16 @@ This will start the following services:
 - `keycloak`: The identity provider used by the cf-lob-platform
 - `kafka`: The message broker used by the cf-lob-platform
 
+## Multi-replica configuration
+
+Use [`.envMultiReplica`](.envMultiReplica) to run multiple API and publisher replicas locally:
+
+```bash
+docker compose --env-file .envMultiReplica --profile frontend --profile traefik up -d
+```
+
+Empty exposed-port values let Docker Compose allocate a port per replica; access the application through Traefik at [http://reeve.localhost](http://reeve.localhost).
+
 ## How to develop
 Start the application stack as described above. Then you can stop containers you are currently working on.
 An example you are working on the `cf-lob-platform` repository and the `accounting_reporting_core` module:
@@ -46,8 +56,20 @@ export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
 ./gradlew clean bootRun # to start the api container
 ```
 
-### Things to tweak if needed
-- Keycloak can be disabled by setting `KEYCLOAK_ENABLED=false` in the `.env` file or in the docker-compose file 
-- To test the api swagger set the following two environment variables in the `.env` file or in the docker-compose file:
-  - `KEYCLOAK_ENABLED=false`
-  - `KC_BASE_URL=http://localhost:8080`
+### OAuth2 resource server
+
+The backend uses Spring Boot's OAuth2 resource-server configuration. Docker Compose provides local defaults for:
+
+- `OAUTH2_ISSUER_URI` (`http://localhost:8080/realms/reeve-master`)
+- `OAUTH2_JWK_SET_URI` (the Keycloak URL reachable from the backend container)
+- `OAUTH2_AUDIENCE` (`reeve-api`)
+- `OAUTH2_AUTHORITIES_CLAIM_NAME` (`roles`)
+- `OAUTH2_AUTHORITY_PREFIX` (`ROLE_`)
+- `OAUTH2_PRINCIPAL_CLAIM_NAME` (`preferred_username`)
+
+Override these variables when using a different OpenID Connect provider or externally hosted realm. The local realm emits the `reeve-api` audience and a flat `roles` claim so Spring Boot can perform issuer, audience, and authority validation without a custom JWT decoder.
+
+Keycloak's startup import skips realms that already exist. Apply the non-destructive, idempotent migrations to an existing `reeve-master` realm while Keycloak is running:
+
+- Declarative `keycloak-config-cli` configuration and manual command: [`keycloak-migrations/keycloak-config-cli/`](keycloak-migrations/keycloak-config-cli/)
+
