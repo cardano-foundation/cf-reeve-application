@@ -146,8 +146,8 @@ services:
       # the agent cannot ask whether a credential is still issued, and verification fails closed.
       # Only read when LOB_KERI_ATTESTATION_ENABLED=true.
       LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID: ${LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID:-EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
-      LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID: ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:-EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1}
-      LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:-https://keria-ext.dev.idw-sandboxes.cf-deployments.org/oobi/EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1/agent/EFjYeBVmKSZ0eJXkNZqLAlPPiDaRds3V2iH_COkxIs4x}
+      LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID: ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:-EOcGYMIaKnF4_cpkcWhZVzoHcS0EauVQeWdSipHAfTrd}
+      LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:-https://keria-ext.dev.ecosyseng.cf-deployments.org/oobi/EOcGYMIaKnF4_cpkcWhZVzoHcS0EauVQeWdSipHAfTrd/agent/EFrACXBZnest_9ldYyGcnKdele6tW50Xot6JEzvslUAU}
       # vLEI stays unset: its GLEIF root AID is deployment-specific and there is no safe default. The
       # entry is commented out in application.yml; enabling it with a blank root refuses to start.
       LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID: ${LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID:-EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao}
@@ -225,8 +225,8 @@ services:
       # the agent cannot ask whether a credential is still issued, and verification fails closed.
       # Only read when LOB_KERI_ATTESTATION_ENABLED=true.
       LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID: ${LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID:-EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
-      LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID: ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:-EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1}
-      LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:-https://keria-ext.dev.idw-sandboxes.cf-deployments.org/oobi/EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1/agent/EFjYeBVmKSZ0eJXkNZqLAlPPiDaRds3V2iH_COkxIs4x}
+      LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID: ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:-EOcGYMIaKnF4_cpkcWhZVzoHcS0EauVQeWdSipHAfTrd}
+      LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:-https://keria-ext.dev.ecosyseng.cf-deployments.org/oobi/EOcGYMIaKnF4_cpkcWhZVzoHcS0EauVQeWdSipHAfTrd/agent/EFrACXBZnest_9ldYyGcnKdele6tW50Xot6JEzvslUAU}
       # vLEI stays unset: its GLEIF root AID is deployment-specific and there is no safe default. The
       # entry is commented out in application.yml; enabling it with a blank root refuses to start.
       LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID: ${LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID:-EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao}

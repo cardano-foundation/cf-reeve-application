@@ -304,7 +304,7 @@ lob:
       # warns. schema-base-url is NOT deprecated and is still read.
       schema-saids: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:}
       trusted-root-aids: ${LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS:}
-      schema-base-url: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:https://cred-issuance.demo.idw-sandboxes.cf-deployments.org/oobi}
+      schema-base-url: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:https://cred-issuance.dev.ecosyseng.cf-deployments.org/oobi}
     # Which credential schemas this deployment accepts, and who may issue them. Adding one is a
     # configuration change, not a code change. CredentialSchemaRegistry VALIDATES THIS AT STARTUP and
     # refuses to boot on a problem, so a deployment cannot come up looking healthy while trusting anyone.
@@ -326,8 +326,8 @@ lob:
         trust-model: STANDALONE
         trusted-roots: []
         trusted-issuers:
-          - ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1}
-        oobis: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:https://keria-ext.dev.idw-sandboxes.cf-deployments.org/oobi/EEYYK6bKLenwD0ZvydD9q5FDY85IKFJtOdmEcdx2izl1/agent/EFjYeBVmKSZ0eJXkNZqLAlPPiDaRds3V2iH_COkxIs4x}
+          - ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:EOcGYMIaKnF4_cpkcWhZVzoHcS0EauVQeWdSipHAfTrd}
+        oobis: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:https://keria-ext.dev.ecosyseng.cf-deployments.org/oobi/EOcGYMIaKnF4_cpkcWhZVzoHcS0EauVQeWdSipHAfTrd/agent/EFrACXBZnest_9ldYyGcnKdele6tW50Xot6JEzvslUAU}
     # - said: ${LOB_KERI_ATTESTATION_VLEI_SCHEMA_SAID:EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao}
     #   name: "vLEI Legal Entity"
     #   trust-model: CHAINED
