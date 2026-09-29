@@ -133,14 +133,14 @@ services:
       LOB_DOCUMENT_VAULT_DISPATCH_INITIAL_DELAY: ${LOB_DOCUMENT_VAULT_DISPATCH_INITIAL_DELAY:-PT10S}
       LOB_DOCUMENT_VAULT_DISPATCH_BATCH_SIZE: ${LOB_DOCUMENT_VAULT_DISPATCH_BATCH_SIZE:-50}
       LOB_KERI_ATTESTATION_ENABLED: ${LOB_KERI_ATTESTATION_ENABLED:-false}
-      LOB_KERI_ATTESTATION_KERIA_URL: ${LOB_KERI_ATTESTATION_KERIA_URL:-https://keria.dev.idw-sandboxes.cf-deployments.org}
-      LOB_KERI_ATTESTATION_KERIA_BOOTURL: ${LOB_KERI_ATTESTATION_KERIA_BOOTURL:-https://keria-boot.dev.idw-sandboxes.cf-deployments.org}
+      LOB_KERI_ATTESTATION_KERIA_URL: ${LOB_KERI_ATTESTATION_KERIA_URL:-https://keria.dev.ecosyseng.cf-deployments.org}
+      LOB_KERI_ATTESTATION_KERIA_BOOTURL: ${LOB_KERI_ATTESTATION_KERIA_BOOTURL:-https://keria-boot.dev.ecosyseng.cf-deployments.org}
       LOB_KERI_ATTESTATION_KERIA_BRAN: ${LOB_KERI_ATTESTATION_KERIA_BRAN:-0A98gEaYge5XlagRM9okY}
       LOB_KERI_ATTESTATION_IDENTIFIER_NAME: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:-reeve-attestation}
       # Deprecated for one release, superseded by the per-schema entries below. Unset by default.
       LOB_KERI_ATTESTATION_SCHEMA_SAIDS: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:-}
       LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS: ${LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS:-}
-      LOB_KERI_ATTESTATION_SCHEMA_BASE_URL: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:-https://cred-issuance.demo.idw-sandboxes.cf-deployments.org/oobi}
+      LOB_KERI_ATTESTATION_SCHEMA_BASE_URL: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:-https://cred-issuance.dev.ecosyseng.cf-deployments.org/oobi}
       # Accepted credential schemas and their trust anchors. Foundation Employee is configured live —
       # its issuer AID and the OOBI that lets the agent reach that issuer's registry. Without the OOBI
       # the agent cannot ask whether a credential is still issued, and verification fails closed.
