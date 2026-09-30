@@ -46,6 +46,7 @@ subprojects {
             // Only search this repository for the specific dependency
             content {
                 includeModule("org.cardanofoundation", "signify")
+                includeModule("id.veridian", "signify")
             }
         }
         // ipfs client
@@ -75,7 +76,7 @@ subprojects {
     extra["springCloudVersion"] = "2025.0.1"
     extra["jMoleculesVersion"] = "2023.1.0"
     extra["testcontainers.version"] = "1.21.4"
-    extra["cfLobPlatformVersion"] = "1.8.0-PR694-5d1a97b-GHRUN35871206710"
+    extra["cfLobPlatformVersion"] = "1.8.0-PR666-7c9b3b9-GHRUN36538883553"
 
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.32")
