@@ -296,14 +296,10 @@ lob:
       # Veridian wallet pairings (inbound IPEX notifications stop arriving). Mirrors the stable default
       # the blockchain-publisher KERI identifier uses above. Override per-deployment via the env var.
       bran: ${LOB_KERI_ATTESTATION_KERIA_BRAN:0A98gEaYge5XlagRM9okY}
-    identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation-2}
+    identifier-name: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:reeve-attestation}
     credential-policy:
-      # DEPRECATED for one release, superseded by credential-schemas below — which records the trust
-      # model PER schema instead of assuming one for all of them. Left unset on purpose: if
-      # credential-schemas is absent and these are set, the registry synthesises CHAINED entries and
-      # warns. schema-base-url is NOT deprecated and is still read.
-      schema-saids: ${LOB_KERI_ATTESTATION_SCHEMA_SAIDS:}
-      trusted-root-aids: ${LOB_KERI_ATTESTATION_TRUSTED_ROOT_AIDS:}
+      # Only schema-base-url is still read here; the deprecated schema-saids / trusted-root-aids are
+      # superseded by credential-schemas below.
       schema-base-url: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:https://cred-issuance.dev.ecosyseng.cf-deployments.org/oobi}
     # Which credential schemas this deployment accepts, and who may issue them. Adding one is a
     # configuration change, not a code change. CredentialSchemaRegistry VALIDATES THIS AT STARTUP and
@@ -335,32 +331,6 @@ lob:
     #     - ${LOB_KERI_ATTESTATION_VLEI_GLEIF_ROOT_AID:}
     #   trusted-issuers: []
     #   oobis: ${LOB_KERI_ATTESTATION_VLEI_OOBIS:}
-    ceremony-ttl: ${LOB_KERI_ATTESTATION_CEREMONY_TTL:PT1H}
-    freeze-max-age: ${LOB_KERI_ATTESTATION_FREEZE_MAX_AGE:PT24H}
-    # How long a wallet step may wait, and how often the agent's notification queue is polled while
-    # waiting for the wallet's reply.
-    remotesign-timeout: ${LOB_KERI_ATTESTATION_REMOTESIGN_TIMEOUT:PT3M}
-    notification-poll-interval: ${LOB_KERI_ATTESTATION_NOTIFICATION_POLL_INTERVAL:PT1.5S}
-    # Retry cadence for reading a wallet's KEL key state after an ATTEST request.
-    key-state-retry-initial-delay: ${LOB_KERI_ATTESTATION_KEY_STATE_RETRY_INITIAL_DELAY:PT2S}
-    key-state-retry-interval: ${LOB_KERI_ATTESTATION_KEY_STATE_RETRY_INTERVAL:PT3S}
-    limits:
-      max-active-ceremonies-per-user: ${LOB_KERI_ATTESTATION_LIMITS_MAX_ACTIVE_CEREMONIES_PER_USER:3}
-      step-cooldown: ${LOB_KERI_ATTESTATION_LIMITS_STEP_COOLDOWN:PT10S}
-    # CeremonyCleanupJob: how often it sweeps, how long a ceremony may sit at AUTH_BEGIN_SUBMITTED,
-    # and the grace added on top of a waiting step's own timeout before it is failed as stale.
-    cleanup:
-      fixed_delay: ${LOB_KERI_ATTESTATION_CLEANUP_FIXED_DELAY:PT10M}
-    # KeriNotificationCleanupJob prunes the agent's notification queue. Notifications are otherwise
-    # deleted only on a successful step, so failed attempts accumulate and every wait pages a longer
-    # queue. Deletion is by AGE only: retention must stay comfortably above ceremony-ttl, since that
-    # is what makes it provable that nothing is still waiting on a pruned notification.
-    notification-retention: ${LOB_KERI_ATTESTATION_NOTIFICATION_RETENTION:PT24H}
-    notification-cleanup:
-      fixed_delay: ${LOB_KERI_ATTESTATION_NOTIFICATION_CLEANUP_FIXED_DELAY:PT1H}
-      initial_delay: ${LOB_KERI_ATTESTATION_NOTIFICATION_CLEANUP_INITIAL_DELAY:PT5M}
-    auth-begin-rollback-window: ${LOB_KERI_ATTESTATION_AUTH_BEGIN_ROLLBACK_WINDOW:PT30M}
-    step-timeout-grace: ${LOB_KERI_ATTESTATION_STEP_TIMEOUT_GRACE:PT2M}
   transaction:
     ipfs:
       enabled: ${LOB_TRANSACTION_IPFS_ENABLED:false}
