@@ -186,7 +186,7 @@ services:
       LOB_KERI_ATTESTATION_KERIA_BOOTURL: ${LOB_KERI_ATTESTATION_KERIA_BOOTURL:-https://keria-boot.dev.ecosyseng.cf-deployments.org}
       LOB_KERI_ATTESTATION_KERIA_BRAN: ${LOB_KERI_ATTESTATION_KERIA_BRAN:-0A98gEaYge5XlagRM9okY}
       LOB_KERI_ATTESTATION_IDENTIFIER_NAME: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:-reeve-attestation}
-      LOB_KERI_ATTESTATION_SCHEMA_BASE_URL: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:-https://cred-issuance.demo.idw-sandboxes.cf-deployments.org/oobi}
+      LOB_KERI_ATTESTATION_SCHEMA_BASE_URL: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:-https://cred-issuance.dev.ecosyseng.cf-deployments.org/oobi}
       # Accepted credential schemas and their trust anchors. Foundation Employee is configured live —
       # its issuer AID and the OOBI that lets the agent reach that issuer's registry. Without the OOBI
       # the agent cannot ask whether a credential is still issued, and verification fails closed.
