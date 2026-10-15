@@ -363,7 +363,7 @@ services:
 
   yaci-cli:
     restart: unless-stopped
-    image: bloxbean/yaci-cli:0.10.6
+    image: bloxbean/yaci-cli:0.12.0
     networks:
       - lob
     env_file:
@@ -375,7 +375,7 @@ services:
     ports:
       - "${YACI_DEVNET_EXPOSED_PORT:-3001}:3001"
       - "8081:8080"
-    entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
+    entrypoint: [ "/app/yaci-cli", "create-node", "--start" ]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.yaci-bf-http.entrypoints=web"
