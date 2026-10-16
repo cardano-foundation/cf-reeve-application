@@ -220,6 +220,9 @@ lob:
       validate-ingestion-response-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionResponseEvent
   organisation:
     enabled: ${LOB_ORGANISATION_ENABLED:false}
+    consumer-group: lob-consumer-organisation
+    topics:
+      netsuite-config-applied: organisation.domain.event.netsuite.NetSuiteConfigAppliedEvent
   blockchain_publisher:
     ipfs:
       enabled: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED:false}
@@ -280,18 +283,21 @@ lob:
       period:
         source: EXPLICIT
     consumer-group: lob-consumer-netsuite
+    # Separate group: the main netsuite group is shared with CSV-only workers, which cannot
+    # apply a configuration and would consume-and-discard these records.
+    config-consumer-group: lob-consumer-netsuite-config
     topics:
       scheduled-ingestion-event: accounting_reporting_core.domain.event.extraction.ScheduledIngestionEvent
       validate-ingestion-event: accounting_reporting_core.domain.event.extraction.ValidateIngestionEvent
       transaction-batch-created-event: accounting_reporting_core.domain.event.extraction.TransactionBatchCreatedEvent
       scheduled-reconcilation-event: accounting_reporting_core.domain.event.reconcilation.ScheduledReconcilationEvent
       reconcilation-created-event: accounting_reporting_core.domain.event.reconcilation.ReconcilationCreatedEvent
+      netsuite-config-upserted: organisation.domain.event.netsuite.NetSuiteConfigUpsertedEvent
     client:
-      token-url: ${LOB_NETSUITE_CLIENT_TOKEN_URL:<enter value>}
-      private-key-file-path: ${LOB_NETSUITE_CLIENT_PRIVATE_KEY_FILE_PATH:<enter value>}
-      url: ${LOB_NETSUITE_CLIENT_URL:<enter value>}
-      client-id: ${LOB_NETSUITE_CLIENT_CLIENT_ID:<enter value>}
-      certificate-id: ${LOB_NETSUITE_CLIENT_CERTIFICATE_ID:<enter value>}
+      # Credentials are no longer configured here. They are stored per organisation in
+      # netsuite_adapter_organisation_config and administered through
+      # POST/PUT /api/v1/organisations/{orgId}/netsuite-configuration.
+      # Only operator-level tuning remains global.
       recordspercall: ${LOB_NETSUITE_CLIENT_RECORDSPERCALL:10000}
       timeout-seconds: ${LOB_NETSUITE_CLIENT_TIMEOUT_SECONDS:300}
   csv:
@@ -305,6 +311,10 @@ lob:
           enable: ${LOB_L1_TRANSACTION_METADATA_VALIDATION_ENABLED:true}
       metadata_label: ${LOB_L1_TRANSACTION_METADATA_LABEL:1447}
   security:
+    config-encryption:
+      # Base64 of exactly 32 bytes. Required wherever the organisation or netsuite module runs.
+      # Changing it makes every stored NetSuite configuration undecryptable.
+      key: ${LOB_CONFIG_ENCRYPTION_KEY:z1koba0yG77CXzWsoDOrUpQq3tBgEKWtcbjH4/vCI/k=}
     roles:
       auditor: ${LOB_SECURITY_ROLES_AUDITOR:reeve_auditor}
       manager: ${LOB_SECURITY_ROLES_MANAGER:reeve_account_manager}
