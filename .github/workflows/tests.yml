@@ -29,6 +29,16 @@ jobs:
           ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
           path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
 
+      - name: Generate throwaway config-encryption key pair
+        # The compose files require LOB_CONFIG_ENCRYPTION_PUBLIC_KEY / _PRIVATE_KEY (no committed
+        # default). Every docker compose command in this job resolves them, including the
+        # 'down -v' cleanup, so they go to GITHUB_ENV for the whole job.
+        run: |
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /tmp/ci-config-encryption.pem
+          echo "LOB_CONFIG_ENCRYPTION_PRIVATE_KEY=$(openssl pkey -in /tmp/ci-config-encryption.pem -outform DER | openssl base64 -A)" >> "$GITHUB_ENV"
+          echo "LOB_CONFIG_ENCRYPTION_PUBLIC_KEY=$(openssl pkey -in /tmp/ci-config-encryption.pem -pubout -outform DER | openssl base64 -A)" >> "$GITHUB_ENV"
+          rm /tmp/ci-config-encryption.pem
+
       - name: Set up Docker Compose
         run: |
           docker compose build --build-arg GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
@@ -67,6 +77,16 @@ jobs:
           ref: ${{ env.REEVE_DB_MIGRATIONS_REF }}
           ssh-key: ${{ secrets.CF_REEVE_DB_MIGRATIONS_SSH_DEPLOY_KEY }}
           path: ${{ env.REEVE_DB_MIGRATIONS_PATH }}
+
+      - name: Generate throwaway config-encryption key pair
+        # The compose files require LOB_CONFIG_ENCRYPTION_PUBLIC_KEY / _PRIVATE_KEY (no committed
+        # default). Every docker compose command in this job resolves them, including the
+        # 'down -v' cleanup, so they go to GITHUB_ENV for the whole job.
+        run: |
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /tmp/ci-config-encryption.pem
+          echo "LOB_CONFIG_ENCRYPTION_PRIVATE_KEY=$(openssl pkey -in /tmp/ci-config-encryption.pem -outform DER | openssl base64 -A)" >> "$GITHUB_ENV"
+          echo "LOB_CONFIG_ENCRYPTION_PUBLIC_KEY=$(openssl pkey -in /tmp/ci-config-encryption.pem -pubout -outform DER | openssl base64 -A)" >> "$GITHUB_ENV"
+          rm /tmp/ci-config-encryption.pem
 
       - name: Set up Docker Compose
         run: |

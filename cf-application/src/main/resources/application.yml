@@ -312,9 +312,12 @@ lob:
       metadata_label: ${LOB_L1_TRANSACTION_METADATA_LABEL:1447}
   security:
     config-encryption:
-      # Base64 of exactly 32 bytes. Required wherever the organisation or netsuite module runs.
-      # Changing it makes every stored NetSuite configuration undecryptable.
-      key: ${LOB_CONFIG_ENCRYPTION_KEY:z1koba0yG77CXzWsoDOrUpQq3tBgEKWtcbjH4/vCI/k=}
+      # RSA key pair, Base64 of DER. The api (organisation module) needs only the PUBLIC key and
+      # can encrypt but never decrypt; the publisher (netsuite module) needs only the PRIVATE key.
+      # Generation and rollout: certs/netsuiteConfiguration.md. No defaults on purpose — the
+      # affected module fails fast at startup when its key is missing.
+      public-key: ${LOB_CONFIG_ENCRYPTION_PUBLIC_KEY:}
+      private-key: ${LOB_CONFIG_ENCRYPTION_PRIVATE_KEY:}
     roles:
       auditor: ${LOB_SECURITY_ROLES_AUDITOR:reeve_auditor}
       manager: ${LOB_SECURITY_ROLES_MANAGER:reeve_account_manager}
