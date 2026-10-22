@@ -10,6 +10,7 @@ import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reco
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationFailedEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationFinalisationEvent;
 import org.cardanofoundation.lob.app.accounting_reporting_core.domain.event.reconcilation.ReconcilationStartedEvent;
+import org.cardanofoundation.lob.app.organisation.domain.event.netsuite.NetSuiteConfigAppliedEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
@@ -40,6 +41,18 @@ public class NetsuiteKafkaPublisher {
     private String transactionBatchStartedEventTopic;
     @Value("${lob.accounting_reporting_core.topics.validate-ingestion-response-event}")
     private String validateIngestionResponseEventTopic;
+    @Value("${lob.organisation.topics.netsuite-config-applied}")
+    private String netSuiteConfigAppliedEventTopic;
+
+    /**
+     * Reports the store-and-verify outcome back to the organisation tier. Keyed by
+     * organisationId so a tenant's acknowledgements stay ordered on one partition.
+     */
+    @EventListener
+    public void handleNetSuiteConfigAppliedEvent(NetSuiteConfigAppliedEvent event) {
+        log.info("Sending NetSuiteConfigAppliedEvent to Kafka: {}", event);
+        kafkaTemplate.send(netSuiteConfigAppliedEventTopic, event.getOrganisationId(), event);
+    }
 
     @EventListener
     public void handleValidateIngestionResponseEvent(ValidateIngestionResponseEvent event) {
