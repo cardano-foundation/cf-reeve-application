@@ -232,7 +232,7 @@ services:
 
   keycloak:
     restart: unless-stopped
-    image: quay.io/keycloak/keycloak:26.7
+    image: quay.io/keycloak/keycloak:26.8
     command: start-dev --import-realm
     depends_on:
       postgres:
@@ -298,7 +298,7 @@ services:
 
   kafka:
     restart: unless-stopped
-    image: apache/kafka:4.1.1
+    image: apache/kafka:4.3.2
     healthcheck:
       test: /opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server kafka:9092 || exit 1
       interval: 1s
