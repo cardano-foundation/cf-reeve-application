@@ -8,29 +8,45 @@ been removed from the compose files.
 Two things still belong to the operator rather than the tenant:
 
 - `LOB_NETSUITE_CLIENT_RECORDSPERCALL` and `LOB_NETSUITE_CLIENT_TIMEOUT_SECONDS` — request tuning.
-- `LOB_CONFIG_ENCRYPTION_KEY` — see below. **Required.**
+- `LOB_CONFIG_ENCRYPTION_PUBLIC_KEY` / `LOB_CONFIG_ENCRYPTION_PRIVATE_KEY` — see below. **Required.**
 
-## Encryption key
+## Encryption keys
 
-Every stored private key is encrypted with AES-256-GCM before it leaves the organisation module, so
-the database, the Kafka topic and any backup contain ciphertext only.
+Every stored private key is envelope-encrypted (RSA-4096-OAEP wrapping a per-value AES-256-GCM key)
+before it leaves the organisation module, so the database, the Kafka topic and any backup contain
+ciphertext only. The scheme is asymmetric on purpose:
 
-Generate the key once per environment:
+- the `api` service holds only the **public** key — it can encrypt a newly entered credential but
+  can never read one back, not even its own writes in the shared database;
+- the `publisher` service holds only the **private** key and is the sole place decryption happens.
+
+Generate the pair once per environment:
 
 ```bash
-openssl rand -base64 32
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out config-encryption.pem
+
+# value for LOB_CONFIG_ENCRYPTION_PRIVATE_KEY (publisher only):
+openssl pkey -in config-encryption.pem -outform DER | openssl base64 -A
+
+# value for LOB_CONFIG_ENCRYPTION_PUBLIC_KEY (api only):
+openssl pkey -in config-encryption.pem -pubout -outform DER | openssl base64 -A
 ```
 
-Set it as `LOB_CONFIG_ENCRYPTION_KEY` on **every service running the organisation or the netsuite
-module** — in the default compose topology that means both `api` (which encrypts) and `publisher`
-(which decrypts). The value must be identical on all of them.
+(`openssl base64 -A` keeps the value on one line; a line-wrapped value also works, the application
+strips whitespace.) A deployment running both modules in one service (the lightweight compose
+topology) sets **both** variables; at startup such a service round-trips a canary value and refuses
+to boot if the two keys are not a pair.
 
-The application refuses to start if the key is missing or does not decode to exactly 32 bytes. That
-is deliberate: a service that started without it would fail later, at ingestion time, instead of at
-boot.
+Each module refuses to start if its key is missing, is not valid Base64/DER, is not RSA, or is
+shorter than 3072 bits. That is deliberate: a service that started without it would fail later, at
+ingestion time, instead of at boot.
 
-> **Changing this key makes every stored NetSuite configuration permanently undecryptable.** There
-> is no rotation tooling. If it must change, every organisation has to re-enter its credentials.
+Treat the **public key as restricted configuration** too: anyone holding it can produce ciphertexts
+the publisher will accept. Do not publish it; it simply doesn't need to be on the publisher.
+
+> **Changing the key pair makes every stored NetSuite configuration permanently undecryptable.**
+> There is no rotation tooling. If it must change, every organisation has to re-enter its
+> credentials.
 
 ## How to set up oAuth2
 
