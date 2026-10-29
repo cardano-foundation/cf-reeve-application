@@ -75,6 +75,7 @@ subprojects {
     extra["springCloudVersion"] = "2025.0.1"
     extra["jMoleculesVersion"] = "2023.1.0"
     extra["testcontainers.version"] = "1.21.4"
+    // TODO need to be updated accordingly after merge
     extra["cfLobPlatformVersion"] = "1.8.0-PR735-f1a2424-GHRUN39761616165"
 
     dependencies {
