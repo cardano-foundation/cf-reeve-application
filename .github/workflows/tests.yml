@@ -42,7 +42,7 @@ jobs:
       - name: Set up Docker Compose
         run: |
           docker compose build --build-arg GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
-          docker compose up -d --wait --quiet-pull
+          docker compose up -d --wait --quiet-pull --env-file postman/envTests
 
           # debugging
           docker compose logs api --tail 500
