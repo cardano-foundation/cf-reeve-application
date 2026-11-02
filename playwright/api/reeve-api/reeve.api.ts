@@ -188,11 +188,13 @@ export function reeveApi(request: APIRequestContext) {
             logApiResponse
         )
     }
-    const batchById = async (authToken: string, batchId: string) => {
+    const batchById = async (organizationId: string, authToken: string, batchId: string) => {
         return BaseApi.postData(
             request,
             Endpoints.Reeve.Batches.BatchById.replace(":batchId",batchId),
-            {},
+            {
+                organisationId: organizationId
+            },
             {
                 Accept: "*/*",
                 "Accept-Encoding": "gzip, deflate, br",
@@ -206,11 +208,13 @@ export function reeveApi(request: APIRequestContext) {
             logApiResponse
         )
     }
-    const reprocessBatch = async (authToken: string, batchId: string) => {
+    const reprocessBatch = async (organizationId: string, authToken: string, batchId: string) => {
         return BaseApi.getData(
             request,
             Endpoints.Reeve.Batches.Reprocess.replace(":batchId", batchId),
-            {},
+            {
+                organisationId: organizationId
+            },
             {
                 Accept: "application/json",
                 "Accept-Encoding": "gzip, deflate, br",
@@ -250,11 +254,13 @@ export function reeveApi(request: APIRequestContext) {
             logApiResponse
         )
     }
-    const getTransactionById = async (authToken: string, transactionId: string) => {
+    const getTransactionById = async (organizationId: string, authToken: string, transactionId: string) => {
         return BaseApi.getData(
             request,
             Endpoints.Reeve.Transactions.transactionById.replace(":txId", transactionId),
-            {},
+            {
+                organisationId: organizationId
+            },
             {
                 Accept: "*/*",
                 "Accept-Encoding": "gzip, deflate, br",

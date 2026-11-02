@@ -17,7 +17,7 @@ import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.event_handle.NetSuiteEventHandler;
 import org.cardanofoundation.lob.app.netsuite_altavia_erp_adapter.service.internal.*;
 import org.cardanofoundation.lob.app.organisation.util.SystemExtractionParametersFactory;
-import org.cardanofoundation.lob.app.support.crypto.SecretCipher;
+import org.cardanofoundation.lob.app.support.crypto.SecretDecryptor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -47,14 +47,14 @@ public class CFConfig {
      */
     @Bean
     public NetSuiteClientRegistry netSuiteClientRegistry(NetSuiteConfigRepository netSuiteConfigRepository,
-                                                         SecretCipher secretCipher,
+                                                         SecretDecryptor secretDecryptor,
                                                          ObjectMapper objectMapper,
                                                          @Qualifier("netsuiteRestClient") RestClient restClient,
                                                          @Value("${lob.netsuite.client.recordspercall}") int recordsPerCall,
                                                          Clock clock
     ) {
         log.info("Creating NetSuite client registry (per-organisation credentials)");
-        return new NetSuiteClientRegistry(netSuiteConfigRepository, secretCipher, objectMapper, restClient, recordsPerCall, clock);
+        return new NetSuiteClientRegistry(netSuiteConfigRepository, secretDecryptor, objectMapper, restClient, recordsPerCall, clock);
     }
 
     @Bean
