@@ -59,6 +59,9 @@ jobs:
 
   playwright:
     runs-on: ubuntu-latest
+    env:
+      # Every docker compose command in this job resolves the required config-encryption keys.
+      COMPOSE_ENV_FILES: postman/envTests
 
     steps:
       - name: Checkout code
