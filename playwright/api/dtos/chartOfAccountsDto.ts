@@ -47,7 +47,32 @@ export interface AccountCodeAndNamePair {
     accountName: string;
 }
 
+export interface TransactionItemAccounts {
+    debitAccount: AccountCodeAndNamePair;
+    creditAccount: AccountCodeAndNamePair;
+}
+
 export interface DebitAndCreditAccounts {
     debitAccounts: AccountCodeAndNamePair[];
     creditAccounts: AccountCodeAndNamePair[];
+}
+
+export interface ChartOfAccountErrorDto {
+    type: string;
+    title: string;
+    status: number;
+    detail: string;
+}
+
+export interface ChartSubTypeDto {
+    id: number;
+    organisationId: string;
+    name: string;
+}
+
+export interface ChartTypeDto {
+    id: number;
+    organisationId: string;
+    name: string;
+    subType: ChartSubTypeDto[];
 }
