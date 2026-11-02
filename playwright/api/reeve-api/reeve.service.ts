@@ -57,7 +57,7 @@ export async function reeveService(request: APIRequestContext) {
     }
 
     const getBatchById = async (authToken: string, batchId: string) => {
-        return await reeveApi(request).batchById(authToken, batchId)
+        return await reeveApi(request).batchById(organizationId, authToken, batchId)
     }
 
     const findBatch = async (
@@ -104,7 +104,7 @@ export async function reeveService(request: APIRequestContext) {
     const getNewBatchByDocumentNumber = async (authToken: string, status: string, documentNumber: string) =>
         pollForNewBatch(authToken, status, batch => batch.transactions[0].items[0].documentNum == documentNumber);
     const reprocessBatch = async (authToken: string, batchId: string) => {
-        return await reeveApi(request).reprocessBatch(authToken, batchId);
+        return await reeveApi(request).reprocessBatch(organizationId, authToken, batchId);
     }
 
     const approveTransaction = async (authToken: string, batchDetails: BatchResponse) => {
@@ -118,7 +118,7 @@ export async function reeveService(request: APIRequestContext) {
         return await reeveApi(request).rejectTransaction(authToken, transactionToReject)
     }
     const getTransactionById = async (authToken: string, transactionId: string) => {
-        return await reeveApi(request).getTransactionById(authToken, transactionId)
+        return await reeveApi(request).getTransactionById(organizationId, authToken, transactionId)
     }
     return {
         loginToReeve,
