@@ -17,6 +17,9 @@ env:
 jobs:
   postman:
     runs-on: ubuntu-latest
+    env:
+      # Every docker compose command in this job resolves the required config-encryption keys.
+      COMPOSE_ENV_FILES: postman/envTests
 
     steps:
       - name: Checkout code
@@ -32,7 +35,7 @@ jobs:
       - name: Set up Docker Compose
         run: |
           docker compose build --build-arg GITLAB_MAVEN_REGISTRY_URL="${GITLAB_MAVEN_REGISTRY_URL}"
-          docker compose --env-file postman/envTests up -d --wait --quiet-pull 
+          docker compose up -d --wait --quiet-pull
 
           # debugging
           docker compose logs api --tail 500
