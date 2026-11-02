@@ -25,8 +25,8 @@ Generate the pair once per environment:
 ```bash
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out config-encryption.pem
 
-# value for LOB_CONFIG_ENCRYPTION_PRIVATE_KEY (publisher only):
-openssl pkey -in config-encryption.pem -outform DER | openssl base64 -A
+# value for LOB_CONFIG_ENCRYPTION_PRIVATE_KEY (publisher only), must be PKCS#8:
+openssl pkcs8 -topk8 -nocrypt -in config-encryption.pem -outform DER | openssl base64 -A
 
 # value for LOB_CONFIG_ENCRYPTION_PUBLIC_KEY (api only):
 openssl pkey -in config-encryption.pem -pubout -outform DER | openssl base64 -A
