@@ -44,6 +44,14 @@ export async function reeveService(request: APIRequestContext) {
         return await reeveApi(request).updateChartOfAccounts(organizationId, authToken, chartOfAccount);
     }
 
+    const createChartOfAccounts = async (authToken: string, chartOfAccount: UpdateChartOfAccountsDto) => {
+        return await reeveApi(request).createChartOfAccounts(organizationId, authToken, chartOfAccount);
+    }
+
+    const getChartTypes = async (authToken: string) => {
+        return await reeveApi(request).chartTypes(organizationId, authToken);
+    }
+
     const validateTransactionCsvFile = async (authToken: string, transactionFile: string) => {
         return await reeveApi(request).validateTransactionCsvFile(organizationId, authToken, transactionFile);
     }
@@ -129,6 +137,8 @@ export async function reeveService(request: APIRequestContext) {
         getCostCenters,
         updateCostCenter,
         updateChartOfAccounts,
+        createChartOfAccounts,
+        getChartTypes,
         validateTransactionCsvFile,
         importTransactionCsvFile,
         getBatchesByStatus,

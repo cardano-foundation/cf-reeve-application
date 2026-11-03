@@ -1,3 +1,4 @@
+import {faker} from "@faker-js/faker";
 import {saveCSV} from "../utils/csvFileGenerator";
 import {TxCSVHeader} from "./transactionCSVProperties";
 import {log} from "../utils/logger";
@@ -11,7 +12,8 @@ import {EventCodesDto, ReferenceCodePair} from "../api/dtos/eventCodesDto";
 import {
     AccountCodeAndNamePair,
     AccountRefCodePair,
-    DebitAndCreditAccounts
+    DebitAndCreditAccounts,
+    TransactionItemAccounts
 } from "../api/dtos/chartOfAccountsDto";
 import {TransactionPendingInvalidStatus} from "./transaction-pending-invalid-status";
 
@@ -19,6 +21,14 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
     const createCSVTransactionReadyToApprove = async (transactionDataToImport: TransactionItemCsvDto[]) => {
         const columns = await getTransactionCSVHeaders();
         const rows = await createValidTransactionData(transactionDataToImport)
+        const fileName = "Approve-" + Math.random().toString(36).substring(2, 2 + 8) + ".csv";
+        return await saveCSV(columns, rows, fileName);
+    }
+    const createCSVTransactionReadyToApproveWithDebitAccount = async (transactionDataToImport: TransactionItemCsvDto[],
+                                                                      debitAccount: AccountRefCodePair) => {
+        const columns = await getTransactionCSVHeaders();
+        const debitAndCreditAccounts = await getCreditAccountsForDebitAccount(debitAccount);
+        const rows = await createValidTransactionData(transactionDataToImport, debitAndCreditAccounts);
         const fileName = "Approve-" + Math.random().toString(36).substring(2, 2 + 8) + ".csv";
         return await saveCSV(columns, rows, fileName);
     }
@@ -34,9 +44,10 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
         const amountForTxItem = (Math.floor(Math.random() * 100000) + 1).toString();
         const eventCodes = await getEventCodes();
         const debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
-        const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem, true, debitAndCreditAccounts);
+        const [debitItemAccounts, creditItemAccounts] = getTransactionItemsAccounts(debitAndCreditAccounts);
+        const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem, true, debitItemAccounts);
         debitTxItem.TxCostCenter = costCenterCode;
-        const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem, false, debitAndCreditAccounts);
+        const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem, false, creditItemAccounts);
         transactionDataToImport.push(debitTxItem);
         transactionDataToImport.push(creditTxItem);
         const rows: string[][] = [];
@@ -62,16 +73,21 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
      * txType organization transaction type requested through API
      * debitTxItem accounts are requested through API in base of organization event codes
      * creditTxItem accounts are requested through API in base of organization event codes
+     * debitAndCreditAccounts optional accounts to use instead of the requested ones
      */
-    const createValidTransactionData = async (transactionDataToImport: TransactionItemCsvDto[]) => {
+    const createValidTransactionData = async (transactionDataToImport: TransactionItemCsvDto[],
+                                              debitAndCreditAccounts?: DebitAndCreditAccounts) => {
         const transactionCommonData = await getTransactionCommonData()
         const amountForTxItem = (Math.floor(Math.random() * 100000) + 1).toString();
-        const eventCodes = await getEventCodes();
-        const debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
+        if (!debitAndCreditAccounts) {
+            const eventCodes = await getEventCodes();
+            debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
+        }
+        const [debitItemAccounts, creditItemAccounts] = getTransactionItemsAccounts(debitAndCreditAccounts);
         const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
-            true, debitAndCreditAccounts);
+            true, debitItemAccounts);
         const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
-            false, debitAndCreditAccounts);
+            false, creditItemAccounts);
         transactionDataToImport.push(debitTxItem);
         transactionDataToImport.push(creditTxItem);
         const rows: string[][] = [];
@@ -84,11 +100,12 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
         const amountForTxItem = (Math.floor(Math.random() * 100000) + 1).toString();
         const eventCodes = await getEventCodes();
         const debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
+        const [debitItemAccounts, creditItemAccounts] = getTransactionItemsAccounts(debitAndCreditAccounts);
         const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
-            true, debitAndCreditAccounts)
+            true, debitItemAccounts)
         await setPendingReason(debitTxItem, pendingReason);
         const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
-            false, debitAndCreditAccounts);
+            false, creditItemAccounts);
         transactionDataToImport.push(debitTxItem);
         transactionDataToImport.push(creditTxItem);
         const rows: string[][] = [];
@@ -101,10 +118,11 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
         const amountForTxItem = (Math.floor(Math.random() * 100000) + 1).toString();
         const eventCodes = await getEventCodes();
         const debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
+        const [debitItemAccounts, creditItemAccounts] = getTransactionItemsAccounts(debitAndCreditAccounts);
         const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
-            true, debitAndCreditAccounts)
+            true, debitItemAccounts)
         const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
-            false, debitAndCreditAccounts);
+            false, creditItemAccounts);
         await setInvalidReason(debitTxItem, creditTxItem,invalidReason);
         transactionDataToImport.push(debitTxItem);
         transactionDataToImport.push(creditTxItem);
@@ -173,31 +191,83 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
 
     /**
      * Get two lists of accounts that has an event code
-     * for the combination of debit and credit accounts
+     * for the combination of debit and credit accounts.
+     * The lists must allow at least two different debit/credit pairs,
+     * one for each transaction item
      * @param eventCodes array of organization's event codes
      *
      */
     const getDebitAndCreditAccounts = async (eventCodes: ReferenceCodePair[]) => {
         const chartOfAccounts: AccountRefCodePair[] = await getChartOfAccounts();
-        let debitAccounts: AccountCodeAndNamePair[] | null;
-        let creditAccounts: AccountCodeAndNamePair[] | null;
         for (const eventCode of eventCodes) {
             if (eventCode.debitReferenceCode !== eventCode.creditReferenceCode) {
-                debitAccounts = chartOfAccounts
-                    .filter(account => account.referenceCode === eventCode.debitReferenceCode)
-                    .map(account => ({ accountCode: account.accountCode, accountName: account.accountName }));
-                if (debitAccounts.length >= 1) {
-                    creditAccounts = chartOfAccounts
-                        .filter(account => account.referenceCode === eventCode.creditReferenceCode
-                            && account.accountCode !== debitAccounts[0].accountCode)
-                        .map(account => ({ accountCode: account.accountCode, accountName: account.accountName }));
+                const debitAndCreditAccounts: DebitAndCreditAccounts = {
+                    debitAccounts: getAccountsByReferenceCode(chartOfAccounts, eventCode.debitReferenceCode),
+                    creditAccounts: getAccountsByReferenceCode(chartOfAccounts, eventCode.creditReferenceCode)
                 }
-                if (creditAccounts != null) break;
+                if (getAccountPairs(debitAndCreditAccounts).length >= 2) return debitAndCreditAccounts;
             }
         }
-        if (!creditAccounts) throw new Error("No valid debit/credit account pair found in event codes");
+        throw new Error("No event code with at least two different debit/credit account pairs found");
+    }
+
+    const getAccountsByReferenceCode = (chartOfAccounts: AccountRefCodePair[], referenceCode: string) =>
+        chartOfAccounts
+            .filter(account => account.referenceCode === referenceCode)
+            .map(account => ({ accountCode: account.accountCode, accountName: account.accountName }));
+
+    /**
+     * All the unique debit/credit combinations where the debit account is different from the credit account
+     */
+    const getAccountPairs = (debitAndCreditAccounts: DebitAndCreditAccounts) => {
+        const accountPairs = new Map<string, TransactionItemAccounts>();
+        for (const debitAccount of debitAndCreditAccounts.debitAccounts) {
+            for (const creditAccount of debitAndCreditAccounts.creditAccounts) {
+                if (debitAccount.accountCode !== creditAccount.accountCode) {
+                    accountPairs.set(debitAccount.accountCode + "|" + creditAccount.accountCode,
+                        { debitAccount: debitAccount, creditAccount: creditAccount });
+                }
+            }
+        }
+        return [...accountPairs.values()]
+    }
+
+    /**
+     * Pick two different debit/credit pairs, one for each transaction item.
+     * The backend merges the items with the same pair and drops the items with the same
+     * debit and credit account, so both cases would end in a one item transaction
+     * @return [debit item accounts, credit item accounts]
+     */
+    const getTransactionItemsAccounts = (debitAndCreditAccounts: DebitAndCreditAccounts) => {
+        const accountPairs = getAccountPairs(debitAndCreditAccounts);
+        if (accountPairs.length < 2) throw new Error("At least two different debit/credit account pairs are needed, found: "
+            + JSON.stringify(accountPairs));
+        return faker.helpers.arrayElements(accountPairs, 2)
+    }
+
+    /**
+     * Use the given account as the only debit account and get the credit accounts
+     * of an event code that has the debit account reference code
+     * @param debitAccount account to be used in the debit side of the transaction
+     */
+    const getCreditAccountsForDebitAccount = async (debitAccount: AccountRefCodePair) => {
+        const eventCodes = await getEventCodes();
+        const chartOfAccounts: AccountRefCodePair[] = await getChartOfAccounts();
+        let creditAccounts: AccountCodeAndNamePair[] = [];
+        for (const eventCode of eventCodes) {
+            if (eventCode.debitReferenceCode === debitAccount.referenceCode
+                && eventCode.debitReferenceCode !== eventCode.creditReferenceCode) {
+                creditAccounts = chartOfAccounts
+                    .filter(account => account.referenceCode === eventCode.creditReferenceCode
+                        && account.accountCode !== debitAccount.accountCode)
+                    .map(account => ({ accountCode: account.accountCode, accountName: account.accountName }));
+                if (creditAccounts.length >= 2) break;
+            }
+        }
+        if (creditAccounts.length < 2) throw new Error("At least two credit accounts are needed for the reference code "
+            + debitAccount.referenceCode + " of the debit account " + debitAccount.accountCode);
         const debitAndCreditAccounts: DebitAndCreditAccounts = {
-            debitAccounts: debitAccounts,
+            debitAccounts: [{ accountCode: debitAccount.accountCode, accountName: debitAccount.accountName }],
             creditAccounts: creditAccounts
         }
         return debitAndCreditAccounts
@@ -216,9 +286,7 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
     }
 
     const createTransactionItem = async (transactionItemCommonData: TransactionItemCsvDto, amount: string,
-                                         isDebit: boolean, debitAndCreditAccounts: DebitAndCreditAccounts) => {
-        let randomIndexDebit = Math.floor(Math.random() * debitAndCreditAccounts.debitAccounts.length)
-        let randomIndexCredit = Math.floor(Math.random() * debitAndCreditAccounts.creditAccounts.length)
+                                         isDebit: boolean, itemAccounts: TransactionItemAccounts) => {
         const transactionItem: TransactionItemCsvDto = {
             TxNumber: transactionItemCommonData.TxNumber,
             TxDate: transactionItemCommonData.TxDate,
@@ -248,15 +316,16 @@ export async function transactionsBuilder(request: APIRequestContext, authToken:
             transactionItem.AmountLcyCredit = amount;
             transactionItem.AmountFcyCredit = amount;
         }
-        transactionItem.DebitCode = debitAndCreditAccounts.debitAccounts[randomIndexDebit].accountCode;
-        transactionItem.DebitName = debitAndCreditAccounts.debitAccounts[randomIndexDebit].accountName;
-        transactionItem.CreditCode = debitAndCreditAccounts.creditAccounts[randomIndexCredit].accountCode;
-        transactionItem.CreditName = debitAndCreditAccounts.creditAccounts[randomIndexCredit].accountName;
+        transactionItem.DebitCode = itemAccounts.debitAccount.accountCode;
+        transactionItem.DebitName = itemAccounts.debitAccount.accountName;
+        transactionItem.CreditCode = itemAccounts.creditAccount.accountCode;
+        transactionItem.CreditName = itemAccounts.creditAccount.accountName;
         return transactionItem
     }
 
     return {
         createReadyToApproveTransaction: createCSVTransactionReadyToApprove,
+        createReadyToApproveTransactionWithDebitAccount: createCSVTransactionReadyToApproveWithDebitAccount,
         createCSVTransactionPending,
         createCSVTransactionPendingByCostCenter,
         createCSVTransactionInvalid

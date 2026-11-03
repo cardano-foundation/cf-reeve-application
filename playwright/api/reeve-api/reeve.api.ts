@@ -122,6 +122,34 @@ export function reeveApi(request: APIRequestContext) {
         )
     }
 
+    const createChartOfAccounts = async (organizationId: string, authToken: string, chartOfAccount: UpdateChartOfAccountsDto) => {
+        return BaseApi.postData(
+            request,
+            Endpoints.Reeve.Organization.ChartOfAccounts.replace(":orgId", organizationId),
+            chartOfAccount,
+            {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: authToken
+            },
+            {},
+            logApiResponse
+        )
+    }
+
+    const chartTypes = async (organizationId: string, authToken: string) => {
+        return BaseApi.getData(
+            request,
+            Endpoints.Reeve.Organization.ChartTypes.replace(":orgId", organizationId),
+            {},
+            {
+                Accept: "application/json",
+                Authorization: authToken
+            },
+            logApiResponse
+        )
+    }
+
     const validateTransactionCsvFile = async (organizationId: string, authToken: string, transactionFilePath: string) => {
         return BaseApi.postFormData(
             request,
@@ -278,6 +306,8 @@ export function reeveApi(request: APIRequestContext) {
         getCostCenters,
         updateCostCenter,
         updateChartOfAccounts,
+        createChartOfAccounts,
+        chartTypes,
         validateTransactionCsvFile,
         importTransactionCsvFile,
         batchesByStatus,
