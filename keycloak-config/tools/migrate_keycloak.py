@@ -7,7 +7,9 @@ Dry run by default: prints what it would do. Pass --apply to make the changes. S
 2. module roles and presets: realm roles with their composites (missing ones created, missing composites added)
 3. the `reeve-backend` service-account client (created if missing) with the realm-management roles it needs
 4. /platform/administrators (create organisations) and, for every organisation (found in users' legacy `organisations` attribute, under /organisations, or --organisation):
-   /organisations/<orgId> with the organisation role and the subgroup layout (existing groups and attributes kept)
+   /organisations/<name> with the organisationId attribute, the organisation role and the subgroup layout (existing groups and attributes kept)
+   Groups still named after the id are renamed to their displayName and get the organisationId attribute; without a
+   displayName they keep the id as name until someone renames them in the admin console (that's safe, the id is in the attribute)
    (members of role subgroups of earlier layouts, e.g. /organisations/<orgId>/reeve_accountant, are moved to the matching preset)
    The legacy preset subgroups are only added to organisations with legacy users or legacy subgroups, or kept where they already exist
 5. every user with the legacy `organisations` attribute and/or a legacy reeve_* role is put in the matching preset
@@ -22,12 +24,15 @@ import argparse
 import getpass
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
 import urllib.request
 
-from reeve_model import BACKEND_ADMIN_ROLES, BACKEND_CLIENT, LEGACY_ROLES, OBSOLETE_GROUPS, ORGANISATIONS_GROUP, PERMISSIONS_CLIENT, Catalogue
+from reeve_model import BACKEND_ADMIN_ROLES, BACKEND_CLIENT, LEGACY_ROLES, OBSOLETE_GROUPS, ORGANISATION_ID_ATTRIBUTE, ORGANISATIONS_GROUP, PERMISSIONS_CLIENT, Catalogue
+
+ORGANISATION_ID = re.compile(r"[0-9a-f]{64}")
 
 
 class Admin:
@@ -78,6 +83,20 @@ def created_id(result):
     if result.get("id"):
         return result["id"]
     return result["location"].rsplit("/", 1)[-1] if result.get("location") else None
+
+
+def organisation_id_of(group):
+    """The organisation id of an organisation group: its attribute, or its name for groups of the earlier layout."""
+    values = (group.get("attributes") or {}).get(ORGANISATION_ID_ATTRIBUTE)
+    return values[0] if values else group["name"]
+
+
+def readable_name(group, organisation, taken):
+    """The name an organisation group should have: its displayName (from the earlier layout) or its current name."""
+    display_name = ((group.get("attributes") or {}).get("displayName") or [group["name"]])[0].strip().replace("/", "-")
+    if display_name != group["name"] and display_name in taken:
+        return f"{display_name} ({organisation[:8]})"
+    return display_name
 
 
 def ensure_client(admin, client_id, representation):
@@ -154,9 +173,12 @@ def main():
     root = admin.get(f"/group-by-path/{ORGANISATIONS_GROUP}")
     if root is None:
         root = {"id": created_id(admin.write("POST", "/groups", {"name": ORGANISATIONS_GROUP}, f"create /{ORGANISATIONS_GROUP}")) or "<root>"}
-    existing_orgs = {group["name"]: group for group in (admin.get(f"/groups/{root['id']}/children", max=10000) or [])} if not root["id"].startswith("<") else {}
+    organisation_groups = (admin.get(f"/groups/{root['id']}/children", max=10000, briefRepresentation="false") or []) if not root["id"].startswith("<") else []
+    existing_orgs = {organisation_id_of(group): group for group in organisation_groups}
+    taken_names = {group["name"] for group in organisation_groups}
     organisations.update(existing_orgs)
-    group_ids = {}  # "/organisations/<org>/<relative path>" -> id
+    organisation_paths = {}  # organisation id -> "/organisations/<name>"
+    group_ids = {}  # "/organisations/<name>/<relative path>" -> id
 
     def ensure_children(parent_id, parent_path, layout):
         children = {group["name"]: group for group in (admin.get(f"/groups/{parent_id}/children", max=10000) or [])} if not parent_id.startswith("<") else {}
@@ -187,14 +209,31 @@ def main():
                    for child in admin.get(f"/groups/{org_id}/children", max=10000) or [])
 
     for organisation in sorted(organisations):
-        path = f"/{ORGANISATIONS_GROUP}/{organisation}"
         if organisation in existing_orgs:
-            org_id = existing_orgs[organisation]["id"]
+            group = existing_orgs[organisation]
+            org_id = group["id"]
+            attributes = dict(group.get("attributes") or {})
+            has_id = ORGANISATION_ID_ATTRIBUTE in attributes
+            if not has_id and not ORGANISATION_ID.fullmatch(organisation):
+                print(f"  WARNING: /{ORGANISATIONS_GROUP}/{group['name']} has no {ORGANISATION_ID_ATTRIBUTE} attribute and its name isn't an organisation id; "
+                      f"it gives no access until the attribute is set by hand")
+                continue
+            name = readable_name(group, organisation, taken_names)
+            path = f"/{ORGANISATIONS_GROUP}/{name}"
+            if not has_id or "displayName" in attributes or name != group["name"]:
+                attributes[ORGANISATION_ID_ATTRIBUTE] = [organisation]
+                attributes.pop("displayName", None)
+                taken_names.add(name)
+                admin.write("PUT", f"/groups/{org_id}", {"name": name, "attributes": attributes},
+                            f"rename /{ORGANISATIONS_GROUP}/{group['name']} to {path}, {ORGANISATION_ID_ATTRIBUTE}={organisation[:12]}…")
             mapped = {r["name"] for r in admin.get(f"/groups/{org_id}/role-mappings/realm") or []}
         else:
+            path = f"/{ORGANISATIONS_GROUP}/{organisation}"
             org_id = created_id(admin.write("POST", f"/groups/{root['id']}/children",
-                                            {"name": organisation, "attributes": {"modules": catalogue.modules}}, f"create group {path} (all modules)")) or f"<{path}>"
+                                            {"name": organisation, "attributes": {ORGANISATION_ID_ATTRIBUTE: [organisation], "modules": catalogue.modules}},
+                                            f"create group {path} (all modules; rename it in the admin console to a readable name)")) or f"<{path}>"
             mapped = set()
+        organisation_paths[organisation] = path
         if catalogue.organisation_role not in mapped:
             admin.write("POST", f"/groups/{org_id}/role-mappings/realm", [admin.get(f"/roles/{q(catalogue.organisation_role)}")] if args.apply else [],
                         f"map {catalogue.organisation_role} on {path}")
@@ -247,7 +286,7 @@ def main():
         for organisation in user_organisations:
             for role in legacy:
                 preset = catalogue.preset_for_legacy_role(role["name"])
-                path = f"/{ORGANISATIONS_GROUP}/{organisation}/{catalogue.preset_group(preset)}"
+                path = f"{organisation_paths[organisation]}/{catalogue.preset_group(preset)}"
                 if path not in current:
                     admin.write("PUT", f"/users/{user['id']}/groups/{group_ids.get(path, '<new>')}", None, f"add {user['username']} to {path}")
         if legacy:

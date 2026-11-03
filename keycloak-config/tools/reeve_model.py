@@ -5,7 +5,7 @@ into the Keycloak model used by the seed (sync_permissions.py) and the migration
 - permissions: client roles of the `reeve-api` client, named resource:action
 - module roles: realm roles composed of permissions (catalogue "roles")
 - presets: realm roles composed of module roles + a few permissions (catalogue "presets")
-- per organisation: group /organisations/<orgId> (attribute modules, organisationRole mapped on it) with the
+- per organisation: group /organisations/<name> (attributes organisationId and modules, organisationRole mapped on it) with the
   subgroup layout of the catalogue ("groups": relative path -> realm role)
 - legacy preset subgroups (catalogue "legacyGroups"): only in organisations seeded or migrated with them, not in new ones
 """
@@ -16,6 +16,8 @@ PERMISSIONS_CLIENT = "reeve-api"
 BACKEND_CLIENT = "reeve-backend"
 BACKEND_ADMIN_ROLES = ["view-users", "query-groups", "view-clients", "view-realm", "manage-users"]
 ORGANISATIONS_GROUP = "organisations"
+# An organisation group is named after the organisation; the id the backend uses is in this attribute
+ORGANISATION_ID_ATTRIBUTE = "organisationId"
 LEGACY_ROLES = ["reeve_account_manager", "reeve_accountant", "reeve_auditor", "reeve_admin"]
 # Subgroups of an earlier layout (viewer roles now sit on the module folder groups, erp moved under setup); removed when empty
 OBSOLETE_GROUPS = ["transactions/viewer", "reporting/viewer", "funding/viewer", "transactions/erp"]

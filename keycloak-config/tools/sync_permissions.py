@@ -19,15 +19,15 @@ import json
 import sys
 from pathlib import Path
 
-from reeve_model import BACKEND_ADMIN_ROLES, BACKEND_CLIENT, LEGACY_ROLES, ORGANISATIONS_GROUP, PERMISSIONS_CLIENT, Catalogue
+from reeve_model import BACKEND_ADMIN_ROLES, BACKEND_CLIENT, LEGACY_ROLES, ORGANISATION_ID_ATTRIBUTE, ORGANISATIONS_GROUP, PERMISSIONS_CLIENT, Catalogue
 
 # Local/demo secret only; set a real one in Keycloak for any shared environment
 BACKEND_CLIENT_SECRET = "reeve-backend-dev-secret"
 
-CF_ORG = "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"
+CF_ORG = "Cardano Foundation"
 
 ORGANISATIONS = [
-    {"id": CF_ORG, "displayName": "Cardano Foundation", "modules": ["transactions", "reporting", "funding"]},
+    {"id": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94", "name": CF_ORG, "modules": ["transactions", "reporting", "funding"]},
 ]
 
 # username -> (organisation, relative group path) memberships; users not listed here keep their groups.
@@ -139,8 +139,8 @@ def main(catalogue_path, realm_path):
         "attributes": {},
         "realmRoles": [],
         "subGroups": [
-            group_representation(organisation["id"], catalogue.organisation_role, tree,
-                                 {"displayName": [organisation["displayName"]], "modules": organisation["modules"]})
+            group_representation(organisation["name"], catalogue.organisation_role, tree,
+                                 {ORGANISATION_ID_ATTRIBUTE: [organisation["id"]], "modules": organisation["modules"]})
             for organisation in ORGANISATIONS
         ],
     }]
