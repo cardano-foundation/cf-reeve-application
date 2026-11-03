@@ -315,15 +315,21 @@ lob:
       # Base64 of exactly 32 bytes. Required wherever the organisation or netsuite module runs.
       # Changing it makes every stored NetSuite configuration undecryptable.
       key: ${LOB_CONFIG_ENCRYPTION_KEY}
-    roles:
-      auditor: ${LOB_SECURITY_ROLES_AUDITOR:reeve_auditor}
-      manager: ${LOB_SECURITY_ROLES_MANAGER:reeve_account_manager}
-      accountant: ${LOB_SECURITY_ROLES_ACCOUNTANT:reeve_accountant}
-      admin: ${LOB_SECURITY_ROLES_ADMIN:reeve_admin}
     clamav:
       enabled: ${LOB_SECURITY_CLAMAV_ENABLED:false}
       host: ${LOB_SECURITY_CLAMAV_HOST:localhost}
       port: ${LOB_SECURITY_CLAMAV_PORT:3310}
+  keycloak:
+    # Organisation memberships, roles per organisation and modules are read from Keycloak
+    # (groups /organisations/<orgId>/...) through the Admin API with this service-account client. The secret is required.
+    admin:
+      url: ${LOB_KEYCLOAK_ADMIN_URL:http://localhost:8080}
+      realm: ${LOB_KEYCLOAK_ADMIN_REALM:reeve-master}
+      client-id: ${LOB_KEYCLOAK_ADMIN_CLIENT_ID:reeve-backend}
+      client-secret: ${LOB_KEYCLOAK_ADMIN_CLIENT_SECRET:}
+      permissions-client-id: ${LOB_KEYCLOAK_ADMIN_PERMISSIONS_CLIENT_ID:reeve-api}
+      organisations-group: ${LOB_KEYCLOAK_ADMIN_ORGANISATIONS_GROUP:organisations}
+      cache-ttl: ${LOB_KEYCLOAK_ADMIN_CACHE_TTL:PT30S}
 
 # yaci store
 store:
