@@ -29,7 +29,7 @@ class PermissionCatalogueYamlTest {
     void bindsTheModulesAndPermissions() {
         assertThat(catalogue.isConfigured()).isTrue();
         assertThat(catalogue.getModules()).containsExactly("transactions", "reporting", "funding", "document_vault");
-        assertThat(catalogue.getPermissions()).hasSize(77).contains("document_vault:publish", "document_vault:delete_any", "transactions:view", "reports:publish", "organisations:create");
+        assertThat(catalogue.getPermissions()).hasSize(78).contains("document_vault:publish", "document_vault:delete_any", "transactions:view", "reports:publish", "organisations:create");
         assertThat(catalogue.getPlatformGroup()).isEqualTo("platform");
     }
 
@@ -64,7 +64,7 @@ class PermissionCatalogueYamlTest {
                 .withUserConfiguration(PermissionCatalogue.class)
                 .run(context -> {
                     assertThat(context).hasNotFailed();
-                    assertThat(context.getBean(PermissionCatalogue.class).getPermissions()).hasSize(71);
+                    assertThat(context.getBean(PermissionCatalogue.class).getPermissions()).hasSize(78);
                 });
     }
 

@@ -200,6 +200,7 @@ lob:
       document_must_be_present: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DOCUMENT_MUST_BE_PRESENT:true}
       check_if_all_tx_items_are_erased: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_CHECK_IF_ALL_TX_ITEMS_ARE_ERASED:true}
       net_off_credit_debit: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_NET_OFF_CREDIT_DEBIT:true}
+      line_item_debit_credit_accounts_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_LINE_ITEM_DEBIT_CREDIT_ACCOUNTS_CHECK:true}
     jobs:
       unstuck:
         enabled: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_ENABLED:true}
@@ -440,7 +441,7 @@ lob:
         actions: [view, create, edit, delete]
       - name: report_types
         modules: [reporting]
-        actions: [edit]
+        actions: [view, edit]
       - name: project_management
         modules: [funding]
         actions: [view, create, edit, delete, publish, create_project]
@@ -525,7 +526,7 @@ lob:
         permissions: ['data_explorer:dashboard_create', 'data_explorer:dashboard_edit']
       - name: reports_viewer
         description: 'Reporting module: reports, templates, chart of accounts and accounting regimes, read-only.'
-        permissions: ['reports:view', 'report_templates:view', 'chart_of_accounts:view', 'accounting_regimes:view']
+        permissions: ['reports:view', 'report_templates:view', 'report_types:view', 'chart_of_accounts:view', 'accounting_regimes:view']
       - name: reports_setup
         description: 'Reporting module: configure accounting regimes and report type field mappings.'
         permissions: ['accounting_regimes:create', 'accounting_regimes:edit', 'report_types:edit']

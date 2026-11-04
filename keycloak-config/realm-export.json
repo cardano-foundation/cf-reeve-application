@@ -793,6 +793,7 @@
               "reeve-api": [
                 "reports:view",
                 "report_templates:view",
+                "report_types:view",
                 "chart_of_accounts:view",
                 "accounting_regimes:view"
               ]
@@ -1179,6 +1180,12 @@
           {
             "name": "report_templates:delete",
             "description": "delete on report_templates (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "report_types:view",
+            "description": "view on report_types (reporting)",
             "composite": false,
             "clientRole": true
           },
