@@ -50,7 +50,10 @@ class ApplicationYamlTest {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> configEncryption = (Map<String, Object>) security.get("config-encryption");
-        assertThat(configEncryption).containsKey("key");
+        assertThat(configEncryption)
+                .as("asymmetric since 1.8: public key on the api tier, private key on the publisher")
+                .containsKeys("public-key", "private-key")
+                .doesNotContainKey("key");
     }
 
     @Test

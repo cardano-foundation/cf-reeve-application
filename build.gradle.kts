@@ -46,6 +46,7 @@ subprojects {
             // Only search this repository for the specific dependency
             content {
                 includeModule("org.cardanofoundation", "signify")
+                includeModule("id.veridian", "signify")
             }
         }
         // ipfs client

@@ -4,7 +4,7 @@ This directory contains focused, declarative configuration for applying Reeve
 changes to an existing Keycloak realm. It is **not** a full realm import and is
 not wired into Docker Compose.
 
-## What migration 001 changes
+## What the migrations change
 
 [`001-reeve-api-resource-server.json`](001-reeve-api-resource-server.json):
 
@@ -13,18 +13,24 @@ not wired into Docker Compose.
 - adds the `reeve-api` audience mapper;
 - adds the flat `roles` claim mapper used by Spring Security.
 
-The full existing `roles.protocolMappers` list is declared because
-keycloak-config-cli treats that list as desired state. Omitting an existing
-mapper would remove it. Other scope properties, such as its description and
-attributes, are omitted and therefore preserved. Review the target realm before
-the first production run if `roles` has environment-specific mappers that are
-not represented here.
+[`002-basic-client-scope.json`](002-basic-client-scope.json):
 
-`webclient` is deliberately absent. In the checked-in realm, `roles` is already
-a default scope for `webclient`; including an incomplete `webclient`
-representation could replace its scope-assignment list. If an older target does
-not have this assignment, add it once with the accompanying `kcadm.sh` script or
-through the Admin Console.
+- creates or reconciles the `basic` client scope;
+- adds the `sub` access-token mapper;
+- adds the `auth_time` ID- and access-token mapper;
+- assigns `basic` as a default scope of `webclient`.
+
+The full existing `protocolMappers` list is declared for each managed scope
+because keycloak-config-cli treats that list as desired state. Omitting an
+existing mapper would remove it. Other properties omitted from a managed
+resource are preserved. Review the target realm before the first production run
+if either scope has environment-specific mappers that are not represented here.
+
+Only `clientId` and `defaultClientScopes` are declared for `webclient`, so its
+other properties are preserved. The complete default-scope list from the
+checked-in realm is included because that list is also desired state; any
+environment-specific default scopes not represented in the migration would be
+removed.
 
 ## Apply manually with Docker
 
@@ -44,7 +50,7 @@ docker run --rm \
   -e KEYCLOAK_LOGINREALM=master \
   -e KEYCLOAK_AVAILABILITYCHECK_ENABLED=true \
   -e KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=120s \
-  -e IMPORT_FILES_LOCATIONS=/config/001-reeve-api-resource-server.json \
+  -e 'IMPORT_FILES_LOCATIONS=/config/*.json' \
   -e IMPORT_VALIDATE=true \
   -e IMPORT_CACHE_ENABLED=false \
   -e IMPORT_REMOTESTATE_ENABLED=true \
@@ -79,8 +85,9 @@ The manual command intentionally uses:
   resources are not purged.
 
 `no-delete` prevents deletion of unrelated clients/scopes, but the properties
-of resources explicitly named by this file are still reconciled. In particular,
-the `roles.protocolMappers` list is authoritative.
+of resources explicitly named by these files are still reconciled. In
+particular, the `roles.protocolMappers`, `basic.protocolMappers`, and
+`webclient.defaultClientScopes` lists are authoritative.
 
 Apply and verify in a non-production environment first, and back up Keycloak
 before the first production use.
