@@ -608,27 +608,6 @@
             }
           }
         ]
-      },
-      {
-        "name": "basic",
-        "description": "OpenID Connect scope for add all basic claims to the token",
-        "protocol": "openid-connect",
-        "attributes": {
-          "include.in.token.scope": "false",
-          "display.on.consent.screen": "false"
-        },
-        "protocolMappers": [
-          {
-            "name": "sub",
-            "protocol": "openid-connect",
-            "protocolMapper": "oidc-sub-mapper",
-            "consentRequired": false,
-            "config": {
-              "introspection.token.claim": "true",
-              "access.token.claim": "true"
-            }
-          }
-        ]
       }
     ],
     "roles": {
@@ -2143,7 +2122,8 @@
               "modules": [
                 "transactions",
                 "reporting",
-                "funding"
+                "funding",
+                "document_vault"
               ]
             },
             "realmRoles": [

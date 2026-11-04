@@ -29,7 +29,7 @@ BACKEND_CLIENT_SECRET = "reeve-backend-dev-secret"
 CF_ORG = "Cardano Foundation"
 
 ORGANISATIONS = [
-    {"id": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94", "name": CF_ORG, "modules": ["transactions", "reporting", "funding"]},
+    {"id": "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94", "name": CF_ORG, "modules": ["transactions", "reporting", "funding", "document_vault"]},
 ]
 
 # username -> (organisation, relative group path) memberships; users not listed here keep their groups.
