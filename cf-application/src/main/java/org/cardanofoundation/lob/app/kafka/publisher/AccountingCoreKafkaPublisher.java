@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Service
 @RequiredArgsConstructor
@@ -61,13 +62,15 @@ public class AccountingCoreKafkaPublisher {
         kafkaTemplate.send(scheduledReconcilationEventTopic, event);
     }
 
-    @EventListener
+    // After commit: the adapter's chunks can reach another replica, which must be able to see the new row
+    @TransactionalEventListener(fallbackExecution = true)
     public void handleReconcilationCreatedEvent(ReconcilationCreatedEvent event) {
         log.info("Sending ReconcilationCreatedEvent to Kafka: {}", event);
         kafkaTemplate.send(reconcilationCreatedEventTopic, event);
     }
 
-    @EventListener
+    // After commit: the adapter's chunks can reach another replica, which must be able to see the new row
+    @TransactionalEventListener(fallbackExecution = true)
     public void handleTransactionBatchCreatedEvent(TransactionBatchCreatedEvent event) {
         log.info("Sending TransactionBatchCreatedEvent to Kafka: {}", event);
         kafkaTemplate.send(transactionBatchCreatedEventTopic, event);
