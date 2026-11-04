@@ -4,20 +4,22 @@ Migrates an existing Keycloak realm to the group-based access model, through the
 Dry run by default: prints what it would do. Pass --apply to make the changes. Safe to run again.
 
 1. permissions: client roles of `reeve-api` (created if missing)
-2. module roles and presets: realm roles with their composites (missing ones created, missing composites added)
+2. module roles: realm roles with their composites (missing ones created, missing composites added)
 3. the `reeve-backend` service-account client (created if missing) with the realm-management roles it needs
 4. /platform/administrators (create organisations) and, for every organisation (found in users' legacy `organisations` attribute, under /organisations, or --organisation):
    /organisations/<name> with the organisationId attribute, the organisation role and the subgroup layout (existing groups and attributes kept)
    Groups still named after the id are renamed to their displayName and get the organisationId attribute; without a
    displayName they keep the id as name until someone renames them in the admin console (that's safe, the id is in the attribute)
-   (members of role subgroups of earlier layouts, e.g. /organisations/<orgId>/reeve_accountant, are moved to the matching preset)
-   The legacy preset subgroups are only added to organisations with legacy users or legacy subgroups, or kept where they already exist
-5. every user with the legacy `organisations` attribute and/or a legacy reeve_* role is put in the matching preset
-   group of each of their organisations, then the attribute and the directly assigned legacy roles are removed
-6. the reeve_* realm roles get a "(legacy)" description, or are deleted with --delete-legacy-roles
+   Members of groups of earlier layouts (/organisations/<org>/reeve_accountant, /organisations/<org>/presets/accountant) move to the groups
+   with the same access, then those groups are deleted
+5. every user with the legacy `organisations` attribute and a legacy reeve_* role is put in the groups giving the same access in each of their
+   organisations (and in /platform/administrators when the role could create organisations), then the attribute and the role are removed
+6. the reeve_* and preset_* realm roles are deleted. The reeve_* roles stay when a user still has one without an organisation:
+   they are the only record of that user's access, so fix those users by hand and run this again
+7. `webclient` no longer has full scope, so its tokens carry no roles and only identify the user
 
 Usage:
-  python3 migrate_keycloak.py --url https://keycloak.example.org --catalogue <reeve-permissions.json> \\
+  python3 migrate_keycloak.py --url https://keycloak.example.org --catalogue <application.yml> \\
       --admin-user admin [--admin-password ... | env KEYCLOAK_ADMIN_PASSWORD] [--realm reeve-master] [--apply]
 """
 import argparse
@@ -30,7 +32,9 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from reeve_model import BACKEND_ADMIN_ROLES, BACKEND_CLIENT, LEGACY_ROLES, OBSOLETE_GROUPS, ORGANISATION_ID_ATTRIBUTE, ORGANISATIONS_GROUP, PERMISSIONS_CLIENT, Catalogue
+from reeve_model import (BACKEND_ADMIN_ROLES, BACKEND_CLIENT, FRONTEND_CLIENT, LEGACY_PLATFORM_ROLES, LEGACY_PRESET_GROUPS, LEGACY_ROLE_GROUPS, LEGACY_ROLES,
+                         OBSOLETE_GROUPS, ORGANISATION_ID_ATTRIBUTE, ORGANISATIONS_GROUP, PERMISSIONS_CLIENT, PLATFORM_ADMIN_GROUP, PRESET_FOLDER, PRESET_ROLES,
+                         Catalogue)
 
 ORGANISATION_ID = re.compile(r"[0-9a-f]{64}")
 
@@ -111,11 +115,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--url", required=True)
     parser.add_argument("--realm", default="reeve-master")
-    parser.add_argument("--catalogue", required=True, help="path to reeve-permissions.json")
+    parser.add_argument("--catalogue", required=True, help="path to application.yml, holding the catalogue in lob.permissions")
     parser.add_argument("--admin-user", required=True, help="admin of the master realm")
     parser.add_argument("--admin-password", default=os.environ.get("KEYCLOAK_ADMIN_PASSWORD"))
     parser.add_argument("--organisation", action="append", default=[], help="extra organisation id to set up (repeatable)")
-    parser.add_argument("--delete-legacy-roles", action="store_true")
     parser.add_argument("--apply", action="store_true", help="make the changes (default: dry run)")
     args = parser.parse_args()
 
@@ -130,7 +133,7 @@ def main():
         if name not in existing_permissions:
             admin.write("POST", f"/clients/{api_id}/roles", {"name": name, "description": description}, f"create permission {name}")
 
-    print("2. Module roles and presets")
+    print("2. Module roles")
     for name, description, role_composites, permission_composites in catalogue.realm_roles():
         if admin.get(f"/roles/{q(name)}") is None:
             admin.write("POST", "/roles", {"name": name, "description": description}, f"create role {name}")
@@ -196,17 +199,16 @@ def main():
             ensure_children(group_id, path, grandchildren)
 
     tree = catalogue.organisation_group_tree()
-    tree_with_legacy = catalogue.organisation_group_tree(include_legacy=True)
-    preset_folders = {path.split("/", 1)[0] for path in catalogue.legacy_groups}
+    platform_members = {}  # user id -> username, for users of earlier layouts whose role could create organisations
 
-    def uses_presets(organisation, org_id):
-        """Presets are only for organisations coming from the legacy roles; new organisations don't get them."""
-        if organisation in legacy_organisations:
-            return True
-        if org_id.startswith("<"):
-            return False
-        return any(child["name"] in preset_folders or catalogue.preset_for_legacy_role(child["name"])
-                   for child in admin.get(f"/groups/{org_id}/children", max=10000) or [])
+    def move_members(group, legacy_role, path):
+        """Gives the members of a group of an earlier layout the groups with the same access."""
+        for member in admin.get(f"/groups/{group['id']}/members", max=100000) or []:
+            for relative_path in LEGACY_ROLE_GROUPS[legacy_role]:
+                target = f"{path}/{relative_path}"
+                admin.write("PUT", f"/users/{member['id']}/groups/{group_ids.get(target, '<new>')}", None, f"add {member['username']} to {target} (was in {group['name']})")
+            if legacy_role in LEGACY_PLATFORM_ROLES:
+                platform_members[member["id"]] = member["username"]
 
     for organisation in sorted(organisations):
         if organisation in existing_orgs:
@@ -237,7 +239,7 @@ def main():
         if catalogue.organisation_role not in mapped:
             admin.write("POST", f"/groups/{org_id}/role-mappings/realm", [admin.get(f"/roles/{q(catalogue.organisation_role)}")] if args.apply else [],
                         f"map {catalogue.organisation_role} on {path}")
-        ensure_children(org_id, path, tree_with_legacy if uses_presets(organisation, org_id) else tree)
+        ensure_children(org_id, path, tree)
         for obsolete in OBSOLETE_GROUPS:
             parent_path, name = obsolete.rsplit("/", 1)
             parent_id = group_ids.get(f"{path}/{parent_path}")
@@ -251,18 +253,23 @@ def main():
                 print(f"  WARNING: {path}/{obsolete} is from an earlier layout but not empty; move its members to {path}/{parent_path} and delete it")
             else:
                 admin.write("DELETE", f"/groups/{existing['id']}", None, f"delete obsolete empty group {path}/{obsolete}")
-        # Role subgroups of an earlier layout, named after a legacy role (e.g. /organisations/<org>/reeve_accountant):
-        # move their members to the matching preset group, then delete them
+        # Groups of earlier layouts: role subgroups named after a legacy role and the preset bundles
         if not org_id.startswith("<"):
-            for legacy_group in admin.get(f"/groups/{org_id}/children", max=10000) or []:
-                preset = catalogue.preset_for_legacy_role(legacy_group["name"])
-                if not preset:
-                    continue
-                preset_path = f"{path}/{catalogue.preset_group(preset)}"
-                for member in admin.get(f"/groups/{legacy_group['id']}/members", max=100000) or []:
-                    admin.write("PUT", f"/users/{member['id']}/groups/{group_ids.get(preset_path, '<new>')}", None,
-                                f"add {member['username']} to {preset_path} (was in {path}/{legacy_group['name']})")
-                admin.write("DELETE", f"/groups/{legacy_group['id']}", None, f"delete group {path}/{legacy_group['name']} (earlier layout)")
+            for child in admin.get(f"/groups/{org_id}/children", max=10000) or []:
+                if child["name"] in LEGACY_ROLE_GROUPS:
+                    move_members(child, child["name"], path)
+                    admin.write("DELETE", f"/groups/{child['id']}", None, f"delete group {path}/{child['name']} (earlier layout)")
+                elif child["name"] == PRESET_FOLDER:
+                    presets = admin.get(f"/groups/{child['id']}/children", max=10000) or []
+                    unknown = [preset["name"] for preset in presets if preset["name"] not in LEGACY_PRESET_GROUPS]
+                    for preset in presets:
+                        if preset["name"] in LEGACY_PRESET_GROUPS:
+                            move_members(preset, LEGACY_PRESET_GROUPS[preset["name"]], path)
+                            admin.write("DELETE", f"/groups/{preset['id']}", None, f"delete group {path}/{PRESET_FOLDER}/{preset['name']} (earlier layout)")
+                    if unknown:
+                        print(f"  WARNING: {path}/{PRESET_FOLDER} kept: {unknown} are not known presets; move their members and delete them by hand")
+                    else:
+                        admin.write("DELETE", f"/groups/{child['id']}", None, f"delete group {path}/{PRESET_FOLDER} (earlier layout)")
 
     print("4b. Platform groups")
     platform_root = admin.get(f"/group-by-path/{catalogue.platform_group}")
@@ -270,9 +277,13 @@ def main():
         platform_root = {"id": created_id(admin.write("POST", "/groups", {"name": catalogue.platform_group}, f"create /{catalogue.platform_group}"))
                          or f"<{catalogue.platform_group}>"}
     ensure_children(platform_root["id"], f"/{catalogue.platform_group}", {name: [role, {}] for name, role in catalogue.platform_groups.items()})
-    print(f"  add organisation creators to /{catalogue.platform_group}/administrators by hand (Users → Groups → Join group)")
+    platform_admins = f"/{catalogue.platform_group}/{PLATFORM_ADMIN_GROUP}"
+    for user_id, username in platform_members.items():
+        admin.write("PUT", f"/users/{user_id}/groups/{group_ids.get(platform_admins, '<new>')}", None, f"add {username} to {platform_admins}")
+    print(f"  other organisation creators are added to {platform_admins} by hand (Users → Groups → Join group)")
 
     print("5. Users")
+    unmigrated = []
     for user in users:
         attributes = user.get("attributes") or {}
         user_organisations = attributes.get("organisations", [])
@@ -281,15 +292,18 @@ def main():
             continue
         print(f"  {user['username']}: organisations={[o[:8] for o in user_organisations]} legacy roles={[r['name'] for r in legacy]}")
         if legacy and not user_organisations:
-            print("    WARNING: legacy role but no organisations attribute; add the user to groups by hand")
+            print("    WARNING: legacy role but no organisations attribute; add the user to groups by hand, then run this again")
+            unmigrated.append(user["username"])
         current = {group["path"] for group in admin.get(f"/users/{user['id']}/groups", max=10000) or []}
         for organisation in user_organisations:
             for role in legacy:
-                preset = catalogue.preset_for_legacy_role(role["name"])
-                path = f"{organisation_paths[organisation]}/{catalogue.preset_group(preset)}"
-                if path not in current:
-                    admin.write("PUT", f"/users/{user['id']}/groups/{group_ids.get(path, '<new>')}", None, f"add {user['username']} to {path}")
-        if legacy:
+                for relative_path in LEGACY_ROLE_GROUPS[role["name"]]:
+                    path = f"{organisation_paths[organisation]}/{relative_path}"
+                    if path not in current:
+                        admin.write("PUT", f"/users/{user['id']}/groups/{group_ids.get(path, '<new>')}", None, f"add {user['username']} to {path}")
+        if user_organisations and any(role["name"] in LEGACY_PLATFORM_ROLES for role in legacy) and platform_admins not in current:
+            admin.write("PUT", f"/users/{user['id']}/groups/{group_ids.get(platform_admins, '<new>')}", None, f"add {user['username']} to {platform_admins}")
+        if legacy and user_organisations:
             admin.write("DELETE", f"/users/{user['id']}/role-mappings/realm", legacy, f"unassign {[r['name'] for r in legacy]} from {user['username']}")
         if user_organisations:
             full = admin.get(f"/users/{user['id']}")
@@ -297,18 +311,19 @@ def main():
             admin.write("PUT", f"/users/{user['id']}", full, f"remove the organisations attribute of {user['username']}")
 
     print("6. Legacy roles")
-    for role in LEGACY_ROLES:
-        representation = admin.get(f"/roles/{q(role)}")
-        if representation is None:
-            continue
-        if args.delete_legacy_roles:
+    if unmigrated:
+        print(f"  WARNING: keeping the reeve_* roles, they are the only record of the access of {unmigrated}")
+    for role in PRESET_ROLES + ([] if unmigrated else LEGACY_ROLES):
+        if admin.get(f"/roles/{q(role)}") is not None:
             admin.write("DELETE", f"/roles/{q(role)}", None, f"delete role {role}")
-            continue
-        description = (f"(legacy) Not used anymore: replaced by {catalogue.preset_for_legacy_role(role)}. "
-                       "Delete it with migrate_keycloak.py --delete-legacy-roles once nobody uses it.")
-        if representation.get("description") != description:
-            representation["description"] = description
-            admin.write("PUT", f"/roles/{q(role)}", representation, f"mark {role} as legacy")
+
+    print("7. Role claims in the token")
+    frontend = next(iter(admin.get("/clients", clientId=FRONTEND_CLIENT) or []), None)
+    if frontend is None:
+        print(f"  WARNING: client {FRONTEND_CLIENT} not found, its tokens keep whatever roles they carry")
+    elif frontend.get("fullScopeAllowed", True):
+        frontend["fullScopeAllowed"] = False
+        admin.write("PUT", f"/clients/{frontend['id']}", frontend, f"turn off full scope on {FRONTEND_CLIENT}")
 
     print("\nDone." if args.apply else "\nDry run only: re-run with --apply to make these changes.")
 

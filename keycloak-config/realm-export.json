@@ -58,7 +58,9 @@
           "PhoneNumber": "+123456789"
         },
         "groups": [
-          "/organisations/Cardano Foundation/presets/auditor"
+          "/organisations/Cardano Foundation/transactions",
+          "/organisations/Cardano Foundation/reporting",
+          "/organisations/Cardano Foundation/funding"
         ]
       },
       {
@@ -80,7 +82,13 @@
           "PhoneNumber": "+123456789"
         },
         "groups": [
-          "/organisations/Cardano Foundation/presets/accountant"
+          "/organisations/Cardano Foundation/transactions/setup",
+          "/organisations/Cardano Foundation/transactions/importer",
+          "/organisations/Cardano Foundation/transactions/reviewer",
+          "/organisations/Cardano Foundation/transactions/reconciler",
+          "/organisations/Cardano Foundation/reporting/editor",
+          "/organisations/Cardano Foundation/funding/event_editor",
+          "/organisations/Cardano Foundation/funding/setup"
         ]
       },
       {
@@ -107,6 +115,7 @@
           "/organisations/Cardano Foundation/transactions/importer",
           "/organisations/Cardano Foundation/transactions/reviewer",
           "/organisations/Cardano Foundation/transactions/publisher",
+          "/organisations/Cardano Foundation/transactions/dashboard_editor",
           "/organisations/Cardano Foundation/transactions/setup/erp",
           "/organisations/Cardano Foundation/reporting/editor",
           "/organisations/Cardano Foundation/reporting/publisher",
@@ -137,7 +146,17 @@
           "PhoneNumber": "+987654321"
         },
         "groups": [
-          "/organisations/Cardano Foundation/presets/admin"
+          "/organisations/Cardano Foundation/org_admin",
+          "/organisations/Cardano Foundation/transactions/setup/erp",
+          "/organisations/Cardano Foundation/transactions/importer",
+          "/organisations/Cardano Foundation/transactions/reviewer",
+          "/organisations/Cardano Foundation/transactions/reconciler",
+          "/organisations/Cardano Foundation/reporting/setup",
+          "/organisations/Cardano Foundation/funding/project_manager",
+          "/organisations/Cardano Foundation/funding/event_editor",
+          "/organisations/Cardano Foundation/funding/publisher",
+          "/organisations/Cardano Foundation/funding/setup",
+          "/platform/administrators"
         ]
       },
       {
@@ -213,7 +232,8 @@
           "roles",
           "basic",
           "email"
-        ]
+        ],
+        "fullScopeAllowed": false
       },
       {
         "clientId": "reeve-backend",
@@ -593,7 +613,9 @@
               "reeve-api": [
                 "organization_details:edit",
                 "currencies:create",
-                "currencies:edit"
+                "currencies:edit",
+                "transactions:publish_view",
+                "reports:publish_view"
               ]
             }
           }
@@ -717,6 +739,19 @@
           }
         },
         {
+          "name": "transactions_dashboard_editor",
+          "description": "Transactions: create and edit data explorer dashboards",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "data_explorer:dashboard_create",
+                "data_explorer:dashboard_edit"
+              ]
+            }
+          }
+        },
+        {
           "name": "reports_viewer",
           "description": "Reporting module: reports, templates, chart of accounts and accounting regimes, read-only.",
           "composite": true,
@@ -758,7 +793,8 @@
                 "reports:preview",
                 "report_templates:create",
                 "report_templates:edit",
-                "report_templates:delete"
+                "report_templates:delete",
+                "report_types:edit"
               ]
             }
           }
@@ -840,107 +876,6 @@
             "client": {
               "reeve-api": [
                 "project_management:publish"
-              ]
-            }
-          }
-        },
-        {
-          "name": "preset_auditor",
-          "description": "Preset (former reeve_auditor): read-only access to every module.",
-          "composite": true,
-          "composites": {
-            "realm": [
-              "org_member",
-              "transactions_viewer",
-              "reports_viewer",
-              "funding_viewer"
-            ]
-          }
-        },
-        {
-          "name": "preset_accountant",
-          "description": "Preset (former reeve_accountant).",
-          "composite": true,
-          "composites": {
-            "realm": [
-              "org_member",
-              "transactions_viewer",
-              "reports_viewer",
-              "funding_viewer",
-              "transactions_setup",
-              "transactions_importer",
-              "transactions_reviewer",
-              "transactions_reconciler",
-              "reports_editor",
-              "funding_event_editor",
-              "funding_setup"
-            ],
-            "client": {
-              "reeve-api": [
-                "report_types:edit"
-              ]
-            }
-          }
-        },
-        {
-          "name": "preset_admin",
-          "description": "Preset (former reeve_admin).",
-          "composite": true,
-          "composites": {
-            "realm": [
-              "org_member",
-              "transactions_viewer",
-              "reports_viewer",
-              "funding_viewer",
-              "org_admin",
-              "transactions_setup",
-              "transactions_erp",
-              "transactions_importer",
-              "transactions_reviewer",
-              "transactions_reconciler",
-              "reports_setup",
-              "funding_project_manager",
-              "funding_event_editor",
-              "funding_publisher",
-              "funding_setup"
-            ],
-            "client": {
-              "reeve-api": [
-                "reports:publish_view",
-                "transactions:publish_view"
-              ]
-            }
-          }
-        },
-        {
-          "name": "preset_account_manager",
-          "description": "Preset (former reeve_account_manager): everything.",
-          "composite": true,
-          "composites": {
-            "realm": [
-              "org_member",
-              "org_admin",
-              "transactions_viewer",
-              "transactions_setup",
-              "transactions_erp",
-              "transactions_importer",
-              "transactions_reviewer",
-              "transactions_reconciler",
-              "transactions_publisher",
-              "reports_viewer",
-              "reports_setup",
-              "reports_editor",
-              "reports_publisher",
-              "funding_viewer",
-              "funding_project_manager",
-              "funding_event_editor",
-              "funding_publisher",
-              "funding_setup"
-            ],
-            "client": {
-              "reeve-api": [
-                "data_explorer:dashboard_create",
-                "data_explorer:dashboard_edit"
               ]
             }
           }
@@ -2111,6 +2046,14 @@
                     "subGroups": []
                   },
                   {
+                    "name": "dashboard_editor",
+                    "attributes": {},
+                    "realmRoles": [
+                      "transactions_dashboard_editor"
+                    ],
+                    "subGroups": []
+                  },
+                  {
                     "name": "setup",
                     "attributes": {},
                     "realmRoles": [
@@ -2198,45 +2141,6 @@
                     "attributes": {},
                     "realmRoles": [
                       "funding_setup"
-                    ],
-                    "subGroups": []
-                  }
-                ]
-              },
-              {
-                "name": "presets",
-                "attributes": {},
-                "realmRoles": [],
-                "subGroups": [
-                  {
-                    "name": "auditor",
-                    "attributes": {},
-                    "realmRoles": [
-                      "preset_auditor"
-                    ],
-                    "subGroups": []
-                  },
-                  {
-                    "name": "accountant",
-                    "attributes": {},
-                    "realmRoles": [
-                      "preset_accountant"
-                    ],
-                    "subGroups": []
-                  },
-                  {
-                    "name": "admin",
-                    "attributes": {},
-                    "realmRoles": [
-                      "preset_admin"
-                    ],
-                    "subGroups": []
-                  },
-                  {
-                    "name": "account_manager",
-                    "attributes": {},
-                    "realmRoles": [
-                      "preset_account_manager"
                     ],
                     "subGroups": []
                   }

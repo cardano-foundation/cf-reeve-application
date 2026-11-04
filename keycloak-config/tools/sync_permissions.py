@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 """
-Syncs keycloak-config/realm-export.json (realm reeve-master, imported only into a fresh Keycloak) with the platform
-permission catalogue (cf-lob-platform: support/src/main/resources/reeve-permissions.json):
+Syncs keycloak-config/realm-export.json (realm reeve-master, imported only into a fresh Keycloak) with the
+permission catalogue (lob.permissions in cf-application/src/main/resources/application.yml):
 
 - every permission becomes a client role of `reeve-api`
-- module roles and presets become realm roles; the legacy reeve_* roles are removed
+- module roles become realm roles; the legacy reeve_* and preset_* roles are removed
 - the `reeve-backend` service-account client is added (the backend reads access from Keycloak with it)
 - the /organisations group tree is created for the seeded organisations and every seeded user is put in groups;
   /platform/administrators (create organisations) is created with manager in it
   (no `organisations` attribute, no directly assigned roles)
+- `webclient` no longer has full scope, so its tokens carry no roles and only identify the user
 
 For an existing Keycloak use migrate_keycloak.py instead.
 
-Usage: python3 sync_permissions.py <path to reeve-permissions.json> [path to realm-export.json]
+Usage: python3 sync_permissions.py <path to application.yml> [path to realm-export.json]
 Re-running it is safe: it replaces what it manages and leaves everything else untouched.
 """
 import json
 import sys
 from pathlib import Path
 
-from reeve_model import BACKEND_ADMIN_ROLES, BACKEND_CLIENT, LEGACY_ROLES, ORGANISATION_ID_ATTRIBUTE, ORGANISATIONS_GROUP, PERMISSIONS_CLIENT, Catalogue
+from reeve_model import (BACKEND_ADMIN_ROLES, BACKEND_CLIENT, FRONTEND_CLIENT, LEGACY_ROLE_GROUPS, LEGACY_ROLES, ORGANISATION_ID_ATTRIBUTE,
+                         ORGANISATIONS_GROUP, PERMISSIONS_CLIENT, PLATFORM_ADMIN_GROUP, PRESET_ROLES, Catalogue)
 
 # Local/demo secret only; set a real one in Keycloak for any shared environment
 BACKEND_CLIENT_SECRET = "reeve-backend-dev-secret"
@@ -31,20 +33,13 @@ ORGANISATIONS = [
 ]
 
 # username -> (organisation, relative group path) memberships; users not listed here keep their groups.
-# manager uses the individual module groups (MANAGER_GROUPS) so stages can be added/removed one by one,
-# and can create organisations (PLATFORM_MEMBERSHIPS); the others use presets.
-MANAGER_GROUPS = ["org_admin", "transactions/reconciler", "transactions/importer", "transactions/reviewer", "transactions/publisher",
-                  "transactions/setup/erp", "reporting/editor", "reporting/publisher", "reporting/setup",
-                  "funding/event_editor", "funding/project_manager", "funding/publisher", "funding/setup"]
-
+# The seeded users keep the access of the role they are named after; manager and admin can create organisations.
 MEMBERSHIPS = {
-    "manager": [(CF_ORG, path) for path in MANAGER_GROUPS],
-    "admin": [(CF_ORG, "presets/admin")],
-    "accountant": [(CF_ORG, "presets/accountant")],
-    "auditor": [(CF_ORG, "presets/auditor")],
+    username: [(CF_ORG, path) for path in LEGACY_ROLE_GROUPS[role]]
+    for username, role in (("manager", "reeve_account_manager"), ("admin", "reeve_admin"), ("accountant", "reeve_accountant"), ("auditor", "reeve_auditor"))
 }
 
-PLATFORM_MEMBERSHIPS = {"manager": ["administrators"]}
+PLATFORM_MEMBERSHIPS = {"manager": [PLATFORM_ADMIN_GROUP], "admin": [PLATFORM_ADMIN_GROUP]}
 
 
 def group_representation(name, role, children, attributes=None):
@@ -70,6 +65,12 @@ def remove_legacy_organisations_claim(realm):
             configs[i] = json.dumps(profile)
 
 
+def remove_role_claims(realm):
+    for client in realm["clients"]:
+        if client["clientId"] == FRONTEND_CLIENT:
+            client["fullScopeAllowed"] = False
+
+
 def main(catalogue_path, realm_path):
     catalogue = Catalogue(catalogue_path)
     export_path = Path(realm_path)
@@ -81,7 +82,7 @@ def main(catalogue_path, realm_path):
     roles.setdefault("client", {})[PERMISSIONS_CLIENT] = [
         {"name": name, "description": description, "composite": False, "clientRole": True} for name, description in catalogue.permissions()
     ]
-    managed = set(LEGACY_ROLES) | {name for name, *_ in catalogue.realm_roles()}
+    managed = set(LEGACY_ROLES) | set(PRESET_ROLES) | {name for name, *_ in catalogue.realm_roles()}
     realm_roles = [role for role in roles.setdefault("realm", []) if role["name"] not in managed]
     for name, description, role_composites, permission_composites in catalogue.realm_roles():
         composites = {}
@@ -125,9 +126,9 @@ def main(catalogue_path, realm_path):
             }],
         })
     remove_legacy_organisations_claim(realm)
+    remove_role_claims(realm)
 
-    # The seeded organisation has seeded users in the legacy presets
-    tree = catalogue.organisation_group_tree(include_legacy=True)
+    tree = catalogue.organisation_group_tree()
     platform_group = {
         "name": catalogue.platform_group,
         "attributes": {},
@@ -161,7 +162,7 @@ def main(catalogue_path, realm_path):
     realm["users"] = users
 
     export_path.write_text(json.dumps(export, indent=2, ensure_ascii=False) + "\n")
-    print(f"{len(catalogue.permissions())} permissions, {len(catalogue.realm_roles())} roles/presets, "
+    print(f"{len(catalogue.permissions())} permissions, {len(catalogue.realm_roles())} roles, "
           f"{len(ORGANISATIONS)} organisations, {len(MEMBERSHIPS)} users in groups written to {export_path}")
 
 
