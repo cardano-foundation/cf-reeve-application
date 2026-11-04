@@ -420,7 +420,7 @@ lob:
   # its parent groups; publisher sits next to reviewer so review and publish can go to different people (four-eyes).
   # Entries are lists on purpose: Spring removes characters like "/" and "_" from map keys when binding.
   permissions:
-    modules: [transactions, reporting, funding]
+    modules: [transactions, reporting, funding, document_vault]
     organisation-role: org_member
     resources:
       - name: organisations
@@ -444,6 +444,9 @@ lob:
       - name: project_management
         modules: [funding]
         actions: [view, create, edit, delete, publish, create_project]
+      - name: document_vault
+        modules: [document_vault]
+        actions: [view, create, edit, delete, delete_any, publish]
       - name: settings
         actions: [view]
       - name: organization
@@ -536,6 +539,18 @@ lob:
       - name: reports_publish_viewer
         description: 'Reporting: see the publish queue, without approving anything'
         permissions: ['reports:publish_view']
+      - name: document_vault_viewer
+        description: 'Document vault module: documents, keys, recipients and contacts, read-only.'
+        permissions: ['document_vault:view']
+      - name: document_vault_editor
+        description: 'Document vault module: upload documents, manage keys and contacts, delete own drafts.'
+        permissions: ['document_vault:create', 'document_vault:edit', 'document_vault:delete']
+      - name: document_vault_publisher
+        description: 'Document vault module: publish documents on-chain and attest them with KERI.'
+        permissions: ['document_vault:publish']
+      - name: document_vault_admin
+        description: 'Document vault module: delete keys and draft documents of other users.'
+        permissions: ['document_vault:delete_any']
       - name: funding_viewer
         description: 'Funding module: projects and spending events, read-only (plus the VAT codes and currencies they use).'
         permissions: ['project_management:view', 'vat_codes:view', 'currencies:view']
@@ -567,6 +582,10 @@ lob:
       - {path: reporting/publisher, role: reports_publisher}
       - {path: reporting/publish_viewer, role: reports_publish_viewer}
       - {path: reporting/setup, role: reports_setup}
+      - {path: document_vault, role: document_vault_viewer}
+      - {path: document_vault/editor, role: document_vault_editor}
+      - {path: document_vault/publisher, role: document_vault_publisher}
+      - {path: document_vault/admin, role: document_vault_admin}
       - {path: funding, role: funding_viewer}
       - {path: funding/event_editor, role: funding_event_editor}
       - {path: funding/project_manager, role: funding_project_manager}

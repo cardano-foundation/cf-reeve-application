@@ -28,8 +28,8 @@ class PermissionCatalogueYamlTest {
     @Test
     void bindsTheModulesAndPermissions() {
         assertThat(catalogue.isConfigured()).isTrue();
-        assertThat(catalogue.getModules()).containsExactly("transactions", "reporting", "funding");
-        assertThat(catalogue.getPermissions()).hasSize(71).contains("transactions:view", "reports:publish", "organisations:create");
+        assertThat(catalogue.getModules()).containsExactly("transactions", "reporting", "funding", "document_vault");
+        assertThat(catalogue.getPermissions()).hasSize(77).contains("document_vault:publish", "document_vault:delete_any", "transactions:view", "reports:publish", "organisations:create");
         assertThat(catalogue.getPlatformGroup()).isEqualTo("platform");
     }
 
@@ -45,13 +45,14 @@ class PermissionCatalogueYamlTest {
     void keepsTheGroupPathsAndRoleNamesIntact() {
         assertThat(catalogue.getOrganisationRole()).isEqualTo("org_member");
         assertThat(catalogue.getGroupLayout())
-                .hasSize(20)
+                .hasSize(24)
                 .containsEntry("transactions", "transactions_viewer")
                 .containsEntry("transactions/setup/erp", "transactions_erp")
                 .containsEntry("funding/project_manager", "funding_project_manager")
                 .containsEntry("transactions/dashboard_editor", "transactions_dashboard_editor")
                 .containsEntry("transactions/publish_viewer", "transactions_publish_viewer")
                 .containsEntry("reporting/publish_viewer", "reports_publish_viewer")
+                .containsEntry("document_vault/publisher", "document_vault_publisher")
                 .doesNotContainKey("presets/accountant");
     }
 

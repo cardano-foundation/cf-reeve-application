@@ -20,14 +20,16 @@ ORGANISATION_ID_ATTRIBUTE = "organisationId"
 # The flat roles of earlier versions -> the groups giving exactly the same access in the organisation. Only used to move
 # users off them: nothing reads these roles anymore. Keep in sync with what the old roles could do, not with new rights.
 LEGACY_ROLE_GROUPS = {
-    "reeve_auditor": ["transactions", "reporting", "funding"],
+    "reeve_auditor": ["transactions", "reporting", "funding", "document_vault/editor"],
     "reeve_accountant": ["transactions/setup", "transactions/importer", "transactions/reviewer", "transactions/reconciler",
-                         "reporting/editor", "funding/event_editor", "funding/setup"],
+                         "reporting/editor", "funding/event_editor", "funding/setup", "document_vault/editor"],
     "reeve_admin": ["org_admin", "transactions/setup/erp", "transactions/importer", "transactions/reviewer", "transactions/reconciler", "transactions/publish_viewer",
-                    "reporting/setup", "reporting/publish_viewer", "funding/project_manager", "funding/event_editor", "funding/publisher", "funding/setup"],
+                    "reporting/setup", "reporting/publish_viewer", "funding/project_manager", "funding/event_editor", "funding/publisher", "funding/setup",
+                    "document_vault/editor", "document_vault/publisher", "document_vault/admin"],
     "reeve_account_manager": ["org_admin", "transactions/reconciler", "transactions/importer", "transactions/reviewer", "transactions/publisher",
                               "transactions/dashboard_editor", "transactions/setup/erp", "reporting/editor", "reporting/publisher", "reporting/setup",
-                              "funding/event_editor", "funding/project_manager", "funding/publisher", "funding/setup"],
+                              "funding/event_editor", "funding/project_manager", "funding/publisher", "funding/setup",
+                              "document_vault/editor", "document_vault/publisher"],
 }
 LEGACY_ROLES = list(LEGACY_ROLE_GROUPS)
 # These could create organisations, which is now /platform/administrators

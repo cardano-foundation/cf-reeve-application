@@ -60,7 +60,8 @@
         "groups": [
           "/organisations/Cardano Foundation/transactions",
           "/organisations/Cardano Foundation/reporting",
-          "/organisations/Cardano Foundation/funding"
+          "/organisations/Cardano Foundation/funding",
+          "/organisations/Cardano Foundation/document_vault/editor"
         ]
       },
       {
@@ -88,7 +89,8 @@
           "/organisations/Cardano Foundation/transactions/reconciler",
           "/organisations/Cardano Foundation/reporting/editor",
           "/organisations/Cardano Foundation/funding/event_editor",
-          "/organisations/Cardano Foundation/funding/setup"
+          "/organisations/Cardano Foundation/funding/setup",
+          "/organisations/Cardano Foundation/document_vault/editor"
         ]
       },
       {
@@ -124,6 +126,8 @@
           "/organisations/Cardano Foundation/funding/project_manager",
           "/organisations/Cardano Foundation/funding/publisher",
           "/organisations/Cardano Foundation/funding/setup",
+          "/organisations/Cardano Foundation/document_vault/editor",
+          "/organisations/Cardano Foundation/document_vault/publisher",
           "/platform/administrators"
         ]
       },
@@ -158,6 +162,9 @@
           "/organisations/Cardano Foundation/funding/event_editor",
           "/organisations/Cardano Foundation/funding/publisher",
           "/organisations/Cardano Foundation/funding/setup",
+          "/organisations/Cardano Foundation/document_vault/editor",
+          "/organisations/Cardano Foundation/document_vault/publisher",
+          "/organisations/Cardano Foundation/document_vault/admin",
           "/platform/administrators"
         ]
       },
@@ -873,6 +880,56 @@
           }
         },
         {
+          "name": "document_vault_viewer",
+          "description": "Document vault module: documents, keys, recipients and contacts, read-only.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "document_vault:view"
+              ]
+            }
+          }
+        },
+        {
+          "name": "document_vault_editor",
+          "description": "Document vault module: upload documents, manage keys and contacts, delete own drafts.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "document_vault:create",
+                "document_vault:edit",
+                "document_vault:delete"
+              ]
+            }
+          }
+        },
+        {
+          "name": "document_vault_publisher",
+          "description": "Document vault module: publish documents on-chain and attest them with KERI.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "document_vault:publish"
+              ]
+            }
+          }
+        },
+        {
+          "name": "document_vault_admin",
+          "description": "Document vault module: delete keys and draft documents of other users.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "document_vault:delete_any"
+              ]
+            }
+          }
+        },
+        {
           "name": "funding_viewer",
           "description": "Funding module: projects and spending events, read-only (plus the VAT codes and currencies they use).",
           "composite": true,
@@ -1185,6 +1242,42 @@
           {
             "name": "project_management:create_project",
             "description": "create_project on project_management (funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:view",
+            "description": "view on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:create",
+            "description": "create on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:edit",
+            "description": "edit on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:delete",
+            "description": "delete on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:delete_any",
+            "description": "delete_any on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:publish",
+            "description": "publish on document_vault (document_vault)",
             "composite": false,
             "clientRole": true
           },
@@ -2175,6 +2268,39 @@
                     "attributes": {},
                     "realmRoles": [
                       "reports_setup"
+                    ],
+                    "subGroups": []
+                  }
+                ]
+              },
+              {
+                "name": "document_vault",
+                "attributes": {},
+                "realmRoles": [
+                  "document_vault_viewer"
+                ],
+                "subGroups": [
+                  {
+                    "name": "editor",
+                    "attributes": {},
+                    "realmRoles": [
+                      "document_vault_editor"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "publisher",
+                    "attributes": {},
+                    "realmRoles": [
+                      "document_vault_publisher"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "admin",
+                    "attributes": {},
+                    "realmRoles": [
+                      "document_vault_admin"
                     ],
                     "subGroups": []
                   }
