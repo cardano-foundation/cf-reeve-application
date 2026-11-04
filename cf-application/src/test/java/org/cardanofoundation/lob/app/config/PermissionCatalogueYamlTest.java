@@ -45,11 +45,13 @@ class PermissionCatalogueYamlTest {
     void keepsTheGroupPathsAndRoleNamesIntact() {
         assertThat(catalogue.getOrganisationRole()).isEqualTo("org_member");
         assertThat(catalogue.getGroupLayout())
-                .hasSize(18)
+                .hasSize(20)
                 .containsEntry("transactions", "transactions_viewer")
                 .containsEntry("transactions/setup/erp", "transactions_erp")
                 .containsEntry("funding/project_manager", "funding_project_manager")
                 .containsEntry("transactions/dashboard_editor", "transactions_dashboard_editor")
+                .containsEntry("transactions/publish_viewer", "transactions_publish_viewer")
+                .containsEntry("reporting/publish_viewer", "reports_publish_viewer")
                 .doesNotContainKey("presets/accountant");
     }
 

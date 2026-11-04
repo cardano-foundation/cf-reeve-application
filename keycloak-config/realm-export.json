@@ -151,7 +151,9 @@
           "/organisations/Cardano Foundation/transactions/importer",
           "/organisations/Cardano Foundation/transactions/reviewer",
           "/organisations/Cardano Foundation/transactions/reconciler",
+          "/organisations/Cardano Foundation/transactions/publish_viewer",
           "/organisations/Cardano Foundation/reporting/setup",
+          "/organisations/Cardano Foundation/reporting/publish_viewer",
           "/organisations/Cardano Foundation/funding/project_manager",
           "/organisations/Cardano Foundation/funding/event_editor",
           "/organisations/Cardano Foundation/funding/publisher",
@@ -613,9 +615,7 @@
               "reeve-api": [
                 "organization_details:edit",
                 "currencies:create",
-                "currencies:edit",
-                "transactions:publish_view",
-                "reports:publish_view"
+                "currencies:edit"
               ]
             }
           }
@@ -739,6 +739,18 @@
           }
         },
         {
+          "name": "transactions_publish_viewer",
+          "description": "Transactions: see the publish queue, without approving anything",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "transactions:publish_view"
+              ]
+            }
+          }
+        },
+        {
           "name": "transactions_dashboard_editor",
           "description": "Transactions: create and edit data explorer dashboards",
           "composite": true,
@@ -809,6 +821,18 @@
                 "reports:publish_view",
                 "reports:publish",
                 "reports:reject"
+              ]
+            }
+          }
+        },
+        {
+          "name": "reports_publish_viewer",
+          "description": "Reporting: see the publish queue, without approving anything",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "reports:publish_view"
               ]
             }
           }
@@ -2046,6 +2070,14 @@
                     "subGroups": []
                   },
                   {
+                    "name": "publish_viewer",
+                    "attributes": {},
+                    "realmRoles": [
+                      "transactions_publish_viewer"
+                    ],
+                    "subGroups": []
+                  },
+                  {
                     "name": "dashboard_editor",
                     "attributes": {},
                     "realmRoles": [
@@ -2092,6 +2124,14 @@
                     "attributes": {},
                     "realmRoles": [
                       "reports_publisher"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "publish_viewer",
+                    "attributes": {},
+                    "realmRoles": [
+                      "reports_publish_viewer"
                     ],
                     "subGroups": []
                   },

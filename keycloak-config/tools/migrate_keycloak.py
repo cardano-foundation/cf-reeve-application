@@ -4,7 +4,7 @@ Migrates an existing Keycloak realm to the group-based access model, through the
 Dry run by default: prints what it would do. Pass --apply to make the changes. Safe to run again.
 
 1. permissions: client roles of `reeve-api` (created if missing)
-2. module roles: realm roles with their composites (missing ones created, missing composites added)
+2. module roles: realm roles with exactly the permissions of the catalogue (missing ones created, missing composites added, others removed)
 3. the `reeve-backend` service-account client (created if missing) with the realm-management roles it needs
 4. /platform/administrators (create organisations) and, for every organisation (found in users' legacy `organisations` attribute, under /organisations, or --organisation):
    /organisations/<name> with the organisationId attribute, the organisation role and the subgroup layout (existing groups and attributes kept)
@@ -137,9 +137,10 @@ def main():
     for name, description, role_composites, permission_composites in catalogue.realm_roles():
         if admin.get(f"/roles/{q(name)}") is None:
             admin.write("POST", "/roles", {"name": name, "description": description}, f"create role {name}")
-            current = set()
+            composites = []
         else:
-            current = {role["name"] for role in admin.get(f"/roles/{q(name)}/composites") or []}
+            composites = admin.get(f"/roles/{q(name)}/composites") or []
+        current = {role["name"] for role in composites}
         missing_roles = [role for role in role_composites if role not in current]
         missing_permissions = [permission for permission in permission_composites if permission not in current]
         if missing_roles or missing_permissions:
@@ -148,6 +149,9 @@ def main():
                 body = [admin.get(f"/roles/{q(role)}") for role in missing_roles]
                 body += [admin.get(f"/clients/{api_id}/roles/{q(permission)}") for permission in missing_permissions]
             admin.write("POST", f"/roles/{q(name)}/composites", body, f"add to {name}: {len(missing_roles)} roles, {len(missing_permissions)} permissions")
+        surplus = [role for role in composites if role.get("clientRole") and role.get("containerId") == api_id and role["name"] not in permission_composites]
+        if surplus:
+            admin.write("DELETE", f"/roles/{q(name)}/composites", surplus, f"remove from {name}: {[role['name'] for role in surplus]}")
 
     print("3. reeve-backend service account")
     backend_id = ensure_client(admin, BACKEND_CLIENT, {

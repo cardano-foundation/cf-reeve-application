@@ -405,7 +405,7 @@ lob:
         permissions: ['settings:view', 'organization:view', 'organization_details:view', 'currencies:view']
       - name: org_admin
         description: Edit the organisation details and currencies.
-        permissions: ['organization_details:edit', 'currencies:create', 'currencies:edit', 'transactions:publish_view', 'reports:publish_view']
+        permissions: ['organization_details:edit', 'currencies:create', 'currencies:edit']
       - name: transactions_viewer
         description: 'Transactions module: transactions, batches, reconciliation status, data explorer, setup data, read-only.'
         permissions: ['transactions:view', 'transactions:export', 'transactions:batches_view', 'transactions:reconcilate_view',
@@ -432,6 +432,9 @@ lob:
       - name: transactions_publisher
         description: 'Transactions module: publish (approve/reject) transactions.'
         permissions: ['transactions:publish_view', 'transactions:publish_approve', 'transactions:publish_reject']
+      - name: transactions_publish_viewer
+        description: 'Transactions: see the publish queue, without approving anything'
+        permissions: ['transactions:publish_view']
       - name: transactions_dashboard_editor
         description: 'Transactions: create and edit data explorer dashboards'
         permissions: ['data_explorer:dashboard_create', 'data_explorer:dashboard_edit']
@@ -448,6 +451,9 @@ lob:
       - name: reports_publisher
         description: 'Reporting module: publish/reject reports.'
         permissions: ['reports:publish_view', 'reports:publish', 'reports:reject']
+      - name: reports_publish_viewer
+        description: 'Reporting: see the publish queue, without approving anything'
+        permissions: ['reports:publish_view']
       - name: funding_viewer
         description: 'Funding module: projects and spending events, read-only (plus the VAT codes and currencies they use).'
         permissions: ['project_management:view', 'vat_codes:view', 'currencies:view']
@@ -470,12 +476,14 @@ lob:
       - {path: transactions/importer, role: transactions_importer}
       - {path: transactions/reviewer, role: transactions_reviewer}
       - {path: transactions/publisher, role: transactions_publisher}
+      - {path: transactions/publish_viewer, role: transactions_publish_viewer}
       - {path: transactions/dashboard_editor, role: transactions_dashboard_editor}
       - {path: transactions/setup, role: transactions_setup}
       - {path: transactions/setup/erp, role: transactions_erp}
       - {path: reporting, role: reports_viewer}
       - {path: reporting/editor, role: reports_editor}
       - {path: reporting/publisher, role: reports_publisher}
+      - {path: reporting/publish_viewer, role: reports_publish_viewer}
       - {path: reporting/setup, role: reports_setup}
       - {path: funding, role: funding_viewer}
       - {path: funding/event_editor, role: funding_event_editor}
