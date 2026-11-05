@@ -377,6 +377,100 @@
             ]
           }
         }
+      },
+      {
+        "name": "preset_auditor",
+        "description": "Temporary bundle with the access of the former reeve_auditor role. Move members to the specific groups, then remove it.",
+        "composite": true,
+        "composites": {
+          "realm": [
+            "transactions_viewer",
+            "reports_viewer",
+            "funding_viewer",
+            "document_vault_viewer",
+            "document_vault_editor"
+          ]
+        }
+      },
+      {
+        "name": "preset_accountant",
+        "description": "Temporary bundle with the access of the former reeve_accountant role. Move members to the specific groups, then remove it.",
+        "composite": true,
+        "composites": {
+          "realm": [
+            "transactions_viewer",
+            "transactions_setup",
+            "transactions_importer",
+            "transactions_reviewer",
+            "transactions_reconciler",
+            "reports_viewer",
+            "reports_editor",
+            "funding_viewer",
+            "funding_event_editor",
+            "funding_setup",
+            "document_vault_viewer",
+            "document_vault_editor"
+          ]
+        }
+      },
+      {
+        "name": "preset_admin",
+        "description": "Temporary bundle with the access of the former reeve_admin role. Move members to the specific groups, then remove it.",
+        "composite": true,
+        "composites": {
+          "realm": [
+            "org_admin",
+            "transactions_viewer",
+            "transactions_setup",
+            "transactions_erp",
+            "transactions_importer",
+            "transactions_reviewer",
+            "transactions_reconciler",
+            "transactions_publish_viewer",
+            "reports_viewer",
+            "reports_setup",
+            "reports_publish_viewer",
+            "funding_viewer",
+            "funding_project_manager",
+            "funding_event_editor",
+            "funding_publisher",
+            "funding_setup",
+            "document_vault_viewer",
+            "document_vault_editor",
+            "document_vault_publisher",
+            "document_vault_admin"
+          ]
+        }
+      },
+      {
+        "name": "preset_account_manager",
+        "description": "Temporary bundle with the access of the former reeve_account_manager role. Move members to the specific groups, then remove it.",
+        "composite": true,
+        "composites": {
+          "realm": [
+            "org_admin",
+            "transactions_viewer",
+            "transactions_reconciler",
+            "transactions_importer",
+            "transactions_reviewer",
+            "transactions_publisher",
+            "transactions_dashboard_editor",
+            "transactions_setup",
+            "transactions_erp",
+            "reports_viewer",
+            "reports_editor",
+            "reports_publisher",
+            "reports_setup",
+            "funding_viewer",
+            "funding_event_editor",
+            "funding_project_manager",
+            "funding_publisher",
+            "funding_setup",
+            "document_vault_viewer",
+            "document_vault_editor",
+            "document_vault_publisher"
+          ]
+        }
       }
     ],
     "client": {
