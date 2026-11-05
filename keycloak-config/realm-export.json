@@ -32,7 +32,7 @@
           "providerId": "declarative-user-profile",
           "config": {
             "kc.user.profile.config": [
-              "{\"attributes\":[{\"name\":\"username\",\"displayName\":\"${username}\",\"validations\":{\"length\":{\"min\":3,\"max\":255},\"username-prohibited-characters\":{},\"up-username-not-idn-homograph\":{}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"email\",\"displayName\":\"${email}\",\"validations\":{\"email\":{},\"length\":{\"max\":255}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"firstName\",\"displayName\":\"${firstName}\",\"validations\":{\"length\":{\"max\":255},\"person-name-prohibited-characters\":{}},\"annotations\":{},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"lastName\",\"displayName\":\"${lastName}\",\"validations\":{\"length\":{\"max\":255},\"person-name-prohibited-characters\":{}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"phone\",\"displayName\":\"${phone}\",\"validations\":{},\"annotations\":{},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"job\",\"displayName\":\"${job}\",\"validations\":{},\"annotations\":{},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\n      \"name\": \"organisations\",\n      \"displayName\": \"${organisations}\",\n      \"validations\": {},\n      \"annotations\": {},\n      \"permissions\": {\n        \"view\": [],\n        \"edit\": [\n          \"admin\"\n        ]\n      },\n      \"multivalued\": true\n    }],\"groups\":[{\"name\":\"user-metadata\",\"displayHeader\":\"User metadata\",\"displayDescription\":\"Attributes, which refer to user metadata\"}]}"
+              "{\"attributes\": [{\"name\": \"username\", \"displayName\": \"${username}\", \"validations\": {\"length\": {\"min\": 3, \"max\": 255}, \"username-prohibited-characters\": {}, \"up-username-not-idn-homograph\": {}}, \"permissions\": {\"view\": [\"admin\", \"user\"], \"edit\": [\"admin\", \"user\"]}, \"multivalued\": false}, {\"name\": \"email\", \"displayName\": \"${email}\", \"validations\": {\"email\": {}, \"length\": {\"max\": 255}}, \"required\": {\"roles\": [\"user\"]}, \"permissions\": {\"view\": [\"admin\", \"user\"], \"edit\": [\"admin\", \"user\"]}, \"multivalued\": false}, {\"name\": \"firstName\", \"displayName\": \"${firstName}\", \"validations\": {\"length\": {\"max\": 255}, \"person-name-prohibited-characters\": {}}, \"annotations\": {}, \"required\": {\"roles\": [\"user\"]}, \"permissions\": {\"view\": [\"admin\", \"user\"], \"edit\": [\"admin\", \"user\"]}, \"multivalued\": false}, {\"name\": \"lastName\", \"displayName\": \"${lastName}\", \"validations\": {\"length\": {\"max\": 255}, \"person-name-prohibited-characters\": {}}, \"required\": {\"roles\": [\"user\"]}, \"permissions\": {\"view\": [\"admin\", \"user\"], \"edit\": [\"admin\", \"user\"]}, \"multivalued\": false}, {\"name\": \"phone\", \"displayName\": \"${phone}\", \"validations\": {}, \"annotations\": {}, \"permissions\": {\"view\": [\"admin\", \"user\"], \"edit\": [\"admin\", \"user\"]}, \"multivalued\": false}, {\"name\": \"job\", \"displayName\": \"${job}\", \"validations\": {}, \"annotations\": {}, \"permissions\": {\"view\": [\"admin\", \"user\"], \"edit\": [\"admin\", \"user\"]}, \"multivalued\": false}], \"groups\": [{\"name\": \"user-metadata\", \"displayHeader\": \"User metadata\", \"displayDescription\": \"Attributes, which refer to user metadata\"}]}"
             ]
           }
         }
@@ -50,15 +50,19 @@
           {
             "type": "password",
             "value": "CF-aud123",
-              "temporary": true
+            "temporary": true
           }
         ],
-        "realmRoles": ["reeve_auditor"],
         "attributes": {
           "JobTitle": "Auditor",
-          "PhoneNumber": "+123456789",
-          "organisations": ["75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"]
-        }
+          "PhoneNumber": "+123456789"
+        },
+        "groups": [
+          "/organisations/Cardano Foundation/transactions",
+          "/organisations/Cardano Foundation/reporting",
+          "/organisations/Cardano Foundation/funding",
+          "/organisations/Cardano Foundation/document_vault/editor"
+        ]
       },
       {
         "username": "accountant",
@@ -74,12 +78,20 @@
             "temporary": true
           }
         ],
-        "realmRoles": ["reeve_accountant"],
         "attributes": {
           "JobTitle": "Accountant",
-          "PhoneNumber": "+123456789",
-          "organisations": ["75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"]
-        }
+          "PhoneNumber": "+123456789"
+        },
+        "groups": [
+          "/organisations/Cardano Foundation/transactions/setup",
+          "/organisations/Cardano Foundation/transactions/importer",
+          "/organisations/Cardano Foundation/transactions/reviewer",
+          "/organisations/Cardano Foundation/transactions/reconciler",
+          "/organisations/Cardano Foundation/reporting/editor",
+          "/organisations/Cardano Foundation/funding/event_editor",
+          "/organisations/Cardano Foundation/funding/setup",
+          "/organisations/Cardano Foundation/document_vault/editor"
+        ]
       },
       {
         "username": "manager",
@@ -95,12 +107,29 @@
             "temporary": true
           }
         ],
-        "realmRoles": ["reeve_account_manager"],
         "attributes": {
-            "JobTitle": "Account Manager",
-            "PhoneNumber": "+987654321",
-            "organisations": ["75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"]
-        }
+          "JobTitle": "Account Manager",
+          "PhoneNumber": "+987654321"
+        },
+        "groups": [
+          "/organisations/Cardano Foundation/org_admin",
+          "/organisations/Cardano Foundation/transactions/reconciler",
+          "/organisations/Cardano Foundation/transactions/importer",
+          "/organisations/Cardano Foundation/transactions/reviewer",
+          "/organisations/Cardano Foundation/transactions/publisher",
+          "/organisations/Cardano Foundation/transactions/dashboard_editor",
+          "/organisations/Cardano Foundation/transactions/setup/erp",
+          "/organisations/Cardano Foundation/reporting/editor",
+          "/organisations/Cardano Foundation/reporting/publisher",
+          "/organisations/Cardano Foundation/reporting/setup",
+          "/organisations/Cardano Foundation/funding/event_editor",
+          "/organisations/Cardano Foundation/funding/project_manager",
+          "/organisations/Cardano Foundation/funding/publisher",
+          "/organisations/Cardano Foundation/funding/setup",
+          "/organisations/Cardano Foundation/document_vault/editor",
+          "/organisations/Cardano Foundation/document_vault/publisher",
+          "/platform/administrators"
+        ]
       },
       {
         "username": "admin",
@@ -116,11 +145,41 @@
             "temporary": true
           }
         ],
-        "realmRoles": ["reeve_admin"],
         "attributes": {
           "JobTitle": "Administrator",
-          "PhoneNumber": "+987654321",
-          "organisations": ["75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"]
+          "PhoneNumber": "+987654321"
+        },
+        "groups": [
+          "/organisations/Cardano Foundation/org_admin",
+          "/organisations/Cardano Foundation/transactions/setup/erp",
+          "/organisations/Cardano Foundation/transactions/importer",
+          "/organisations/Cardano Foundation/transactions/reviewer",
+          "/organisations/Cardano Foundation/transactions/reconciler",
+          "/organisations/Cardano Foundation/transactions/publish_viewer",
+          "/organisations/Cardano Foundation/reporting/setup",
+          "/organisations/Cardano Foundation/reporting/publish_viewer",
+          "/organisations/Cardano Foundation/funding/project_manager",
+          "/organisations/Cardano Foundation/funding/event_editor",
+          "/organisations/Cardano Foundation/funding/publisher",
+          "/organisations/Cardano Foundation/funding/setup",
+          "/organisations/Cardano Foundation/document_vault/editor",
+          "/organisations/Cardano Foundation/document_vault/publisher",
+          "/organisations/Cardano Foundation/document_vault/admin",
+          "/platform/administrators"
+        ]
+      },
+      {
+        "username": "service-account-reeve-backend",
+        "enabled": true,
+        "serviceAccountClientId": "reeve-backend",
+        "clientRoles": {
+          "realm-management": [
+            "view-users",
+            "query-groups",
+            "view-clients",
+            "view-realm",
+            "manage-users"
+          ]
         }
       }
     ],
@@ -176,14 +235,28 @@
         "defaultClientScopes": [
           "web-origins",
           "acr",
-          "organisations",
           "phone",
           "profile",
           "organization",
           "roles",
           "basic",
           "email"
-        ]
+        ],
+        "fullScopeAllowed": false
+      },
+      {
+        "clientId": "reeve-backend",
+        "name": "Reeve backend",
+        "description": "Service account the backend uses to read organisations, roles and modules",
+        "enabled": true,
+        "protocol": "openid-connect",
+        "publicClient": false,
+        "clientAuthenticatorType": "client-secret",
+        "secret": "reeve-backend-dev-secret",
+        "serviceAccountsEnabled": true,
+        "standardFlowEnabled": false,
+        "implicitFlowEnabled": false,
+        "directAccessGrantsEnabled": false
       }
     ],
     "clientScopes": [
@@ -298,36 +371,6 @@
               "claim.name": "resource_access.${client_id}.roles",
               "jsonType.label": "String",
               "multivalued": "true"
-            }
-          }
-        ]
-      },
-      {
-        "name": "organisations",
-        "description": "A user is a member of one or more organisations",
-        "protocol": "openid-connect",
-        "attributes": {
-          "include.in.token.scope": "false",
-          "display.on.consent.screen": "true",
-          "gui.order": "",
-          "consent.screen.text": ""
-        },
-        "protocolMappers": [
-          {
-            "name": "organisations",
-            "protocol": "openid-connect",
-            "protocolMapper": "oidc-usermodel-attribute-mapper",
-            "consentRequired": false,
-            "config": {
-              "introspection.token.claim": "true",
-              "multivalued": "true",
-              "userinfo.token.claim": "true",
-              "user.attribute": "organisations",
-              "id.token.claim": "true",
-              "lightweight.claim": "false",
-              "access.token.claim": "true",
-              "claim.name": "organisations",
-              "jsonType.label": "String"
             }
           }
         ]
@@ -570,34 +613,854 @@
     "roles": {
       "realm": [
         {
-          "name": "reeve_account_manager",
-          "description": "",
-          "composite": false,
-          "clientRole": false,
-          "attributes": {}
+          "name": "org_member",
+          "description": "Member of the organisation: organisation details and settings, read-only. Assigned on the organisation group, so every member has it.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "settings:view",
+                "organization:view",
+                "organization_details:view",
+                "currencies:view"
+              ]
+            }
+          }
         },
         {
-          "name": "reeve_auditor",
-          "description": "",
-          "composite": false,
-          "clientRole": false,
-          "attributes": {}
+          "name": "org_admin",
+          "description": "Edit the organisation details and currencies.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "organization_details:edit",
+                "currencies:create",
+                "currencies:edit"
+              ]
+            }
+          }
         },
         {
-          "name": "reeve_accountant",
-          "description": "",
-          "composite": false,
-          "clientRole": false,
-          "attributes": {}
+          "name": "transactions_viewer",
+          "description": "Transactions module: transactions, batches, reconciliation status, data explorer, setup data, read-only.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "transactions:view",
+                "transactions:export",
+                "transactions:batches_view",
+                "transactions:reconcilate_view",
+                "data_explorer:view",
+                "data_explorer:dashboard_view",
+                "data_explorer:search_view",
+                "chart_of_accounts:view",
+                "event_codes:view",
+                "cost_centers:view",
+                "projects:view",
+                "vat_codes:view",
+                "export_setup_data:view"
+              ]
+            }
+          }
         },
         {
-          "name": "reeve_admin",
-          "description": "",
-          "composite": false,
-          "clientRole": false,
-          "attributes": {}
+          "name": "transactions_setup",
+          "description": "Transactions module: configure chart of accounts, event/reference codes, cost centers, project codes, VAT codes, currencies; import/export setup data.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "chart_of_accounts:create",
+                "chart_of_accounts:edit",
+                "event_codes:create",
+                "event_codes:edit",
+                "cost_centers:create",
+                "cost_centers:edit",
+                "projects:create",
+                "projects:edit",
+                "vat_codes:create",
+                "vat_codes:edit",
+                "currencies:create",
+                "currencies:edit",
+                "organization_setup:view",
+                "organization_setup:import",
+                "export_setup_data:download"
+              ]
+            }
+          }
+        },
+        {
+          "name": "transactions_erp",
+          "description": "Transactions module: configure the ERP (NetSuite) connection.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "netsuite_configuration:view",
+                "netsuite_configuration:create",
+                "netsuite_configuration:edit"
+              ]
+            }
+          }
+        },
+        {
+          "name": "transactions_importer",
+          "description": "Transactions module: import/extract from the ERP and reprocess batches.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "transactions:import_view",
+                "transactions:import",
+                "transactions:batches_reprocess"
+              ]
+            }
+          }
+        },
+        {
+          "name": "transactions_reviewer",
+          "description": "Transactions module: review (approve/reject) transactions.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "transactions:review_view",
+                "transactions:review_approve",
+                "transactions:review_reject"
+              ]
+            }
+          }
+        },
+        {
+          "name": "transactions_reconciler",
+          "description": "Transactions module: run the reconciliation.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "transactions:reconcilate"
+              ]
+            }
+          }
+        },
+        {
+          "name": "transactions_publisher",
+          "description": "Transactions module: publish (approve/reject) transactions.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "transactions:publish_view",
+                "transactions:publish_approve",
+                "transactions:publish_reject"
+              ]
+            }
+          }
+        },
+        {
+          "name": "transactions_publish_viewer",
+          "description": "Transactions: see the publish queue, without approving anything",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "transactions:publish_view"
+              ]
+            }
+          }
+        },
+        {
+          "name": "transactions_dashboard_editor",
+          "description": "Transactions: create and edit data explorer dashboards",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "data_explorer:dashboard_create",
+                "data_explorer:dashboard_edit"
+              ]
+            }
+          }
+        },
+        {
+          "name": "reports_viewer",
+          "description": "Reporting module: reports, templates, chart of accounts and accounting regimes, read-only.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "reports:view",
+                "report_templates:view",
+                "report_types:view",
+                "chart_of_accounts:view",
+                "accounting_regimes:view"
+              ]
+            }
+          }
+        },
+        {
+          "name": "reports_setup",
+          "description": "Reporting module: configure accounting regimes and report type field mappings.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "accounting_regimes:create",
+                "accounting_regimes:edit",
+                "report_types:edit"
+              ]
+            }
+          }
+        },
+        {
+          "name": "reports_editor",
+          "description": "Reporting module: create, edit, generate and delete reports and report templates.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "reports:create",
+                "reports:edit",
+                "reports:delete",
+                "reports:preview",
+                "report_templates:create",
+                "report_templates:edit",
+                "report_templates:delete",
+                "report_types:edit"
+              ]
+            }
+          }
+        },
+        {
+          "name": "reports_publisher",
+          "description": "Reporting module: publish/reject reports.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "reports:publish_view",
+                "reports:publish",
+                "reports:reject"
+              ]
+            }
+          }
+        },
+        {
+          "name": "reports_publish_viewer",
+          "description": "Reporting: see the publish queue, without approving anything",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "reports:publish_view"
+              ]
+            }
+          }
+        },
+        {
+          "name": "document_vault_viewer",
+          "description": "Document vault module: documents, keys, recipients and contacts, read-only.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "document_vault:view"
+              ]
+            }
+          }
+        },
+        {
+          "name": "document_vault_editor",
+          "description": "Document vault module: upload documents, manage keys and contacts, delete own drafts.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "document_vault:create",
+                "document_vault:edit",
+                "document_vault:delete"
+              ]
+            }
+          }
+        },
+        {
+          "name": "document_vault_publisher",
+          "description": "Document vault module: publish documents on-chain and attest them with KERI.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "document_vault:publish"
+              ]
+            }
+          }
+        },
+        {
+          "name": "document_vault_admin",
+          "description": "Document vault module: delete keys and draft documents of other users.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "document_vault:delete_any"
+              ]
+            }
+          }
+        },
+        {
+          "name": "funding_viewer",
+          "description": "Funding module: projects and spending events, read-only (plus the VAT codes and currencies they use).",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "project_management:view",
+                "vat_codes:view",
+                "currencies:view"
+              ]
+            }
+          }
+        },
+        {
+          "name": "funding_setup",
+          "description": "Funding module: create and edit the VAT codes and currencies the funding module uses.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "vat_codes:create",
+                "vat_codes:edit",
+                "currencies:create",
+                "currencies:edit"
+              ]
+            }
+          }
+        },
+        {
+          "name": "funding_project_manager",
+          "description": "Funding module: create, edit and delete projects and milestones, bulk import; delete events.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "project_management:create_project",
+                "project_management:delete"
+              ]
+            }
+          }
+        },
+        {
+          "name": "funding_event_editor",
+          "description": "Funding module: create and edit spending events.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "project_management:create",
+                "project_management:edit"
+              ]
+            }
+          }
+        },
+        {
+          "name": "funding_publisher",
+          "description": "Funding module: publish spending events.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "project_management:publish"
+              ]
+            }
+          }
+        },
+        {
+          "name": "platform_admin",
+          "description": "Platform administrator: creates organisations.",
+          "composite": true,
+          "composites": {
+            "client": {
+              "reeve-api": [
+                "organisations:create"
+              ]
+            }
+          }
         }
-      ]
+      ],
+      "client": {
+        "reeve-api": [
+          {
+            "name": "organisations:create",
+            "description": "create on organisations (core)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:view",
+            "description": "view on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:export",
+            "description": "export on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:import_view",
+            "description": "import_view on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:import",
+            "description": "import on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:review_view",
+            "description": "review_view on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:review_approve",
+            "description": "review_approve on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:review_reject",
+            "description": "review_reject on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:publish_view",
+            "description": "publish_view on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:publish_approve",
+            "description": "publish_approve on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:publish_reject",
+            "description": "publish_reject on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:batches_view",
+            "description": "batches_view on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:batches_reprocess",
+            "description": "batches_reprocess on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:reconcilate_view",
+            "description": "reconcilate_view on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "transactions:reconcilate",
+            "description": "reconcilate on transactions (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "data_explorer:view",
+            "description": "view on data_explorer (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "data_explorer:dashboard_view",
+            "description": "dashboard_view on data_explorer (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "data_explorer:dashboard_create",
+            "description": "dashboard_create on data_explorer (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "data_explorer:dashboard_edit",
+            "description": "dashboard_edit on data_explorer (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "data_explorer:search_view",
+            "description": "search_view on data_explorer (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "reports:view",
+            "description": "view on reports (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "reports:create",
+            "description": "create on reports (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "reports:edit",
+            "description": "edit on reports (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "reports:delete",
+            "description": "delete on reports (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "reports:preview",
+            "description": "preview on reports (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "reports:publish",
+            "description": "publish on reports (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "reports:publish_view",
+            "description": "publish_view on reports (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "reports:reject",
+            "description": "reject on reports (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "report_templates:view",
+            "description": "view on report_templates (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "report_templates:create",
+            "description": "create on report_templates (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "report_templates:edit",
+            "description": "edit on report_templates (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "report_templates:delete",
+            "description": "delete on report_templates (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "report_types:view",
+            "description": "view on report_types (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "report_types:edit",
+            "description": "edit on report_types (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "project_management:view",
+            "description": "view on project_management (funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "project_management:create",
+            "description": "create on project_management (funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "project_management:edit",
+            "description": "edit on project_management (funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "project_management:delete",
+            "description": "delete on project_management (funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "project_management:publish",
+            "description": "publish on project_management (funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "project_management:create_project",
+            "description": "create_project on project_management (funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:view",
+            "description": "view on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:create",
+            "description": "create on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:edit",
+            "description": "edit on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:delete",
+            "description": "delete on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:delete_any",
+            "description": "delete_any on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "document_vault:publish",
+            "description": "publish on document_vault (document_vault)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "settings:view",
+            "description": "view on settings (core)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "organization:view",
+            "description": "view on organization (core)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "organization_details:view",
+            "description": "view on organization_details (core)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "organization_details:edit",
+            "description": "edit on organization_details (core)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "netsuite_configuration:view",
+            "description": "view on netsuite_configuration (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "netsuite_configuration:create",
+            "description": "create on netsuite_configuration (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "netsuite_configuration:edit",
+            "description": "edit on netsuite_configuration (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "organization_setup:view",
+            "description": "view on organization_setup (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "organization_setup:import",
+            "description": "import on organization_setup (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "export_setup_data:view",
+            "description": "view on export_setup_data (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "export_setup_data:download",
+            "description": "download on export_setup_data (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "chart_of_accounts:view",
+            "description": "view on chart_of_accounts (transactions, reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "chart_of_accounts:create",
+            "description": "create on chart_of_accounts (transactions, reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "chart_of_accounts:edit",
+            "description": "edit on chart_of_accounts (transactions, reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "event_codes:view",
+            "description": "view on event_codes (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "event_codes:create",
+            "description": "create on event_codes (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "event_codes:edit",
+            "description": "edit on event_codes (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "cost_centers:view",
+            "description": "view on cost_centers (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "cost_centers:create",
+            "description": "create on cost_centers (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "cost_centers:edit",
+            "description": "edit on cost_centers (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "projects:view",
+            "description": "view on projects (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "projects:create",
+            "description": "create on projects (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "projects:edit",
+            "description": "edit on projects (transactions)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "vat_codes:view",
+            "description": "view on vat_codes (transactions, funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "vat_codes:create",
+            "description": "create on vat_codes (transactions, funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "vat_codes:edit",
+            "description": "edit on vat_codes (transactions, funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "currencies:view",
+            "description": "view on currencies (transactions, funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "currencies:create",
+            "description": "create on currencies (transactions, funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "currencies:edit",
+            "description": "edit on currencies (transactions, funding)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "accounting_regimes:view",
+            "description": "view on accounting_regimes (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "accounting_regimes:create",
+            "description": "create on accounting_regimes (reporting)",
+            "composite": false,
+            "clientRole": true
+          },
+          {
+            "name": "accounting_regimes:edit",
+            "description": "edit on accounting_regimes (reporting)",
+            "composite": false,
+            "clientRole": true
+          }
+        ]
+      }
     },
     "smtpServer": {
       "password": "**********",
@@ -1234,6 +2097,246 @@
         "config": {
           "update.profile.on.first.login": "missing"
         }
+      }
+    ],
+    "groups": [
+      {
+        "name": "platform",
+        "attributes": {},
+        "realmRoles": [],
+        "subGroups": [
+          {
+            "name": "administrators",
+            "attributes": {},
+            "realmRoles": [
+              "platform_admin"
+            ],
+            "subGroups": []
+          }
+        ]
+      },
+      {
+        "name": "organisations",
+        "attributes": {},
+        "realmRoles": [],
+        "subGroups": [
+          {
+            "name": "Cardano Foundation",
+            "attributes": {
+              "organisationId": [
+                "75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94"
+              ],
+              "modules": [
+                "transactions",
+                "reporting",
+                "funding",
+                "document_vault"
+              ]
+            },
+            "realmRoles": [
+              "org_member"
+            ],
+            "subGroups": [
+              {
+                "name": "org_admin",
+                "attributes": {},
+                "realmRoles": [
+                  "org_admin"
+                ],
+                "subGroups": []
+              },
+              {
+                "name": "transactions",
+                "attributes": {},
+                "realmRoles": [
+                  "transactions_viewer"
+                ],
+                "subGroups": [
+                  {
+                    "name": "reconciler",
+                    "attributes": {},
+                    "realmRoles": [
+                      "transactions_reconciler"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "importer",
+                    "attributes": {},
+                    "realmRoles": [
+                      "transactions_importer"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "reviewer",
+                    "attributes": {},
+                    "realmRoles": [
+                      "transactions_reviewer"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "publisher",
+                    "attributes": {},
+                    "realmRoles": [
+                      "transactions_publisher"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "publish_viewer",
+                    "attributes": {},
+                    "realmRoles": [
+                      "transactions_publish_viewer"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "dashboard_editor",
+                    "attributes": {},
+                    "realmRoles": [
+                      "transactions_dashboard_editor"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "setup",
+                    "attributes": {},
+                    "realmRoles": [
+                      "transactions_setup"
+                    ],
+                    "subGroups": [
+                      {
+                        "name": "erp",
+                        "attributes": {},
+                        "realmRoles": [
+                          "transactions_erp"
+                        ],
+                        "subGroups": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "reporting",
+                "attributes": {},
+                "realmRoles": [
+                  "reports_viewer"
+                ],
+                "subGroups": [
+                  {
+                    "name": "editor",
+                    "attributes": {},
+                    "realmRoles": [
+                      "reports_editor"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "publisher",
+                    "attributes": {},
+                    "realmRoles": [
+                      "reports_publisher"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "publish_viewer",
+                    "attributes": {},
+                    "realmRoles": [
+                      "reports_publish_viewer"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "setup",
+                    "attributes": {},
+                    "realmRoles": [
+                      "reports_setup"
+                    ],
+                    "subGroups": []
+                  }
+                ]
+              },
+              {
+                "name": "document_vault",
+                "attributes": {},
+                "realmRoles": [
+                  "document_vault_viewer"
+                ],
+                "subGroups": [
+                  {
+                    "name": "editor",
+                    "attributes": {},
+                    "realmRoles": [
+                      "document_vault_editor"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "publisher",
+                    "attributes": {},
+                    "realmRoles": [
+                      "document_vault_publisher"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "admin",
+                    "attributes": {},
+                    "realmRoles": [
+                      "document_vault_admin"
+                    ],
+                    "subGroups": []
+                  }
+                ]
+              },
+              {
+                "name": "funding",
+                "attributes": {},
+                "realmRoles": [
+                  "funding_viewer"
+                ],
+                "subGroups": [
+                  {
+                    "name": "event_editor",
+                    "attributes": {},
+                    "realmRoles": [
+                      "funding_event_editor"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "project_manager",
+                    "attributes": {},
+                    "realmRoles": [
+                      "funding_project_manager"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "publisher",
+                    "attributes": {},
+                    "realmRoles": [
+                      "funding_publisher"
+                    ],
+                    "subGroups": []
+                  },
+                  {
+                    "name": "setup",
+                    "attributes": {},
+                    "realmRoles": [
+                      "funding_setup"
+                    ],
+                    "subGroups": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

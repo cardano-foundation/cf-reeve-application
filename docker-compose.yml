@@ -168,6 +168,8 @@ services:
       LOB_MOCK_RESULT_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations/NetSuiteIngestionMock.json
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev--yaci-dev-kit}
       DB_URL: ${DB_URL:-jdbc:postgresql://postgres-reeve:5432/postgres}
+      LOB_KEYCLOAK_ADMIN_URL: ${LOB_KEYCLOAK_ADMIN_URL:-http://keycloak:8080}
+      LOB_KEYCLOAK_ADMIN_CLIENT_SECRET: ${LOB_KEYCLOAK_ADMIN_CLIENT_SECRET:-reeve-backend-dev-secret}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
       LOB_ORGANISATION_ENABLED: true
