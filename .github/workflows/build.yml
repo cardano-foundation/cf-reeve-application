@@ -52,7 +52,7 @@ jobs:
           HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
           DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
 
-      - name:  EarthBuild (docker build and push)
+      - name: EarthBuild (docker build and push)
         run: |
           earth +docker-publish \
             --PUSH=${DOCKER_PUSH} \
