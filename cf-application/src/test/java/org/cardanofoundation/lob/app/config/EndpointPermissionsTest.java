@@ -2,7 +2,6 @@ package org.cardanofoundation.lob.app.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,16 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
-import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.cardanofoundation.lob.app.support.security.access.PermissionCatalogue;
+import org.cardanofoundation.lob.app.support.security.access.PermissionCatalogueEnvironmentPostProcessor;
 import org.cardanofoundation.lob.app.support.security.access.PermissionProperties;
 
 /**
@@ -96,14 +94,9 @@ class EndpointPermissionsTest {
     }
 
     private static PermissionCatalogue catalogue() {
-        try {
-            var sources = new YamlPropertySourceLoader().load("catalogue", new ClassPathResource("application.yml"));
-            return new PermissionCatalogue(new Binder(ConfigurationPropertySources.from(sources))
-                    .bind("lob.permissions", PermissionProperties.class)
-                    .orElseThrow(() -> new IllegalStateException("application.yml has no lob.permissions")));
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+        return new PermissionCatalogue(new Binder(ConfigurationPropertySources.from(PermissionCatalogueEnvironmentPostProcessor.load()))
+                .bind("lob.permissions", PermissionProperties.class)
+                .orElseThrow(() -> new IllegalStateException("the platform's reeve-permissions.yml has no lob.permissions")));
     }
 
 }
