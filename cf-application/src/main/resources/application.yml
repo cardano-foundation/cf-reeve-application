@@ -415,8 +415,8 @@ lob:
       cache-ttl: ${LOB_KEYCLOAK_ADMIN_CACHE_TTL:PT30S}
   # Permission catalogue. Endpoints check resource:action permissions; Keycloak decides who has them: permissions are
   # client roles of reeve-api, roles below are realm roles composed of them, and users get roles through groups.
-  # The backend reads modules, organisation-role, resources, groups and platform.group. The rest only seeds and migrates
-  # Keycloak through keycloak-config/tools, which read this file directly.
+  # The backend reads modules, organisation-role, resources, groups and platform.group. Nothing reads roles and
+  # platform.roles: Keycloak gets them from keycloak-config/realm-export.json and keycloak-migrations, so change them there too.
   # groups is the subgroup layout under /organisations/<organisation name>. A member of a subgroup also gets the roles of
   # its parent groups; publisher sits next to reviewer so review and publish can go to different people (four-eyes).
   # Entries are lists on purpose: Spring removes characters like "/" and "_" from map keys when binding.
@@ -461,7 +461,7 @@ lob:
         modules: [transactions]
         actions: [view, import]
       - name: export_setup_data
-        modules: [transactions]
+        modules: [transactions, funding]
         actions: [view, download]
       - name: chart_of_accounts
         modules: [transactions, reporting]
@@ -517,7 +517,8 @@ lob:
         permissions: ['transactions:reconcilate']
       - name: transactions_publisher
         description: 'Transactions module: publish (approve/reject) transactions.'
-        permissions: ['transactions:publish_view', 'transactions:publish_approve', 'transactions:publish_reject']
+        permissions: ['transactions:publish_view', 'transactions:publish_approve', 'transactions:publish_reject',
+          'transactions:review_reject']
       - name: transactions_publish_viewer
         description: 'Transactions: see the publish queue, without approving anything'
         permissions: ['transactions:publish_view']
@@ -557,7 +558,7 @@ lob:
         permissions: ['project_management:view', 'vat_codes:view', 'currencies:view']
       - name: funding_setup
         description: 'Funding module: create and edit the VAT codes and currencies the funding module uses.'
-        permissions: ['vat_codes:create', 'vat_codes:edit', 'currencies:create', 'currencies:edit']
+        permissions: ['vat_codes:create', 'vat_codes:edit', 'currencies:create', 'currencies:edit', 'export_setup_data:download']
       - name: funding_project_manager
         description: 'Funding module: create, edit and delete projects and milestones, bulk import; delete events.'
         permissions: ['project_management:create_project', 'project_management:delete']

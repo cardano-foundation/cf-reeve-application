@@ -754,7 +754,8 @@
               "reeve-api": [
                 "transactions:publish_view",
                 "transactions:publish_approve",
-                "transactions:publish_reject"
+                "transactions:publish_reject",
+                "transactions:review_reject"
               ]
             }
           }
@@ -933,7 +934,8 @@
                 "vat_codes:create",
                 "vat_codes:edit",
                 "currencies:create",
-                "currencies:edit"
+                "currencies:edit",
+                "export_setup_data:download"
               ]
             }
           }
@@ -1323,13 +1325,13 @@
           },
           {
             "name": "export_setup_data:view",
-            "description": "view on export_setup_data (transactions)",
+            "description": "view on export_setup_data (transactions, funding)",
             "composite": false,
             "clientRole": true
           },
           {
             "name": "export_setup_data:download",
-            "description": "download on export_setup_data (transactions)",
+            "description": "download on export_setup_data (transactions, funding)",
             "composite": false,
             "clientRole": true
           },
