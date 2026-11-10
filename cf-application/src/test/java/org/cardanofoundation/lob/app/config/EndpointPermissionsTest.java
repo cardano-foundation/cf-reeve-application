@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.cardanofoundation.lob.app.support.security.access.PermissionCatalogue;
 import org.cardanofoundation.lob.app.support.security.access.PermissionCatalogueEnvironmentPostProcessor;
-import org.cardanofoundation.lob.app.support.security.access.PermissionProperties;
 
 /**
  * Every endpoint declares who may call it, with permissions the catalogue knows: a SpEL expression isn't compiled, so
@@ -94,9 +91,7 @@ class EndpointPermissionsTest {
     }
 
     private static PermissionCatalogue catalogue() {
-        return new PermissionCatalogue(new Binder(ConfigurationPropertySources.from(PermissionCatalogueEnvironmentPostProcessor.load()))
-                .bind("lob.permissions", PermissionProperties.class)
-                .orElseThrow(() -> new IllegalStateException("the platform's reeve-permissions.yml has no lob.permissions")));
+        return new PermissionCatalogue(PermissionCatalogueEnvironmentPostProcessor.shippedCatalogue());
     }
 
 }

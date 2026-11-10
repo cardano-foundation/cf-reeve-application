@@ -10,15 +10,12 @@ import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.cardanofoundation.lob.app.support.security.access.PermissionCatalogue;
 import org.cardanofoundation.lob.app.support.security.access.PermissionCatalogueEnvironmentPostProcessor;
-import org.cardanofoundation.lob.app.support.security.access.PermissionProperties;
 
 /**
  * The permission catalogue comes with the platform, the roles and permissions in Keycloak come from this repository.
@@ -29,9 +26,7 @@ class KeycloakPermissionsTest {
     private static final String REALM = "reeve-master";
     private static final String PERMISSIONS_CLIENT = "reeve-api";
 
-    private final PermissionCatalogue catalogue = new PermissionCatalogue(new Binder(ConfigurationPropertySources.from(PermissionCatalogueEnvironmentPostProcessor.load()))
-            .bind("lob.permissions", PermissionProperties.class)
-            .orElseThrow(() -> new IllegalStateException("the platform's reeve-permissions.yml has no lob.permissions")));
+    private final PermissionCatalogue catalogue = new PermissionCatalogue(PermissionCatalogueEnvironmentPostProcessor.shippedCatalogue());
 
     @ParameterizedTest
     @ValueSource(strings = {"keycloak-migrations/keycloak-config-cli/003-group-access-model.json", "keycloak-config/realm-export.json"})
