@@ -200,6 +200,7 @@ lob:
       document_must_be_present: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_DOCUMENT_MUST_BE_PRESENT:true}
       check_if_all_tx_items_are_erased: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_CHECK_IF_ALL_TX_ITEMS_ARE_ERASED:true}
       net_off_credit_debit: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_NET_OFF_CREDIT_DEBIT:true}
+      line_item_debit_credit_accounts_check: ${LOB_ACCOUNTING_REPORTING_CORE_RULES_LINE_ITEM_DEBIT_CREDIT_ACCOUNTS_CHECK:true}
     jobs:
       unstuck:
         enabled: ${LOB_ACCOUNTING_REPORTING_CORE_JOBS_UNSTUCK_ENABLED:true}
@@ -397,15 +398,14 @@ lob:
       # affected module fails fast at startup when its key is missing.
       public-key: ${LOB_CONFIG_ENCRYPTION_PUBLIC_KEY:}
       private-key: ${LOB_CONFIG_ENCRYPTION_PRIVATE_KEY:}
-    roles:
-      auditor: ${LOB_SECURITY_ROLES_AUDITOR:reeve_auditor}
-      manager: ${LOB_SECURITY_ROLES_MANAGER:reeve_account_manager}
-      accountant: ${LOB_SECURITY_ROLES_ACCOUNTANT:reeve_accountant}
-      admin: ${LOB_SECURITY_ROLES_ADMIN:reeve_admin}
     clamav:
       enabled: ${LOB_SECURITY_CLAMAV_ENABLED:false}
       host: ${LOB_SECURITY_CLAMAV_HOST:localhost}
       port: ${LOB_SECURITY_CLAMAV_PORT:3310}
+  # Keycloak (lob.keycloak.admin) and the permission catalogue (lob.permissions) are configured in cf-lob-platform:
+  # the connection defaults in KeycloakAdminProperties, overridden with LOB_KEYCLOAK_ADMIN_* (the secret is required),
+  # and the catalogue in support/src/main/resources/org/cardanofoundation/lob/support/reeve-permissions.yml.
+  # Which role holds which permission is defined in keycloak-migrations and keycloak-config/realm-export.json.
 
 # yaci store
 store:

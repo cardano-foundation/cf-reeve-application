@@ -94,6 +94,18 @@ class ApplicationYamlTest {
         assertThat(client).as("operator tuning stays global").containsKey("recordspercall");
     }
 
+    @Test
+    void leavesTheKeycloakConnectionAndThePermissionCatalogueToThePlatform() {
+        Map<String, Object> root = load("/application.yml");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> lob = (Map<String, Object>) root.get("lob");
+
+        assertThat(lob)
+                .as("lists set here would replace the platform's reeve-permissions.yml; the connection is set with LOB_KEYCLOAK_ADMIN_*")
+                .doesNotContainKeys("keycloak", "permissions");
+    }
+
     /**
      * Loads with {@code allowDuplicateKeys=false}, matching Spring Boot's {@code YamlProcessor}.
      * <p>
