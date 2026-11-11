@@ -1,0 +1,226 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: tests/e2e/reject-transactions.feature.spec.js >> Users can reject transactions that has wrong data to avoid be published or to be correct it, system checks >> Reject transaction to pending by parent cost center
+- Location: .features-gen/tests/e2e/reject-transactions.feature.spec.js:41:7
+
+# Error details
+
+```
+Error: expect(received).toEqual(expected) // deep equality
+
+Expected: 200
+Received: 401
+```
+
+# Test source
+
+```ts
+  83  |             const eventCodes = await getEventCodes();
+  84  |             debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
+  85  |         }
+  86  |         const [debitItemAccounts, creditItemAccounts] = getTransactionItemsAccounts(debitAndCreditAccounts);
+  87  |         const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
+  88  |             true, debitItemAccounts);
+  89  |         const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
+  90  |             false, creditItemAccounts);
+  91  |         transactionDataToImport.push(debitTxItem);
+  92  |         transactionDataToImport.push(creditTxItem);
+  93  |         const rows: string[][] = [];
+  94  |         rows.push(Object.values(debitTxItem));
+  95  |         rows.push(Object.values(creditTxItem))
+  96  |         return rows
+  97  |     }
+  98  |     const createPendingTransactionData = async (transactionDataToImport: TransactionItemCsvDto[], pendingReason: string) => {
+  99  |         const transactionCommonData = await getTransactionCommonData()
+  100 |         const amountForTxItem = (Math.floor(Math.random() * 100000) + 1).toString();
+  101 |         const eventCodes = await getEventCodes();
+  102 |         const debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
+  103 |         const [debitItemAccounts, creditItemAccounts] = getTransactionItemsAccounts(debitAndCreditAccounts);
+  104 |         const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
+  105 |             true, debitItemAccounts)
+  106 |         await setPendingReason(debitTxItem, pendingReason);
+  107 |         const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
+  108 |             false, creditItemAccounts);
+  109 |         transactionDataToImport.push(debitTxItem);
+  110 |         transactionDataToImport.push(creditTxItem);
+  111 |         const rows: string[][] = [];
+  112 |         rows.push(Object.values(debitTxItem));
+  113 |         rows.push(Object.values(creditTxItem))
+  114 |         return rows
+  115 |     }
+  116 |     const createInvalidTransactionData = async (transactionDataToImport: TransactionItemCsvDto[], invalidReason: string) => {
+  117 |         const transactionCommonData = await getTransactionCommonData()
+  118 |         const amountForTxItem = (Math.floor(Math.random() * 100000) + 1).toString();
+  119 |         const eventCodes = await getEventCodes();
+  120 |         const debitAndCreditAccounts = await getDebitAndCreditAccounts(eventCodes);
+  121 |         const [debitItemAccounts, creditItemAccounts] = getTransactionItemsAccounts(debitAndCreditAccounts);
+  122 |         const debitTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
+  123 |             true, debitItemAccounts)
+  124 |         const creditTxItem = await createTransactionItem(transactionCommonData, amountForTxItem,
+  125 |             false, creditItemAccounts);
+  126 |         await setInvalidReason(debitTxItem, creditTxItem,invalidReason);
+  127 |         transactionDataToImport.push(debitTxItem);
+  128 |         transactionDataToImport.push(creditTxItem);
+  129 |         const rows: string[][] = [];
+  130 |         rows.push(Object.values(debitTxItem));
+  131 |         rows.push(Object.values(creditTxItem))
+  132 |         return rows
+  133 |     }
+  134 |     const getTransactionCommonData = async () => {
+  135 |         const txNumber = "TEST-" + Math.random().toString(36).substring(2, 2 + 8);
+  136 |         const txDate = getDateInThePast(2, true);
+  137 |         const txType = await getTransactionType();
+  138 |         const documentName = "TEST-" + Math.random().toString(36).substring(2, 2 + 8);
+  139 |         const transactionItemCommonData: TransactionItemCsvDto = {
+  140 |             TxNumber: txNumber,
+  141 |             TxDate: txDate,
+  142 |             TxType: txType,
+  143 |             DocumentName: documentName
+  144 |         }
+  145 |         return transactionItemCommonData
+  146 |     }
+  147 |     const setPendingReason = async (transactionItem: TransactionItemCsvDto, pendingReason: string) => {
+  148 |         if(pendingReason == TransactionPendingInvalidStatus.COST_CENTER_DATA_NOT_FOUND){
+  149 |             transactionItem.TxCostCenter = Math.random().toString(36).substring(2, 2 + 8);
+  150 |         }
+  151 |         if(pendingReason == TransactionPendingInvalidStatus.VAT_DATA_NOT_FOUND){
+  152 |             transactionItem.VatCode = Math.random().toString(36).substring(2, 2 + 8);
+  153 |         }
+  154 |         if(pendingReason == TransactionPendingInvalidStatus.CHART_OF_ACCOUNT_NOT_FOUND){
+  155 |             transactionItem.DebitCode = Math.random().toString(36).substring(2, 2 + 8);
+  156 |         }
+  157 |     }
+  158 |     const setInvalidReason = async (debitTransactionItem: TransactionItemCsvDto, creditTransactionItem: TransactionItemCsvDto,
+  159 |                                     invalidReason: string) => {
+  160 |         if(invalidReason == TransactionPendingInvalidStatus.UNBALANCED_TRANSACTION){
+  161 |             debitTransactionItem.AmountLcyDebit = (Number(debitTransactionItem.AmountLcyDebit) + 1000).toString();
+  162 |             debitTransactionItem.AmountFcyDebit = (Number(debitTransactionItem.AmountFcyDebit) + 1000).toString();
+  163 |         }
+  164 |         if(invalidReason == TransactionPendingInvalidStatus.TX_INTERNAL_NUMBER_MUST_BE_PRESENT){
+  165 |             debitTransactionItem.TxNumber = "";
+  166 |             creditTransactionItem.TxNumber= "";
+  167 |         }
+  168 |         if(invalidReason == TransactionPendingInvalidStatus.ACCOUNT_CODE_DEBIT_IS_EMPTY){
+  169 |             debitTransactionItem.DebitCode = "";
+  170 |         }
+  171 |     }
+  172 |     const getTransactionType = async () => {
+  173 |         const transactionTypeResponse = await (await reeveService(request))
+  174 |             .getTransactionTypes(authToken);
+  175 |         expect(transactionTypeResponse.status()).toEqual(HttpStatusCodes.success);
+  176 |         const transactionTypes: TransactionTypeDto[] = await (transactionTypeResponse.json());
+  177 |         const randomTxType = Math.floor(Math.random() * (transactionTypes.length - 1));
+  178 |         return (transactionTypes[randomTxType].id)
+  179 |     }
+  180 | 
+  181 |     const getEventCodes = async () => {
+  182 |         const eventCodesResponse = await (await reeveService(request)).getEventCodes(authToken);
+> 183 |         expect(eventCodesResponse.status()).toEqual(HttpStatusCodes.success);
+      |                                             ^ Error: expect(received).toEqual(expected) // deep equality
+  184 |         const eventCodes: EventCodesDto[] = await (eventCodesResponse.json());
+  185 |         const referenceCodes: ReferenceCodePair[] = eventCodes.map(eventCode => ({
+  186 |             debitReferenceCode: eventCode.debitReferenceCode,
+  187 |             creditReferenceCode: eventCode.creditReferenceCode
+  188 |         }));
+  189 |         return referenceCodes;
+  190 |     }
+  191 | 
+  192 |     /**
+  193 |      * Get two lists of accounts that has an event code
+  194 |      * for the combination of debit and credit accounts.
+  195 |      * The lists must allow at least two different debit/credit pairs,
+  196 |      * one for each transaction item
+  197 |      * @param eventCodes array of organization's event codes
+  198 |      *
+  199 |      */
+  200 |     const getDebitAndCreditAccounts = async (eventCodes: ReferenceCodePair[]) => {
+  201 |         const chartOfAccounts: AccountRefCodePair[] = await getChartOfAccounts();
+  202 |         for (const eventCode of eventCodes) {
+  203 |             if (eventCode.debitReferenceCode !== eventCode.creditReferenceCode) {
+  204 |                 const debitAndCreditAccounts: DebitAndCreditAccounts = {
+  205 |                     debitAccounts: getAccountsByReferenceCode(chartOfAccounts, eventCode.debitReferenceCode),
+  206 |                     creditAccounts: getAccountsByReferenceCode(chartOfAccounts, eventCode.creditReferenceCode)
+  207 |                 }
+  208 |                 if (getAccountPairs(debitAndCreditAccounts).length >= 2) return debitAndCreditAccounts;
+  209 |             }
+  210 |         }
+  211 |         throw new Error("No event code with at least two different debit/credit account pairs found");
+  212 |     }
+  213 | 
+  214 |     const getAccountsByReferenceCode = (chartOfAccounts: AccountRefCodePair[], referenceCode: string) =>
+  215 |         chartOfAccounts
+  216 |             .filter(account => account.referenceCode === referenceCode)
+  217 |             .map(account => ({ accountCode: account.accountCode, accountName: account.accountName }));
+  218 | 
+  219 |     /**
+  220 |      * All the unique debit/credit combinations where the debit account is different from the credit account
+  221 |      */
+  222 |     const getAccountPairs = (debitAndCreditAccounts: DebitAndCreditAccounts) => {
+  223 |         const accountPairs = new Map<string, TransactionItemAccounts>();
+  224 |         for (const debitAccount of debitAndCreditAccounts.debitAccounts) {
+  225 |             for (const creditAccount of debitAndCreditAccounts.creditAccounts) {
+  226 |                 if (debitAccount.accountCode !== creditAccount.accountCode) {
+  227 |                     accountPairs.set(debitAccount.accountCode + "|" + creditAccount.accountCode,
+  228 |                         { debitAccount: debitAccount, creditAccount: creditAccount });
+  229 |                 }
+  230 |             }
+  231 |         }
+  232 |         return [...accountPairs.values()]
+  233 |     }
+  234 | 
+  235 |     /**
+  236 |      * Pick two different debit/credit pairs, one for each transaction item.
+  237 |      * The backend merges the items with the same pair and drops the items with the same
+  238 |      * debit and credit account, so both cases would end in a one item transaction
+  239 |      * @return [debit item accounts, credit item accounts]
+  240 |      */
+  241 |     const getTransactionItemsAccounts = (debitAndCreditAccounts: DebitAndCreditAccounts) => {
+  242 |         const accountPairs = getAccountPairs(debitAndCreditAccounts);
+  243 |         if (accountPairs.length < 2) throw new Error("At least two different debit/credit account pairs are needed, found: "
+  244 |             + JSON.stringify(accountPairs));
+  245 |         return faker.helpers.arrayElements(accountPairs, 2)
+  246 |     }
+  247 | 
+  248 |     /**
+  249 |      * Use the given account as the only debit account and get the credit accounts
+  250 |      * of an event code that has the debit account reference code
+  251 |      * @param debitAccount account to be used in the debit side of the transaction
+  252 |      */
+  253 |     const getCreditAccountsForDebitAccount = async (debitAccount: AccountRefCodePair) => {
+  254 |         const eventCodes = await getEventCodes();
+  255 |         const chartOfAccounts: AccountRefCodePair[] = await getChartOfAccounts();
+  256 |         let creditAccounts: AccountCodeAndNamePair[] = [];
+  257 |         for (const eventCode of eventCodes) {
+  258 |             if (eventCode.debitReferenceCode === debitAccount.referenceCode
+  259 |                 && eventCode.debitReferenceCode !== eventCode.creditReferenceCode) {
+  260 |                 creditAccounts = chartOfAccounts
+  261 |                     .filter(account => account.referenceCode === eventCode.creditReferenceCode
+  262 |                         && account.accountCode !== debitAccount.accountCode)
+  263 |                     .map(account => ({ accountCode: account.accountCode, accountName: account.accountName }));
+  264 |                 if (creditAccounts.length >= 2) break;
+  265 |             }
+  266 |         }
+  267 |         if (creditAccounts.length < 2) throw new Error("At least two credit accounts are needed for the reference code "
+  268 |             + debitAccount.referenceCode + " of the debit account " + debitAccount.accountCode);
+  269 |         const debitAndCreditAccounts: DebitAndCreditAccounts = {
+  270 |             debitAccounts: [{ accountCode: debitAccount.accountCode, accountName: debitAccount.accountName }],
+  271 |             creditAccounts: creditAccounts
+  272 |         }
+  273 |         return debitAndCreditAccounts
+  274 |     }
+  275 | 
+  276 |     const getChartOfAccounts = async () => {
+  277 |         const chartOfAccountsResponse = await (await reeveService(request)).getChartOfAccounts(authToken);
+  278 |         expect(chartOfAccountsResponse.status()).toEqual(HttpStatusCodes.success);
+  279 |         const chartOfAccounts: AccountRefCodePair[] = (await (chartOfAccountsResponse).json())
+  280 |             .map(chartOfAccount => ({
+  281 |                 accountCode: chartOfAccount.customerCode,
+  282 |                 referenceCode: chartOfAccount.eventRefCode,
+  283 |                 accountName: chartOfAccount.name
+```
