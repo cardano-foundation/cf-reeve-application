@@ -36,7 +36,10 @@ removed.
 
 - creates the permissions (client roles of `reeve-api`), the module and platform
   realm roles, and the temporary `preset_*` roles;
-- creates the `reeve-backend` service account and gives it the `realm-management`
+- creates the `reeve-backend` service account with the default scopes `basic`, `roles`
+  (puts its `realm-management` roles in the token) and `kc-admin-api` (Keycloak 26.8.2+
+  rejects Admin API tokens without this scope's audience; the scope is built into
+  realms on 26.8.2+, so this needs Keycloak 26.8.2 or later), and gives it the `realm-management`
   roles it needs. Keycloak generates its secret: read it in the admin console and
   set it as `LOB_KEYCLOAK_ADMIN_CLIENT_SECRET`;
 - turns off full scope on `webclient`, so its tokens only identify the user, and
