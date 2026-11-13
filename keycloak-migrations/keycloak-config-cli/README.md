@@ -45,6 +45,15 @@ removed.
 - turns off full scope on `webclient`, so its tokens only identify the user, and
   removes the `organisations` scope from its default scopes.
 
+[`004-reports-viewer-event-codes.json`](004-reports-viewer-event-codes.json):
+
+- gives `reports_viewer` the permission `event_codes:view`: the chart of accounts
+  screens list the reference codes. A role's `composites` list is desired state, so
+  the file declares the role's whole list, not only the added permission;
+- `003` declares the same list. Every run applies all files in order, so a role
+  declared differently in two files would lose and regain the permission on every
+  run. Keep the two in step when changing `reports_viewer`.
+
 [`one-time/cardano-foundation-group-migration.json`](one-time/cardano-foundation-group-migration.json)
 runs **once**, after the migrations above. It creates the group tree and moves the
 `auditor`, `accountant`, `manager` and `admin` users to their preset. See
