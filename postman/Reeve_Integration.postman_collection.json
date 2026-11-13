@@ -1437,8 +1437,8 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "// Generate a random integer between 1 and 1000",
-                  "const randomNumber = Math.floor(Math.random() * 1000) + 1;",
+                  "// Generate a random 3-digit integer between 100 and 999 (currency codes must be exactly 3 characters)",
+                  "const randomNumber = Math.floor(Math.random() * 900) + 100;",
                   "",
                   "// Save it to an environment variable",
                   "pm.environment.set(\"randomNumber\", randomNumber);"

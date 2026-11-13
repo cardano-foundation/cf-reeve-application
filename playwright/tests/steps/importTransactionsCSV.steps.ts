@@ -35,6 +35,7 @@ Then(/^the transaction data should be imported with ready to approve status$/, a
         newBatchAfterImport.id);
     expect(batchDetailsResponse.status()).toEqual(HttpStatusCodes.success);
     let importedBatchDetails: BatchResponse =  await batchDetailsResponse.json()
+    ctx.transaction.batchDetails = importedBatchDetails;
     await (await transactionValidator()).validateImportedTxWithStatus(ctx.transaction.transactionDataToImport, importedBatchDetails,
         BatchesStatusCodes.APPROVE);
 });
