@@ -9,3 +9,8 @@ API_HOSTNAME=api.${DOMAIN}
 FRONTEND_HOSTNAME=${DOMAIN}
 FRONTEND_URL=https://${FRONTEND_HOSTNAME}
 LOB_CORS_ALLOWED_ORIGINS=https://${DOMAIN}
+
+# NetSuite credential encryption (RSA pair, Base64 DER). Generate per environment:
+# see certs/netsuiteConfiguration.md. api gets only the PUBLIC key, publisher only the PRIVATE key.
+LOB_CONFIG_ENCRYPTION_PUBLIC_KEY=
+LOB_CONFIG_ENCRYPTION_PRIVATE_KEY=

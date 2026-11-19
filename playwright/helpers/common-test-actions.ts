@@ -6,6 +6,8 @@ import {TransactionItemCsvDto} from "../api/dtos/transactionItemCsvDto";
 import {deleteFile} from "../utils/csvFileGenerator";
 import {BatchesStatusCodes} from "../api/api-helpers/batches-status-codes";
 import {transactionValidator} from "../validators/transactionValidator";
+import {UpdateChartOfAccountsDto} from "../api/dtos/chartOfAccountsDto";
+import {chartOfAccountsBuilder} from "./chartOfAccountsBuilder";
 
 export async function commonTestActions(request: APIRequestContext) {
     const loginUser = async () => {
@@ -40,8 +42,22 @@ export async function commonTestActions(request: APIRequestContext) {
         return await (await reeveService(request)).getNewBatch(authToken, BatchesStatusCodes.PENDING, txNumber);
     }
 
+    /**
+     * Precondition action: add a new chart of account with all the required fields
+     * @return the data of the created chart of account
+     */
+    const addChartOfAccount = async (authToken: string) => {
+        const chartOfAccount: UpdateChartOfAccountsDto = await (await chartOfAccountsBuilder(request, authToken))
+            .createChartOfAccountData();
+        const createResponse = await (await reeveService(request)).createChartOfAccounts(authToken, chartOfAccount);
+        expect(createResponse.status(), "Precondition chart of account " + chartOfAccount.customerCode
+            + " should be created: " + await createResponse.text()).toEqual(HttpStatusCodes.success);
+        return chartOfAccount
+    }
+
     return {
         loginUser,
+        addChartOfAccount,
         importReadyToApproveTx,
         importAndGetPendingBatch
     }
