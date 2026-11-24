@@ -1,0 +1,4 @@
+[2026-11-24T09:53:18.354] [INFO] default - Request URL: http://localhost:8080/realms/reeve-master/protocol/openid-connect/token
+[2026-11-24T09:53:18.355] [INFO] default - Response status: 200
+[2026-11-24T09:53:18.384] [INFO] default - Request URL: http://localhost:9000/api/v1/transaction-types
+[2026-11-24T09:53:18.384] [INFO] default - Response status: 400
