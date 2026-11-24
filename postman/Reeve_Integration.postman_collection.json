@@ -1860,12 +1860,8 @@
                 "type": "text"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"customerCode\": \"6311170100\",\n    \"refCode\": \"7157\",\n    \"eventRefCode\": \"7100\",\n    \"name\": \"New Postman Name\",\n    \"subType\": 18,\n    \"type\": 5,\n    \"active\": true\n}"
-            },
             "url": {
-              "raw": "{{base_url}}/api/v1/transactions-rejection-codes",
+              "raw": "{{base_url}}/api/v1/transactions-rejection-codes?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -1873,6 +1869,12 @@
                 "api",
                 "v1",
                 "transactions-rejection-codes"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -2429,7 +2431,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/transactions/{{transactionId}}",
+              "raw": "{{base_url}}/api/v1/transactions/{{transactionId}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -2438,6 +2440,12 @@
                 "v1",
                 "transactions",
                 "{{transactionId}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -2478,7 +2486,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/transaction-types",
+              "raw": "{{base_url}}/api/v1/transaction-types?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -2486,6 +2494,12 @@
                 "api",
                 "v1",
                 "transaction-types"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -2526,7 +2540,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/rejection-reasons",
+              "raw": "{{base_url}}/api/v1/rejection-reasons?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -2534,6 +2548,12 @@
                 "api",
                 "v1",
                 "rejection-reasons"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -2639,7 +2659,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/batches/{{batchId}}",
+              "raw": "{{base_url}}/api/v1/batches/{{batchId}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -2648,6 +2668,12 @@
                 "v1",
                 "batches",
                 "{{batchId}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -2688,7 +2714,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/batches/reprocess/{{batchId}}",
+              "raw": "{{base_url}}/api/v1/batches/reprocess/{{batchId}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -2698,6 +2724,12 @@
                 "batches",
                 "reprocess",
                 "{{batchId}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -3235,7 +3267,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/reporting/reports/{{balanceSheetReportId}}",
+              "raw": "{{base_url}}/api/v1/reporting/reports/{{balanceSheetReportId}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -3245,6 +3277,12 @@
                 "reporting",
                 "reports",
                 "{{balanceSheetReportId}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -3283,7 +3321,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/reporting/templates/{{dummyTemplateId}}",
+              "raw": "{{base_url}}/api/v1/reporting/templates/{{dummyTemplateId}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -3293,6 +3331,12 @@
                 "reporting",
                 "templates",
                 "{{dummyTemplateId}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -3509,18 +3553,27 @@
           "name": "POST Create Project",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// proId is permanent and unique per organisation among root projects, so every run needs a new one",
+                  "pm.environment.set(\"dummyProjectProId\", \"PM-\" + Date.now());"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "exec": [
-                  "// store in dummyTemplateId environment variable",
-                  "pm.test(\"Template ID is stored in environment variable\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.environment.set(\"dummyProject\", jsonData.projectId);",
+                  "pm.test(\"Project is created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    pm.environment.set(\"dummyProject\", pm.response.json().projectId);",
                   "});"
                 ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "packages": {}
               }
             }
           ],
@@ -3535,7 +3588,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"projectId\": \"projectId\",\n  \"projectTitle\": \"projectTitle\",\n  \"totalAmount\": 100,\n  \"currency\": \"USD\",\n  \"milestones\": [{\n    \"milestoneId\": \"milestone1\",\n    \"milestoneTitle\": \"title\",\n    \"milestoneAmount\": 200,\n    \"currency\": \"USD\",\n    \"milestoneDate\": \"2025-06-30\"\n  }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"projectTitle\": \"Postman Project\",\n  \"proId\": \"{{dummyProjectProId}}\",\n  \"totalAmount\": 200,\n  \"currency\": \"USD\",\n  \"milestones\": [\n    {\n      \"milestoneTitle\": \"Milestone 1\",\n      \"milestoneAmount\": 200,\n      \"currency\": \"USD\",\n      \"milestoneDate\": \"2026-06-30\"\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3583,7 +3636,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"activityTitle\": \"Project AB-2\",\n    \"expectedTotalAmount\": 200000,\n    \"currency\": \"USD\"\n}",
+              "raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"projectTitle\": \"Postman Project\",\n  \"proId\": \"{{dummyProjectProId}}\",\n  \"totalAmount\": 300,\n  \"currency\": \"USD\",\n  \"milestones\": [\n    {\n      \"milestoneTitle\": \"Milestone 1\",\n      \"milestoneAmount\": 300,\n      \"currency\": \"USD\",\n      \"milestoneDate\": \"2026-06-30\",\n      \"proId\": \"{{dummyProjectProId}}-M1\"\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3591,14 +3644,14 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/api/v1/spending/projects/{{dummyProject}}",
+              "raw": "{{base_url}}/api/v1/funding/projects/{{dummyProject}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "spending",
+                "funding",
                 "projects",
                 "{{dummyProject}}"
               ]
@@ -3607,7 +3660,7 @@
           "response": []
         },
         {
-          "name": "POST Get specific project",
+          "name": "GET specific project",
           "event": [
             {
               "listen": "test",
@@ -3633,26 +3686,23 @@
                 "type": "text"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"fundingId\": \"GRANT-2025-001\",\n  \"activityId\": \"PROJ-AB\",\n  \"activityTitle\": \"Project AB\",\n  \"expectedTotalAmount\": 200000,\n  \"currency\": \"USD\",\n  \"milestones\": [\n    {\n      \"label\": \"Milestone AB\",\n      \"expectedCost\": 50000,\n      \"currency\": \"USD\",\n      \"dueDate\": \"2025-06-30\"\n    }\n  ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
             "url": {
-              "raw": "{{base_url}}/api/v1/spending/projects/{{dummyProject}}",
+              "raw": "{{base_url}}/api/v1/funding/projects/{{dummyProject}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "spending",
+                "funding",
                 "projects",
                 "{{dummyProject}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -3688,7 +3738,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-003\",\n  \"fundingHash\": \"18939000123\",\n  \"fundingEntity\": \"Test entity\",\n  \"currency\": \"USD\",\n  \"allocations\": [\n    {\n        \"projectId\": \"GRANT-2025-001\",\n        \"fundingId\": \"FundingID\",\n        \"projectTitle\": \"projectTitle\",\n        \"milestones\": [\n            {\n                \"milestoneId\": \"milestone1\",\n                \"allocatedAmount\": 50\n            }\n        ]\n    }\n  ]\n}",
+              "raw": "{\n  \"organisationId\": \"75f95560c1d883ee7628993da5adf725a5d97a13929fd4f477be0faf5020ca94\",\n  \"eventType\": \"FUNDING\",\n  \"fundingId\": \"GRANT-2025-003\",\n  \"fundingHash\": \"18939000123\",\n  \"fundingEntity\": \"Test entity\",\n  \"currencyRcy\": \"USD\",\n  \"eventDate\": \"2026-06-30\",\n  \"allocations\": [\n    {\n      \"proId\": \"{{dummyProjectProId}}\",\n      \"milestones\": [\n        {\n          \"milestone\": {\n            \"proId\": \"{{dummyProjectProId}}-M1\"\n          },\n          \"allocatedAmount\": 50\n        }\n      ]\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3735,17 +3785,23 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/spending/projects/{{dummyProject}}/events",
+              "raw": "{{base_url}}/api/v1/funding/projects/{{dummyProject}}/events?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "spending",
+                "funding",
                 "projects",
                 "{{dummyProject}}",
                 "events"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -3776,18 +3832,22 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/spending/projects/{{dummyProject}}/events/{{dummySpendingEvent}}",
+              "raw": "{{base_url}}/api/v1/funding/events/{{dummySpendingEvent}}?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "spending",
-                "projects",
-                "{{dummyProject}}",
+                "funding",
                 "events",
                 "{{dummySpendingEvent}}"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
@@ -3818,19 +3878,23 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/spending/projects/{{dummyProject}}/events/{{dummySpendingEvent}}/publish",
+              "raw": "{{base_url}}/api/v1/funding/events/{{dummySpendingEvent}}/publish?organisationId={{orgId}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "spending",
-                "projects",
-                "{{dummyProject}}",
+                "funding",
                 "events",
                 "{{dummySpendingEvent}}",
                 "publish"
+              ],
+              "query": [
+                {
+                  "key": "organisationId",
+                  "value": "{{orgId}}"
+                }
               ]
             }
           },
