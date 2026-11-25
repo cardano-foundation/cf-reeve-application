@@ -12,9 +12,9 @@ export async function transactionValidator() {
         const creditCsvItem: TransactionItemCsvDto = await extractCsvTxItem(transactionCsvData, false);
         const txItems = importedBatchDetails.transactions[0].items
         const txDebitItem = txItems.find(tx =>
-            tx.accountDebitCode ==  debitCsvItem.DebitCode)
+            tx.accountDebitCode == debitCsvItem.DebitCode && tx.accountCreditCode == debitCsvItem.CreditCode)
         const txCreditItem = txItems.find(tx =>
-        tx.accountDebitCode == creditCsvItem.DebitCode)
+            tx.accountDebitCode == creditCsvItem.DebitCode && tx.accountCreditCode == creditCsvItem.CreditCode)
         if(transactionStatus == BatchesStatusCodes.APPROVE){
             expect(importedBatchDetails.batchStatistics.approve, "Imported batch should have transaction in ready to approve status ")
                 .toEqual(importedBatchDetails.totalTransactionsCount)
@@ -79,8 +79,17 @@ export async function transactionValidator() {
             return !isNaN(amount) && amount > 0
         })
     }
+    const validateTransactionContainsAccount = async (importedBatchDetails: BatchResponse, accountCode: string) => {
+        const txItems = importedBatchDetails.transactions[0].items;
+        expect(txItems.some(txItem => txItem.accountDebitCode == accountCode || txItem.accountCreditCode == accountCode),
+            "The imported transaction " + importedBatchDetails.transactions[0].internalTransactionNumber
+            + " should contain the account " + accountCode + " but has the accounts: "
+            + JSON.stringify(txItems.map(txItem => ({debit: txItem.accountDebitCode, credit: txItem.accountCreditCode}))))
+            .toBeTruthy()
+    }
     return {
         validateImportedTxWithStatus,
+        validateTransactionContainsAccount,
         validatePendingCondition,
         validateInvalidCondition
     }

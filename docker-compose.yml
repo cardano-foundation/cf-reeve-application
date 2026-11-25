@@ -95,9 +95,9 @@ services:
       LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
       LOB_INDEXER_URL: ${LOB_INDEXER_URL:-http://reeve-indexer-api:9000}
       LOB_ORGANISATION_ENABLED: false
-      # Required on every service running the organisation or netsuite module:
-      # the organisation tier encrypts NetSuite keys, the netsuite tier decrypts them.
-      LOB_CONFIG_ENCRYPTION_KEY: ${LOB_CONFIG_ENCRYPTION_KEY:-z1koba0yG77CXzWsoDOrUpQq3tBgEKWtcbjH4/vCI/k=}
+      # Decrypt-only half of the RSA key pair: this service runs the netsuite module.
+      # The api never gets this key - it can only encrypt. See certs/netsuiteConfiguration.md.
+      LOB_CONFIG_ENCRYPTION_PRIVATE_KEY: ${LOB_CONFIG_ENCRYPTION_PRIVATE_KEY:?Generate the encryption key pair - see certs/netsuiteConfiguration.md}
       LOB_BLOCKCHAIN_READER_ENABLED: true
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: true
       LOB_NETSUITE_ENABLED: true
@@ -117,9 +117,12 @@ services:
       LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME: ${LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_NAME:-identity}
       LOB_BLOCKCHAIN_PUBLISHER_KERI_IDENTIFIER_ROLE: agent
       LOB_BLOCKCHAIN_PUBLISHER_KERI_METADATA_LABEL: 170
-      LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED:-false}
-      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED:-false}
-      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID:-DUMMY_KEY}
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_ENABLED:-true}
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED:-true}
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID:-ipfsJrP4wskyTOLTnqZ9Bd8lslYv0tuy17bX}
+      # Both modules default to off on this service — the api service owns them.
+      LOB_DOCUMENT_VAULT_ENABLED: ${LOB_DOCUMENT_VAULT_ENABLED:-false}
+      LOB_KERI_ATTESTATION_ENABLED: ${LOB_KERI_ATTESTATION_ENABLED:-false}
     working_dir: /app
     healthcheck:
       test: ["CMD", "java", "-jar", "/healthcheck.jar", "9001"]
@@ -165,12 +168,14 @@ services:
       LOB_MOCK_RESULT_PATH: cf-application/src/main/resources/db/migration/postgresql/cf-reeve-db-migrations/NetSuiteIngestionMock.json
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev--yaci-dev-kit}
       DB_URL: ${DB_URL:-jdbc:postgresql://postgres-reeve:5432/postgres}
+      LOB_KEYCLOAK_ADMIN_URL: ${LOB_KEYCLOAK_ADMIN_URL:-http://keycloak:8080}
+      LOB_KEYCLOAK_ADMIN_CLIENT_SECRET: ${LOB_KEYCLOAK_ADMIN_CLIENT_SECRET:-reeve-backend-dev-secret}
       lob_owner_account_mnemonic: ${LOB_OWNER_ACCOUNT_MNEMONIC:-test test test test test test test test test test test test test test test test test test test test test test test sauce}
       LOB_ACCOUNTING_REPORTING_CORE_ENABLED: true
       LOB_ORGANISATION_ENABLED: true
-      # Required on every service running the organisation or netsuite module:
-      # the organisation tier encrypts NetSuite keys, the netsuite tier decrypts them.
-      LOB_CONFIG_ENCRYPTION_KEY: ${LOB_CONFIG_ENCRYPTION_KEY:-z1koba0yG77CXzWsoDOrUpQq3tBgEKWtcbjH4/vCI/k=}
+      # Encrypt-only half of the RSA key pair: this service runs the organisation module
+      # and can never decrypt stored credentials. See certs/netsuiteConfiguration.md.
+      LOB_CONFIG_ENCRYPTION_PUBLIC_KEY: ${LOB_CONFIG_ENCRYPTION_PUBLIC_KEY:?Generate the encryption key pair - see certs/netsuiteConfiguration.md}
       LOB_REPORTING_ENABLED: true
       LOB_INDEXER_ENABLED: ${LOB_INDEXER_ENABLE:-true}
       LOB_INDEXER_URL: ${LOB_INDEXER_URL:-http://reeve-indexer-api:9000}
@@ -178,6 +183,22 @@ services:
       LOB_BLOCKCHAIN_READER_ENABLED: false
       LOB_BLOCKCHAIN_PUBLISHER_ENABLED: false
       LOB_NETSUITE_ENABLED: false
+      LOB_KERI_ATTESTATION_ENABLED: true
+      LOB_KERI_ATTESTATION_KERIA_URL: ${LOB_KERI_ATTESTATION_KERIA_URL:-https://keria.dev.ecosyseng.cf-deployments.org}
+      LOB_KERI_ATTESTATION_KERIA_BOOTURL: ${LOB_KERI_ATTESTATION_KERIA_BOOTURL:-https://keria-boot.dev.ecosyseng.cf-deployments.org}
+      LOB_KERI_ATTESTATION_KERIA_BRAN: ${LOB_KERI_ATTESTATION_KERIA_BRAN:-0A98gEaYge5XlagRM9okY}
+      LOB_KERI_ATTESTATION_IDENTIFIER_NAME: ${LOB_KERI_ATTESTATION_IDENTIFIER_NAME:-reeve-attestation}
+      LOB_KERI_ATTESTATION_SCHEMA_BASE_URL: ${LOB_KERI_ATTESTATION_SCHEMA_BASE_URL:-https://cred-issuance.dev.ecosyseng.cf-deployments.org/oobi}
+      # Accepted credential schemas and their trust anchors. Foundation Employee is configured live —
+      # its issuer AID and the OOBI that lets the agent reach that issuer's registry. Without the OOBI
+      # the agent cannot ask whether a credential is still issued, and verification fails closed.
+      # Only read when LOB_KERI_ATTESTATION_ENABLED=true.
+      LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID: ${LOB_KERI_ATTESTATION_EMPLOYEE_SCHEMA_SAID:-EL9oOWU_7zQn_rD--Xsgi3giCWnFDaNvFMUGTOZx1ARO}
+      LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID: ${LOB_KERI_ATTESTATION_EMPLOYEE_ISSUER_AID:-EOcGYMIaKnF4_cpkcWhZVzoHcS0EauVQeWdSipHAfTrd}
+      LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS: ${LOB_KERI_ATTESTATION_EMPLOYEE_OOBIS:-https://keria-ext.dev.ecosyseng.cf-deployments.org/oobi/EOcGYMIaKnF4_cpkcWhZVzoHcS0EauVQeWdSipHAfTrd/agent/EFrACXBZnest_9ldYyGcnKdele6tW50Xot6JEzvslUAU}
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_ENABLED:-true}
+      LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID: ${LOB_BLOCKCHAIN_PUBLISHER_IPFS_BLOCKFROST_PROJECT_ID:-ipfsJrP4wskyTOLTnqZ9Bd8lslYv0tuy17bX}
+      LOB_DOCUMENT_VAULT_ENABLED: true
       LOB_FUNDING_ENABLED: true
       LOB_CSV_ENABLED: false
       SPRING_KAFKA_ENABLED: true
@@ -232,7 +253,7 @@ services:
 
   keycloak:
     restart: unless-stopped
-    image: quay.io/keycloak/keycloak:26.7
+    image: quay.io/keycloak/keycloak:26.8
     command: start-dev --import-realm
     depends_on:
       postgres:
@@ -298,7 +319,7 @@ services:
 
   kafka:
     restart: unless-stopped
-    image: apache/kafka:4.1.1
+    image: apache/kafka:4.3.2
     healthcheck:
       test: /opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server kafka:9092 || exit 1
       interval: 1s
@@ -420,7 +441,7 @@ services:
   traefik:
     profiles: [traefik]
     restart: unless-stopped
-    image: "traefik:v3.6"
+    image: "traefik:v3.7"
     container_name: "traefik"
     command:
       - "--log.level=DEBUG"

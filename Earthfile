@@ -16,7 +16,7 @@ all:
   END
 
 docker-publish:
-  ARG EARTHLY_GIT_SHORT_HASH
+  ARG EARTH_GIT_SHORT_HASH
   ARG RELEASE_TAG
   WAIT
     BUILD +all --RELEASE_TAG=${RELEASE_TAG}
@@ -33,19 +33,19 @@ docker-publish:
           RUN if [ "$PUSH" = "true" ]; then docker push ${registry}/${IMAGE_NAME}:${image_tag}; fi
         END
       END
-      RUN echo docker tag ${IMAGE_NAME}:latest ${registry}/${IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH} && \
-        docker tag ${IMAGE_NAME}:latest ${registry}/${IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}
-      RUN if [ "$PUSH" = "true" ]; then docker push ${registry}/${IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}; fi
+      RUN echo docker tag ${IMAGE_NAME}:latest ${registry}/${IMAGE_NAME}:${EARTH_GIT_SHORT_HASH} && \
+        docker tag ${IMAGE_NAME}:latest ${registry}/${IMAGE_NAME}:${EARTH_GIT_SHORT_HASH}
+      RUN if [ "$PUSH" = "true" ]; then docker push ${registry}/${IMAGE_NAME}:${EARTH_GIT_SHORT_HASH}; fi
     END
   END
 
 backend:
-  ARG EARTHLY_TARGET_NAME
-  FROM DOCKERFILE -f Dockerfile --target ${EARTHLY_TARGET_NAME} --build-arg GITLAB_MAVEN_REGISTRY_URL .
-  SAVE IMAGE ${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}:latest
+  ARG EARTH_TARGET_NAME
+  FROM DOCKERFILE -f Dockerfile --target ${EARTH_TARGET_NAME} --build-arg GITLAB_MAVEN_REGISTRY_URL .
+  SAVE IMAGE ${DOCKER_IMAGE_PREFIX}-${EARTH_TARGET_NAME}:latest
 
 backend-test-build:
-  ARG EARTHLY_TARGET_NAME
+  ARG EARTH_TARGET_NAME
   FROM DOCKERFILE -f Dockerfile --target build --build-arg GITLAB_MAVEN_REGISTRY_URL .
 
 backend-test:

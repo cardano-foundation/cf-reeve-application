@@ -1,4 +1,5 @@
 import {test as base, createBdd} from 'playwright-bdd';
+import {APIResponse} from "@playwright/test";
 import {TransactionItemCsvDto} from "../api/dtos/transactionItemCsvDto";
 import {BatchResponse} from "../api/dtos/batchDto";
 import {RejectTransactionDto, RejectTransactionResponseDto} from "../api/dtos/RejectTransactionDto";
@@ -26,6 +27,9 @@ interface CostCenterContext {
 
 interface ChartOfAccountContext {
     updateDto?: UpdateChartOfAccountsDto;
+    existingAccount?: UpdateChartOfAccountsDto;
+    requestData?: UpdateChartOfAccountsDto;
+    response?: APIResponse;
 }
 
 interface ScenarioContext {

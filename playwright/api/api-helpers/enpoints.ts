@@ -42,6 +42,9 @@ export class Reeve {
         public static get CostCenters() {
             return `${Reeve.Organization.Base}/:orgId/cost-centers`
         }
+        public static get ChartTypes() {
+            return `${Reeve.Organization.Base}/:orgId/chart-types`
+        }
     }
     static Batches = class {
         public static get Batches() {

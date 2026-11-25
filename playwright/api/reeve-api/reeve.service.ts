@@ -44,6 +44,14 @@ export async function reeveService(request: APIRequestContext) {
         return await reeveApi(request).updateChartOfAccounts(organizationId, authToken, chartOfAccount);
     }
 
+    const createChartOfAccounts = async (authToken: string, chartOfAccount: UpdateChartOfAccountsDto) => {
+        return await reeveApi(request).createChartOfAccounts(organizationId, authToken, chartOfAccount);
+    }
+
+    const getChartTypes = async (authToken: string) => {
+        return await reeveApi(request).chartTypes(organizationId, authToken);
+    }
+
     const validateTransactionCsvFile = async (authToken: string, transactionFile: string) => {
         return await reeveApi(request).validateTransactionCsvFile(organizationId, authToken, transactionFile);
     }
@@ -57,7 +65,7 @@ export async function reeveService(request: APIRequestContext) {
     }
 
     const getBatchById = async (authToken: string, batchId: string) => {
-        return await reeveApi(request).batchById(authToken, batchId)
+        return await reeveApi(request).batchById(organizationId, authToken, batchId)
     }
 
     const findBatch = async (
@@ -104,7 +112,7 @@ export async function reeveService(request: APIRequestContext) {
     const getNewBatchByDocumentNumber = async (authToken: string, status: string, documentNumber: string) =>
         pollForNewBatch(authToken, status, batch => batch.transactions[0].items[0].documentNum == documentNumber);
     const reprocessBatch = async (authToken: string, batchId: string) => {
-        return await reeveApi(request).reprocessBatch(authToken, batchId);
+        return await reeveApi(request).reprocessBatch(organizationId, authToken, batchId);
     }
 
     const approveTransaction = async (authToken: string, batchDetails: BatchResponse) => {
@@ -118,7 +126,7 @@ export async function reeveService(request: APIRequestContext) {
         return await reeveApi(request).rejectTransaction(authToken, transactionToReject)
     }
     const getTransactionById = async (authToken: string, transactionId: string) => {
-        return await reeveApi(request).getTransactionById(authToken, transactionId)
+        return await reeveApi(request).getTransactionById(organizationId, authToken, transactionId)
     }
     return {
         loginToReeve,
@@ -129,6 +137,8 @@ export async function reeveService(request: APIRequestContext) {
         getCostCenters,
         updateCostCenter,
         updateChartOfAccounts,
+        createChartOfAccounts,
+        getChartTypes,
         validateTransactionCsvFile,
         importTransactionCsvFile,
         getBatchesByStatus,

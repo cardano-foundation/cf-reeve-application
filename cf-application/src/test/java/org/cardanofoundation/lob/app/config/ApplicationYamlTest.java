@@ -50,7 +50,10 @@ class ApplicationYamlTest {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> configEncryption = (Map<String, Object>) security.get("config-encryption");
-        assertThat(configEncryption).containsKey("key");
+        assertThat(configEncryption)
+                .as("asymmetric since 1.8: public key on the api tier, private key on the publisher")
+                .containsKeys("public-key", "private-key")
+                .doesNotContainKey("key");
     }
 
     @Test
@@ -89,6 +92,18 @@ class ApplicationYamlTest {
                 .as("credentials are per-organisation in the database now")
                 .doesNotContainKeys("url", "token-url", "client-id", "certificate-id", "private-key-file-path");
         assertThat(client).as("operator tuning stays global").containsKey("recordspercall");
+    }
+
+    @Test
+    void leavesTheKeycloakConnectionAndThePermissionCatalogueToThePlatform() {
+        Map<String, Object> root = load("/application.yml");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> lob = (Map<String, Object>) root.get("lob");
+
+        assertThat(lob)
+                .as("lists set here would replace the platform's reeve-permissions.yml; the connection is set with LOB_KEYCLOAK_ADMIN_*")
+                .doesNotContainKeys("keycloak", "permissions");
     }
 
     /**
